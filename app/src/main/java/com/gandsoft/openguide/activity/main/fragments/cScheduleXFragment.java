@@ -8,9 +8,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.gandsoft.openguides2.R;
-import com.gandsoft.openguides2.adapter.TaskRecViewAdapter;
-import com.gandsoft.openguides2.adapter.TaskRecViewPojo;
+import com.gandsoft.openguide.R;
+import com.gandsoft.openguide.activity.main.adapter.TaskRecViewAdapter;
+import com.gandsoft.openguide.activity.main.adapter.TaskRecViewPojo;
 
 import java.util.ArrayList;
 

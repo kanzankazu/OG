@@ -6,7 +6,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.gandsoft.openguides2.R;
+import com.gandsoft.openguide.R;
+
 
 public class bWalletFragment extends Fragment {
     @Override

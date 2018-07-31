@@ -10,9 +10,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
-import com.gandsoft.openguides2.R;
-import com.gandsoft.openguides2.adapter.PostRecViewAdapter;
-import com.gandsoft.openguides2.adapter.PostRecViewPojo;
+import com.gandsoft.openguide.R;
+import com.gandsoft.openguide.activity.main.adapter.PostRecViewAdapter;
+import com.gandsoft.openguide.activity.main.adapter.PostRecViewPojo;
 
 import java.util.ArrayList;
 

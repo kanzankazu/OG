@@ -8,7 +8,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.gandsoft.openguides2.R;
+import com.gandsoft.openguide.R;
+
 
 public class cScheduleFragment extends Fragment {
     static final int NUM_ITEMS = 5;

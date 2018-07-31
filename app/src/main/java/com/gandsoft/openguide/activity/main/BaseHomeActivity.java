@@ -1,63 +1,73 @@
 package com.gandsoft.openguide.activity.main;
 
+import android.graphics.PorterDuff;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
+import android.support.design.widget.TabLayout;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.widget.Button;
 
-import com.gandsoft.openguides2.fragments.bWalletFragment;
-import com.gandsoft.openguides2.fragments.cScheduleFragment;
-import com.gandsoft.openguides2.fragments.dAboutFragment;
-import com.gandsoft.openguides2.fragments.eInfoFragment;
+import com.gandsoft.openguide.R;
 
 public class BaseHomeActivity extends AppCompatActivity {
-	static final int NUM_ITEMS = 5;
+    static final int NUM_ITEMS = 5;
 
-	ViewPager mPager;
-	SlidePagerAdapter mPagerAdapter;
-    Button btn1,btn2,btn3,btn4,btn5;
+    ViewPager mPager;
+    SlidePagerAdapter mPagerAdapter;
+    private TabLayout tabLayout;
 
     @Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_base_home);
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_base_home);
 
-        mPager = (ViewPager) findViewById(R.id.pager);
-		mPagerAdapter = new SlidePagerAdapter(getSupportFragmentManager());
-		mPager.setAdapter(mPagerAdapter);
+        initComponent();
+        initContent();
+        initListener();
+
+
     }
 
-	public class SlidePagerAdapter extends FragmentPagerAdapter {
-		SlidePagerAdapter(FragmentManager fm) {
-			super(fm);
-		}
+    private void initComponent() {
+        tabLayout = (TabLayout) findViewById(R.id.tlFiltSortHot);
+        mPager = (ViewPager) findViewById(R.id.pager);
+    }
 
-		@Override
-		public Fragment getItem(int position) {
-		    if (position == 0){
-                return new RootFragment();
-            }
-			else if(position==1){
-                return new bWalletFragment();
-            }
-			else if(position==2){
-                return new cScheduleFragment();
-            }
-			else if(position==3){
-                return new dAboutFragment();
-            }
-            else if(position==4){
-                return new eInfoFragment();
-            }
-            return null;
-		}
+    private void initContent() {
+        /*tab layout*/
+        tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.ic_tab_home));
+        tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.ic_tab_wallet));
+        tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.ic_tab_schedule));
+        tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.ic_tab_about));
+        tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.ic_tab_info));
+        tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
-		@Override
-		public int getCount() {
-			return NUM_ITEMS;
-		}
-	}
+        mPagerAdapter = new SlidePagerAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
+        mPager.setAdapter(mPagerAdapter);
+
+    }
+
+    private void initListener() {
+        mPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+        tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                mPager.setCurrentItem(tab.getPosition());
+                int tabIconColor = ContextCompat.getColor(BaseHomeActivity.this, R.color.colorPrimaryDark);
+                tab.getIcon().setColorFilter(tabIconColor, PorterDuff.Mode.SRC_IN);
+
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+                int tabIconColor = ContextCompat.getColor(BaseHomeActivity.this, R.color.grey);
+                tab.getIcon().setColorFilter(tabIconColor, PorterDuff.Mode.SRC_IN);
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+            }
+        });
+    }
 }

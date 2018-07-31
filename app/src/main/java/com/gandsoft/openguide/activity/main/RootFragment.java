@@ -7,7 +7,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.gandsoft.openguides2.fragments.aHomeFragment;
+import com.gandsoft.openguide.R;
+import com.gandsoft.openguide.activity.main.fragments.aHomeFragment;
+
 
 /**
  * Example about replacing fragments inside a ViewPager. I'm using
