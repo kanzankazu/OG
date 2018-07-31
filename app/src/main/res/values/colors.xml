@@ -4,6 +4,11 @@
     <color name="colorPrimaryDark">#3a4660</color>
     <color name="colorAccent">#fec107</color>
 
+    <color name="SuperWhite">#FFFFFF</color>
+
+    <color name="colorPrimaryText">#212121</color>
+    <color name="colorSecondaryText">#727272</color>
+
     <color name="androidRed">#d86858</color>
     <color name="super_red">#ff2929</color>
     <color name="orange1">#ff3300</color>
