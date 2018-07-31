@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "572456119095",
+    "firebase_url": "https://openguides-a7b13.firebaseio.com",
+    "project_id": "openguides-a7b13",
+    "storage_bucket": "openguides-a7b13.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:572456119095:android:cf5c5210ed588b26",
+        "android_client_info": {
+          "package_name": "com.gandsoft.openguide"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "572456119095-4k4ers52926j61vqmhrelsalsc07tsj5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.gandsoft.openguide",
+            "certificate_hash": "f4e00a11fb3e9f955cb5089279cb546f218004dd"
+          }
+        },
+        {
+          "client_id": "572456119095-jcjpn6tq59jvg4osrbmi1b3ug9420u0m.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBIgobs_Hy-nUJoRi_3pp3e7duUTZyr41I"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "572456119095-jcjpn6tq59jvg4osrbmi1b3ug9420u0m.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
