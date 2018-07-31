@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#606b8b</color>
+    <color name="colorPrimaryDark">#3a4660</color>
+    <color name="colorAccent">#fec107</color>
+
+    <color name="androidRed">#d86858</color>
+    <color name="super_red">#ff2929</color>
+    <color name="orange1">#ff3300</color>
+    <color name="orange2">#ff6600</color>
+    <color name="orange3">#ff9900</color>
+    <color name="yellow">#f5b32c</color>
+    <color name="yellowlight">#fbeb75</color>
+    <color name="androidSbluelight">#acdaf5</color>
+    <color name="androidSbluedark">#279ed4</color>
+    <color name="androidSblue">#2733d4</color>
+    <color name="androidGreen">#39b44a</color>
+    <color name="graydark">#2b2b2b</color>
+    <color name="black">#000000</color>
+    <color name="white">#FFFFFF</color>
+    <color name="grey">#cccccc</color>
+
+    <!-- Screens background color-->
+    <color name="bg_screen1">#f64c73</color>
+    <color name="bg_screen2">#20d2bb</color>
+    <color name="bg_screen3">#3395ff</color>
+    <color name="bg_screen4">#c873f4</color>
+
+    <!-- dots inactive colors -->
+    <color name="dot_dark_screen1">#d1395c</color>
+    <color name="dot_dark_screen2">#14a895</color>
+    <color name="dot_dark_screen3">#2278d4</color>
+    <color name="dot_dark_screen4">#a854d4</color>
+
+    <!-- dots active colors -->
+    <color name="dot_light_screen1">#f98da5</color>
+    <color name="dot_light_screen2">#8cf9eb</color>
+    <color name="dot_light_screen3">#93c6fd</color>
+    <color name="dot_light_screen4">#e4b5fc</color>
+
+    <array name="array_dot_active">
+        <item>@color/dot_light_screen1</item>
+        <item>@color/dot_light_screen2</item>
+        <item>@color/dot_light_screen3</item>
+        <item>@color/dot_light_screen4</item>
+    </array>
+
+    <array name="array_dot_inactive">
+        <item>@color/dot_dark_screen1</item>
+        <item>@color/dot_dark_screen2</item>
+        <item>@color/dot_dark_screen3</item>
+        <item>@color/dot_dark_screen4</item>
+    </array>
+</resources>
