@@ -7,87 +7,78 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-
 import com.gandsoft.openguide.R;
 
 import java.util.ArrayList;
+import java.util.List;
 
-/** Authuor: Hari vignesh Jayapalan
- *  Created on: 6 Feb 2016
- *  Email: hariutd@gmail.com
- *
- *  Implementing custom RecyclerView Adapter
- *  Tutorial @ https://medium.com/@harivigneshjayapalan
- * */
+/**
+ * Authuor: Hari vignesh Jayapalan
+ * Created on: 6 Feb 2016
+ * Email: hariutd@gmail.com
+ * <p>
+ * Implementing custom RecyclerView Adapter
+ * Tutorial @ https://medium.com/@harivigneshjayapalan
+ */
 public class PostRecViewAdapter extends RecyclerView.Adapter<PostRecViewAdapter.MyViewHolder> {
 
-    //Creating an arraylist of POJO objects
-    private ArrayList<PostRecViewPojo> list_members=new ArrayList<>();
+    private List<PostRecViewPojo> mValues;
     private final LayoutInflater inflater;
     View view;
     MyViewHolder holder;
     private Context context;
 
-
-    public PostRecViewAdapter(Context context){
-        this.context=context;
-        inflater= LayoutInflater.from(context);
+    public PostRecViewAdapter(Context context, List<PostRecViewPojo> items) {
+        this.context = context;
+        mValues = items;
+        inflater = LayoutInflater.from(context);
     }
 
-
-    //This method inflates view present in the RecyclerView
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        view=inflater.inflate(R.layout.recview_post, parent, false);
-        holder=new MyViewHolder(view);
+        view = inflater.inflate(R.layout.recview_post, parent, false);
+        holder = new MyViewHolder(view);
         return holder;
     }
 
-    //Binding the data using get() method of POJO object
     @Override
     public void onBindViewHolder(final MyViewHolder holder, int position) {
-        PostRecViewPojo list_items=list_members.get(position);
-        holder.user_name.setText(list_items.getName());
-        holder.content.setText(list_items.getContent());
-        holder.time.setText(list_items.getTime());
+        PostRecViewPojo recViewPojo = mValues.get(position);
+        holder.user_name.setText(recViewPojo.getName());
+        holder.content.setText(recViewPojo.getContent());
+        holder.time.setText(recViewPojo.getTime());
     }
-
-    //Setting the arraylist
-    public void setListContent(ArrayList<PostRecViewPojo> list_members){
-        this.list_members=list_members;
-        notifyItemRangeChanged(0,list_members.size());
-
-    }
-
 
     @Override
     public int getItemCount() {
-        return list_members.size();
+        return mValues.size();
     }
 
+    class MyViewHolder extends RecyclerView.ViewHolder {
 
-    //View holder class, where all view components are defined
-    class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
-        TextView user_name,content,time;
+        TextView user_name, content, time;
+
         public MyViewHolder(View itemView) {
             super(itemView);
-            itemView.setOnClickListener(this);
-            user_name=(TextView)itemView.findViewById(R.id.user_name);
-            content=(TextView)itemView.findViewById(R.id.content);
-            time=(TextView)itemView.findViewById(R.id.time);
+            user_name = (TextView) itemView.findViewById(R.id.user_name);
+            content = (TextView) itemView.findViewById(R.id.content);
+            time = (TextView) itemView.findViewById(R.id.time);
 
         }
 
-        @Override
-        public void onClick(View v) {
-
-        }
     }
 
-    public void removeAt(int position) {
-        list_members.remove(position);
-        notifyItemRemoved(position);
+    public void setListContent(ArrayList<PostRecViewPojo> list_members) {
+        this.mValues = list_members;
         notifyItemRangeChanged(0, list_members.size());
+    }
+
+    public void setData(List<PostRecViewPojo> datas) {
+        mValues = datas;
+    }
+
+    public void addDatas(List<PostRecViewPojo> datas) {
+        mValues.addAll(datas);
     }
 
 }

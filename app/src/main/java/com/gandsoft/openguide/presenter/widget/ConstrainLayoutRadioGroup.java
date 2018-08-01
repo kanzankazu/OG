@@ -1,4 +1,4 @@
-package com.gandsoft.openguide.presenter.witget;
+package com.gandsoft.openguide.presenter.widget;
 
 import android.content.Context;
 import android.support.constraint.ConstraintLayout;
