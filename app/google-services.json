@@ -23,6 +23,14 @@
           }
         },
         {
+          "client_id": "572456119095-illavesqsoeon60tqbb3rempm8eehlgf.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.gandsoft.openguide",
+            "certificate_hash": "f9085da2d38e41d6ffe204d7a75d1d023a465741"
+          }
+        },
+        {
           "client_id": "572456119095-jcjpn6tq59jvg4osrbmi1b3ug9420u0m.apps.googleusercontent.com",
           "client_type": 3
         }
