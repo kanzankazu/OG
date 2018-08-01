@@ -179,6 +179,7 @@ public class LoginActivity extends LocalBaseActivity {
     private void updateUI(int ui, PhoneAuthCredential cred) {
         if (ui == UI_LOGIN) {
             disableViews(tvLoginVerifyInfofvbi, tvLoginResendCodefvbi, llLoginBackfvbi);
+
             enableViews(ccpLoginfvbi);
             etLoginfvbi.setHint("Enter Phone Number");
             tvLoginSubmitfvbi.setText("VERIFY");

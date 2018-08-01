@@ -64,6 +64,7 @@ dependencies {
     implementation 'com.google.dagger:dagger:2.4'
     /**/
     implementation 'com.github.acan12:coconut:1.0.7'
+    implementation 'com.google.android.gms:play-services-maps:15.0.1'
     annotationProcessor "com.google.dagger:dagger-compiler:2.4"
     implementation 'uk.co.chrisjenx:calligraphy:2.3.0'
     implementation 'com.squareup.retrofit2:retrofit:2.3.0'

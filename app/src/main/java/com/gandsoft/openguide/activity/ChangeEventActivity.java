@@ -17,6 +17,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.gandsoft.openguide.R;
+import com.gandsoft.openguide.activity.main.BaseHomeActivity;
 
 public class ChangeEventActivity extends AppCompatActivity {
 
@@ -74,7 +75,7 @@ public class ChangeEventActivity extends AppCompatActivity {
 
     private void Onclick(View view) {
         if (view == ceBUserAccountfvbi) {
-            Intent intent = new Intent(ChangeEventActivity.this, AccountActivity.class);
+            Intent intent = new Intent(ChangeEventActivity.this, BaseHomeActivity.class);
             startActivity(intent);
             finish();
         }
