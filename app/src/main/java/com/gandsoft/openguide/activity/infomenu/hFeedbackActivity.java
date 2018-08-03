@@ -10,6 +10,6 @@ public class hFeedbackActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_h_feedback);
+        setContentView(R.layout.activity_info_h_feedback);
     }
 }

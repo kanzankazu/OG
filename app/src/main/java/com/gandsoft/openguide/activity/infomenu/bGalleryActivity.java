@@ -23,9 +23,10 @@ public class bGalleryActivity extends AppCompatActivity {
         setContentView(gridView);
         gridView.setAdapter(new GridViewAdapter(this));
     }
+
     private class GridViewAdapter extends BaseAdapter {
         private Context context;
-        private final int length = 9;
+        private final int length = 16;
         public GridViewAdapter(Context context) {
             this.context = context;
         }
@@ -47,13 +48,14 @@ public class bGalleryActivity extends AppCompatActivity {
             if (convertView == null) {
                 imageView = new ImageView(context);
                 DisplayMetrics metrics = context.getResources().getDisplayMetrics();
-                int width = metrics.widthPixels / 3;
-                int height = metrics.heightPixels / 3;
+                int width = metrics.widthPixels / 9*3;
+                int height = metrics.heightPixels / 16*3;
                 imageView.setLayoutParams(new GridView.LayoutParams(width, height));
+                imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
             } else {
                 imageView = (ImageView) convertView;
             }
-            imageView.setImageResource(R.drawable.ic_action_camera);
+            imageView.setImageResource(R.drawable.gallery);
             return imageView;
         }
     }

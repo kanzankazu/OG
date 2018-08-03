@@ -10,6 +10,6 @@ public class eEmergenciesActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_e_emergencies);
+        setContentView(R.layout.activity_info_e_emergencies);
     }
 }

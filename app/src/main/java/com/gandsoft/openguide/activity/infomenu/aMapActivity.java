@@ -10,6 +10,6 @@ public class aMapActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_a_map);
+        setContentView(R.layout.activity_info_a_map);
     }
 }
