@@ -1,19 +1,16 @@
 package com.gandsoft.openguide.activity.main.fragments;
 
-import android.accessibilityservice.AccessibilityService;
-import android.accounts.Account;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 
-import com.gandsoft.openguide.MapsActivity;
 import com.gandsoft.openguide.R;
 import com.gandsoft.openguide.activity.AccountActivity;
 import com.gandsoft.openguide.activity.ChangeEventActivity;
@@ -25,97 +22,108 @@ import com.gandsoft.openguide.activity.infomenu.eEmergenciesActivity;
 import com.gandsoft.openguide.activity.infomenu.fPracticalInfoActivity;
 import com.gandsoft.openguide.activity.infomenu.gSurroundingAreaActivity;
 import com.gandsoft.openguide.activity.infomenu.hFeedbackActivity;
-import com.gandsoft.openguide.activity.main.BaseHomeActivity;
+import com.gandsoft.openguide.activity.main.adapter.InfoListViewAdapter;
+import com.gandsoft.openguide.activity.main.adapter.InfoListviewModel;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
  * Example about replacing fragments inside a ViewPager. I'm using
  * android-support-v7 to maximize the compatibility.
- * 
+ *
  * @author Dani Lao (@dani_lao)
- * 
  */
 public class eInfoFragment extends Fragment {
-	ListView listView;
-	Button bMyPro;
-	ArrayAdapter<String> adapter;
-	String infomenu[]={
-		"Map",
-		"Gallery",
-		"Inbox",
-		"Comitee Contact",
-		"Emergencies",
-		"Practical Information",
-		"Surrounding Area",
-		"Feedback",
-		"Change Event"
-	};
+    ListView listView;
+    Button bMyPro;
+    InfoListViewAdapter adapter;
+    List<InfoListviewModel> listviewModels = new ArrayList<>();
+    String infoMenu[] = {
+            "Map",
+            "Gallery",
+            "Inbox",
+            "Comitee Contact",
+            "Emergencies",
+            "Practical Information",
+            "Surrounding Area",
+            "Feedback",
+            "Change Event"
+    };
+    int infoPic[] = {
+            R.drawable.ic_tab_home,
+            R.drawable.ic_tab_home,
+            R.drawable.ic_tab_home,
+            R.drawable.ic_tab_home,
+            R.drawable.ic_tab_home,
+            R.drawable.ic_tab_home,
+            R.drawable.ic_tab_home,
+            R.drawable.ic_tab_home,
+            R.drawable.ic_tab_home
+    };
 
 
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-			Bundle savedInstanceState) {
-		// Inflate the layout for this fragment
-		View view = inflater
-				.inflate(R.layout.fragment_e_info, container, false);
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        View view = inflater.inflate(R.layout.fragment_e_info, container, false);
+
+        for (int i = 0; i < infoMenu.length; i++) {
+            listviewModels.add(new InfoListviewModel(infoMenu[i], infoPic[i]));
+        }
 
         final Button button = (Button) view.findViewById(R.id.button);
 
         button.setOnClickListener(new View.OnClickListener() {
-        public void onClick(View v) {
-            Intent intent = new Intent(getActivity(),AccountActivity.class);
-            startActivity(intent);
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), AccountActivity.class);
+                startActivity(intent);
+            }
+        });
+        listView = (ListView) view.findViewById(R.id.lvMenu);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            listView.setNestedScrollingEnabled(false);
         }
-    });
-    listView = (ListView) view.findViewById(R.id.lvMenu);
-    adapter = new ArrayAdapter<String>(getActivity().getApplicationContext(),
-				android.R.layout.simple_list_item_1, infomenu);
-		listView.setAdapter(adapter);
+        adapter = new InfoListViewAdapter(getActivity().getApplicationContext(), R.layout.list_info, listviewModels);
+        listView.setAdapter(adapter);
 
-		listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-			@Override
-			public void onItemClick(AdapterView<?> listView, View view, int position, long id) {
-				String infomenu2 = (String) listView.getAdapter().getItem(position);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> listView, View view, int position, long id) {
+                String infomenu2 = (String) listView.getAdapter().getItem(position);
 
                 if (infomenu2.equals("Map")) {
                     Intent intent = new Intent(listView.getContext(), aMapActivity.class);
                     listView.getContext().startActivity(intent);
-                }
-                else if(infomenu2.equals("Gallery")) {
+                } else if (infomenu2.equals("Gallery")) {
                     Intent intent = new Intent(listView.getContext(), bGalleryActivity.class);
                     listView.getContext().startActivity(intent);
-                }
-                else if(infomenu2.equals("Inbox")) {
+                } else if (infomenu2.equals("Inbox")) {
                     Intent intent = new Intent(listView.getContext(), cInboxActivity.class);
                     listView.getContext().startActivity(intent);
-                }
-                else if(infomenu2.equals("Comitte Contact")) {
+                } else if (infomenu2.equals("Comitte Contact")) {
                     Intent intent = new Intent(listView.getContext(), dComitteContactActivity.class);
                     listView.getContext().startActivity(intent);
-                }
-                else if(infomenu2.equals("Emergencies")) {
+                } else if (infomenu2.equals("Emergencies")) {
                     Intent intent = new Intent(listView.getContext(), eEmergenciesActivity.class);
                     listView.getContext().startActivity(intent);
-                }
-                else if(infomenu2.equals("Practical Information")) {
-                    Intent intent = new Intent(listView.getContext(),fPracticalInfoActivity.class);
+                } else if (infomenu2.equals("Practical Information")) {
+                    Intent intent = new Intent(listView.getContext(), fPracticalInfoActivity.class);
+                    listView.getContext().startActivity(intent);
+                } else if (infomenu2.equals("Surrounding Area")) {
+                    Intent intent = new Intent(listView.getContext(), gSurroundingAreaActivity.class);
+                    listView.getContext().startActivity(intent);
+                } else if (infomenu2.equals("Feedback")) {
+                    Intent intent = new Intent(listView.getContext(), hFeedbackActivity.class);
+                    listView.getContext().startActivity(intent);
+                } else if (infomenu2.equals("Change Event")) {
+                    Intent intent = new Intent(listView.getContext(), ChangeEventActivity.class);
                     listView.getContext().startActivity(intent);
                 }
-                else if(infomenu2.equals("Surrounding Area")) {
-                    Intent intent = new Intent(listView.getContext(),gSurroundingAreaActivity.class);
-                    listView.getContext().startActivity(intent);
-                }
-                else if(infomenu2.equals("Feedback")) {
-                    Intent intent = new Intent(listView.getContext(),hFeedbackActivity.class);
-                    listView.getContext().startActivity(intent);
-                }
-                else if(infomenu2.equals("Change Event")) {
-                    Intent intent = new Intent(listView.getContext(),ChangeEventActivity.class);
-                    listView.getContext().startActivity(intent);
-                }
-			}
-		});
-		return view;
-	}
+            }
+        });
+        return view;
+    }
 }
 
