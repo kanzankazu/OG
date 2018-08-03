@@ -1,11 +1,15 @@
 package com.gandsoft.openguide.activity.main.fragments;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,13 +21,16 @@ import android.widget.TextView;
 
 import com.gandsoft.openguide.R;
 import com.gandsoft.openguide.activity.main.adapter.PostRecViewAdapter;
+import com.gandsoft.openguide.activity.main.adapter.PostRecViewPojo;
 import com.gandsoft.openguide.activity.main.adapter.PostRecViewPojoDummy;
-import com.gandsoft.openguide.presenter.widget.LoadMoreRecyclerView;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class aHomeFragment extends Fragment {
     private static final String TAG = "Lihat";
     private View view;
-    private LoadMoreRecyclerView recyclerView;
+    private RecyclerView recyclerView;
     private SwipeRefreshLayout homeSRLHomefvbi;
     private ImageView homeIVOpenCamerafvbi;
     private NestedScrollView homeNSVHomefvbi;
@@ -35,6 +42,7 @@ public class aHomeFragment extends Fragment {
     private EditText homeETWritePostCreatefvbi;
     /**/
     private PostRecViewAdapter adapter;
+    private List<PostRecViewPojo> menuUi = new ArrayList<>();
     private int page = 0;
 
     public aHomeFragment() {
@@ -46,7 +54,7 @@ public class aHomeFragment extends Fragment {
 
         initComponent();
         initContent(container);
-        initListener();
+        initListener(view);
 
         return view;
     }
@@ -61,21 +69,23 @@ public class aHomeFragment extends Fragment {
         homeTVDescEventfvbi = (TextView) view.findViewById(R.id.homeTVDescEvent);
         homeETWritePostCreatefvbi = (EditText) view.findViewById(R.id.homeETWritePostCreate);
         homeBTapCheckInfvbi = (Button) view.findViewById(R.id.homeBTapCheckIn);
-        recyclerView = (LoadMoreRecyclerView) view.findViewById(R.id.homeRVEvent);
+        recyclerView = (RecyclerView) view.findViewById(R.id.homeRVEvent);
     }
 
     private void initContent(ViewGroup container) {
+        adapter = new PostRecViewAdapter(menuUi);
         recyclerView.setNestedScrollingEnabled(false);
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new LinearLayoutManager(container.getContext()));
-        adapter = new PostRecViewAdapter(container.getContext(), PostRecViewPojoDummy.generyData(page));
+        //recyclerView.setHasFixedSize(true);
+        //recyclerView.setAutoLoadMoreEnable(true);
         recyclerView.setAdapter(adapter);
-        recyclerView.setAutoLoadMoreEnable(true);
+        adapter.setData(PostRecViewPojoDummy.generyData(page));
+        Log.d("Lihat initContent aHomeFragment page", String.valueOf(page));
         adapter.notifyDataSetChanged();
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         //populateRecyclerViewValues();
     }
 
-    private void initListener() {
+    private void initListener(View view) {
         homeIVOpenCamerafvbi.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
@@ -87,9 +97,45 @@ public class aHomeFragment extends Fragment {
             public void onRefresh() {
                 homeSRLHomefvbi.setRefreshing(false);
                 page = 0;
-                adapter.setData(PostRecViewPojoDummy.generyData(page));
-                recyclerView.setAutoLoadMoreEnable(PostRecViewPojoDummy.hasMore(page));
+                Log.d("Lihat onRefresh aHomeFragment page", String.valueOf(page));
+                adapter.replaceData(PostRecViewPojoDummy.generyData(page));
                 adapter.notifyDataSetChanged();
+            }
+        });
+        homeNSVHomefvbi.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
+            @Override
+            public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+                if (scrollY > oldScrollY) {
+                    Log.d("Lihat onScrollChange aHomeFragment", String.valueOf(scrollY));
+                    //Log.i(TAG, "Scroll DOWN");
+                }
+                if (scrollY < oldScrollY) {
+                    //Log.i(TAG, "Scroll UP");
+                }
+                if (scrollY == 0) {
+                    //Log.i(TAG, "TOP SCROLL");
+                }
+                ProgressDialog progressDialog;
+                if (scrollY == (v.getChildAt(0).getMeasuredHeight() - v.getMeasuredHeight())) {
+                    //progressDialog = ProgressDialog.show(getActivity(), "Loading", "Wait Data", true, false);
+                    Log.i(TAG, "BOTTOM SCROLL");
+                    new Handler().postDelayed(new Runnable() {
+                        public void run() {
+                            //code here
+                            if (PostRecViewPojoDummy.hasMore(page)) {
+                                Log.d("Lihat run aHomeFragment PostRecViewPojoDummy.hasMore(page)1", String.valueOf(PostRecViewPojoDummy.hasMore(page)));
+                                Log.d("Lihat run aHomeFragment page", String.valueOf(page));
+                                Log.d("Lihat run aHomeFragment adapter.getItemCount()", String.valueOf(adapter.getItemCount()));
+                                adapter.addDatas(PostRecViewPojoDummy.generyData(++page));
+                                Log.d("Lihat run aHomeFragment PostRecViewPojoDummy.hasMore(page)2", String.valueOf(PostRecViewPojoDummy.hasMore(page)));
+                                Log.d("Lihat run aHomeFragment page", String.valueOf(page));
+                                Log.d("Lihat run aHomeFragment adapter.getItemCount()", String.valueOf(adapter.getItemCount()));
+                            } else {
+                                Snackbar.make(getActivity().findViewById(android.R.id.content), "tidak ada data", Snackbar.LENGTH_LONG).show();
+                            }
+                        }
+                    }, 1000);
+                }
             }
         });
         /*recyclerView.setLoadMoreListener(new LoadMoreRecyclerView.LoadMoreListener() {
@@ -105,27 +151,6 @@ public class aHomeFragment extends Fragment {
                 }, 1000);
             }
         });*/
-        homeNSVHomefvbi.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
-            @Override
-            public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
-                if (scrollY > oldScrollY) {
-                    Log.i(TAG, "Scroll DOWN");
-                }
-                if (scrollY < oldScrollY) {
-                    Log.i(TAG, "Scroll UP");
-                }
-                if (scrollY == 0) {
-                    Log.i(TAG, "TOP SCROLL");
-                }
-                if (scrollY == (v.getChildAt(0).getMeasuredHeight() - v.getMeasuredHeight())) {
-                    Log.i(TAG, "BOTTOM SCROLL");
-                    homeSRLHomefvbi.setRefreshing(false);
-                    adapter.addDatas(PostRecViewPojoDummy.generyData(++page));
-                    recyclerView.notifyMoreFinish(PostRecViewPojoDummy.hasMore(page));
-
-                }
-            }
-        });
     }
 
     /*private void populateRecyclerViewValues() {

@@ -113,19 +113,13 @@
                     android:layout_height="2dp"
                     android:background="@color/gray_very_light" />
 
-                <LinearLayout
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/homeRVEvent"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_margin="12dp"
-                    android:orientation="vertical">
+                    android:padding="12dp"
+                    tools:listitem="@layout/recview_post" />
 
-                    <com.gandsoft.openguide.presenter.widget.LoadMoreRecyclerView
-                        android:id="@+id/homeRVEvent"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        app:layoutManager="LinearLayoutManager"
-                        tools:listitem="@layout/recview_post" />
-                </LinearLayout>
             </LinearLayout>
         </android.support.v4.widget.NestedScrollView>
 

@@ -304,4 +304,10 @@ public class LoadMoreRecyclerView extends RecyclerView {
         getAdapter().notifyItemRemoved(mLoadMorePosition);
         mIsLoadingMore = false;
     }
+
+    public void notifyMoreFinish2(boolean hasMore, int itemCount) {
+        setAutoLoadMoreEnable(hasMore);
+        getAdapter().notifyItemRemoved(itemCount);
+        mIsLoadingMore = false;
+    }
 }

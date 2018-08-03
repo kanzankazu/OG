@@ -1,17 +1,23 @@
 package com.gandsoft.openguide.activity.main.adapter;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class PostRecViewPojoDummy {
-    private static final int COUNT = 25;
-    private static final int TOTALPAGE = 4;
+    private static final int COUNT = 10;
+    private static final int TOTALPAGE = 5;//5+1*10
 
     public static List<PostRecViewPojo> generyData(int page) {
-        int start = page * COUNT;
+        Log.d("Lihat generyData PostRecViewPojoDummy page", String.valueOf(page));
+        int start = page * COUNT;//0
+        Log.d("Lihat generyData PostRecViewPojoDummy start", String.valueOf(start));
         int end = TOTALPAGE == page ? start + COUNT : start + COUNT;
+        Log.d("Lihat generyData PostRecViewPojoDummy end", String.valueOf(end));
         List<PostRecViewPojo> items = new ArrayList<PostRecViewPojo>();
-        for (int i = start; i <= end; i++) {
+        for (int i = start; i < end; i++) {
+            //Log.d("Lihat generyData PostRecViewPojoDummy i", String.valueOf(i));
             items.add(createDummyItem(i));
         }
         return items;
