@@ -78,7 +78,7 @@ public class eInfoFragment extends Fragment {
 				String infomenu2 = (String) listView.getAdapter().getItem(position);
 
                 if (infomenu2.equals("Map")) {
-                    Intent intent = new Intent(listView.getContext(), MapsActivity.class);
+                    Intent intent = new Intent(listView.getContext(), aMapActivity.class);
                     listView.getContext().startActivity(intent);
                 }
                 else if(infomenu2.equals("Gallery")) {
