@@ -2,6 +2,8 @@ package com.gandsoft.openguide.activity.infomenu;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.print.PrintAttributes;
+import android.support.v4.view.MarginLayoutParamsCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.view.View;
@@ -56,6 +58,7 @@ public class bGalleryActivity extends AppCompatActivity {
                 int height = metrics.heightPixels / 16 * 3;
                 imageView.setLayoutParams(new GridView.LayoutParams(width, height));
                 imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                imageView.setBackground(getResources().getDrawable(R.drawable.background_radius));
             } else {
                 imageView = (ImageView) convertView;
             }
