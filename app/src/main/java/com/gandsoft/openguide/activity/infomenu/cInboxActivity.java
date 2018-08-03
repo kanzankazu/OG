@@ -8,10 +8,7 @@ import android.support.v7.widget.RecyclerView;
 import com.gandsoft.openguide.R;
 import com.gandsoft.openguide.activity.infomenu.adapter.InboxRecViewAdapter;
 import com.gandsoft.openguide.activity.infomenu.adapter.InboxRecViewPojo;
-import com.gandsoft.openguide.activity.main.adapter.PostRecViewAdapter;
-import com.gandsoft.openguide.activity.main.adapter.PostRecViewPojo;
 
-import java.security.AccessController;
 import java.util.ArrayList;
 
 public class cInboxActivity extends AppCompatActivity {
@@ -22,7 +19,7 @@ public class cInboxActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_c_inbox);
+        setContentView(R.layout.activity_info_c_inbox);
 
         recyclerView=(RecyclerView)findViewById(R.id.recycleView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));

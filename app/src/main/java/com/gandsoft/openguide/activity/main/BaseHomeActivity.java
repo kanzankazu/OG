@@ -32,7 +32,6 @@ public class BaseHomeActivity extends AppCompatActivity {
         initComponent();
         initContent();
         initListener();
-
     }
 
     private void initComponent() {
@@ -82,7 +81,6 @@ public class BaseHomeActivity extends AppCompatActivity {
                 ab.setTitle(titleName[tab.getPosition()]);
                 int tabIconColor = ContextCompat.getColor(BaseHomeActivity.this, R.color.colorPrimaryDark);
                 tab.getIcon().setColorFilter(tabIconColor, PorterDuff.Mode.SRC_IN);
-
             }
 
             @Override

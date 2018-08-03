@@ -10,6 +10,6 @@ public class fPracticalInfoActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_f_practical_info);
+        setContentView(R.layout.activity_info_f_practical_info);
     }
 }

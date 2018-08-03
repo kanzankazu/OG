@@ -10,6 +10,6 @@ public class gSurroundingAreaActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_g_surrounding_area);
+        setContentView(R.layout.activity_info_g_surrounding_area);
     }
 }

@@ -10,6 +10,6 @@ public class dComitteContactActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_d_comitte_contact);
+        setContentView(R.layout.activity_info_d_comitte_contact);
     }
 }
