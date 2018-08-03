@@ -1,11 +1,14 @@
 package com.gandsoft.openguide.activity.main.fragments;
 
+import android.app.MediaRouteButton;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,18 +23,37 @@ import java.util.ArrayList;
 public class cScheduleFragment extends Fragment {
     static final int NUM_ITEMS = 5;
     RecyclerView recyclerView;
+    private int a=0;
     TaskRecViewAdapter adapter;
-    private ArrayList<TaskRecViewPojo> listContentArr= new ArrayList<>();
 
+    private ArrayList<TaskRecViewPojo> listContentArr= new ArrayList<>();
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater
                 .inflate(R.layout.fragment_c_schedule, container, false);
-        ViewPager pager=(ViewPager)view.findViewById(R.id.pagerinfrag);
 
-        pager.setAdapter(buildAdapter());
+        NestedScrollView scroller = (NestedScrollView) view.findViewById(R.id.infoNSVInfo);
+        scroller.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
+            @Override
+            public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+                if (scrollY>330) {
+                    ViewPager pager = (ViewPager) view.findViewById(R.id.pagerinfragmini);
+                    pager.setAdapter(buildAdapter(1));
+                    a=1;
+                    view.findViewById(R.id.pagerinfragmini).setVisibility(View.VISIBLE);
+                    view.findViewById(R.id.pagerinfrag).setVisibility(View.GONE);
+                }
+                else{
+                    ViewPager pager=(ViewPager)view.findViewById(R.id.pagerinfrag);
+                    pager.setAdapter(buildAdapter(0 ));
+                    a=0;
+                    view.findViewById(R.id.pagerinfrag).setVisibility(View.VISIBLE);
+                    view.findViewById(R.id.pagerinfragmini).setVisibility(View.GONE);
+                }
+            }
+        });
 
         recyclerView=(RecyclerView)view.findViewById(R.id.recycleView);
         recyclerView.setLayoutManager(new LinearLayoutManager(container.getContext()));
@@ -39,7 +61,6 @@ public class cScheduleFragment extends Fragment {
         adapter=new TaskRecViewAdapter(container.getContext());
         //Method call for populating the view
         populateRecyclerViewValues();
-
         return view;
     }
     private void populateRecyclerViewValues() {
@@ -63,7 +84,7 @@ public class cScheduleFragment extends Fragment {
         //We in turn set the adapter to the RecyclerView
         recyclerView.setAdapter(adapter);
     }
-    private PagerAdapter buildAdapter() {
-        return(new SampleAdapter(getActivity(), getChildFragmentManager()));
+    private PagerAdapter buildAdapter(int a) {
+        return(new SampleAdapter(getActivity(), getChildFragmentManager(),a));
     }
 }
