@@ -17,11 +17,9 @@ import java.util.ArrayList;
 public class cScheduleXFragment extends Fragment {
     public cScheduleXFragment(){ }
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater
-                .inflate(R.layout.fragment_cx_fact, container, false);
+        View view = inflater.inflate(R.layout.fragment_cx_fact, container, false);
 
         return view;
     }

@@ -15,7 +15,8 @@
         <android.support.v4.widget.NestedScrollView
             android:id="@+id/homeNSVHome"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:descendantFocusability="blocksDescendants">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -118,7 +119,33 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:padding="12dp"
+                    android:visibility="visible"
                     tools:listitem="@layout/recview_post" />
+
+                <LinearLayout
+                    android:id="@+id/llLoadMode"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/colorPrimary"
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    android:paddingTop="10dp"
+                    android:paddingBottom="10dp"
+                    android:visibility="gone">
+
+                    <ProgressBar
+                        android:layout_width="25dp"
+                        android:layout_height="25dp"></ProgressBar>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="10dp"
+                        android:text="Loading..."
+                        android:textColor="@color/white"
+                        android:textSize="16dp"></TextView>
+
+                </LinearLayout>
 
             </LinearLayout>
         </android.support.v4.widget.NestedScrollView>

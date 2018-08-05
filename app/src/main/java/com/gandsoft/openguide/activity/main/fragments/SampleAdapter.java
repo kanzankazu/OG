@@ -20,12 +20,13 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
 public class SampleAdapter extends FragmentPagerAdapter {
-    int a=0;
-    Context ctxt=null;
-    public SampleAdapter(Context ctxt, FragmentManager mgr,int a) {
+    int a = 0;
+    Context ctxt = null;
+
+    public SampleAdapter(Context ctxt, FragmentManager mgr, int a) {
         super(mgr);
-        this.ctxt=ctxt;
-        this.a= a;
+        this.ctxt = ctxt;
+        this.a = a;
     }
 
     @Override
@@ -33,15 +34,14 @@ public class SampleAdapter extends FragmentPagerAdapter {
         String[] headervalues = new String[]{
                 "11 Jul", "12 Jul", "13 Jul", "14 Jul", "15 Jul",
         };
-        if(a==0){
-            for(int i=0;i<headervalues.length;i++) {
+        if (a == 0) {
+            for (int i = 0; i < headervalues.length; i++) {
                 if (position == i) {
                     return new cScheduleXFragment();
                 }
             }
-        }
-        else{
-            for(int i=0;i<headervalues.length;i++) {
+        } else {
+            for (int i = 0; i < headervalues.length; i++) {
                 if (position == i) {
                     return new cScheduleXMiniFragment();
                 }

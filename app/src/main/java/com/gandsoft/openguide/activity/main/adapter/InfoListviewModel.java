@@ -9,6 +9,10 @@ public class InfoListviewModel {
         this.picTitle = picTitle;
     }
 
+    public InfoListviewModel() {
+
+    }
+
     public String getTitle() {
         return title;
     }

@@ -21,7 +21,8 @@ public class BaseHomeActivity extends AppCompatActivity {
     SlidePagerAdapter mPagerAdapter;
     private TabLayout tabLayout;
     private ActionBar ab;
-    private String[] titleName = new String[]{"Home", "Wallet", "Schedule", "About the Event", "Important Information"};
+    private String[] titleTab = new String[]{"Home", "Wallet", "Schedule", "About the Event", "Important Information"};
+    private int[] iconTab = new int[]{R.drawable.ic_tab_home, R.drawable.ic_tab_wallet, R.drawable.ic_tab_schedule, R.drawable.ic_tab_about, R.drawable.ic_tab_info};
     private Toolbar toolbar;
 
     @Override
@@ -48,23 +49,31 @@ public class BaseHomeActivity extends AppCompatActivity {
     private void initActioBar() {
         setSupportActionBar(toolbar);
         ab = getSupportActionBar();
-        ab.setTitle(titleName[0]);
+        ab.setTitle(titleTab[0]);
     }
 
     private void initTablayoutViewpager() {
         int tabIconColorSelect = ContextCompat.getColor(BaseHomeActivity.this, R.color.colorPrimary);
         int tabIconColorUnSelect = ContextCompat.getColor(BaseHomeActivity.this, R.color.grey);
-        tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.ic_tab_home));
+        for (int i = 0; i < titleTab.length; i++) {
+            tabLayout.addTab(tabLayout.newTab().setIcon(iconTab[i]));
+            if (i == 0) {
+                tabLayout.getTabAt(i).getIcon().setColorFilter(tabIconColorSelect, PorterDuff.Mode.SRC_IN);
+            } else {
+                tabLayout.getTabAt(i).getIcon().setColorFilter(tabIconColorUnSelect, PorterDuff.Mode.SRC_IN);
+            }
+        }
+        /*tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.ic_tab_home));
         tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.ic_tab_wallet));
         tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.ic_tab_schedule));
         tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.ic_tab_about));
         tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.ic_tab_info));
-        tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
         tabLayout.getTabAt(0).getIcon().setColorFilter(tabIconColorSelect, PorterDuff.Mode.SRC_IN);
         tabLayout.getTabAt(1).getIcon().setColorFilter(tabIconColorUnSelect, PorterDuff.Mode.SRC_IN);
         tabLayout.getTabAt(2).getIcon().setColorFilter(tabIconColorUnSelect, PorterDuff.Mode.SRC_IN);
         tabLayout.getTabAt(3).getIcon().setColorFilter(tabIconColorUnSelect, PorterDuff.Mode.SRC_IN);
-        tabLayout.getTabAt(4).getIcon().setColorFilter(tabIconColorUnSelect, PorterDuff.Mode.SRC_IN);
+        tabLayout.getTabAt(4).getIcon().setColorFilter(tabIconColorUnSelect, PorterDuff.Mode.SRC_IN);*/
+        tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
         mPagerAdapter = new SlidePagerAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
         mPager.setAdapter(mPagerAdapter);
@@ -78,7 +87,7 @@ public class BaseHomeActivity extends AppCompatActivity {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 mPager.setCurrentItem(tab.getPosition());
-                ab.setTitle(titleName[tab.getPosition()]);
+                ab.setTitle(titleTab[tab.getPosition()]);
                 int tabIconColor = ContextCompat.getColor(BaseHomeActivity.this, R.color.colorPrimaryDark);
                 tab.getIcon().setColorFilter(tabIconColor, PorterDuff.Mode.SRC_IN);
             }

@@ -1,58 +1,84 @@
 package com.gandsoft.openguide.activity.main.adapter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
-import android.graphics.Color;
-import android.graphics.PorterDuff;
 import android.os.Build;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.gandsoft.openguide.R;
+import com.gandsoft.openguide.support.DeviceDetailUtil;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class InfoListViewAdapter extends ArrayAdapter<InfoListviewModel> {
+public class InfoListViewAdapter extends RecyclerView.Adapter<InfoListViewAdapter.ViewHolder> {
 
-    private final Context context;
-    private final int resource;
-    private final List<InfoListviewModel> objects;
+    private Context context;
+    private List<InfoListviewModel> models = new ArrayList<>();
 
-    public InfoListViewAdapter(Context context, int resource, List<InfoListviewModel> objects) {
-        super(context, resource, objects);
-        this.context = context;
-        this.resource = resource;
-        this.objects = objects;
+    public InfoListViewAdapter() {
+
     }
 
-    @NonNull
-    @Override
-    public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+    public InfoListViewAdapter(Context context, List<InfoListviewModel> items) {
+        this.context = context;
+        models = items;
+    }
 
-        //we need to get the view of the xml for our list item
-        //And for this we need a layoutinflater
-        LayoutInflater layoutInflater = LayoutInflater.from(context);
+    class ViewHolder extends RecyclerView.ViewHolder {
 
-        //getting the view
-        View view = layoutInflater.inflate(resource, null, false);
+        //LinearLayout llListInfofvbi;
+        ImageView ivListInfofvbi;
+        TextView tvListInfofvbi;
 
-        ImageView ivListInfofvbi = (ImageView) view.findViewById(R.id.ivListInfo);
-        TextView tvListInfofvbi = (TextView) view.findViewById(R.id.tvListInfo);
-
-        InfoListviewModel model = objects.get(position);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            ivListInfofvbi.setBackgroundTintList(context.getResources().getColorStateList(R.color.colorPrimary));
-        } else {
-            ivListInfofvbi.getBackground().setColorFilter(Color.parseColor("#606b8b"), PorterDuff.Mode.SRC_ATOP);
+        public ViewHolder(View itemView) {
+            super(itemView);
+            //llListInfofvbi = (LinearLayout) itemView.findViewById(R.id.llListInfo);
+            ivListInfofvbi = (ImageView) itemView.findViewById(R.id.ivListInfo);
+            tvListInfofvbi = (TextView) itemView.findViewById(R.id.tvListInfo);
         }
-        ivListInfofvbi.setImageDrawable(context.getResources().getDrawable(model.getPicTitle()));
-        tvListInfofvbi.setText(model.getTitle());
+    }
 
-        return view;
+    @Override
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_info, parent, false);
+        return new ViewHolder(view);
+    }
+
+    @SuppressLint("NewApi")
+    @Override
+    public void onBindViewHolder(ViewHolder holder, int position) {
+        InfoListviewModel model = models.get(position);
+        if (DeviceDetailUtil.isKitkatBelow()) {
+            holder.ivListInfofvbi.setImageResource(model.getPicTitle());
+        } else {
+            holder.ivListInfofvbi.setImageDrawable(context.getDrawable(model.getPicTitle()));
+        }
+        holder.tvListInfofvbi.setText(model.getTitle());
+    }
+
+    @Override
+    public int getItemCount() {
+        return models.size();
+    }
+
+    public void setData(List<InfoListviewModel> datas) {
+        models = datas;
+    }
+
+    public void replaceData(List<InfoListviewModel> datas) {
+        models.clear();
+        models.addAll(datas);
+    }
+
+
+    public void addDatas(List<InfoListviewModel> datas) {
+        models.addAll(datas);
+        notifyItemRangeInserted(models.size(), datas.size());
     }
 }
