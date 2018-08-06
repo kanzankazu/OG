@@ -37,7 +37,7 @@ public class SampleAdapter extends FragmentPagerAdapter {
         if (a == 0) {
             for (int i = 0; i < headervalues.length; i++) {
                 if (position == i) {
-                    return new cScheduleXFragment();
+                     return new cScheduleXFragment();
                 }
             }
         } else {

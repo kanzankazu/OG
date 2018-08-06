@@ -7,6 +7,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,13 +40,18 @@ public class cScheduleFragment extends Fragment {
         scroller.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
             @Override
             public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
-                if (scrollY > 330) {
+                Log.i("SCROOLLL X = ",String.valueOf(scrollX));
+                Log.i("SCROOLLL Y = ",String.valueOf(scrollY));
+                Log.i("SCROOLLL old X = ",String.valueOf(oldScrollX));
+                Log.i("SCROOLLL old Y = ",String.valueOf(oldScrollY));
+                if (scrollY == 330) {
                     ViewPager pager = (ViewPager) view.findViewById(R.id.pagerinfragmini);
                     a = 1;
                     pager.setAdapter(buildAdapter(a));
+
                     view.findViewById(R.id.pagerinfrag).setVisibility(View.GONE);
                     view.findViewById(R.id.pagerinfragmini).setVisibility(View.VISIBLE);
-                } else {
+                } else{
                     ViewPager pager = (ViewPager) view.findViewById(R.id.pagerinfrag);
                     a = 0;
                     pager.setAdapter(buildAdapter(a));
