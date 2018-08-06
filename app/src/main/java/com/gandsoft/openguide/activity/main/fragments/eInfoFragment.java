@@ -1,6 +1,5 @@
 package com.gandsoft.openguide.activity.main.fragments;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -47,15 +46,15 @@ public class eInfoFragment extends Fragment {
             "Change Event"
     };
     int infoPic[] = {
-            R.drawable.ic_tab_home,
-            R.drawable.ic_tab_home,
-            R.drawable.ic_tab_home,
-            R.drawable.ic_tab_home,
-            R.drawable.ic_tab_home,
-            R.drawable.ic_tab_home,
-            R.drawable.ic_tab_home,
-            R.drawable.ic_tab_home,
-            R.drawable.ic_tab_home
+            R.drawable.ic_option_location,
+            R.drawable.ic_option_image,
+            R.drawable.ic_option_inbox,
+            R.drawable.ic_option_contact,
+            R.drawable.ic_option_emergency,
+            R.drawable.ic_option_information,
+            R.drawable.ic_option_surrouncding_area,
+            R.drawable.ic_option_feedback,
+            R.drawable.ic_option_event_change
     };
     private Button button;
     private List<InfoListviewModel> listviewModels = new ArrayList<>();
