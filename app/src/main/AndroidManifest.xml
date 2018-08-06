@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.gandsoft.openguide">
 
@@ -20,7 +19,12 @@
 
         <activity
             android:name=".activity.SplashscreenActivity"
-            android:theme="@style/AppTheme.FullScreen"></activity>
+            android:theme="@style/AppTheme.FullScreen">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".activity.IntroActivity"
             android:theme="@style/AppTheme.FullScreen" />
@@ -35,12 +39,7 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".activity.main.BaseHomeActivity"
-            android:theme="@style/AppTheme.NoActionBar">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+            android:theme="@style/AppTheme.NoActionBar" >
         </activity>
         <activity
             android:name=".activity.infomenu.aMapActivity"
@@ -73,6 +72,12 @@
             android:name=".activity.MainActivity"
             android:label="@string/title_activity_main"
             android:theme="@style/AppTheme.NoActionBar"></activity>
+
+        <activity
+            android:name=".gallery.withviewpager.PagerActivity"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:label="alalalal" >
+        </activity>
     </application>
 
 </manifest>
