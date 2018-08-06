@@ -19,7 +19,12 @@ import com.gandsoft.openguide.R;
 import com.google.android.gms.auth.GoogleAuthUtil;
 import com.google.android.gms.common.AccountPicker;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 public class SystemUtil {
@@ -172,4 +177,83 @@ public class SystemUtil {
         }
         return null;
     }
+
+    public static String getDayFromDateString(String stringDate, String dateTimeFormat) {
+        //[] daysArray = new String[]{"saturday", "sunday", "monday", "tuesday", "wednesday", "thursday", "friday"};
+        String[] daysArray = new String[]{"Sabtu", "Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat"};
+        String day = "";
+
+        int dayOfWeek = 0;
+        //dateTimeFormat = yyyy-MM-dd HH:mm:ss
+        SimpleDateFormat formatter = new SimpleDateFormat(dateTimeFormat);
+        Date date;
+        try {
+            date = formatter.parse(stringDate);
+            Calendar c = Calendar.getInstance();
+            c.setTime(date);
+            dayOfWeek = c.get(Calendar.DAY_OF_WEEK) - 1;
+            if (dayOfWeek < 0) {
+                dayOfWeek += 7;
+            }
+            day = daysArray[dayOfWeek];
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return day;
+    }
+
+    public static String convertStringDateToNewFormat(String timeDefault, String dateFormatDefault, String dateFormatNew) {
+        String mytime = timeDefault;
+        SimpleDateFormat dateFormat = new SimpleDateFormat(
+                dateFormatDefault);
+        Date myDate = null;
+        try {
+            myDate = dateFormat.parse(mytime);
+
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        SimpleDateFormat timeFormat = new SimpleDateFormat(dateFormatNew);
+        String finalDate = timeFormat.format(myDate);
+
+        return finalDate;
+    }
+
+    /**
+     * "yyyy-MM-dd" format
+     *
+     * @param dateString1
+     * @param dateString2
+     * @return
+     */
+    public static List<Date> getDates(String dateString1, String dateString2) {
+        ArrayList<Date> dates = new ArrayList<Date>();
+        DateFormat df1 = new SimpleDateFormat("yyyy-MM-dd");
+
+        Date date1 = null;
+        Date date2 = null;
+
+        try {
+            date1 = df1.parse(dateString1);
+            date2 = df1.parse(dateString2);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        Calendar cal1 = Calendar.getInstance();
+        cal1.setTime(date1);
+
+
+        Calendar cal2 = Calendar.getInstance();
+        cal2.setTime(date2);
+
+        while (!cal1.after(cal2)) {
+            dates.add(cal1.getTime());
+            cal1.add(Calendar.DATE, 1);
+        }
+        return dates;
+    }
+
 }

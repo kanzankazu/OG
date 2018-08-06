@@ -114,9 +114,7 @@ public class aHomeFragment extends Fragment {
                 if (scrollY == 0) {
                     //Log.i(TAG, "TOP SCROLL");
                 }
-                ProgressDialog progressDialog;
                 if (scrollY == (v.getChildAt(0).getMeasuredHeight() - v.getMeasuredHeight())) {
-                    //progressDialog = ProgressDialog.show(getActivity(), "Loading", "Wait Data", true, false);
                     llLoadModefvbi.setVisibility(View.VISIBLE);
                     new Handler().postDelayed(new Runnable() {
                         public void run() {

@@ -10,10 +10,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.gandsoft.openguide.R;
 import com.gandsoft.openguide.activity.AccountActivity;
 import com.gandsoft.openguide.activity.ChangeEventActivity;
+import com.gandsoft.openguide.activity.MainActivity;
 import com.gandsoft.openguide.activity.infomenu.aMapActivity;
 import com.gandsoft.openguide.activity.infomenu.bGalleryActivity;
 import com.gandsoft.openguide.activity.infomenu.cInboxActivity;
@@ -31,7 +33,9 @@ import java.util.List;
 
 
 public class eInfoFragment extends Fragment {
-    RecyclerView rvMenufvbi;
+    private RecyclerView rvMenufvbi;
+    private TextView tvInfoFullNamefvbi;
+    private Button button;
     Button bMyPro;
     InfoListViewAdapter adapter;
     String infoMenu[] = {
@@ -56,7 +60,6 @@ public class eInfoFragment extends Fragment {
             R.drawable.ic_option_feedback,
             R.drawable.ic_option_event_change
     };
-    private Button button;
     private List<InfoListviewModel> listviewModels = new ArrayList<>();
 
 
@@ -75,6 +78,7 @@ public class eInfoFragment extends Fragment {
     private void initComponent(View view) {
         button = (Button) view.findViewById(R.id.button);
         rvMenufvbi = (RecyclerView) view.findViewById(R.id.rvMenu);
+        tvInfoFullNamefvbi = (TextView) view.findViewById(R.id.tvInfoFullName);
     }
 
     private void initContent() {
@@ -88,6 +92,15 @@ public class eInfoFragment extends Fragment {
     }
 
     private void initListener() {
+        tvInfoFullNamefvbi.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getActivity(), MainActivity.class);
+                startActivity(intent);
+                //finish();
+            }
+        });
+
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), AccountActivity.class);

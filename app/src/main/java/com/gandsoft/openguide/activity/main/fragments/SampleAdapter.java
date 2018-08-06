@@ -14,45 +14,68 @@
 
 package com.gandsoft.openguide.activity.main.fragments;
 
-import android.content.Context;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
+import android.support.annotation.NonNull;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.view.PagerAdapter;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
-public class SampleAdapter extends FragmentPagerAdapter {
-    int a = 0;
-    Context ctxt = null;
+import com.gandsoft.openguide.R;
+import com.gandsoft.openguide.support.SystemUtil;
 
-    public SampleAdapter(Context ctxt, FragmentManager mgr, int a) {
-        super(mgr);
-        this.ctxt = ctxt;
-        this.a = a;
+public class SampleAdapter extends PagerAdapter {
+
+    private final FragmentActivity activity;
+    private final int pager;
+    private String[] dates;
+
+    public SampleAdapter(FragmentActivity activity, int pager, String[] dates) {
+
+        this.activity = activity;
+        this.pager = pager;
+        this.dates = dates;
     }
 
     @Override
-    public Fragment getItem(int position) {
-        String[] headervalues = new String[]{
-                "11 Jul", "12 Jul", "13 Jul", "14 Jul", "15 Jul",
-        };
-        if (a == 0) {
-            for (int i = 0; i < headervalues.length; i++) {
-                if (position == i) {
-                     return new cScheduleXFragment();
-                }
-            }
-        } else {
-            for (int i = 0; i < headervalues.length; i++) {
-                if (position == i) {
-                    return new cScheduleXMiniFragment();
-                }
-            }
+    public boolean isViewFromObject(View view, Object object) {
+        return view == object;
+    }
 
+    @NonNull
+    @Override
+    public Object instantiateItem(@NonNull ViewGroup container, int position) {
+        View view = null;
+        if (pager == 0) {
+            LayoutInflater layoutInflater = (LayoutInflater) activity.getSystemService(activity.LAYOUT_INFLATER_SERVICE);
+            view = layoutInflater.inflate(R.layout.fragment_cx_fact, container, false);
+            TextView tvScheduleFactDayfvbi = (TextView) view.findViewById(R.id.tvScheduleFactDay);
+            TextView tvScheduleFactDatefvbi = (TextView) view.findViewById(R.id.tvScheduleFactDate);
+            TextView tvScheduleFactMonthYearfvbi = (TextView) view.findViewById(R.id.tvScheduleFactMonthYear);
+            tvScheduleFactDayfvbi.setText(SystemUtil.getDayFromDateString(dates[position], "dd MMM yyyy"));
+            tvScheduleFactDatefvbi.setText(dates[position].substring(0, 2));
+            tvScheduleFactMonthYearfvbi.setText(dates[position].substring(3));
+            container.addView(view);
+        } else if (pager == 1) {
+            LayoutInflater layoutInflater = (LayoutInflater) activity.getSystemService(activity.LAYOUT_INFLATER_SERVICE);
+            view = layoutInflater.inflate(R.layout.fragment_cx_fact_mini, container, false);
+            TextView tvScheduleFactMiniDatefvbi = (TextView) view.findViewById(R.id.tvScheduleFactMiniDate);
+            tvScheduleFactMiniDatefvbi.setText(dates[position]);
+            container.addView(view);
         }
-        return null;
+        return view;
     }
 
     @Override
     public int getCount() {
-        return 5;
+        return dates.length;
+    }
+
+    @Override
+    public void destroyItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
+        View view = (View) object;
+        container.removeView(view);
     }
 }
