@@ -5,6 +5,7 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
 
     <application
         android:name=".App"
@@ -33,14 +34,14 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".activity.AccountActivity"
+            android:theme="@style/AppTheme.NoActionBar"
             android:label="Account" />
         <activity
             android:name=".activity.ChangeEventActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".activity.main.BaseHomeActivity"
-            android:theme="@style/AppTheme.NoActionBar" >
-        </activity>
+            android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity
             android:name=".activity.infomenu.aMapActivity"
             android:theme="@style/AppTheme.NoActionBar" />
@@ -75,9 +76,8 @@
 
         <activity
             android:name=".gallery.withviewpager.PagerActivity"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:label="alalalal" >
-        </activity>
+            android:label="alalalal"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>

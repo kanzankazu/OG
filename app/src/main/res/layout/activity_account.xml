@@ -5,6 +5,32 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+    <RelativeLayout
+        android:id="@+id/rlAccountTop"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:layout_alignParentTop="true"
+        android:animateLayoutChanges="true"
+        android:background="@color/colorPrimary"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="Account"
+            android:textColor="@color/white"
+            android:textStyle="bold" />
+
+        <ImageButton
+            android:layout_width="?attr/actionBarSize"
+            android:layout_height="match_parent"
+            android:layout_alignParentStart="true"
+            android:background="?android:selectableItemBackground"
+            android:src="@drawable/ic_arrow_back_white"
+            android:visibility="visible" />
+    </RelativeLayout>
+
     <View
         android:id="@+id/focus_thief"
         android:layout_width="1dp"
@@ -13,9 +39,10 @@
         android:focusableInTouchMode="true" />
 
     <ScrollView
+        android:id="@+id/sc"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/bottom"
+        android:layout_below="@+id/rlAccountTop"
         android:background="@color/gray_very_light">
 
         <LinearLayout
