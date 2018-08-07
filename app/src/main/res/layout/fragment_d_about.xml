@@ -35,15 +35,39 @@
                 app:siRadius="10dp"
                 app:siSquare="true" />
 
-            <TextView
+            <LinearLayout
                 android:id="@+id/layoutBottom"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_below="@id/layoutTop"
                 android:layout_marginTop="60dp"
+                android:animateLayoutChanges="true"
                 android:gravity="start"
-                android:text="@string/large_text"
-                android:textColor="@color/colorPrimaryDark" />
+                android:orientation="vertical"
+                android:paddingBottom="20dp"
+                android:paddingLeft="30dp"
+                android:paddingRight="30dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="@string/large_text"
+                    android:textColor="@color/colorPrimaryDark" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="20dp"
+                    android:background="@color/gray_very_light" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="20dp"
+                    android:text="SLA Workshop 2018 - Winning as One Team will take place January 17-19, 2018 at The Alana Hotel &amp; Convention Centre, Yogyakarta."
+                    android:textColor="@color/gray_very_light" />
+
+            </LinearLayout>
 
 
         </RelativeLayout>

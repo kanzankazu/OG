@@ -2,29 +2,21 @@ package com.gandsoft.openguide.activity.infomenu;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.print.PrintAttributes;
-import android.support.v4.view.MarginLayoutParamsCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
 
 import com.gandsoft.openguide.R;
 import com.gandsoft.openguide.gallery.Global;
-import com.gandsoft.openguide.gallery.images.ImageSource;
 import com.gandsoft.openguide.gallery.withviewpager.PagerActivity;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.assist.ImageSize;
-import com.nostra13.universalimageloader.core.imageaware.ImageViewAware;
-import com.nostra13.universalimageloader.utils.MemoryCacheUtils;
 
 public class bGalleryActivity extends AppCompatActivity {
 
@@ -88,8 +80,7 @@ public class bGalleryActivity extends AppCompatActivity {
                         }
                     });
                 }
-
-            } else {gi
+            } else {
                 imageView = (ImageView) convertView;
             }
             imageView.setImageResource(R.drawable.gallery);
