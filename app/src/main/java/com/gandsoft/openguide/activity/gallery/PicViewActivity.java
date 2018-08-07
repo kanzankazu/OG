@@ -3,26 +3,40 @@ package com.gandsoft.openguide.activity.gallery.zoomtransition;
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
 import android.app.Activity;
+import android.content.Context;
+import android.content.ContextWrapper;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
+import android.graphics.Picture;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
+import android.os.Environment;
 import android.view.SoundEffectConstants;
 import android.view.View;
 import android.widget.ImageView;
 
 import com.gandsoft.openguide.R;
+import com.gandsoft.openguide.activity.gallery.Global;
 import com.gandsoft.openguide.activity.gallery.PinchImageView;
 import com.gandsoft.openguide.activity.gallery.images.ImageObject;
 import com.gandsoft.openguide.activity.gallery.images.ImageSource;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.lang.reflect.Method;
+
 
 public class PicViewActivity extends Activity {
 
-    private static final long ANIM_TIME = 200;
+    private static final long ANIM_TIME = 10;
 
     private RectF mThumbMaskRect;
     private Matrix mThumbImageMatrix;
@@ -47,14 +61,20 @@ public class PicViewActivity extends Activity {
         ImageLoader imageLoader = Global.getImageLoader(getApplicationContext());
         DisplayImageOptions originOptions = new DisplayImageOptions.Builder().build();
 
-        //view初始化
         setContentView(R.layout.activity_pic_view);
         mImageView = (PinchImageView) findViewById(R.id.pic);
         mBackground = findViewById(R.id.background);
-        Bitmap bitmap = imageLoader.getMemoryCache().get(memoryCacheKey);
-        if (bitmap != null && !bitmap.isRecycled()) {
+        String root = Environment.getExternalStorageDirectory().toString();
+       // if(checkMobileData(getApplicationContext())){
+            Bitmap bitmap = imageLoader.getMemoryCache().get(memoryCacheKey);
             mImageView.setImageBitmap(bitmap);
-        }
+            saveToInternalStorage(bitmap);
+        //}
+       // else{
+         //   Bitmap bitmap = BitmapFactory.decodeFile(root+"/.Gandsoft/image.jpg");
+           // mImageView.setImageBitmap(bitmap);
+        //}
+
         imageLoader.displayImage(image.getThumb(1000, 1000).url, mImageView, originOptions);
 
         mImageView.post(new Runnable() {
@@ -100,6 +120,8 @@ public class PicViewActivity extends Activity {
         });
     }
 
+
+
     @Override
     public void finish() {
         if ((mBackgroundAnimator != null && mBackgroundAnimator.isRunning())) {
@@ -133,10 +155,43 @@ public class PicViewActivity extends Activity {
         });
         mBackgroundAnimator.start();
 
-        //mask动画
         mImageView.zoomMaskTo(mThumbMaskRect, ANIM_TIME);
 
-        //图片缩小动画
         mImageView.outerMatrixTo(mThumbImageMatrix, ANIM_TIME);
+    }
+
+    public static boolean checkMobileData(Context context){
+        boolean mobileDataEnabled = false; // Assume disabled
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        try {
+            Class cmClass = Class.forName(cm.getClass().getName());
+            Method method = cmClass.getDeclaredMethod("getMobileDataEnabled");
+            method.setAccessible(true); // Make the method callable
+            // get the setting for "mobile data"
+            mobileDataEnabled = (Boolean)method.invoke(cm);
+        } catch (Exception e) {
+            // Some problem accessible private API
+            // TODO do whatever error handling you want here
+        }
+        return mobileDataEnabled;
+    }
+
+    private String saveToInternalStorage(Bitmap bitmapImage){
+        String root = Environment.getExternalStorageDirectory().toString();
+        File myDir = new File(root + "/.Gandsoft");
+        myDir.mkdirs();
+        String fname = "image.jpg";
+        File file = new File(myDir, fname);
+        if (file.exists())
+            file.delete();
+        try {
+            FileOutputStream out = new FileOutputStream(file);
+            bitmapImage.compress(Bitmap.CompressFormat.JPEG, 100, out);
+            out.flush();
+            out.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }
