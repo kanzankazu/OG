@@ -5,6 +5,8 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
         android:name=".App"
@@ -74,12 +76,7 @@
             android:theme="@style/AppTheme.NoActionBar"></activity>
 
         <activity
-            android:name=".activity.gallery.zoomtransition.ThumbViewActivity"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:label="alalalal" >
-        </activity>
-        <activity
-            android:name=".activity.gallery.zoomtransition.PicViewActivity"
+            android:name=".activity.gallery.PicViewActivity"
             android:theme="@style/AppTheme.NoActionBar"
             android:label="alalalal" >
         </activity>

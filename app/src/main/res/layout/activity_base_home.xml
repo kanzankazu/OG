@@ -20,8 +20,7 @@
             android:background="@color/white"
             app:layout_scrollFlags="scroll|enterAlways"
             app:popupTheme="@style/AppTheme.PopupOverlay"
-            app:titleTextColor="@color/colorPrimary">
-        </android.support.v7.widget.Toolbar>
+            app:titleTextColor="@color/colorPrimary"></android.support.v7.widget.Toolbar>
 
         <android.support.design.widget.TabLayout
             android:id="@+id/tlFiltSortHot"

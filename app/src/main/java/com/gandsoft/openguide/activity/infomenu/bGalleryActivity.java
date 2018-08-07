@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.view.View;
@@ -11,9 +12,10 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.Toolbar;
 
 import com.gandsoft.openguide.activity.gallery.Global;
-import com.gandsoft.openguide.activity.gallery.zoomtransition.PicViewActivity;
+import com.gandsoft.openguide.activity.gallery.PicViewActivity;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
@@ -21,10 +23,13 @@ import com.nostra13.universalimageloader.core.imageaware.ImageViewAware;
 import com.nostra13.universalimageloader.utils.MemoryCacheUtils;
 
 public class bGalleryActivity extends AppCompatActivity {
-
+    private Toolbar toolbar;
+    private ActionBar ab;
     @Override
     public void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
+
         GridView gridView = new GridView(this);
         gridView.setNumColumns(3);
         setContentView(gridView);
@@ -60,10 +65,11 @@ public class bGalleryActivity extends AppCompatActivity {
             if (convertView == null) {
                 DisplayMetrics metrics = context.getResources().getDisplayMetrics();
                 int width = metrics.widthPixels / 9 * 3;
-                int height = metrics.heightPixels / 16 * 3;
+                int height = metrics.heightPixels / 16 * 3gi;
 
                 final DisplayImageOptions thumbOptions = new DisplayImageOptions.Builder().cacheInMemory(true).build();
                 final ImageLoader imageLoader = Global.getImageLoader(getApplicationContext());
+
 
                 for (int i = 0; i < Global.getTestImagesCount(); i++) {
                     final int fi = i;
@@ -71,8 +77,17 @@ public class bGalleryActivity extends AppCompatActivity {
                     imageView.setLayoutParams(new GridView.LayoutParams(width, height));
                     imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
                     final ImageViewAware thumbAware = new ImageViewAware(imageView);
-                    final String url = Global.getTestImage(i).getThumb(100, 100).url;
-                    imageLoader.displayImage(url, thumbAware, thumbOptions);
+
+                    String url = Global.getTestImage(i).getThumb(1000, 1000).url;
+//Check
+   //                 String root = Environment.getExternalStorageDirectory().toString();
+ //                   if(PicViewActivity.checkMobileData(getApplicationContext())){
+                        imageLoader.displayImage(url, thumbAware, thumbOptions);
+     //               }
+       //             else{
+         //               imageLoader.displayImage(root+"/.Gandsoft/image.jpg",thumbAware,thumbOptions);
+           //         }
+
                     imageView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -93,4 +108,5 @@ public class bGalleryActivity extends AppCompatActivity {
             return imageView;
         }
     }
+
 }

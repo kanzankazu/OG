@@ -5,13 +5,13 @@ import android.widget.ImageView;
 
 import com.gandsoft.openguide.activity.gallery.PinchImageView;
 
-public class FengNiaoImageSource implements ImageSource {
+public class ImageSource implements ImageSourceInterface {
 
     private String mOriginUrl;
     private int mOriginWidth;
     private int mOriginHeight;
 
-    public FengNiaoImageSource(String originUrl, int originWidth, int originHeight) {
+    public ImageSource(String originUrl, int originWidth, int originHeight) {
         mOriginUrl = originUrl;
         mOriginWidth = originWidth;
         mOriginHeight = originHeight;

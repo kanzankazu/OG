@@ -2,21 +2,18 @@ package com.gandsoft.openguide.activity.gallery;
 
 import android.content.Context;
 
-import com.gandsoft.openguide.activity.gallery.images.FengNiaoImageSource;
 import com.gandsoft.openguide.activity.gallery.images.ImageSource;
+import com.gandsoft.openguide.activity.gallery.images.ImageSourceInterface;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
-/**
- * Created by clifford on 16/3/8.
- */
 public class Global {
 
-    private static ImageSource[] sTestImages = new ImageSource[] {
-             new FengNiaoImageSource("http://jonvilma.com/images/xenoblade-chronicles-x-4k.jpg", 5760, 3840)
+    private static ImageSourceInterface[] sTestImages = new ImageSourceInterface[] {
+             new ImageSource("http://jonvilma.com/images/xenoblade-chronicles-x-4k.jpg", 5760, 3840)
     };
 
-    public static ImageSource getTestImage(int i) {
+    public static ImageSourceInterface getTestImage(int i) {
         if (i >= 0 && i < sTestImages.length) {
             return sTestImages[i];
         }

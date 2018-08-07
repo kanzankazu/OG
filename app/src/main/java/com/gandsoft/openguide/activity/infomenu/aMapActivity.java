@@ -10,6 +10,11 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.ActionBar;
+import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.gandsoft.openguide.R;
@@ -28,7 +33,8 @@ public class aMapActivity extends LocalBaseActivity implements OnMapReadyCallbac
     private double mylat;
     private double mylng;
     private LatLng mylatlng;
-
+    private Toolbar toolbar;
+    private ActionBar ab;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,11 +53,26 @@ public class aMapActivity extends LocalBaseActivity implements OnMapReadyCallbac
     }
 
     private void initComponent() {
-
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
     }
 
     private void initContent() {
+        setSupportActionBar(toolbar);
+        ab = getSupportActionBar();
+        ab.setTitle("Maps");
+    }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_activity, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        finish();
+        return super.onOptionsItemSelected(item);
     }
 
     private void initListener() {

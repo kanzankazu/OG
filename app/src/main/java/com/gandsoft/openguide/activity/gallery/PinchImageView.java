@@ -1,6 +1,7 @@
 package com.gandsoft.openguide.activity.gallery;
 
 import android.animation.ValueAnimator;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
@@ -15,7 +16,6 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
-
 
 public class PinchImageView extends ImageView {
     public static final int SCALE_ANIMATOR_DURATION = 200;
@@ -1335,12 +1335,6 @@ public class PinchImageView extends ImageView {
         }
     }
 
-
-    ////////////////////////////////数学计算工具类////////////////////////////////
-
-    /**
-     * 数学计算工具类
-     */
     public static class MathUtils {
 
         /**
