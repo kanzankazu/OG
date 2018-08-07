@@ -1,4 +1,4 @@
-package com.gandsoft.openguide.gallery.withviewpager;
+package com.gandsoft.openguide.activity.gallery.withviewpager;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -7,10 +7,10 @@ import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.gandsoft.openguide.gallery.PinchImageView;
-import com.gandsoft.openguide.gallery.Global;
+import com.gandsoft.openguide.activity.gallery.PinchImageView;
+import com.gandsoft.openguide.activity.gallery.Global;
 import com.gandsoft.openguide.R;
-import com.gandsoft.openguide.gallery.images.ImageSource;
+import com.gandsoft.openguide.activity.gallery.images.ImageSource;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 
 import java.util.LinkedList;

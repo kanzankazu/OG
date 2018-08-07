@@ -1,4 +1,4 @@
-package com.gandsoft.openguide.gallery.images;
+package com.gandsoft.openguide.activity.gallery.images;
 
 /**
  * 图片信息结构体

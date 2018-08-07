@@ -1,9 +1,9 @@
-package com.gandsoft.openguide.gallery.images;
+package com.gandsoft.openguide.activity.gallery.images;
 
 import android.graphics.RectF;
 import android.widget.ImageView;
 
-import com.gandsoft.openguide.gallery.PinchImageView;
+import com.gandsoft.openguide.activity.gallery.PinchImageView;
 
 /**
  * 蜂鸟网的图片素材

@@ -1,4 +1,4 @@
-package com.gandsoft.openguide.gallery.images;
+package com.gandsoft.openguide.activity.gallery.images;
 
 import java.io.Serializable;
 

@@ -74,7 +74,12 @@
             android:theme="@style/AppTheme.NoActionBar"></activity>
 
         <activity
-            android:name=".gallery.withviewpager.PagerActivity"
+            android:name=".activity.gallery.zoomtransition.ThumbViewActivity"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:label="alalalal" >
+        </activity>
+        <activity
+            android:name=".activity.gallery.zoomtransition.PicViewActivity"
             android:theme="@style/AppTheme.NoActionBar"
             android:label="alalalal" >
         </activity>
