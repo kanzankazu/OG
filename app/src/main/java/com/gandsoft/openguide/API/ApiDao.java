@@ -1,7 +1,11 @@
 package com.gandsoft.openguide.API;
 
+import com.gandsoft.openguide.model.request.Login.LoginRequestModel;
 import com.gandsoft.openguide.model.request.Report.ReportRequestModel;
 import com.gandsoft.openguide.model.request.Update.UpdateRequestModel;
+import com.gandsoft.openguide.model.respond.Login.LoginResponseModel;
+
+import java.io.IOException;
 
 import app.beelabs.com.codebase.base.BaseActivity;
 import app.beelabs.com.codebase.base.BaseDao;
@@ -27,6 +31,10 @@ public class ApiDao extends BaseDao {
 
     public void doGetOuiDao(BaseActivity ac, Callback callback) {
         API.doGetOui(ac, callback);
+    }
+
+    public void doLoginDao(BaseActivity ac, LoginRequestModel request, Callback callback) {
+        API.doLogin(ac, request, callback);
     }
 
 }

@@ -1,6 +1,9 @@
 package com.gandsoft.openguide.model.respond;
 
+import com.gandsoft.openguide.model.respond.Login.LoginResponseModel;
+
 import java.io.Serializable;
+import java.util.ArrayList;
 
 import app.beelabs.com.codebase.base.response.BaseResponse;
 
@@ -11,7 +14,7 @@ import app.beelabs.com.codebase.base.response.BaseResponse;
 public class BaseResponseModel extends BaseResponse implements Serializable {
 
     private String message;
-    private String ip;
+    private ArrayList<LoginResponseModel> loginModel;
 
     public String getMessage() {
         return message;
@@ -21,11 +24,11 @@ public class BaseResponseModel extends BaseResponse implements Serializable {
         this.message = message;
     }
 
-    public String getIp() {
-        return ip;
+    public ArrayList<LoginResponseModel> getLoginModel() {
+        return loginModel;
     }
 
-    public void setIp(String ip) {
-        this.ip = ip;
+    public void setLoginModel(ArrayList<LoginResponseModel> loginModel) {
+        this.loginModel = loginModel;
     }
 }

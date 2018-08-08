@@ -3,6 +3,7 @@ package com.gandsoft.openguide.activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -16,9 +17,15 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.gandsoft.openguide.API.API;
+import com.gandsoft.openguide.API.ApiDao;
+import com.gandsoft.openguide.App;
 import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
+import com.gandsoft.openguide.model.request.Login.LoginRequestModel;
+import com.gandsoft.openguide.model.respond.BaseResponseModel;
 import com.gandsoft.openguide.presenter.SeasonManager.SessionUtil;
+import com.gandsoft.openguide.support.DeviceDetailUtil;
 import com.gandsoft.openguide.support.SystemUtil;
 import com.gandsoft.openguide.support.ValidUtil;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -35,11 +42,19 @@ import com.hbb20.CountryCodePicker;
 
 import java.util.concurrent.TimeUnit;
 
+import app.beelabs.com.codebase.base.BaseDao;
+import app.beelabs.com.codebase.base.response.BaseResponse;
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 public class LoginActivity extends LocalBaseActivity {
 
     private static final int UI_LOGIN = 0;
     private static final int UI_VERIFY = 1;
     private static final String TAG = "Lihat LoginActivity";
+    private static final int API_CALLER_LOGIN = 1010;
 
     /**/
     private CountryCodePicker ccpLoginfvbi;
@@ -56,6 +71,7 @@ public class LoginActivity extends LocalBaseActivity {
     private String phoneNumberSaved;
     private String mVerificationId;
     private boolean isLogin, isVerify;
+    private String phoneNumberSavedwoPlus;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -105,9 +121,23 @@ public class LoginActivity extends LocalBaseActivity {
                 // 2 - Auto-retrieval. On some devices Google Play services can automatically
                 //     detect the incoming verification SMS and perform verification without
                 //     user action.
-                Log.d(TAG, "onVerificationCompleted: " + credential);
+                Log.d("Lihat onVerificationCompleted LoginActivity", credential.getProvider().toString());
+                Log.d("Lihat onVerificationCompleted LoginActivity", credential.getSignInMethod().toString());
                 signInWithPhoneAuthCredential(credential);
-                updateUI(UI_VERIFY, credential);
+
+                if (credential != null) {
+                    if (credential.getSmsCode() != null) {
+                        updateUI(UI_VERIFY, credential);
+                        new Handler().postDelayed(new Runnable() {
+                            public void run() {
+                                //code here
+                                etLoginfvbi.setText(credential.getSmsCode());
+                            }
+                        }, 1000);
+                    } else {
+                        snackBar("instant validation", false);
+                    }
+                }
             }
 
             @Override
@@ -194,13 +224,13 @@ public class LoginActivity extends LocalBaseActivity {
             isLogin = false;
             isVerify = true;
 
-            if (cred != null) {
+            /*if (cred != null) {
                 if (cred.getSmsCode() != null) {
                     etLoginfvbi.setText(cred.getSmsCode());
                 } else {
                     snackBar("instant validation", false);
                 }
-            }
+            }*/
         }
     }
 
@@ -211,6 +241,7 @@ public class LoginActivity extends LocalBaseActivity {
                     //Toast.makeText(getApplicationContext(), getNumberValid(etLoginfvbi), Toast.LENGTH_SHORT).show();
                     startPhoneNumberVerification("+" + getNumberValid(etLoginfvbi));
                     phoneNumberSaved = "+" + getNumberValid(etLoginfvbi);
+                    phoneNumberSavedwoPlus = getNumberValid(etLoginfvbi);
                 } else {
                     SystemUtil.etReqFocus(LoginActivity.this, etLoginfvbi, "Data Tidak Valid");
                 }
@@ -268,11 +299,15 @@ public class LoginActivity extends LocalBaseActivity {
                     FirebaseUser user = task.getResult().getUser();
                     //updateUI(STATE_SIGNIN_SUCCESS, user);
                     snackBar("Success", false);
-                    Log.d(TAG, "signInWithCredential:success");
-                    Log.d(TAG, String.valueOf(user));
+                    Log.d("Lihat onComplete LoginActivity", "success");
+                    Log.d("Lihat onComplete LoginActivity getPhoneNumber", user.getPhoneNumber());
+                    Log.d("Lihat onComplete LoginActivity getProviderId", user.getProviderId());
+                    Log.d("Lihat onComplete LoginActivity getUid", user.getUid());
+//                    sendLoginData();
                     moveToNext();
                 } else {
-                    Log.w(TAG, "signInWithCredential:failure", task.getException());
+                    Log.d("Lihat onComplete LoginActivity getMessage", task.getException().getMessage());
+                    Log.d("Lihat onComplete LoginActivity getLocalizedMessage", task.getException().getLocalizedMessage());
                     if (task.getException() instanceof FirebaseAuthInvalidCredentialsException) {
                         snackBar("Invalid code.", true);
                     }
@@ -286,6 +321,43 @@ public class LoginActivity extends LocalBaseActivity {
         PhoneAuthCredential credential = PhoneAuthProvider.getCredential(verificationId, code);
 
         signInWithPhoneAuthCredential(credential);
+    }
+
+    private void sendLoginData() {
+        LoginRequestModel request = new LoginRequestModel();
+        request.setDbver("3");
+        request.setDevice_app(DeviceDetailUtil.getAllDataPhone(this));
+        request.setPhonenumber(phoneNumberSavedwoPlus);
+        request.setLogin_status("1");
+        /*showApiProgressDialog(App.getAppComponent(), new ApiDao(this) {
+            @Override
+            public void call() {
+                super.doLoginDao(LoginActivity.this,request, BaseDao.getInstance(LoginActivity.this, API_CALLER_LOGIN).callback);
+            }
+        },"Please Wait...");*/
+
+        API.doLogin(this, request, new Callback() {
+            @Override
+            public void onResponse(Call call, Response response) {
+                if (response.isSuccessful()){
+                    try {
+                        Log.d("Lihat onResponse LoginActivity", String.valueOf(response.body()));
+                        Log.d("Lihat onResponse LoginActivity", String.valueOf(((BaseResponseModel) response.body()).getLoginModel()));
+                        Log.d("Lihat onResponse LoginActivity", String.valueOf(response.body()));
+                        Log.d("Lihat onResponse LoginActivity", String.valueOf(response.message()));
+                    } catch (Exception e) {
+                        Log.d("Lihat onResponse catch LoginActivity",response.body().toString());
+                        Log.d("Lihat onResponse catch LoginActivity",response.message().toString());
+                        Log.d("Lihat onResponse catch LoginActivity", e.getMessage());
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call call, Throwable t) {
+                Log.d("Lihat onFailure LoginActivity", t.getMessage());
+            }
+        });
     }
 
     private void moveToNext() {
@@ -340,4 +412,25 @@ public class LoginActivity extends LocalBaseActivity {
         Snackbar.make(findViewById(android.R.id.content), "Success Sign Out", Snackbar.LENGTH_SHORT).show();
     }
 
+    @Override
+    protected void onApiResponseCallback(BaseResponse br, int responseCode, Response response) {
+        super.onApiResponseCallback(br, responseCode, response);
+        if (response.isSuccessful()) {
+            if (responseCode == API_CALLER_LOGIN) {
+                Log.d("Lihat onApiResponseCallback LoginActivity", String.valueOf(br.getStatus()));
+                Log.d("Lihat onApiResponseCallback LoginActivity", String.valueOf(br));
+                Log.d("Lihat onApiResponseCallback LoginActivity", String.valueOf(response.message()));
+                Log.d("Lihat onApiResponseCallback LoginActivity", String.valueOf(response.body()));
+            } else {
+                Snackbar.make(findViewById(android.R.id.content), "Unknown Connection", Snackbar.LENGTH_LONG).show();
+            }
+        } else {
+            Snackbar.make(findViewById(android.R.id.content), "Failed to connect server", Snackbar.LENGTH_LONG).show();
+        }
+    }
+
+    @Override
+    protected void onApiFailureCallback(String message) {
+        super.onApiFailureCallback(message);
+    }
 }
