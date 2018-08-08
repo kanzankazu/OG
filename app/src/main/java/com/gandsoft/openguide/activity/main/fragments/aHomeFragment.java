@@ -80,7 +80,7 @@ public class aHomeFragment extends Fragment {
         recyclerView.setNestedScrollingEnabled(false);
         recyclerView.setAdapter(adapter);
         adapter.setData(PostRecViewPojoDummy.generyData(page));
-        adapter.notifyDataSetChanged();
+        //adapter.notifyDataSetChanged();
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         //populateRecyclerViewValues();
     }
@@ -99,7 +99,7 @@ public class aHomeFragment extends Fragment {
                 page = 0;
                 Log.d("Lihat onRefresh aHomeFragment page", String.valueOf(page));
                 adapter.replaceData(PostRecViewPojoDummy.generyData(page));
-                adapter.notifyDataSetChanged();
+                //adapter.notifyDataSetChanged();
             }
         });
         homeNSVHomefvbi.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {

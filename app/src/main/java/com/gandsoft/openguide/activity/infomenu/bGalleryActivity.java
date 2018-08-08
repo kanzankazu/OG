@@ -2,9 +2,14 @@ package com.gandsoft.openguide.activity.infomenu;
 
 import android.content.Context;
 import android.content.Intent;
+<<<<<<< HEAD
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
+=======
+import android.graphics.drawable.Drawable;
+import android.os.Bundle;
+>>>>>>> origin
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.view.View;
@@ -14,13 +19,16 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.Toolbar;
 
+<<<<<<< HEAD
 import com.gandsoft.openguide.activity.gallery.Global;
 import com.gandsoft.openguide.activity.gallery.PicViewActivity;
+=======
+import com.gandsoft.openguide.R;
+import com.gandsoft.openguide.gallery.Global;
+import com.gandsoft.openguide.gallery.withviewpager.PagerActivity;
+>>>>>>> origin
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.assist.ImageSize;
-import com.nostra13.universalimageloader.core.imageaware.ImageViewAware;
-import com.nostra13.universalimageloader.utils.MemoryCacheUtils;
 
 public class bGalleryActivity extends AppCompatActivity {
     private Toolbar toolbar;
@@ -65,7 +73,7 @@ public class bGalleryActivity extends AppCompatActivity {
             if (convertView == null) {
                 DisplayMetrics metrics = context.getResources().getDisplayMetrics();
                 int width = metrics.widthPixels / 9 * 3;
-                int height = metrics.heightPixels / 16 * 3gi;
+                int height = metrics.heightPixels / 16 * 3;
 
                 final DisplayImageOptions thumbOptions = new DisplayImageOptions.Builder().cacheInMemory(true).build();
                 final ImageLoader imageLoader = Global.getImageLoader(getApplicationContext());

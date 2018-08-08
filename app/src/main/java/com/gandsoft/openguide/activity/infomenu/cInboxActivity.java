@@ -50,5 +50,5 @@ public class cInboxActivity extends AppCompatActivity {
         adapter.setListContent(listContentArr);
         //We in turn set the adapter to the RecyclerView
         recyclerView.setAdapter(adapter);
-    }
+    }g
 }

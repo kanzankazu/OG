@@ -52,13 +52,14 @@ public class PostRecViewAdapter extends RecyclerView.Adapter<PostRecViewAdapter.
 
     public void setData(List<PostRecViewPojo> datas) {
         models = datas;
+        notifyDataSetChanged();
     }
 
     public void replaceData(List<PostRecViewPojo> datas){
         models.clear();
         models.addAll(datas);
+        notifyDataSetChanged();
     }
-
 
     public void addDatas(List<PostRecViewPojo> datas) {
         models.addAll(datas);

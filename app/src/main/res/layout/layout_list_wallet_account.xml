@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@drawable/background_radius"
+    android:backgroundTint="@color/white"
     android:gravity="center|top"
     android:orientation="vertical">
 
@@ -19,7 +22,7 @@
         android:layout_marginRight="128dp"
         android:layout_marginTop="30dp"
         android:adjustViewBounds="true"
-        android:src="@drawable/gallery" />
+        android:src="@mipmap/ic_launcher" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -62,12 +65,20 @@
         android:layout_marginTop="25dp"
         android:background="@color/gray_very_light" />
 
-    <Button
+    <android.support.v7.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="20dp"
-        android:backgroundTint="@color/colorPrimaryDark"
-        android:text="detail"
-        android:textColor="@color/white" />
+        android:layout_margin="10dp"
+        android:backgroundTint="@color/colorPrimary"
+        app:cardCornerRadius="7dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:padding="7dp"
+            android:text="DETAIL"
+            android:textColor="@color/white" />
+    </android.support.v7.widget.CardView>
 
 </LinearLayout>

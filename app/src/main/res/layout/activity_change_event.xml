@@ -19,13 +19,27 @@
             android:background="@color/gray_very_light"
             android:orientation="vertical">
             <!--Action bar-->
-            <TextView
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:gravity="center"
-                android:text="Event"
-                android:textSize="16dp"
-                android:textStyle="bold" />
+                android:layout_height="?attr/actionBarSize"
+                android:animateLayoutChanges="true"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="Event"
+                    android:textStyle="bold" />
+
+                <ImageButton
+                    android:layout_width="?attr/actionBarSize"
+                    android:layout_height="match_parent"
+                    android:layout_alignParentEnd="true"
+                    android:background="?android:selectableItemBackground"
+                    android:src="@drawable/ic_dialog_close_dark"
+                    android:visibility="visible" />
+            </RelativeLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -71,6 +85,7 @@
                     android:textColor="@color/colorPrimary" />
             </LinearLayout>
 
+            <!--ongoing event-->
             <LinearLayout
                 android:id="@+id/ceLLOngoingEvent"
                 android:layout_width="match_parent"
@@ -94,6 +109,7 @@
 
             </LinearLayout>
 
+            <!--past event-->
             <LinearLayout
                 android:id="@+id/ceLLPastEvent"
                 android:layout_width="match_parent"
@@ -116,7 +132,6 @@
                     android:layout_marginTop="20dp" />
 
             </LinearLayout>
-
 
             <android.support.v7.widget.CardView
                 android:layout_width="match_parent"
