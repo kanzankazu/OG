@@ -42,11 +42,11 @@ public class BaseHomeActivity extends AppCompatActivity {
     }
 
     private void initContent() {
-        initActioBar();
+        initActionBar();
         initTablayoutViewpager();
     }
 
-    private void initActioBar() {
+    private void initActionBar() {
         setSupportActionBar(toolbar);
         ab = getSupportActionBar();
         ab.setTitle(titleTab[0]);

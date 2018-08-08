@@ -1,5 +1,6 @@
 package com.gandsoft.openguide.activity.main.fragments;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -109,6 +110,7 @@ public class eInfoFragment extends Fragment {
         });
 
         rvMenufvbi.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(), rvMenufvbi, new RecyclerItemClickListener.OnItemClickListener() {
+            @SuppressLint("LongLogTag")
             @Override
             public void onItemClick(View view, int position) {
                 Log.d("Lihat onItemClick eInfoFragment", String.valueOf(position));
