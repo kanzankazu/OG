@@ -20,7 +20,7 @@ public class ImageSource implements ImageSourceInterface {
     @Override
     public ImageObject getThumb(int width, int height) {
         ImageObject imageObject = new ImageObject();
-        imageObject.url = mOriginUrl + "?imageView2/2/w/" + width + "/h/" + height;
+        imageObject.url = mOriginUrl;
         RectF result = new RectF();
         PinchImageView.MathUtils.calculateScaledRectInContainer(new RectF(0, 0, width, height), mOriginWidth, mOriginHeight, ImageView.ScaleType.FIT_CENTER, result);
         imageObject.width = (int) result.width();

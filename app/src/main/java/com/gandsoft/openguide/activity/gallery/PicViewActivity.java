@@ -42,7 +42,6 @@ public class PicViewActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        //获取参数
         ImageSourceInterface image = (ImageSourceInterface) getIntent().getSerializableExtra("image");
         String memoryCacheKey =  getIntent().getStringExtra("cache_key");
         final Rect rect = getIntent().getParcelableExtra("rect");
@@ -58,8 +57,10 @@ public class PicViewActivity extends Activity {
         String root = Environment.getExternalStorageDirectory().toString();
 
         Bitmap bitmap = imageLoader.getMemoryCache().get(memoryCacheKey);
+        if(Global.isOnline()){
+            saveToInternalStorage(bitmap);
+        }
         mImageView.setImageBitmap(bitmap);
-        saveToInternalStorage(bitmap);
 
         imageLoader.displayImage(image.getThumb(1000, 1000).url, mImageView, originOptions);
 
@@ -142,25 +143,9 @@ public class PicViewActivity extends Activity {
         mImageView.outerMatrixTo(mThumbImageMatrix, ANIM_TIME);
     }
 
-    public static boolean checkMobileData(Context context){
-        boolean mobileDataEnabled = false; // Assume disabled
-        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        try {
-            Class cmClass = Class.forName(cm.getClass().getName());
-            Method method = cmClass.getDeclaredMethod("getMobileDataEnabled");
-            method.setAccessible(true); // Make the method callable
-            // get the setting for "mobile data"
-            mobileDataEnabled = (Boolean)method.invoke(cm);
-        } catch (Exception e) {
-            // Some problem accessible private API
-            // TODO do whatever error handling you want here
-        }
-        return mobileDataEnabled;
-    }
-
     private String saveToInternalStorage(Bitmap bitmapImage){
         String root = Environment.getExternalStorageDirectory().toString();
-        File myDir = new File(root + "/.Gandsoft");
+        File myDir = new File(root + "/.Gandsoft/");
         myDir.mkdirs();
         String fname = "image.jpg";
         File file = new File(myDir, fname);
