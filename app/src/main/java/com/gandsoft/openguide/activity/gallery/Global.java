@@ -1,32 +1,42 @@
 package com.gandsoft.openguide.activity.gallery;
 
 import android.content.Context;
+import android.os.Environment;
 
-import com.gandsoft.openguide.activity.gallery.images.FengNiaoImageSource;
 import com.gandsoft.openguide.activity.gallery.images.ImageSource;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.net.URL;
+import java.net.URLConnection;
 
 /**
  * Created by clifford on 16/3/8.
  */
 public class Global {
 
+    private static String urls="https://bbs.qn.img-space.com/201803/1/a3d12f4355dde74483e323022866c27c.jpg";
+    private static String root=Environment.getExternalStorageDirectory().toString()+"/.Gandsoft/images.jpg";
+
+    public static String url(){
+        String url = null;
+        if(downloadFile(urls, new File(root))){
+            url = "https://bbs.qn.img-space.com/201803/1/a3d12f4355dde74483e323022866c27c.jpg";
+        }
+        else{
+            url = Environment.getExternalStorageDirectory().toString()+"/.Gandsoft/images.jpg";
+        }
+        return url;
+    }
+
     private static ImageSource[] sTestImages = new ImageSource[] {
-             new FengNiaoImageSource("https://bbs.qn.img-space.com/201803/1/a3d12f4355dde74483e323022866c27c.jpg", 5760, 3840)
-            ,new FengNiaoImageSource("https://bbs.qn.img-space.com/201803/1/821ee769c9965094bd2d4d3567253eb4.jpg", 5760, 3840)
-            ,new FengNiaoImageSource("https://bbs.qn.img-space.com/201803/1/a6c04be8a7c070f90707ee346180e664.jpg", 5760, 3840)
-            ,new FengNiaoImageSource("https://bbs.qn.img-space.com/201803/1/18925552b84b6462f041fdac7533111b.jpg", 5760, 3840)
-            ,new FengNiaoImageSource("https://bbs.qn.img-space.com/201803/1/dfd2eb58639be0c55be4802b99b50fb6.jpg", 3840, 5760)
-            ,new FengNiaoImageSource("https://bbs.qn.img-space.com/201803/1/70ef420ace8179b68523701d784e772c.jpg", 3840, 5760)
-            ,new FengNiaoImageSource("https://bbs.qn.img-space.com/201803/1/82acb0052d63633324da3aa2eddf9610.jpg", 5760, 3840)
-            ,new FengNiaoImageSource("https://bbs.qn.img-space.com/201803/1/f37e7606bc900a7b0a4dbf42f82d8147.jpg", 5760, 3840)
-            ,new FengNiaoImageSource("https://bbs.qn.img-space.com/201803/1/f48fc28caecc588fadf5ab71d5a3215c.jpg", 5760, 3840)
-            ,new FengNiaoImageSource("https://bbs.qn.img-space.com/201803/1/fcaaa048799d44f48ce015d11ba6e565.jpg", 5760, 3840)
-            ,new FengNiaoImageSource("https://bbs.qn.img-space.com/201803/1/110401232c7f779e647251b7445a0635.jpg", 5760, 3840)
-            ,new FengNiaoImageSource("https://bbs.qn.img-space.com/201803/1/2263e35507b57b5c1ddcd989d45c05b7.jpg", 3840, 5760)
-            ,new FengNiaoImageSource("https://bbs.qn.img-space.com/201803/1/ac5ce73f98a43c7c9263974a93c1c39b.jpg", 3840, 5760)
-            ,new FengNiaoImageSource("https://bbs.qn.img-space.com/201803/1/c2776f84eef6f0350666b1b37d87d9d3.jpg", 5760, 3840)
+             new ImageSource(url(), 5760, 3840)
     };
 
     public static ImageSource getTestImage(int i) {
@@ -46,5 +56,34 @@ public class Global {
             imageLoader.init(ImageLoaderConfiguration.createDefault(context));
         }
         return imageLoader;
+    }
+
+    private static boolean downloadFile(String url, File outputFile) {
+        boolean success;
+        try {
+            URL u = new URL(url);
+            URLConnection conn = u.openConnection();
+            int contentLength = conn.getContentLength();
+
+            DataInputStream stream = new DataInputStream(u.openStream());
+
+            byte[] buffer = new byte[contentLength];
+            stream.readFully(buffer);
+            stream.close();
+
+            DataOutputStream fos = new DataOutputStream(new FileOutputStream(outputFile));
+            fos.write(buffer);
+            fos.flush();
+            fos.close();
+            success=true;
+
+        } catch(FileNotFoundException e) {
+            success=false;
+            return success; // swallow a 404
+        } catch (IOException e) {
+            success=false;
+            return success; // swallow a 404
+        }
+        return success;
     }
 }
