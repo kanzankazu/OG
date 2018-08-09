@@ -16,7 +16,6 @@ import android.widget.TextView;
 import com.gandsoft.openguide.R;
 import com.gandsoft.openguide.activity.AccountActivity;
 import com.gandsoft.openguide.activity.ChangeEventActivity;
-import com.gandsoft.openguide.activity.MainActivity;
 import com.gandsoft.openguide.activity.infomenu.aMapActivity;
 import com.gandsoft.openguide.activity.infomenu.bGalleryActivity;
 import com.gandsoft.openguide.activity.infomenu.cInboxActivity;
@@ -93,14 +92,7 @@ public class eInfoFragment extends Fragment {
     }
 
     private void initListener() {
-        tvInfoFullNamefvbi.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getActivity(), MainActivity.class);
-                startActivity(intent);
-                //finish();
-            }
-        });
+
 
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {

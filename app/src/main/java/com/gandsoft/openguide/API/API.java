@@ -1,7 +1,6 @@
 package com.gandsoft.openguide.API;
 
 import android.content.Context;
-import android.util.Log;
 
 import com.gandsoft.openguide.App;
 import com.gandsoft.openguide.IConfig;
@@ -13,10 +12,10 @@ import com.gandsoft.openguide.model.respond.Oui.OuiResponseModel;
 import com.gandsoft.openguide.model.respond.Report.ReportRespondModel;
 import com.gandsoft.openguide.model.respond.Update.UpdateAppRespondModel;
 
-import java.util.ArrayList;
+import java.util.List;
 
+import app.beelabs.com.codebase.base.BaseActivity;
 import app.beelabs.com.codebase.base.BaseApi;
-import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 
@@ -43,14 +42,17 @@ public class API extends BaseApi implements IConfig {
         initApiDomain(context).Oui().enqueue((Callback<OuiResponseModel>) callback);
     }
 
-    synchronized public static void doLogin(Context context, LoginRequestModel request, Callback callback) {
-        initApiDomain(context).Login(request).enqueue((Callback<ArrayList<LoginResponseModel>>) callback);
-        Log.d("Lihat doLogin2 API", String.valueOf(initApiDomain(context).Login(request)));
+    public static void doLogin(Context context, LoginRequestModel request, Callback callback) {
+        initApiDomain(context).Login(request).enqueue((Callback<List<LoginResponseModel>>) callback);
+    }
+    /**/
+
+    private static ApiServices getAPIService() {
+        return RetrofitClient.getClient(API_BASE_URL).create(ApiServices.class);
     }
 
-    synchronized public static void doLogin2(Context context, LoginRequestModel request, Callback callback) {
-        initApiDomain(context).Login2(request).enqueue((Callback<LoginResponseModel>) callback);
-        Log.d("Lihat doLogin2 API", String.valueOf(initApiDomain(context).Login2(request)));
+    public static Call<List<LoginResponseModel>> doLoginRet(LoginRequestModel requestModel) {
+        return getAPIService().LoginRet(requestModel);
     }
 
 }

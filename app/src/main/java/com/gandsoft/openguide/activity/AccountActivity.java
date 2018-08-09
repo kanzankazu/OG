@@ -1,9 +1,12 @@
 package com.gandsoft.openguide.activity;
 
+import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.text.SpannableStringBuilder;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
@@ -16,18 +19,23 @@ import android.widget.Toast;
 
 import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
+import com.gandsoft.openguide.database.SQLiteHelper;
 import com.gandsoft.openguide.presenter.SeasonManager.SessionUtil;
 import com.google.firebase.auth.FirebaseAuth;
 
 public class AccountActivity extends LocalBaseActivity implements View.OnClickListener {
+    SQLiteHelper db = new SQLiteHelper(this);
 
     private static final int UI_NEW_USER = 0;
+    private static final int UI_OLD_USER = 1;
     private FirebaseAuth mAuth;
     private TextView tvAccIDfvbi, tvAccGenderfvbi, tvAccTglfvbi, tvAccBulanfvbi, tvAccTahunfvbi, tvAccAggrementfvbi, tvSignOutSkipfvbi;
     private EditText etAccNamefvbi, etAccEmailfvbi;
     private LinearLayout llAccPicfvbi, llAccGenderfvbi, llAccAggrementfvbi, llAccSavefvbi;
     private CheckBox cbAccAggrementfvbi;
+    /**/
     private boolean isNewUser = false;
+    private String accountId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +65,26 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
     }
 
     private void initContent() {
+        Intent bundle = getIntent();
+        if (bundle.hasExtra(ISeasonConfig.KEY_IS_FIRST_ACCOUNT)) {
+            isNewUser = bundle.getBooleanExtra(ISeasonConfig.KEY_IS_FIRST_ACCOUNT, false);
+            if (isNewUser) {
+                updateUI(UI_NEW_USER);
+            } else {
+                updateUI(UI_OLD_USER);
+            }
+        } else {
+            updateUI(UI_OLD_USER);
+            isNewUser = false;
+        }
+        if (bundle.hasExtra(ISeasonConfig.KEY_ACCOUNT_ID)) {
+            accountId = bundle.getStringExtra(ISeasonConfig.KEY_ACCOUNT_ID);
+            tvAccIDfvbi.setText(accountId);
+        } else {
+            accountId = db.getAccountId();
+            tvAccIDfvbi.setText(accountId);
+        }
+
         mAuth = FirebaseAuth.getInstance();
 
         customText(tvAccAggrementfvbi);
@@ -74,7 +102,7 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
         if (ui == UI_NEW_USER) {
             llAccAggrementfvbi.setVisibility(View.VISIBLE);
             tvSignOutSkipfvbi.setText("SKIP THIS STEP");
-        } else {
+        } else if (ui == UI_OLD_USER) {
             llAccAggrementfvbi.setVisibility(View.GONE);
             tvSignOutSkipfvbi.setText("SIGN-OUT");
         }
@@ -117,11 +145,33 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
     }
 
     private void signOut() {
-        mAuth.signOut();
-        Snackbar.make(findViewById(android.R.id.content), "Success Sign Out", Snackbar.LENGTH_SHORT).show();
-        startActivity(new Intent(AccountActivity.this, LoginActivity.class));
-        finish();
-        SessionUtil.setBoolPreferences(ISeasonConfig.KEY_IS_HAS_LOGIN, false);
+        // Munculkan alert dialog apabila user ingin keluar aplikasi
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+        alertDialogBuilder.setMessage("ARE YOU SURE WANNA SIGN-OUT?");
+        alertDialogBuilder.setCancelable(false);
+        alertDialogBuilder.setPositiveButton("YES",
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface arg0, int arg1) {
+                        mAuth.signOut();
+                        Snackbar.make(findViewById(android.R.id.content), "Success Sign Out", Snackbar.LENGTH_SHORT).show();
+                        startActivity(new Intent(AccountActivity.this, LoginActivity.class));
+                        finish();
+                        SessionUtil.setBoolPreferences(ISeasonConfig.KEY_IS_HAS_LOGIN, false);
+                    }
+                });
+        // Pilihan jika NO
+        alertDialogBuilder.setNegativeButton("CANCEL",
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface arg0, int arg1) {
+
+                    }
+                });
+        // Tampilkan alert dialog
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
+
     }
 
     private void moveToChangeEvent() {
@@ -135,12 +185,17 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
         if (v == llAccPicfvbi) {
         } else if (v == llAccGenderfvbi) {
         } else if (v == llAccSavefvbi) {
-            if (cbAccAggrementfvbi.isChecked()) {
-                moveToChangeEvent();
+            if (isNewUser) {
+                if (cbAccAggrementfvbi.isChecked()) {
+                    moveToChangeEvent();
+                } else {
+                    Snackbar.make(findViewById(android.R.id.content), "Checked Egreement First!!", Snackbar.LENGTH_LONG).show();
+                    cbAccAggrementfvbi.requestFocus();
+                }
             } else {
-                Snackbar.make(findViewById(android.R.id.content), "Checked Egreement First!!", Snackbar.LENGTH_LONG).show();
-                cbAccAggrementfvbi.requestFocus();
+
             }
+
         } else if (v == tvSignOutSkipfvbi) {
             if (isNewUser) {
                 moveToChangeEvent();
@@ -148,5 +203,9 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
                 signOut();
             }
         }
+    }
+
+    public static Intent getActIntent(Activity activity) {
+        return new Intent(activity, AccountActivity.class);
     }
 }

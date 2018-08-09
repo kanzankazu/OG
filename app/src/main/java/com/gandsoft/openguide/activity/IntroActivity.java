@@ -1,5 +1,6 @@
 package com.gandsoft.openguide.activity;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -36,7 +37,7 @@ public class IntroActivity extends LocalBaseActivity {
 
         // Checking for first time launch - before calling setContentView()
         if (SessionUtil.getBoolPreferences(ISeasonConfig.KEY_IS_HAS_LOGIN, false)) {
-            moveToAccount();
+            moveToChangeEvent();
         } else {
             // Making notification bar transparent
             if (Build.VERSION.SDK_INT >= 21) {
@@ -128,12 +129,12 @@ public class IntroActivity extends LocalBaseActivity {
     }
 
     private void moveToLogin() {
-        startActivity(new Intent(IntroActivity.this, LoginActivity.class));
+        startActivity(LoginActivity.getActIntent(IntroActivity.this));
         finish();
     }
 
-    private void moveToAccount() {
-        startActivity(new Intent(IntroActivity.this, AccountActivity.class));
+    private void moveToChangeEvent() {
+        startActivity(ChangeEventActivity.getActIntent(IntroActivity.this));
         finish();
     }
 
@@ -209,5 +210,9 @@ public class IntroActivity extends LocalBaseActivity {
             View view = (View) object;
             container.removeView(view);
         }
+    }
+
+    public static Intent getActIntent(Activity activity) {
+        return new Intent(activity, IntroActivity.class);
     }
 }

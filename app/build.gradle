@@ -78,6 +78,7 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.7'
     implementation 'us.belka:androidtoggleswitch:1.2.2'
     implementation 'org.apache.httpcomponents:httpcore:4.4.1'
+    implementation 'com.squareup.okhttp3:logging-interceptor:3.9.1'
     /**/
     //noinspection DuplicatePlatformClasses
     implementation 'org.apache.httpcomponents:httpclient:4.5'
@@ -85,6 +86,7 @@ dependencies {
     /**/
     testImplementation 'junit:junit:4.12'
     implementation files('libs/universal-image-loader-1.9.5.jar')
+    implementation 'com.github.bumptech.glide:glide:3.7.0'
 }
 
 apply plugin: 'com.google.gms.google-services'
