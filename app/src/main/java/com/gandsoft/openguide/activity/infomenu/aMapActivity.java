@@ -55,7 +55,6 @@ public class aMapActivity extends LocalBaseActivity implements OnMapReadyCallbac
     private void initComponent() {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
     }
-
     private void initContent() {
         setSupportActionBar(toolbar);
         ab = getSupportActionBar();
