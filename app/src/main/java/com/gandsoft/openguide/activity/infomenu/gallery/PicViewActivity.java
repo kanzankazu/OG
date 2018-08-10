@@ -1,14 +1,13 @@
-package com.gandsoft.openguide.activity.gallery;
+package com.gandsoft.openguide.activity.infomenu.gallery;
 
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
 import android.app.Activity;
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.graphics.Rect;
 import android.graphics.RectF;
-import android.net.ConnectivityManager;
+import android.net.Network;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.SoundEffectConstants;
@@ -16,14 +15,15 @@ import android.view.View;
 import android.widget.ImageView;
 
 import com.gandsoft.openguide.R;
-import com.gandsoft.openguide.activity.gallery.images.ImageObject;
-import com.gandsoft.openguide.activity.gallery.images.ImageSourceInterface;
+import com.gandsoft.openguide.activity.infomenu.gallery.images.ImageObject;
+import com.gandsoft.openguide.activity.infomenu.gallery.images.ImageSourceInterface;
+import com.gandsoft.openguide.support.NetworkUtil;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.lang.reflect.Method;
+
 
 
 public class PicViewActivity extends Activity {
@@ -51,13 +51,13 @@ public class PicViewActivity extends Activity {
         ImageLoader imageLoader = Global.getImageLoader(getApplicationContext());
         DisplayImageOptions originOptions = new DisplayImageOptions.Builder().build();
 
-        setContentView(R.layout.activity_pic_view);
+        setContentView(R.layout.activity_info_b_gallery_picview);
         mImageView = (PinchImageView) findViewById(R.id.pic);
         mBackground = findViewById(R.id.background);
         String root = Environment.getExternalStorageDirectory().toString();
 
         Bitmap bitmap = imageLoader.getMemoryCache().get(memoryCacheKey);
-        if(Global.isOnline()){
+        if(NetworkUtil.isOnline2()){
             saveToInternalStorage(bitmap);
         }
         mImageView.setImageBitmap(bitmap);

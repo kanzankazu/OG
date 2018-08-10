@@ -1,4 +1,4 @@
-package com.grafixartist.gallery;
+package com.gandsoft.openguide.activity.infomenu.gallery2;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
@@ -9,13 +9,10 @@ import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-
+import com.gandsoft.openguide.R;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by Suleiman19 on 10/22/15.
- */
 public class GalleryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     Context context;

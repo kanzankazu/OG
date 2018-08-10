@@ -74,7 +74,13 @@
             android:name=".MapsActivity"
             android:label="@string/title_activity_maps" />
         <activity
-            android:name=".activity.gallery.PicViewActivity"
+            android:name=".activity.infomenu.gallery2.DetailActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".activity.infomenu.gallery2.GalleryActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".activity.infomenu.gallery.PicViewActivity"
             android:theme="@style/AppTheme.NoActionBar"
             android:label="alalalal" >
         </activity>

@@ -1,9 +1,9 @@
-package com.gandsoft.openguide.activity.gallery.images;
+package com.gandsoft.openguide.activity.infomenu.gallery.images;
 
 import android.graphics.RectF;
 import android.widget.ImageView;
 
-import com.gandsoft.openguide.activity.gallery.PinchImageView;
+import com.gandsoft.openguide.activity.infomenu.gallery.PinchImageView;
 
 public class ImageSource implements ImageSourceInterface {
 
