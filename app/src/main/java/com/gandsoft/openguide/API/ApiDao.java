@@ -3,9 +3,6 @@ package com.gandsoft.openguide.API;
 import com.gandsoft.openguide.model.request.Login.LoginRequestModel;
 import com.gandsoft.openguide.model.request.Report.ReportRequestModel;
 import com.gandsoft.openguide.model.request.Update.UpdateRequestModel;
-import com.gandsoft.openguide.model.respond.Login.LoginResponseModel;
-
-import java.io.IOException;
 
 import app.beelabs.com.codebase.base.BaseActivity;
 import app.beelabs.com.codebase.base.BaseDao;

@@ -225,6 +225,11 @@ public class DeviceDetailUtil {
         return detailDevice;
     }
 
+    public static String getAllDataPhone2(Context context) {
+        String detailDevice = Build.MANUFACTURER + " " + Build.MODEL + " " + getDeviceId(context) + "." + Build.SERIAL;
+        return detailDevice;
+    }
+
     /*public static String getImei(Context context) {
         TelephonyManager manager = (TelephonyManager) context.getSystemService(context.TELEPHONY_SERVICE);
         if (isKitkatBelow()) {

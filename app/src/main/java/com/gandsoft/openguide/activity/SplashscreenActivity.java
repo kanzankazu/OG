@@ -45,7 +45,7 @@ public class SplashscreenActivity extends LocalBaseActivity {
     }
 
     private void moveToIntro() {
-        startActivity(new Intent(SplashscreenActivity.this, IntroActivity.class));
+        startActivity(IntroActivity.getActIntent(SplashscreenActivity.this));
         finish();
     }
 }
