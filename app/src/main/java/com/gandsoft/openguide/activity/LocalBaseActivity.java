@@ -35,4 +35,5 @@ public class LocalBaseActivity extends BaseActivity {
     private void showsnackBar(String stringInfo) {
         Snackbar.make(findViewById(android.R.id.content), stringInfo, Snackbar.LENGTH_LONG).show();
     }
+
 }

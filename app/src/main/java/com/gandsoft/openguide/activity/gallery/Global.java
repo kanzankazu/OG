@@ -27,7 +27,6 @@ import java.net.URLConnection;
  * Created by clifford on 16/3/8.
  */
 public class Global {
-
     private static String url="https://bbs.qn.img-space.com/201803/1/a3d12f4355dde74483e323022866c27c.jpg";
     private static String root="file:///mnt/sdcard/.Gandsoft/image.jpg";
 
@@ -54,6 +53,7 @@ public class Global {
     }
 
     private String saveToInternalStorage(Bitmap bitmapImage){
+
         String root = Environment.getExternalStorageDirectory().toString();
         File myDir = new File(root + "/.Gandsoft/");
         myDir.mkdirs();
