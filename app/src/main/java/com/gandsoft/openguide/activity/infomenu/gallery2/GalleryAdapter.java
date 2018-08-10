@@ -37,7 +37,6 @@ public class GalleryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-
             Glide.with(context).load(data.get(position).getUrl())
                     .thumbnail(0.5f)
                     .override(200,200)
@@ -54,7 +53,6 @@ public class GalleryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     public static class MyItemHolder extends RecyclerView.ViewHolder {
         ImageView mImg;
-
 
         public MyItemHolder(View itemView) {
             super(itemView);

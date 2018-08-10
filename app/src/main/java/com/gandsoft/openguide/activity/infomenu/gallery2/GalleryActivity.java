@@ -66,15 +66,12 @@ public class GalleryActivity extends AppCompatActivity {
 
         mRecyclerView.addOnItemTouchListener(new RecyclerItemClickListener(this,
                 new RecyclerItemClickListener.OnItemClickListener() {
-
                     @Override
                     public void onItemClick(View view, int position) {
-
                         Intent intent = new Intent(GalleryActivity.this, DetailActivity.class);
                         intent.putParcelableArrayListExtra("data", data);
                         intent.putExtra("pos", position);
                         startActivity(intent);
-
                     }
                 }));
 

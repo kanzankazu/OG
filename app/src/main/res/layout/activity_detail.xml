@@ -17,8 +17,10 @@
         android:id="@+id/detail_toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="@android:color/transparent"
+        android:background="@android:color/white"
         app:elevation="0dp"
-        app:popupTheme="@style/AppTheme.PopupOverlay" />
+        app:popupTheme="@style/AppTheme.PopupOverlay"
+
+        app:titleTextColor="@color/colorPrimary"/>/>
 
 </android.support.design.widget.CoordinatorLayout>
