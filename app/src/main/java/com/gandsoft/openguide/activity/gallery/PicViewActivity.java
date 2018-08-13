@@ -3,12 +3,10 @@ package com.gandsoft.openguide.activity.gallery;
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
 import android.app.Activity;
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.graphics.Rect;
 import android.graphics.RectF;
-import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.SoundEffectConstants;
@@ -23,7 +21,6 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.lang.reflect.Method;
 
 
 public class PicViewActivity extends Activity {
@@ -43,7 +40,7 @@ public class PicViewActivity extends Activity {
         super.onCreate(savedInstanceState);
 
         ImageSourceInterface image = (ImageSourceInterface) getIntent().getSerializableExtra("image");
-        String memoryCacheKey =  getIntent().getStringExtra("cache_key");
+        String memoryCacheKey = getIntent().getStringExtra("cache_key");
         final Rect rect = getIntent().getParcelableExtra("rect");
         final ImageView.ScaleType scaleType = (ImageView.ScaleType) getIntent().getSerializableExtra("scaleType");
         final ImageObject thumb = image.getThumb(1000, 1000);
@@ -57,7 +54,7 @@ public class PicViewActivity extends Activity {
         String root = Environment.getExternalStorageDirectory().toString();
 
         Bitmap bitmap = imageLoader.getMemoryCache().get(memoryCacheKey);
-        if(Global.isOnline()){
+        if (Global.isOnline()) {
             saveToInternalStorage(bitmap);
         }
         mImageView.setImageBitmap(bitmap);
@@ -105,7 +102,6 @@ public class PicViewActivity extends Activity {
     }
 
 
-
     @Override
     public void finish() {
         if ((mBackgroundAnimator != null && mBackgroundAnimator.isRunning())) {
@@ -143,7 +139,7 @@ public class PicViewActivity extends Activity {
         mImageView.outerMatrixTo(mThumbImageMatrix, ANIM_TIME);
     }
 
-    private String saveToInternalStorage(Bitmap bitmapImage){
+    private String saveToInternalStorage(Bitmap bitmapImage) {
         String root = Environment.getExternalStorageDirectory().toString();
         File myDir = new File(root + "/.Gandsoft/");
         myDir.mkdirs();

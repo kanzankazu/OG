@@ -11,14 +11,6 @@ import com.gandsoft.openguide.R;
 
 import java.util.ArrayList;
 
-/**
- * Authuor: Hari vignesh Jayapalan
- * Created on: 6 Feb 2016
- * Email: hariutd@gmail.com
- * <p>
- * Implementing custom RecyclerView Adapter
- * Tutorial @ https://medium.com/@harivigneshjayapalan
- */
 public class TaskRecViewAdapter extends RecyclerView.Adapter<TaskRecViewAdapter.MyViewHolder> {
     private ArrayList<TaskRecViewPojo> list_members = new ArrayList<>();
     private final LayoutInflater inflater;
@@ -36,7 +28,7 @@ public class TaskRecViewAdapter extends RecyclerView.Adapter<TaskRecViewAdapter.
     //This method inflates view present in the RecyclerView
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        view = inflater.inflate(R.layout.recview_task, parent, false);
+        view = inflater.inflate(R.layout.layout_list_schedule_adapter, parent, false);
         holder = new MyViewHolder(view);
         return holder;
     }

@@ -117,7 +117,7 @@ public class LoadMoreRecyclerView extends RecyclerView {
                 return new HeaderViewHolder(LayoutInflater.from(parent.getContext()).inflate(mHeaderResId, parent, false));
             }
             if (viewType == TYPE_FOOTER) {
-                return new FooterViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.list_foot_loading, parent, false));
+                return new FooterViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_home_foot_loading, parent, false));
             } else { // type normal
                 return mInternalAdapter.onCreateViewHolder(parent, viewType);
             }

@@ -837,7 +837,7 @@ public class NetworkUtil {
         for (int i = 0; i <= 255; i++) {
             try {
 
-                // build the next IpModel address
+                // build the next address
                 currentPingAddr = InetAddress.getByName(myIPArray[0] + "." + myIPArray[1] + "." + myIPArray[2] + "." + Integer.toString(LoopCurrentIP));
 
                 // 50ms Timeout for the "ping"

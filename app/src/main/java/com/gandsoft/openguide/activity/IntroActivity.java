@@ -20,7 +20,7 @@ import android.widget.TextView;
 
 import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
-import com.gandsoft.openguide.presenter.SeasonManager.SessionUtil;
+import com.gandsoft.openguide.support.SessionUtil;
 
 public class IntroActivity extends LocalBaseActivity {
 
@@ -64,9 +64,9 @@ public class IntroActivity extends LocalBaseActivity {
         // layouts of all welcome sliders
         // add few more layouts if you want
         layouts = new int[]{
-                R.layout.intro_slide1,
-                R.layout.intro_slide2,
-                R.layout.intro_slide3
+                R.layout.layout_intro_slide1,
+                R.layout.layout_intro_slide2,
+                R.layout.layout_intro_slide3
         };
 
         // adding bottom dots

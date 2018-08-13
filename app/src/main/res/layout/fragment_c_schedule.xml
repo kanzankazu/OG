@@ -48,7 +48,7 @@
                 android:layout_marginStart="15dp"
                 android:layout_marginTop="15dp"
                 android:nestedScrollingEnabled="false"
-                tools:listitem="@layout/recview_task" />
+                tools:listitem="@layout/layout_list_schedule_adapter" />
         </LinearLayout>
     </android.support.v4.widget.NestedScrollView>
 

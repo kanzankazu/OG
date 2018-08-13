@@ -2,7 +2,6 @@ package com.gandsoft.openguide.activity.main.adapter;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.os.Build;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -46,7 +45,7 @@ public class InfoListViewAdapter extends RecyclerView.Adapter<InfoListViewAdapte
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_info, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_list_info_adapter, parent, false);
         return new ViewHolder(view);
     }
 

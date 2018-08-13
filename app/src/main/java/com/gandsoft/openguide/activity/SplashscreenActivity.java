@@ -1,13 +1,12 @@
 package com.gandsoft.openguide.activity;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 
 import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
-import com.gandsoft.openguide.presenter.SeasonManager.SessionUtil;
+import com.gandsoft.openguide.support.SessionUtil;
 
 public class SplashscreenActivity extends LocalBaseActivity {
 

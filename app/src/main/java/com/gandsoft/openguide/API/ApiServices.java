@@ -1,18 +1,13 @@
 package com.gandsoft.openguide.API;
 
-import com.gandsoft.openguide.model.request.Login.LoginRequestModel;
-import com.gandsoft.openguide.model.request.Report.ReportRequestModel;
-import com.gandsoft.openguide.model.request.Update.UpdateRequestModel;
-import com.gandsoft.openguide.model.respond.Login.LoginResponseModel;
-import com.gandsoft.openguide.model.respond.Oui.OuiResponseModel;
-import com.gandsoft.openguide.model.respond.Report.ReportRespondModel;
-import com.gandsoft.openguide.model.respond.Update.UpdateAppRespondModel;
+import com.gandsoft.openguide.API.APIrequest.Login.LoginRequestModel;
+import com.gandsoft.openguide.API.APIrespond.Login.LoginResponseModel;
+import com.gandsoft.openguide.API.APIrespond.UserData.UserDataResponseModel;
 
 import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
-import retrofit2.http.GET;
 import retrofit2.http.POST;
 
 /**
@@ -21,7 +16,7 @@ import retrofit2.http.POST;
 
 public interface ApiServices {
 
-    @POST("mail")
+    /*@POST("mail")
     Call<ReportRespondModel> Report(@Body ReportRequestModel model);
 
     @POST("appupdate")
@@ -31,9 +26,12 @@ public interface ApiServices {
     Call<OuiResponseModel> Oui();
 
     @POST("verification_phonenumber_firebase")
-    Call<List<LoginResponseModel>> Login(@Body LoginRequestModel model);
+    Call<List<LoginResponseModel>> Login(@Body LoginRequestModel model);*/
 
     /**/
     @POST("verification_phonenumber_firebase")
     Call<List<LoginResponseModel>> LoginRet(@Body LoginRequestModel model);
+
+    @POST("get_list_user_event")
+    Call<List<UserDataResponseModel>> UserEventRet(@Body UserEventRequestModel model);
 }

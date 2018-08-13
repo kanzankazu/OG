@@ -1,15 +1,21 @@
 package com.gandsoft.openguide.activity;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.SpannableStringBuilder;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
 import android.text.style.ForegroundColorSpan;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -17,10 +23,32 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.FutureTarget;
+import com.gandsoft.openguide.API.API;
+import com.gandsoft.openguide.API.APIrespond.UserData.ListEventResponseModel;
+import com.gandsoft.openguide.API.APIrespond.UserData.UserDataResponseModel;
+import com.gandsoft.openguide.API.APIrespond.UserData.WalletDataResponseModel;
+import com.gandsoft.openguide.API.UserEventRequestModel;
+import com.gandsoft.openguide.IConfig;
+import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
-import com.gandsoft.openguide.activity.main.BaseHomeActivity;
+import com.gandsoft.openguide.database.SQLiteHelper;
+import com.gandsoft.openguide.support.NetworkUtil;
+import com.gandsoft.openguide.support.SessionUtil;
+
+import java.io.File;
+import java.lang.annotation.Target;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class ChangeEventActivity extends AppCompatActivity {
+    SQLiteHelper db = new SQLiteHelper(this);
 
     private ImageView ceIVUserPicfvbi;
     private TextView ceTVUserNamefvbi, ceTVUserIdfvbi, ceTVInfofvbi, ceTVVersionAppfvbi;
@@ -28,6 +56,13 @@ public class ChangeEventActivity extends AppCompatActivity {
     private RecyclerView ceRVOngoingEventfvbi, ceRVPastEventfvbi;
     private String appVersionName, appVersionCode, appName, appPkg;
     private Button ceBUserAccountfvbi;
+    private String accountid;
+    private SwipeRefreshLayout srlChangeEventActivityfvbi;
+    /**/
+    private int version_data = 0;
+    private List<ListEventResponseModel> menuUi;
+    private ChangeEventOnGoingAdapter adapterOnGoing;
+    private ChangeEventPastAdapter adapterPast;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +75,7 @@ public class ChangeEventActivity extends AppCompatActivity {
     }
 
     private void initComponent() {
+        srlChangeEventActivityfvbi = (SwipeRefreshLayout) findViewById(R.id.srlChangeEventActivity);
         ceIVUserPicfvbi = (ImageView) findViewById(R.id.ceIVUserPic);
         ceTVUserNamefvbi = (TextView) findViewById(R.id.ceTVUserName);
         ceTVUserIdfvbi = (TextView) findViewById(R.id.ceTVUserId);
@@ -53,8 +89,16 @@ public class ChangeEventActivity extends AppCompatActivity {
     }
 
     private void initContent() {
+        initRecycleView();
+
         customText(ceTVInfofvbi);
 
+        if (SessionUtil.checkIfExist(ISeasonConfig.KEY_ACCOUNT_ID)) {
+            accountid = SessionUtil.getStringPreferences(ISeasonConfig.KEY_ACCOUNT_ID, null);
+            if (accountid != null) {
+                getUserEventDo();
+            }
+        }
         //getversion
         try {
             appVersionName = getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
@@ -66,19 +110,152 @@ public class ChangeEventActivity extends AppCompatActivity {
         appPkg = this.getBaseContext().getPackageName();
         ceTVVersionAppfvbi.setText(getString(R.string.app_name) + " - v " + appVersionName + "." + appVersionCode + "" +
                 "\n Powered by Gandsoft");
-
-
     }
 
     private void initListener() {
         ceBUserAccountfvbi.setOnClickListener(this::Onclick);
+        srlChangeEventActivityfvbi.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                getUserEventDo();
+            }
+        });
+    }
+
+    private void getUserEventDo() {
+        if (NetworkUtil.isConnected(this)) {
+            getUserEvent(accountid);
+        } else {
+            if (db.checkDataTable(SQLiteHelper.TableUserData, SQLiteHelper.KEY_UserData_accountId, accountid)) {
+                updateRecycleView(db.getAllListEvent(accountid));
+                updateUserInfo(db.getUserData(accountid));
+                Snackbar.make(findViewById(android.R.id.content), "Memunculkan Data Offline", Snackbar.LENGTH_LONG).show();
+            } else {
+                Snackbar.make(findViewById(android.R.id.content), "Data Bermasalah", Snackbar.LENGTH_LONG).show();
+            }
+        }
+    }
+
+    private void getUserEvent(String accountid) {
+        if (srlChangeEventActivityfvbi.isRefreshing()) {
+            srlChangeEventActivityfvbi.setRefreshing(false);
+        }
+        ProgressDialog progressDialog = new ProgressDialog(this);
+        progressDialog.setCancelable(false);
+        progressDialog.setMessage("Please Wait...");
+        progressDialog.setTitle("Get data from server");
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        // show it
+        progressDialog.show();
+        API.doUserEventRet(new UserEventRequestModel(accountid, IConfig.DB_Version, version_data)).enqueue(new Callback<List<UserDataResponseModel>>() {
+            @Override
+            public void onResponse(Call<List<UserDataResponseModel>> call, Response<List<UserDataResponseModel>> response) {
+                progressDialog.dismiss();
+                if (response.isSuccessful()) {
+
+                    List<UserDataResponseModel> userDataResponseModels = response.body();
+                    for (int i = 0; i < userDataResponseModels.size(); i++) {
+                        UserDataResponseModel model = userDataResponseModels.get(i);
+                        if (db.checkDataTable(SQLiteHelper.TableUserData, SQLiteHelper.KEY_UserData_accountId, accountid)) {
+                            db.updateUserData(model, accountid);
+                        } else {
+                            db.saveUserData(model);
+                        }
+                        updateUserInfo(userDataResponseModels);
+                        //db.saveImageUserToLocal(getImgCachePath(model.getImage_url()),accountid);
+
+                        List<ListEventResponseModel> listEventResponseModels = model.getList_event();
+                        for (int j = 0; j < listEventResponseModels.size(); j++) {
+                            ListEventResponseModel model1 = listEventResponseModels.get(j);
+                            if (db.checkDataTable(SQLiteHelper.TableListEvent, SQLiteHelper.KEY_ListEvent_eventId, model1.event_id)) {
+                                db.updateListEvent(model1);
+                            } else {
+                                db.saveListEvent(model1, accountid);
+                            }
+                            updateRecycleView(listEventResponseModels);
+                            //db.saveImageListEventToLocal(getImgCachePath(model1.getBackground()),getImgCachePath(model1.getLogo()),model1);
+
+                            List<WalletDataResponseModel> walletDataResponseModels = model1.getWallet_data();
+                            for (int n = 0; n < walletDataResponseModels.size(); n++) {
+                                WalletDataResponseModel model2 = walletDataResponseModels.get(n);
+                                if (db.checkDataTableKeyMultiple(SQLiteHelper.TableWallet, SQLiteHelper.KEY_Wallet_sort, SQLiteHelper.KEY_Wallet_eventId, model2.getSort(), model1.getEvent_id())) {
+                                    db.updateWalletData(model2, model1.getEvent_id());
+                                } else {
+                                    db.saveWalletData(model2, accountid, model1.getEvent_id());
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    Log.e("Lihat", "onResponse ChangeEventActivity : " + response.message());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<UserDataResponseModel>> call, Throwable t) {
+                progressDialog.dismiss();
+                Snackbar.make(findViewById(android.R.id.content), "Tidak Dapat terhubung dengan server", Snackbar.LENGTH_LONG).setAction("Reload", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        getUserEventDo();
+                    }
+                }).show();
+                updateRecycleView(db.getAllListEvent(accountid));
+                updateUserInfo(db.getUserData(accountid));
+                Log.e("Lihat", "onFailure ChangeEventActivity : " + t.getMessage(), t);
+            }
+        });
+    }
+
+    private void initRecycleView() {
+        adapterOnGoing = new ChangeEventOnGoingAdapter(this, menuUi);
+        adapterPast = new ChangeEventPastAdapter(this, menuUi);
+        ceRVOngoingEventfvbi.setNestedScrollingEnabled(false);
+        ceRVPastEventfvbi.setNestedScrollingEnabled(false);
+        ceRVOngoingEventfvbi.setAdapter(adapterOnGoing);
+        ceRVPastEventfvbi.setAdapter(adapterPast);
+        ceRVOngoingEventfvbi.setLayoutManager(new LinearLayoutManager(this));
+        ceRVPastEventfvbi.setLayoutManager(new LinearLayoutManager(this));
+    }
+
+    private void updateUserInfo(List<UserDataResponseModel> models) {
+        if (models.size() == 1) {
+            for (int i = 0; i < models.size(); i++) {
+                UserDataResponseModel model = models.get(i);
+                ceTVUserNamefvbi.setText(model.getFull_name());
+                ceTVUserIdfvbi.setText(model.getAccount_id());
+                Glide.with(getApplicationContext())
+                        .load(model.getImage_url())
+                        .placeholder(R.drawable.template_account_og)
+                        .error(R.drawable.template_account_og)
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .into(ceIVUserPicfvbi);
+            }
+        }
+    }
+
+    private void updateRecycleView(List<ListEventResponseModel> models) {
+        for (int i = 0; i < models.size(); i++) {
+            ListEventResponseModel model = models.get(i);
+            Log.d("Lihat", "updateRecycleView ChangeEventActivity : " + models.size());
+            Log.d("Lihat", "updateRecycleView ChangeEventActivity : " + model.getStatus());
+            if (model.getStatus().equalsIgnoreCase("PAST EVENT")) {
+                ceLLPastEventfvbi.setVisibility(View.VISIBLE);
+
+            } else if (model.getStatus().equalsIgnoreCase("ON GOING")) {
+                ceLLOngoingEventfvbi.setVisibility(View.VISIBLE);
+            }
+        }
+        adapterPast.setData(models);
+        adapterPast.notifyDataSetChanged();
+        adapterOnGoing.setData(models);
+        adapterOnGoing.notifyDataSetChanged();
+
     }
 
     private void Onclick(View view) {
         if (view == ceBUserAccountfvbi) {
-            Intent intent = new Intent(ChangeEventActivity.this, BaseHomeActivity.class);
-            startActivity(intent);
-            finish();
+            startActivity(AccountActivity.getActIntent(ChangeEventActivity.this));
         }
     }
 
@@ -90,6 +267,9 @@ public class ChangeEventActivity extends AppCompatActivity {
                             @Override
                             public void onClick(View widget) {
                                 Toast.makeText(getApplicationContext(), "+62 21 53661536 Clicked", Toast.LENGTH_SHORT).show();
+                                String phone = "+622153661536";
+                                Intent intent = new Intent(Intent.ACTION_DIAL, Uri.fromParts("tel", phone, null));
+                                startActivity(intent);
                             }
                         },
                 spanTxt.length() - "+62 21 53661536".length(),
@@ -104,6 +284,9 @@ public class ChangeEventActivity extends AppCompatActivity {
                             @Override
                             public void onClick(View widget) {
                                 Toast.makeText(getApplicationContext(), "hello@gandsoft.com Clicked", Toast.LENGTH_SHORT).show();
+                                Intent emailIntent = new Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:" + "hello@gandsoft.com")); //alamat email tujuan
+                                //emailIntent.putExtra(Intent.EXTRA_SUBJECT, ); //subject email
+                                startActivity(Intent.createChooser(emailIntent, "Pilih Aplikasi Email"));
                             }
                         },
                 spanTxt.length() - "hello@gandsoft.com".length(),
@@ -116,5 +299,21 @@ public class ChangeEventActivity extends AppCompatActivity {
 
     public static Intent getActIntent(Activity activity) {
         return new Intent(activity, ChangeEventActivity.class);
+    }
+
+    private String getImgCachePath(String url) {
+        FutureTarget<File> futureTarget = Glide.with(getBaseContext())
+                .load(url)
+                .downloadOnly(com.bumptech.glide.request.target.Target.SIZE_ORIGINAL, 100);//-1,-1 Real size
+        try {
+            File file = futureTarget.get();
+            String path = file.getAbsolutePath();
+            return path;
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

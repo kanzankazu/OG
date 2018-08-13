@@ -20,13 +20,13 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.gandsoft.openguide.API.API;
+import com.gandsoft.openguide.API.APIrequest.Login.LoginRequestModel;
+import com.gandsoft.openguide.API.APIrespond.Login.LoginResponseModel;
 import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
 import com.gandsoft.openguide.database.SQLiteHelper;
-import com.gandsoft.openguide.model.request.Login.LoginRequestModel;
-import com.gandsoft.openguide.model.respond.Login.LoginResponseModel;
-import com.gandsoft.openguide.presenter.SeasonManager.SessionUtil;
 import com.gandsoft.openguide.support.DeviceDetailUtil;
+import com.gandsoft.openguide.support.SessionUtil;
 import com.gandsoft.openguide.support.SystemUtil;
 import com.gandsoft.openguide.support.ValidUtil;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -68,10 +68,10 @@ public class LoginActivity extends LocalBaseActivity {
     private FirebaseAuth mAuth;
     private PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallbacks;
     private PhoneAuthProvider.ForceResendingToken mResendToken;
-    private String phoneNumberSaved;
+    private String phoneNumberSavedwPlus;
+    private String phoneNumberSavedwoPlus;
     private String mVerificationId;
     private boolean isLogin, isVerify;
-    private String phoneNumberSavedwoPlus;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -194,7 +194,7 @@ public class LoginActivity extends LocalBaseActivity {
         tvLoginResendCodefvbi.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                resendVerificationCode(/*etLoginfvbi.getText().toString()*/phoneNumberSaved, mResendToken);
+                resendVerificationCode(/*etLoginfvbi.getText().toString()*/phoneNumberSavedwPlus, mResendToken);
             }
         });
 
@@ -240,7 +240,7 @@ public class LoginActivity extends LocalBaseActivity {
                 if (ValidUtil.isValidatePhoneNumber(etLoginfvbi.getText().toString())) {
                     //Toast.makeText(getApplicationContext(), getNumberValid(etLoginfvbi), Toast.LENGTH_SHORT).show();
                     startPhoneNumberVerification("+" + getNumberValid(etLoginfvbi));
-                    phoneNumberSaved = "+" + getNumberValid(etLoginfvbi);
+                    phoneNumberSavedwPlus = "+" + getNumberValid(etLoginfvbi);
                     phoneNumberSavedwoPlus = getNumberValid(etLoginfvbi);
                 } else {
                     SystemUtil.etReqFocus(LoginActivity.this, etLoginfvbi, "Data Tidak Valid");
@@ -293,6 +293,7 @@ public class LoginActivity extends LocalBaseActivity {
 
     private void signInWithPhoneAuthCredential(PhoneAuthCredential credential) {
         mAuth.signInWithCredential(credential).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+            @SuppressLint("LongLogTag")
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
@@ -340,7 +341,8 @@ public class LoginActivity extends LocalBaseActivity {
                             if (model.getStatus().equalsIgnoreCase("verify")) {
                                 Snackbar.make(findViewById(android.R.id.content), "verify", Snackbar.LENGTH_LONG).show();
                                 moveToChangeEvent();
-                                db.saveAccountID(phoneNumberSaved);
+                                db.saveAccountID(phoneNumberSavedwoPlus);
+                                SessionUtil.setStringPreferences(ISeasonConfig.KEY_ACCOUNT_ID, phoneNumberSavedwoPlus);
                             } else {
                                 Snackbar.make(findViewById(android.R.id.content), "no verify", Snackbar.LENGTH_LONG).show();
                                 moveToAccountForNewUser();
@@ -366,7 +368,7 @@ public class LoginActivity extends LocalBaseActivity {
         SessionUtil.setBoolPreferences(ISeasonConfig.KEY_IS_HAS_LOGIN, true);
         startActivity(AccountActivity.getActIntent(LoginActivity.this)
                 .putExtra(ISeasonConfig.KEY_IS_FIRST_ACCOUNT, true)
-                .putExtra(ISeasonConfig.KEY_ACCOUNT_ID, phoneNumberSaved)
+                .putExtra(ISeasonConfig.KEY_ACCOUNT_ID, phoneNumberSavedwoPlus)
         );
         finish();
     }
@@ -374,7 +376,7 @@ public class LoginActivity extends LocalBaseActivity {
     private void moveToChangeEvent() {
         SessionUtil.setBoolPreferences(ISeasonConfig.KEY_IS_HAS_LOGIN, true);
         startActivity(ChangeEventActivity.getActIntent(LoginActivity.this)
-                .putExtra(ISeasonConfig.KEY_ACCOUNT_ID, phoneNumberSaved)
+                .putExtra(ISeasonConfig.KEY_ACCOUNT_ID, phoneNumberSavedwoPlus)
         );
         finish();
     }

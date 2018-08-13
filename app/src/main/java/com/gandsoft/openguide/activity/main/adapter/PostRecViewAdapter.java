@@ -33,7 +33,7 @@ public class PostRecViewAdapter extends RecyclerView.Adapter<PostRecViewAdapter.
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recview_post, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_list_home_adapter, parent, false);
         return new ViewHolder(view);
     }
 

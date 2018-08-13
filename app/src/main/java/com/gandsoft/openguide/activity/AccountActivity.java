@@ -10,18 +10,23 @@ import android.support.v7.app.AlertDialog;
 import android.text.SpannableStringBuilder;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
+import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.gandsoft.openguide.API.APIrespond.UserData.UserDataResponseModel;
 import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
 import com.gandsoft.openguide.database.SQLiteHelper;
-import com.gandsoft.openguide.presenter.SeasonManager.SessionUtil;
+import com.gandsoft.openguide.support.SessionUtil;
 import com.google.firebase.auth.FirebaseAuth;
+
+import java.util.ArrayList;
 
 public class AccountActivity extends LocalBaseActivity implements View.OnClickListener {
     SQLiteHelper db = new SQLiteHelper(this);
@@ -29,10 +34,12 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
     private static final int UI_NEW_USER = 0;
     private static final int UI_OLD_USER = 1;
     private FirebaseAuth mAuth;
+    /**/
     private TextView tvAccIDfvbi, tvAccGenderfvbi, tvAccTglfvbi, tvAccBulanfvbi, tvAccTahunfvbi, tvAccAggrementfvbi, tvSignOutSkipfvbi;
     private EditText etAccNamefvbi, etAccEmailfvbi;
-    private LinearLayout llAccPicfvbi, llAccGenderfvbi, llAccAggrementfvbi, llAccSavefvbi;
+    private LinearLayout llAccPicfvbi, llAccGenderfvbi, llAccBirthdatefvbi, llAccAggrementfvbi, llAccSavefvbi;
     private CheckBox cbAccAggrementfvbi;
+    private ImageButton ibAccClosefvbi;
     /**/
     private boolean isNewUser = false;
     private String accountId;
@@ -49,6 +56,7 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
 
     private void initComponent() {
         tvAccIDfvbi = (TextView) findViewById(R.id.tvAccID);
+        ibAccClosefvbi = (ImageButton) findViewById(R.id.ibAccClose);
         tvAccGenderfvbi = (TextView) findViewById(R.id.tvAccGender);
         tvAccTglfvbi = (TextView) findViewById(R.id.tvAccTgl);
         tvAccBulanfvbi = (TextView) findViewById(R.id.tvAccBulan);
@@ -59,6 +67,7 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
         etAccEmailfvbi = (EditText) findViewById(R.id.etAccEmail);
         llAccPicfvbi = (LinearLayout) findViewById(R.id.llAccPic);
         llAccGenderfvbi = (LinearLayout) findViewById(R.id.llAccGender);
+        llAccBirthdatefvbi = (LinearLayout) findViewById(R.id.llAccBirthdate);
         llAccAggrementfvbi = (LinearLayout) findViewById(R.id.llAccAggrement);
         llAccSavefvbi = (LinearLayout) findViewById(R.id.llAccSave);
         cbAccAggrementfvbi = (CheckBox) findViewById(R.id.cbAccAggrement);
@@ -72,11 +81,13 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
                 updateUI(UI_NEW_USER);
             } else {
                 updateUI(UI_OLD_USER);
+
             }
         } else {
             updateUI(UI_OLD_USER);
             isNewUser = false;
         }
+
         if (bundle.hasExtra(ISeasonConfig.KEY_ACCOUNT_ID)) {
             accountId = bundle.getStringExtra(ISeasonConfig.KEY_ACCOUNT_ID);
             tvAccIDfvbi.setText(accountId);
@@ -84,6 +95,8 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
             accountId = db.getAccountId();
             tvAccIDfvbi.setText(accountId);
         }
+
+        updateData(db.getUserData(accountId));
 
         mAuth = FirebaseAuth.getInstance();
 
@@ -96,14 +109,32 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
         llAccGenderfvbi.setOnClickListener(this);
         llAccSavefvbi.setOnClickListener(this);
         tvSignOutSkipfvbi.setOnClickListener(this);
+        ibAccClosefvbi.setOnClickListener(this);
+    }
+
+    private void updateData(ArrayList<UserDataResponseModel> models) {
+        if (models.size() == 1) {
+            for (int i = 0; i < models.size(); i++) {
+                UserDataResponseModel model = models.get(i);
+                etAccNamefvbi.setText(model.getFull_name());
+                etAccEmailfvbi.setText(model.getEmail());
+                tvAccGenderfvbi.setText(model.getGender());
+                String[] q = model.getBirthday().split("-");
+                tvAccTahunfvbi.setText(q[0]);
+                tvAccBulanfvbi.setText(q[1]);
+                tvAccTglfvbi.setText(q[2]);
+            }
+        }
     }
 
     private void updateUI(int ui) {
         if (ui == UI_NEW_USER) {
             llAccAggrementfvbi.setVisibility(View.VISIBLE);
+            ibAccClosefvbi.setVisibility(View.GONE);
             tvSignOutSkipfvbi.setText("SKIP THIS STEP");
         } else if (ui == UI_OLD_USER) {
             llAccAggrementfvbi.setVisibility(View.GONE);
+            ibAccClosefvbi.setVisibility(View.VISIBLE);
             tvSignOutSkipfvbi.setText("SIGN-OUT");
         }
     }
@@ -156,8 +187,11 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
                         mAuth.signOut();
                         Snackbar.make(findViewById(android.R.id.content), "Success Sign Out", Snackbar.LENGTH_SHORT).show();
                         startActivity(new Intent(AccountActivity.this, LoginActivity.class));
-                        finish();
+                        finishAffinity();
                         SessionUtil.setBoolPreferences(ISeasonConfig.KEY_IS_HAS_LOGIN, false);
+                        db.deleteAllDataUser();
+                        db.deleteAllDataListEvent();
+                        db.deleteAllDataWallet();
                     }
                 });
         // Pilihan jika NO
@@ -178,6 +212,7 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
         Intent intent = new Intent(AccountActivity.this, ChangeEventActivity.class);
         startActivity(intent);
         finish();
+        SessionUtil.setStringPreferences(ISeasonConfig.KEY_ACCOUNT_ID, accountId);
     }
 
     @Override
@@ -185,27 +220,43 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
         if (v == llAccPicfvbi) {
         } else if (v == llAccGenderfvbi) {
         } else if (v == llAccSavefvbi) {
-            if (isNewUser) {
-                if (cbAccAggrementfvbi.isChecked()) {
-                    moveToChangeEvent();
-                } else {
-                    Snackbar.make(findViewById(android.R.id.content), "Checked Egreement First!!", Snackbar.LENGTH_LONG).show();
-                    cbAccAggrementfvbi.requestFocus();
-                }
-            } else {
-
-            }
+            saveClick();
 
         } else if (v == tvSignOutSkipfvbi) {
-            if (isNewUser) {
+            skipLogoutClick();
+
+        } else if (v == ibAccClosefvbi) {
+            finish();
+        }
+    }
+
+    private void skipLogoutClick() {
+        if (isNewUser) {
+            moveToChangeEvent();
+        } else {
+            signOut();
+        }
+    }
+
+    private void saveClick() {
+        if (isNewUser) {
+            if (cbAccAggrementfvbi.isChecked()) {
                 moveToChangeEvent();
             } else {
-                signOut();
+                Snackbar.make(findViewById(android.R.id.content), "Checked Egreement First!!", Snackbar.LENGTH_LONG).show();
+                cbAccAggrementfvbi.requestFocus();
             }
+        } else {
+            finish();
         }
     }
 
     public static Intent getActIntent(Activity activity) {
         return new Intent(activity, AccountActivity.class);
+    }
+
+    @Override
+    public void onBackPressed() {
+        saveClick();
     }
 }

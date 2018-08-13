@@ -71,9 +71,6 @@
             android:name=".activity.infomenu.hFeedbackActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".MapsActivity"
-            android:label="@string/title_activity_maps" />
-        <activity
             android:name=".activity.gallery.PicViewActivity"
             android:theme="@style/AppTheme.NoActionBar"
             android:label="alalalal" >

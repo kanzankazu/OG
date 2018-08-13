@@ -120,7 +120,7 @@
                     android:layout_height="match_parent"
                     android:padding="12dp"
                     android:visibility="visible"
-                    tools:listitem="@layout/recview_post" />
+                    tools:listitem="@layout/layout_list_home_adapter" />
 
                 <LinearLayout
                     android:id="@+id/llLoadMode"

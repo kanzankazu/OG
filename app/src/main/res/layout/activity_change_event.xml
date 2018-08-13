@@ -7,168 +7,179 @@
     android:orientation="vertical"
     tools:context=".activity.ChangeEventActivity">
 
-
-    <ScrollView
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/srlChangeEventActivity"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fillViewport="true">
+        android:layout_height="match_parent">
 
-        <LinearLayout
+        <android.support.v4.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/gray_very_light"
-            android:orientation="vertical">
-            <!--Action bar-->
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                android:animateLayoutChanges="true"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:gravity="center"
-                    android:text="Event"
-                    android:textStyle="bold" />
-
-                <ImageButton
-                    android:layout_width="?attr/actionBarSize"
-                    android:layout_height="match_parent"
-                    android:layout_alignParentEnd="true"
-                    android:background="?android:selectableItemBackground"
-                    android:src="@drawable/ic_dialog_close_dark"
-                    android:visibility="visible" />
-            </RelativeLayout>
+            android:fillViewport="true">
 
             <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/colorPrimary"
-                android:gravity="center"
-                android:orientation="vertical"
-                android:paddingBottom="20dp"
-                android:paddingTop="20dp">
-
-                <ImageView
-                    android:id="@+id/ceIVUserPic"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_action_name" />
-
-                <TextView
-                    android:id="@+id/ceTVUserName"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:text="Faisal Bahri"
-                    android:textColor="@color/white"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/ceTVUserId"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="6283872203508"
-                    android:textColor="@color/white" />
-
-                <Button
-                    android:id="@+id/ceBUserAccount"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:background="@drawable/background_radius"
-                    android:backgroundTint="@color/colorPrimaryDark"
-                    android:paddingLeft="20dp"
-                    android:paddingRight="20dp"
-                    android:text="my account"
-                    android:textColor="@color/colorPrimary" />
-            </LinearLayout>
-
-            <!--ongoing event-->
-            <LinearLayout
-                android:id="@+id/ceLLOngoingEvent"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginTop="20dp"
-                android:animateLayoutChanges="true"
-                android:orientation="vertical"
-                android:visibility="gone">
-
-                <TextView
+                android:background="@color/gray_very_light"
+                android:orientation="vertical">
+                <!--Action bar-->
+                <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:text="ON GOING" />
+                    android:layout_height="?attr/actionBarSize"
+                    android:animateLayoutChanges="true"
+                    android:orientation="horizontal">
 
-                <android.support.v7.widget.RecyclerView
-                    android:id="@+id/ceRVOngoingEvent"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="20dp" />
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:text="Event"
+                        android:textStyle="bold" />
 
-            </LinearLayout>
-
-            <!--past event-->
-            <LinearLayout
-                android:id="@+id/ceLLPastEvent"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginTop="20dp"
-                android:animateLayoutChanges="true"
-                android:orientation="vertical"
-                android:visibility="gone">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:text="PAST EVENT" />
-
-                <android.support.v7.widget.RecyclerView
-                    android:id="@+id/ceRVPastEvent"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="20dp" />
-
-            </LinearLayout>
-
-            <android.support.v7.widget.CardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="20dp"
-                app:cardCornerRadius="5dp"
-                app:cardElevation="2dp">
+                    <!--
+                                    <ImageButton
+                                        android:layout_width="?attr/actionBarSize"
+                                        android:layout_height="match_parent"
+                                        android:layout_alignParentEnd="true"
+                                        android:background="?android:selectableItemBackground"
+                                        android:src="@drawable/ic_dialog_close_dark"
+                                        android:visibility="visible" />
+                    -->
+                </RelativeLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:animateLayoutChanges="true"
+                    android:background="@color/colorPrimary"
+                    android:gravity="center"
                     android:orientation="vertical"
-                    android:padding="15dp">
+                    android:paddingBottom="20dp"
+                    android:paddingTop="20dp">
+
+                    <ImageView
+                        android:id="@+id/ceIVUserPic"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:src="@drawable/ic_action_name" />
 
                     <TextView
-                        android:id="@+id/ceTVInfo"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:gravity="center"
-                        android:text="To create an event, please contact out pgone number:"
+                        android:id="@+id/ceTVUserName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:text=""
+                        android:textColor="@color/white"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/ceTVUserId"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text=""
+                        android:textColor="@color/white" />
+
+                    <Button
+                        android:id="@+id/ceBUserAccount"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:background="@drawable/background_radius"
+                        android:backgroundTint="@color/colorPrimaryDark"
+                        android:paddingLeft="20dp"
+                        android:paddingRight="20dp"
+                        android:text="my account"
                         android:textColor="@color/colorPrimary" />
                 </LinearLayout>
-            </android.support.v7.widget.CardView>
 
-            <TextView
-                android:id="@+id/ceTVVersionApp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                <!--ongoing event-->
+                <LinearLayout
+                    android:id="@+id/ceLLOngoingEvent"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="20dp"
+                    android:animateLayoutChanges="true"
+                    android:orientation="vertical"
+                    android:visibility="gone">
 
-                android:layout_marginBottom="20dp"
-                android:gravity="center"
-                android:text="version"
-                android:textColor="@color/colorPrimary" />
-        </LinearLayout>
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="ON GOING" />
 
-    </ScrollView>
+                    <android.support.v7.widget.RecyclerView
+                        android:id="@+id/ceRVOngoingEvent"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginRight="20dp" />
+
+                </LinearLayout>
+
+                <!--past event-->
+                <LinearLayout
+                    android:id="@+id/ceLLPastEvent"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="20dp"
+                    android:animateLayoutChanges="true"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="PAST EVENT" />
+
+                    <android.support.v7.widget.RecyclerView
+                        android:id="@+id/ceRVPastEvent"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginRight="20dp"
+                        tools:listitem="@layout/layout_list_change_event" />
+
+                </LinearLayout>
+
+                <android.support.v7.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="20dp"
+                    app:cardCornerRadius="5dp"
+                    app:cardElevation="2dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:animateLayoutChanges="true"
+                        android:orientation="vertical"
+                        android:padding="15dp">
+
+                        <TextView
+                            android:id="@+id/ceTVInfo"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:gravity="center"
+                            android:text="To create an event, please contact out pgone number:"
+                            android:textColor="@color/colorPrimary" />
+                    </LinearLayout>
+                </android.support.v7.widget.CardView>
+
+                <TextView
+                    android:id="@+id/ceTVVersionApp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+
+                    android:layout_marginBottom="20dp"
+                    android:gravity="center"
+                    android:text="version"
+                    android:textColor="@color/colorPrimary" />
+            </LinearLayout>
+
+        </android.support.v4.widget.NestedScrollView>
+
+    </android.support.v4.widget.SwipeRefreshLayout>
 
 
 </LinearLayout>

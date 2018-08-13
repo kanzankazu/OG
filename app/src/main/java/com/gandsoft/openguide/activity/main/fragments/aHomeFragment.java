@@ -80,8 +80,8 @@ public class aHomeFragment extends Fragment {
         recyclerView.setNestedScrollingEnabled(false);
         recyclerView.setAdapter(adapter);
         adapter.setData(PostRecViewPojoDummy.generyData(page));
-        //adapter.notifyDataSetChanged();
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        //adapter.notifyDataSetChanged();
         //populateRecyclerViewValues();
     }
 

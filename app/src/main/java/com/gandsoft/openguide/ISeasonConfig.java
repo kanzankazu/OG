@@ -12,6 +12,7 @@ public interface ISeasonConfig {
     String KEY_IS_FIRST_ACCOUNT = "CING123123";
 
     String KEY_ACCOUNT_ID = "MBEE123123";
+    String KEY_EVENT_ID = "MOO123123";
 
     String ERROR_RETRIEVAL = "235KAMBINGNGREBO5632";
 }

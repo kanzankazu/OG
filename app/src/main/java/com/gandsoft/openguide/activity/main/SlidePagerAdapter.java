@@ -4,6 +4,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
+import com.gandsoft.openguide.activity.main.fragments.aHomeFragment;
 import com.gandsoft.openguide.activity.main.fragments.bWalletFragment;
 import com.gandsoft.openguide.activity.main.fragments.cScheduleFragment;
 import com.gandsoft.openguide.activity.main.fragments.dAboutFragment;
@@ -23,7 +24,7 @@ public class SlidePagerAdapter extends FragmentStatePagerAdapter {
     @Override
     public Fragment getItem(int position) {
         if (position == 0) {
-            return new RootFragment();
+            return new aHomeFragment();
         } else if (position == 1) {
             return new bWalletFragment();
         } else if (position == 2) {

@@ -1,23 +1,14 @@
 package com.gandsoft.openguide.API;
 
-import android.content.Context;
-
-import com.gandsoft.openguide.App;
+import com.gandsoft.openguide.API.APIrequest.Login.LoginRequestModel;
+import com.gandsoft.openguide.API.APIrespond.Login.LoginResponseModel;
+import com.gandsoft.openguide.API.APIrespond.UserData.UserDataResponseModel;
 import com.gandsoft.openguide.IConfig;
-import com.gandsoft.openguide.model.request.Login.LoginRequestModel;
-import com.gandsoft.openguide.model.request.Report.ReportRequestModel;
-import com.gandsoft.openguide.model.request.Update.UpdateRequestModel;
-import com.gandsoft.openguide.model.respond.Login.LoginResponseModel;
-import com.gandsoft.openguide.model.respond.Oui.OuiResponseModel;
-import com.gandsoft.openguide.model.respond.Report.ReportRespondModel;
-import com.gandsoft.openguide.model.respond.Update.UpdateAppRespondModel;
 
 import java.util.List;
 
-import app.beelabs.com.codebase.base.BaseActivity;
 import app.beelabs.com.codebase.base.BaseApi;
 import retrofit2.Call;
-import retrofit2.Callback;
 
 /**
  * Created by glenn on 1/25/18.
@@ -25,7 +16,7 @@ import retrofit2.Callback;
 
 public class API extends BaseApi implements IConfig {
 
-    synchronized private static ApiServices initApiDomain(Context context) {
+    /*synchronized private static ApiServices initApiDomain(Context context) {
         setApiDomain(API_BASE_URL);
         return (ApiServices) setupApi(App.getAppComponent(), ApiServices.class);
     }
@@ -44,15 +35,19 @@ public class API extends BaseApi implements IConfig {
 
     public static void doLogin(Context context, LoginRequestModel request, Callback callback) {
         initApiDomain(context).Login(request).enqueue((Callback<List<LoginResponseModel>>) callback);
-    }
-    /**/
+    }*/
 
+    /**/
     private static ApiServices getAPIService() {
         return RetrofitClient.getClient(API_BASE_URL).create(ApiServices.class);
     }
 
     public static Call<List<LoginResponseModel>> doLoginRet(LoginRequestModel requestModel) {
         return getAPIService().LoginRet(requestModel);
+    }
+
+    public static Call<List<UserDataResponseModel>> doUserEventRet(UserEventRequestModel requestModel) {
+        return getAPIService().UserEventRet(requestModel);
     }
 
 }

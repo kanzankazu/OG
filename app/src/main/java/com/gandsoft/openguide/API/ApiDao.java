@@ -1,20 +1,12 @@
 package com.gandsoft.openguide.API;
 
-import com.gandsoft.openguide.model.request.Login.LoginRequestModel;
-import com.gandsoft.openguide.model.request.Report.ReportRequestModel;
-import com.gandsoft.openguide.model.request.Update.UpdateRequestModel;
-
-import app.beelabs.com.codebase.base.BaseActivity;
-import app.beelabs.com.codebase.base.BaseDao;
-import retrofit2.Callback;
-
 /**
  * Created by glenn on 1/25/18.
  */
 
-public class ApiDao extends BaseDao {
+public class ApiDao /*extends BaseDao*/ {
 
-    public ApiDao(Object obj) {
+    /*public ApiDao(Object obj) {
         super(obj);
     }
 
@@ -32,6 +24,6 @@ public class ApiDao extends BaseDao {
 
     public void doLoginDao(BaseActivity ac, LoginRequestModel request, Callback callback) {
         API.doLogin(ac, request, callback);
-    }
+    }*/
 
 }
