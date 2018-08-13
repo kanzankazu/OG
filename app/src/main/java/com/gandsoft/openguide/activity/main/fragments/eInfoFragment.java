@@ -23,6 +23,7 @@ import com.gandsoft.openguide.activity.infomenu.dComitteContactActivity;
 import com.gandsoft.openguide.activity.infomenu.eEmergenciesActivity;
 import com.gandsoft.openguide.activity.infomenu.fPracticalInfoActivity;
 import com.gandsoft.openguide.activity.infomenu.gSurroundingAreaActivity;
+import com.gandsoft.openguide.activity.infomenu.gallery2.GalleryActivity;
 import com.gandsoft.openguide.activity.infomenu.hFeedbackActivity;
 import com.gandsoft.openguide.activity.main.adapter.InfoListViewAdapter;
 import com.gandsoft.openguide.activity.main.adapter.InfoListviewModel;
@@ -114,7 +115,7 @@ public class eInfoFragment extends Fragment {
                         getActivity().startActivity(intent1);
                         break;
                     case 1:
-                        Intent intent2 = new Intent(getActivity(), bGalleryActivity.class);
+                        Intent intent2 = new Intent(getActivity(), GalleryActivity.class);
                         getActivity().startActivity(intent2);
                         break;
                     case 2:

@@ -14,8 +14,8 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.Toolbar;
 
-import com.gandsoft.openguide.activity.gallery.Global;
-import com.gandsoft.openguide.activity.gallery.PicViewActivity;
+import com.gandsoft.openguide.activity.infomenu.gallery.Global;
+import com.gandsoft.openguide.activity.infomenu.gallery.PicViewActivity;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
@@ -79,14 +79,7 @@ public class bGalleryActivity extends AppCompatActivity {
                     final ImageViewAware thumbAware = new ImageViewAware(imageView);
 
                     String url = Global.getTestImage(i).getThumb(1000, 1000).url;
-//Check
-                    //                 String root = Environment.getExternalStorageDirectory().toString();
-                    //                   if(PicViewActivity.checkMobileData(getApplicationContext())){
                     imageLoader.displayImage(url, thumbAware, thumbOptions);
-                    //               }
-                    //             else{
-                    //               imageLoader.displayImage(root+"/.Gandsoft/image.jpg",thumbAware,thumbOptions);
-                    //         }
 
                     imageView.setOnClickListener(new View.OnClickListener() {
                         @Override

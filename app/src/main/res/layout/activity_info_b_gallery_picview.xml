@@ -7,7 +7,7 @@
         android:layout_height="match_parent"
         android:background="#000000"
         android:alpha="0"/>
-    <com.gandsoft.openguide.activity.gallery.PinchImageView
+    <com.gandsoft.openguide.activity.infomenu.gallery.PinchImageView
         android:id="@+id/pic"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
