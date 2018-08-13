@@ -1,18 +1,17 @@
 package com.gandsoft.openguide.API;
 
+import com.gandsoft.openguide.API.APIrequest.Event.EventDataRequestModel;
 import com.gandsoft.openguide.API.APIrequest.Login.LoginRequestModel;
-import com.gandsoft.openguide.API.APIrespond.Login.LoginResponseModel;
-import com.gandsoft.openguide.API.APIrespond.UserData.UserDataResponseModel;
+import com.gandsoft.openguide.API.APIrequest.UserData.UserDataRequestModel;
+import com.gandsoft.openguide.API.APIresponse.Event.EventDataResponseModel;
+import com.gandsoft.openguide.API.APIresponse.Login.LoginResponseModel;
+import com.gandsoft.openguide.API.APIresponse.UserData.UserDataResponseModel;
 
 import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.POST;
-
-/**
- * Created by glenn on 1/25/18.
- */
 
 public interface ApiServices {
 
@@ -30,8 +29,13 @@ public interface ApiServices {
 
     /**/
     @POST("verification_phonenumber_firebase")
-    Call<List<LoginResponseModel>> LoginRet(@Body LoginRequestModel model);
+    Call<List<LoginResponseModel>> loginRet(@Body LoginRequestModel model);
 
     @POST("get_list_user_event")
-    Call<List<UserDataResponseModel>> UserEventRet(@Body UserEventRequestModel model);
+    Call<List<UserDataResponseModel>> userDataRet(@Body UserDataRequestModel model);
+
+    @POST("get_data_event")
+    Call<List<EventDataResponseModel>> eventDataRet(@Body EventDataRequestModel model);
+
+
 }

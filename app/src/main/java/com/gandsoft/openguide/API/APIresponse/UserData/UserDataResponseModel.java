@@ -1,4 +1,4 @@
-package com.gandsoft.openguide.API.APIrespond.UserData;
+package com.gandsoft.openguide.API.APIresponse.UserData;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -19,9 +19,11 @@ public class UserDataResponseModel implements Serializable {
     public String version_data;
     public String group_code;
     public String role_name;
+    public List<UserListEventResponseModel> list_event = new ArrayList<>();
 
     public int number;
     public String image_url_local;
+
 
     public int getNumber() {
         return number;
@@ -38,8 +40,6 @@ public class UserDataResponseModel implements Serializable {
     public void setImage_url_local(String image_url_local) {
         this.image_url_local = image_url_local;
     }
-
-    public List<ListEventResponseModel> list_event = new ArrayList<>();
 
     public String getAccount_id() {
         return account_id;
@@ -145,11 +145,11 @@ public class UserDataResponseModel implements Serializable {
         this.role_name = role_name;
     }
 
-    public List<ListEventResponseModel> getList_event() {
+    public List<UserListEventResponseModel> getList_event() {
         return list_event;
     }
 
-    public void setList_event(List<ListEventResponseModel> list_event) {
+    public void setList_event(List<UserListEventResponseModel> list_event) {
         this.list_event = list_event;
     }
 
@@ -194,7 +194,7 @@ public class UserDataResponseModel implements Serializable {
     public String roleName;
     @SerializedName("list_event")
     @Expose
-    public List<ListEventResponseModel> listEvent = null;
+    public List<UserListEventResponseModel> listEvent = null;
 
     *//**
      * No args constructor for use in serialization
@@ -219,7 +219,7 @@ public class UserDataResponseModel implements Serializable {
      * @param gender
      * @param fullName
      *//*
-    public UserDataResponseModel(String accountId, String imageUrl, String fullName, String position, String phoneNumber, String email, String gender, String birthday, String checkin, String privacyPolicy, String versionData, String groupCode, String roleName, List<ListEventResponseModel> listEvent) {
+    public UserDataResponseModel(String accountId, String imageUrl, String fullName, String position, String phoneNumber, String email, String gender, String birthday, String checkin, String privacyPolicy, String versionData, String groupCode, String roleName, List<UserListEventResponseModel> listEvent) {
         super();
         this.accountId = accountId;
         this.imageUrl = imageUrl;
@@ -341,11 +341,11 @@ public class UserDataResponseModel implements Serializable {
         this.roleName = roleName;
     }
 
-    public List<ListEventResponseModel> getAllListEvent() {
+    public List<UserListEventResponseModel> getAllListEvent() {
         return listEvent;
     }
 
-    public void setListEvent(List<ListEventResponseModel> listEvent) {
+    public void setListEvent(List<UserListEventResponseModel> listEvent) {
         this.listEvent = listEvent;
     }*/
 

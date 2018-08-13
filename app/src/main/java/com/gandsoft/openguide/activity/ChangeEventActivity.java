@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -27,10 +28,10 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.FutureTarget;
 import com.gandsoft.openguide.API.API;
-import com.gandsoft.openguide.API.APIrespond.UserData.ListEventResponseModel;
-import com.gandsoft.openguide.API.APIrespond.UserData.UserDataResponseModel;
-import com.gandsoft.openguide.API.APIrespond.UserData.WalletDataResponseModel;
-import com.gandsoft.openguide.API.UserEventRequestModel;
+import com.gandsoft.openguide.API.APIrequest.UserData.UserDataRequestModel;
+import com.gandsoft.openguide.API.APIresponse.UserData.UserDataResponseModel;
+import com.gandsoft.openguide.API.APIresponse.UserData.UserListEventResponseModel;
+import com.gandsoft.openguide.API.APIresponse.UserData.UserWalletDataResponseModel;
 import com.gandsoft.openguide.IConfig;
 import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
@@ -39,7 +40,6 @@ import com.gandsoft.openguide.support.NetworkUtil;
 import com.gandsoft.openguide.support.SessionUtil;
 
 import java.io.File;
-import java.lang.annotation.Target;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -59,8 +59,8 @@ public class ChangeEventActivity extends AppCompatActivity {
     private String accountid;
     private SwipeRefreshLayout srlChangeEventActivityfvbi;
     /**/
-    private int version_data = 0;
-    private List<ListEventResponseModel> menuUi;
+    private int version_data_user;
+    private List<UserListEventResponseModel> menuUi;
     private ChangeEventOnGoingAdapter adapterOnGoing;
     private ChangeEventPastAdapter adapterPast;
 
@@ -68,6 +68,8 @@ public class ChangeEventActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_change_event);
+
+        accountid = SessionUtil.getStringPreferences(ISeasonConfig.KEY_ACCOUNT_ID, null);
 
         initComponent();
         initContent();
@@ -91,14 +93,16 @@ public class ChangeEventActivity extends AppCompatActivity {
     private void initContent() {
         initRecycleView();
 
-        customText(ceTVInfofvbi);
-
         if (SessionUtil.checkIfExist(ISeasonConfig.KEY_ACCOUNT_ID)) {
-            accountid = SessionUtil.getStringPreferences(ISeasonConfig.KEY_ACCOUNT_ID, null);
             if (accountid != null) {
-                getUserEventDo();
+                getUserDataValidation();
             }
         }
+
+        initVersionDataUser();
+
+        customText(ceTVInfofvbi);
+
         //getversion
         try {
             appVersionName = getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
@@ -117,14 +121,14 @@ public class ChangeEventActivity extends AppCompatActivity {
         srlChangeEventActivityfvbi.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                getUserEventDo();
+                getUserDataValidation();
             }
         });
     }
 
-    private void getUserEventDo() {
+    private void getUserDataValidation() {
         if (NetworkUtil.isConnected(this)) {
-            getUserEvent(accountid);
+            getUserDataDo(accountid);
         } else {
             if (db.checkDataTable(SQLiteHelper.TableUserData, SQLiteHelper.KEY_UserData_accountId, accountid)) {
                 updateRecycleView(db.getAllListEvent(accountid));
@@ -136,10 +140,11 @@ public class ChangeEventActivity extends AppCompatActivity {
         }
     }
 
-    private void getUserEvent(String accountid) {
+    private void getUserDataDo(String accountid) {
         if (srlChangeEventActivityfvbi.isRefreshing()) {
             srlChangeEventActivityfvbi.setRefreshing(false);
         }
+
         ProgressDialog progressDialog = new ProgressDialog(this);
         progressDialog.setCancelable(false);
         progressDialog.setMessage("Please Wait...");
@@ -147,64 +152,82 @@ public class ChangeEventActivity extends AppCompatActivity {
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         // show it
         progressDialog.show();
-        API.doUserEventRet(new UserEventRequestModel(accountid, IConfig.DB_Version, version_data)).enqueue(new Callback<List<UserDataResponseModel>>() {
-            @Override
-            public void onResponse(Call<List<UserDataResponseModel>> call, Response<List<UserDataResponseModel>> response) {
-                progressDialog.dismiss();
-                if (response.isSuccessful()) {
 
-                    List<UserDataResponseModel> userDataResponseModels = response.body();
-                    for (int i = 0; i < userDataResponseModels.size(); i++) {
-                        UserDataResponseModel model = userDataResponseModels.get(i);
-                        if (db.checkDataTable(SQLiteHelper.TableUserData, SQLiteHelper.KEY_UserData_accountId, accountid)) {
-                            db.updateUserData(model, accountid);
-                        } else {
-                            db.saveUserData(model);
-                        }
-                        updateUserInfo(userDataResponseModels);
-                        //db.saveImageUserToLocal(getImgCachePath(model.getImage_url()),accountid);
+        //ProgressDialog progressDialog = ProgressDialog.show(ChangeEventActivity.this, "Loading...", "Please Wait..", true, false);
 
-                        List<ListEventResponseModel> listEventResponseModels = model.getList_event();
-                        for (int j = 0; j < listEventResponseModels.size(); j++) {
-                            ListEventResponseModel model1 = listEventResponseModels.get(j);
-                            if (db.checkDataTable(SQLiteHelper.TableListEvent, SQLiteHelper.KEY_ListEvent_eventId, model1.event_id)) {
-                                db.updateListEvent(model1);
-                            } else {
-                                db.saveListEvent(model1, accountid);
-                            }
-                            updateRecycleView(listEventResponseModels);
-                            //db.saveImageListEventToLocal(getImgCachePath(model1.getBackground()),getImgCachePath(model1.getLogo()),model1);
+        new Handler().postDelayed(new Runnable() {
+            public void run() {
+                //code here
+                API.doUserDataRet(new UserDataRequestModel(accountid, IConfig.DB_Version, version_data_user)).enqueue(new Callback<List<UserDataResponseModel>>() {
+                    @Override
+                    public void onResponse(Call<List<UserDataResponseModel>> call, Response<List<UserDataResponseModel>> response) {
+                        progressDialog.dismiss();
+                        if (response.isSuccessful()) {
 
-                            List<WalletDataResponseModel> walletDataResponseModels = model1.getWallet_data();
-                            for (int n = 0; n < walletDataResponseModels.size(); n++) {
-                                WalletDataResponseModel model2 = walletDataResponseModels.get(n);
-                                if (db.checkDataTableKeyMultiple(SQLiteHelper.TableWallet, SQLiteHelper.KEY_Wallet_sort, SQLiteHelper.KEY_Wallet_eventId, model2.getSort(), model1.getEvent_id())) {
-                                    db.updateWalletData(model2, model1.getEvent_id());
+                            List<UserDataResponseModel> userDataResponseModels = response.body();
+                            for (int i = 0; i < userDataResponseModels.size(); i++) {
+                                UserDataResponseModel model = userDataResponseModels.get(i);
+                                if (db.checkDataTable(SQLiteHelper.TableUserData, SQLiteHelper.KEY_UserData_accountId, accountid)) {
+                                    db.updateUserData(model, accountid);
                                 } else {
-                                    db.saveWalletData(model2, accountid, model1.getEvent_id());
+                                    db.saveUserData(model);
+                                }
+                                updateUserInfo(userDataResponseModels);
+                                //db.saveImageUserToLocal(getImgCachePath(model.getImage_url()),accountid);
+
+                                List<UserListEventResponseModel> userListEventResponseModels = model.getList_event();
+                                for (int j = 0; j < userListEventResponseModels.size(); j++) {
+                                    UserListEventResponseModel model1 = userListEventResponseModels.get(j);
+                                    if (db.checkDataTable(SQLiteHelper.TableListEvent, SQLiteHelper.KEY_ListEvent_eventId, model1.event_id)) {
+                                        db.updateListEvent(model1);
+                                    } else {
+                                        db.saveListEvent(model1, accountid);
+                                    }
+                                    updateRecycleView(userListEventResponseModels);
+                                    //db.saveImageListEventToLocal(getImgCachePath(model1.getBackground()),getImgCachePath(model1.getLogo()),model1);
+
+                                    List<UserWalletDataResponseModel> userWalletDataResponseModels = model1.getWallet_data();
+                                    for (int n = 0; n < userWalletDataResponseModels.size(); n++) {
+                                        UserWalletDataResponseModel model2 = userWalletDataResponseModels.get(n);
+                                        if (db.checkDataTableKeyMultiple(SQLiteHelper.TableWallet, SQLiteHelper.KEY_Wallet_sort, SQLiteHelper.KEY_Wallet_eventId, model2.getSort(), model1.getEvent_id())) {
+                                            db.updateWalletData(model2, model1.getEvent_id());
+                                        } else {
+                                            db.saveWalletData(model2, accountid, model1.getEvent_id());
+                                        }
+                                    }
                                 }
                             }
+                        } else {
+                            Log.e("Lihat", "onResponse ChangeEventActivity : " + response.message());
                         }
                     }
-                } else {
-                    Log.e("Lihat", "onResponse ChangeEventActivity : " + response.message());
-                }
-            }
 
-            @Override
-            public void onFailure(Call<List<UserDataResponseModel>> call, Throwable t) {
-                progressDialog.dismiss();
-                Snackbar.make(findViewById(android.R.id.content), "Tidak Dapat terhubung dengan server", Snackbar.LENGTH_LONG).setAction("Reload", new View.OnClickListener() {
                     @Override
-                    public void onClick(View view) {
-                        getUserEventDo();
+                    public void onFailure(Call<List<UserDataResponseModel>> call, Throwable t) {
+                        progressDialog.dismiss();
+                        Snackbar.make(findViewById(android.R.id.content), "Tidak Dapat terhubung dengan server", Snackbar.LENGTH_LONG).setAction("Reload", new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                getUserDataValidation();
+                            }
+                        }).show();
+                        updateRecycleView(db.getAllListEvent(accountid));
+                        updateUserInfo(db.getUserData(accountid));
+                        Log.e("Lihat", "onFailure ChangeEventActivity : " + t.getMessage(), t);
                     }
-                }).show();
-                updateRecycleView(db.getAllListEvent(accountid));
-                updateUserInfo(db.getUserData(accountid));
-                Log.e("Lihat", "onFailure ChangeEventActivity : " + t.getMessage(), t);
+                });
+
             }
-        });
+        }, 1000);
+
+    }
+
+    private void initVersionDataUser() {
+        if (db.checkDataTableNull(SQLiteHelper.TableGlobalData, SQLiteHelper.KEY_GlobalData_version_data_user)) {
+            version_data_user = 0;
+        } else {
+            version_data_user = db.getVersionDataIdUser(accountid);
+        }
     }
 
     private void initRecycleView() {
@@ -234,9 +257,9 @@ public class ChangeEventActivity extends AppCompatActivity {
         }
     }
 
-    private void updateRecycleView(List<ListEventResponseModel> models) {
+    private void updateRecycleView(List<UserListEventResponseModel> models) {
         for (int i = 0; i < models.size(); i++) {
-            ListEventResponseModel model = models.get(i);
+            UserListEventResponseModel model = models.get(i);
             Log.d("Lihat", "updateRecycleView ChangeEventActivity : " + models.size());
             Log.d("Lihat", "updateRecycleView ChangeEventActivity : " + model.getStatus());
             if (model.getStatus().equalsIgnoreCase("PAST EVENT")) {

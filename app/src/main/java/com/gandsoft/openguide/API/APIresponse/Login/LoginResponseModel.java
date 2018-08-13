@@ -1,4 +1,4 @@
-package com.gandsoft.openguide.API.APIrespond.Login;
+package com.gandsoft.openguide.API.APIresponse.Login;
 
 
 import com.google.gson.annotations.Expose;

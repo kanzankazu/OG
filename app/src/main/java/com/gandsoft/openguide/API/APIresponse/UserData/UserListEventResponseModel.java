@@ -1,10 +1,10 @@
-package com.gandsoft.openguide.API.APIrespond.UserData;
+package com.gandsoft.openguide.API.APIresponse.UserData;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ListEventResponseModel implements Serializable {
+public class UserListEventResponseModel implements Serializable {
 
     public String event_id;
     public String background;
@@ -54,7 +54,7 @@ public class ListEventResponseModel implements Serializable {
         this.background_local = background_local;
     }
 
-    public List<WalletDataResponseModel> wallet_data = new ArrayList<>();
+    public List<UserWalletDataResponseModel> wallet_data = new ArrayList<>();
 
     public String getEvent_id() {
         return event_id;
@@ -136,11 +136,11 @@ public class ListEventResponseModel implements Serializable {
         this.role_name = role_name;
     }
 
-    public List<WalletDataResponseModel> getWallet_data() {
+    public List<UserWalletDataResponseModel> getWallet_data() {
         return wallet_data;
     }
 
-    public void setWallet_data(List<WalletDataResponseModel> wallet_data) {
+    public void setWallet_data(List<UserWalletDataResponseModel> wallet_data) {
         this.wallet_data = wallet_data;
     }
 
@@ -176,12 +176,12 @@ public class ListEventResponseModel implements Serializable {
     public String roleName;
     @SerializedName("wallet_data")
     @Expose
-    public List<WalletDataResponseModel> walletData = null;
+    public List<UserWalletDataResponseModel> walletData = null;
 
     *//**
      * No args constructor for use in serialization
      *//*
-    public ListEventResponseModel() {
+    public UserListEventResponseModel() {
     }
 
     *//**
@@ -197,7 +197,7 @@ public class ListEventResponseModel implements Serializable {
      * @param date
      * @param walletData
      *//*
-    public ListEventResponseModel(String eventId, String background, String logo, String title, String startDate, String date, String status, String groupCode, String groupCompany, String roleName, List<WalletDataResponseModel> walletData) {
+    public UserListEventResponseModel(String eventId, String background, String logo, String title, String startDate, String date, String status, String groupCode, String groupCompany, String roleName, List<UserWalletDataResponseModel> walletData) {
         super();
         this.eventId = eventId;
         this.background = background;
@@ -292,11 +292,11 @@ public class ListEventResponseModel implements Serializable {
         this.roleName = roleName;
     }
 
-    public List<WalletDataResponseModel> getWalletData() {
+    public List<UserWalletDataResponseModel> getWalletData() {
         return walletData;
     }
 
-    public void setWalletData(List<WalletDataResponseModel> walletData) {
+    public void setWalletData(List<UserWalletDataResponseModel> walletData) {
         this.walletData = walletData;
     }*/
 }

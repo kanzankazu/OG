@@ -12,7 +12,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.gandsoft.openguide.API.APIrespond.UserData.ListEventResponseModel;
+import com.gandsoft.openguide.API.APIresponse.UserData.UserListEventResponseModel;
 import com.gandsoft.openguide.R;
 import com.github.siyamed.shapeimageview.RoundedImageView;
 
@@ -21,9 +21,9 @@ import java.util.List;
 
 class ChangeEventOnGoingAdapter extends RecyclerView.Adapter<ChangeEventOnGoingAdapter.ViewHolder> {
     private Context context;
-    private List<ListEventResponseModel> models = new ArrayList<>();
+    private List<UserListEventResponseModel> models = new ArrayList<>();
 
-    public ChangeEventOnGoingAdapter(Context context, List<ListEventResponseModel> menuUi) {
+    public ChangeEventOnGoingAdapter(Context context, List<UserListEventResponseModel> menuUi) {
         this.context = context;
         this.models = menuUi;
     }
@@ -37,7 +37,7 @@ class ChangeEventOnGoingAdapter extends RecyclerView.Adapter<ChangeEventOnGoingA
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        ListEventResponseModel model = models.get(position);
+        UserListEventResponseModel model = models.get(position);
         if (model.getStatus().equalsIgnoreCase("PAST EVENT")) {
             Glide.with(context)
                     .load(model.getBackground())
@@ -78,18 +78,18 @@ class ChangeEventOnGoingAdapter extends RecyclerView.Adapter<ChangeEventOnGoingA
         }
     }
 
-    public void setData(List<ListEventResponseModel> datas) {
+    public void setData(List<UserListEventResponseModel> datas) {
         models = datas;
         notifyDataSetChanged();
     }
 
-    public void replaceData(List<ListEventResponseModel> datas) {
+    public void replaceData(List<UserListEventResponseModel> datas) {
         models.clear();
         models.addAll(datas);
         notifyDataSetChanged();
     }
 
-    public void addDatas(List<ListEventResponseModel> datas) {
+    public void addDatas(List<UserListEventResponseModel> datas) {
         models.addAll(datas);
         notifyItemRangeInserted(models.size(), datas.size());
     }

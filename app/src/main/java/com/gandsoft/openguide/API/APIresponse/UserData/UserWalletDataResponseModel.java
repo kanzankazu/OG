@@ -1,8 +1,8 @@
-package com.gandsoft.openguide.API.APIrespond.UserData;
+package com.gandsoft.openguide.API.APIresponse.UserData;
 
 import java.io.Serializable;
 
-public class WalletDataResponseModel implements Serializable {
+public class UserWalletDataResponseModel implements Serializable {
 
     public String sort;
     public String type;
@@ -97,7 +97,7 @@ public class WalletDataResponseModel implements Serializable {
     *//**
      * No args constructor for use in serialization
      *//*
-    public WalletDataResponseModel() {
+    public UserWalletDataResponseModel() {
     }
 
     *//**
@@ -107,7 +107,7 @@ public class WalletDataResponseModel implements Serializable {
      * @param sort
      * @param type
      *//*
-    public WalletDataResponseModel(String sort, String type, String bodyWallet, String notif, String detail) {
+    public UserWalletDataResponseModel(String sort, String type, String bodyWallet, String notif, String detail) {
         super();
         this.sort = sort;
         this.type = type;

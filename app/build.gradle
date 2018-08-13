@@ -52,13 +52,6 @@ dependencies {
     implementation 'com.android.support:multidex:1.0.3'
     implementation 'com.android.support.constraint:constraint-layout:1.1.2'
     /**/
-    implementation 'com.github.tajchert:nammu:1.2.0'
-    implementation 'com.hbb20:ccp:2.1.2'
-    implementation 'com.github.siyamed:android-shape-imageview:0.9.+@aar'
-    implementation 'rongi.rotate-layout:rotate-layout:3.0.0'
-    implementation 'com.github.bumptech.glide:glide:3.7.0'
-    //implementation 'com.github.stealthcopter:AndroidNetworkTools:0.3.0'
-    /**/
     implementation 'com.google.android.gms:play-services:12.0.1'
     implementation 'com.google.android.gms:play-services-maps:12.0.1'
     implementation 'com.google.android.gms:play-services-location:12.0.1'
@@ -85,12 +78,16 @@ dependencies {
     implementation 'org.apache.httpcomponents:httpclient:4.5'
     /*implementation 'com.crashlytics.sdk.android:crashlytics:2.9.4'*/
     /**/
-    testImplementation 'junit:junit:4.12'
+    implementation 'com.github.tajchert:nammu:1.2.0'
+    implementation 'com.hbb20:ccp:2.1.2'
+    implementation 'com.github.siyamed:android-shape-imageview:0.9.3@aar'
+    implementation 'rongi.rotate-layout:rotate-layout:3.0.0'
+    implementation 'com.github.bumptech.glide:glide:3.7.0'
     implementation files('libs/universal-image-loader-1.9.5.jar')
-    compile 'com.squareup.picasso:picasso:2.5.2'
-    compile 'com.github.bumptech.glide:glide:3.6.1'
-
-    compile 'com.jsibbold:zoomage:1.1.0'
+    implementation 'com.squareup.picasso:picasso:2.5.2'
+    implementation 'com.jsibbold:zoomage:1.1.0'
+    //implementation 'com.github.stealthcopter:AndroidNetworkTools:0.3.0'
+    testImplementation 'junit:junit:4.12'
 }
 
 apply plugin: 'com.google.gms.google-services'

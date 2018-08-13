@@ -1,11 +1,11 @@
-package com.gandsoft.openguide.API;
+package com.gandsoft.openguide.API.APIrequest.UserData;
 
-public class UserEventRequestModel {
+public class UserDataRequestModel {
     private String accountid;
     private int version_data;
     private int dbver;
 
-    public UserEventRequestModel(String accountid, int db_version, int version_data) {
+    public UserDataRequestModel(String accountid, int db_version, int version_data) {
 
         this.accountid = accountid;
         this.dbver = db_version;

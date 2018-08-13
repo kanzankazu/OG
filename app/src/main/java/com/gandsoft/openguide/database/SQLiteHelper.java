@@ -7,9 +7,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-import com.gandsoft.openguide.API.APIrespond.UserData.ListEventResponseModel;
-import com.gandsoft.openguide.API.APIrespond.UserData.UserDataResponseModel;
-import com.gandsoft.openguide.API.APIrespond.UserData.WalletDataResponseModel;
+import com.gandsoft.openguide.API.APIresponse.UserData.UserDataResponseModel;
+import com.gandsoft.openguide.API.APIresponse.UserData.UserListEventResponseModel;
+import com.gandsoft.openguide.API.APIresponse.UserData.UserWalletDataResponseModel;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -20,9 +20,10 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "openguides.db";
     private static final int DATABASE_VERSION = 1;
 
-    public static String TABEL_GlobalData = "tabGlobalData";
+    public static String TableGlobalData = "tabGlobalData";
     public static String KEY_GlobalData_dbver = "dbver";
-    public static String KEY_GlobalData_version_data = "version_data";
+    public static String KEY_GlobalData_version_data_user = "version_data_user";
+    public static String KEY_GlobalData_version_data_event = "version_data_event";
 
     public static String TableUserData = "tabUserEvent";
     public static String KEY_UserData_position = "position";
@@ -45,6 +46,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     public static String KEY_ListEvent_No = "number";
     public static String KEY_ListEvent_eventId = "eventId";
     public static String KEY_ListEvent_accountId = "accountId";
+    public static String KEY_ListEvent_version_data = "versionData";
     public static String KEY_ListEvent_startDate = "startDate";
     public static String KEY_ListEvent_logo = "logo";
     public static String KEY_ListEvent_logo_local = "logo_local";
@@ -68,13 +70,12 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     public static String KEY_Wallet_sort = "sort";
     public static String KEY_Wallet_type = "type";
 
-
     private static final String query_add_table_UserData = "CREATE TABLE IF NOT EXISTS " + TableUserData + "("
             + KEY_UserData_No + " INTEGER PRIMARY KEY AUTOINCREMENT,"
             + KEY_UserData_accountId + " TEXT,"
             + KEY_UserData_position + " TEXT, "
             + KEY_UserData_birthday + " TEXT, "
-            + KEY_UserData_versionData + " TEXT, "
+            + KEY_UserData_versionData + " INTEGER, "
             + KEY_UserData_privacyPolicy + " TEXT, "
             + KEY_UserData_imageUrl + " BLOB, "
             + KEY_UserData_imageUrl_local + " BLOB, "
@@ -87,10 +88,12 @@ public class SQLiteHelper extends SQLiteOpenHelper {
             + KEY_UserData_fullName + " TEXT) ";
     private static final String query_delete_table_UserData = "DROP TABLE IF EXISTS " + TableUserData;
 
+
     private static final String query_add_table_ListEvent = "CREATE TABLE IF NOT EXISTS " + TableListEvent + "("
             + KEY_ListEvent_No + " INTEGER PRIMARY KEY AUTOINCREMENT,"
             + KEY_ListEvent_eventId + " TEXT, "
             + KEY_ListEvent_accountId + " TEXT,"
+            + KEY_ListEvent_version_data + " INTEGER,"
             + KEY_ListEvent_startDate + " TEXT, "
             + KEY_ListEvent_logo + " BLOB, "
             + KEY_ListEvent_logo_local + " BLOB, "
@@ -107,7 +110,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
 
     private static final String query_add_table_Wallet = "CREATE TABLE IF NOT EXISTS " + TableWallet + "("
             + KEY_Wallet_No + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-            + KEY_Wallet_sort + " TEXT, "
+            + KEY_Wallet_sort + " INTEGER, "
             + KEY_Wallet_accountId + " TEXT, "
             + KEY_Wallet_eventId + " TEXT, "
             + KEY_Wallet_bodyWallet + " BLOB, "
@@ -116,10 +119,11 @@ public class SQLiteHelper extends SQLiteOpenHelper {
             + KEY_Wallet_type + " TEXT) ";
     private static final String query_delete_table_Wallet = "DROP TABLE IF EXISTS " + TableWallet;
 
-    private static final String query_add_table_GlobalData = "CREATE TABLE IF NOT EXISTS " + TABEL_GlobalData + "("
+    private static final String query_add_table_GlobalData = "CREATE TABLE IF NOT EXISTS " + TableGlobalData + "("
             + KEY_GlobalData_dbver + " TEXT PRIMARY KEY , "
-            + KEY_GlobalData_version_data + " TEXT) ";
-    private static final String query_delete_table_GlobalData = "DROP TABLE IF EXISTS " + TABEL_GlobalData;
+            + KEY_GlobalData_version_data_user + " TEXT, "
+            + KEY_GlobalData_version_data_event + " TEXT) ";
+    private static final String query_delete_table_GlobalData = "DROP TABLE IF EXISTS " + TableGlobalData;
 
     public SQLiteHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -143,7 +147,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         replaceDataToNewTable(db, TableUserData, "tabTempUserEvent");
         replaceDataToNewTable(db, TableListEvent, "tabTempEvent");
         replaceDataToNewTable(db, TableWallet, "tabTempWallet");
-        replaceDataToNewTable(db, TABEL_GlobalData, "tabTempGlobalData");
+        replaceDataToNewTable(db, TableGlobalData, "tabTempGlobalData");
     }
 
     private void replaceDataToNewTable(SQLiteDatabase db, String tableName, String tableString) {
@@ -208,6 +212,27 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         }
     }
 
+    public int getVersionDataIdUser(String accountId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(TableUserData, new String[]{KEY_UserData_versionData}, KEY_UserData_accountId + " = ? ", new String[]{accountId}, null, null, null);
+        if (cursor.moveToFirst()) {
+            return cursor.getInt(cursor.getColumnIndex(KEY_UserData_versionData));
+        } else {
+            return 0;
+        }
+    }
+
+    public int getVersionDataIdEvent(String eventId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(TableListEvent, new String[]{KEY_ListEvent_version_data}, KEY_ListEvent_eventId + " = ? ", new String[]{eventId}, null, null, null);
+        if (cursor.moveToFirst()) {
+            return Integer.parseInt(cursor.getString(0));
+        } else {
+            return 0;
+        }
+    }
+
+    /**/
     public void saveUserData(UserDataResponseModel model) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
@@ -229,7 +254,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         db.close();
     }
 
-    public void saveListEvent(ListEventResponseModel model, String accountId) {
+    public void saveListEvent(UserListEventResponseModel model, String accountId) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(KEY_ListEvent_eventId, model.getEvent_id());
@@ -249,10 +274,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         db.close();
     }
 
-    public void saveWalletData(WalletDataResponseModel model, String accountId, String eventId) {
-        Log.d("Lihat", "saveWalletData SQLiteHelper : " + model.getSort());
-        Log.d("Lihat", "saveWalletData SQLiteHelper : " + accountId);
-        Log.d("Lihat", "saveWalletData SQLiteHelper : " + eventId);
+    public void saveWalletData(UserWalletDataResponseModel model, String accountId, String eventId) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(KEY_Wallet_sort, model.getSort());
@@ -262,7 +284,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         contentValues.put(KEY_Wallet_notif, model.getNotif());
         contentValues.put(KEY_Wallet_detail, model.getDetail());
         contentValues.put(KEY_Wallet_type, model.getType());
-        long i = db.insert(TableWallet, null, contentValues);
+        db.insert(TableWallet, null, contentValues);
         db.close();
     }
 
@@ -287,7 +309,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         db.close();
     }
 
-    public void updateListEvent(ListEventResponseModel model) {
+    public void updateListEvent(UserListEventResponseModel model) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(KEY_ListEvent_eventId, model.getEvent_id());
@@ -307,7 +329,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         db.close();
     }
 
-    public void updateWalletData(WalletDataResponseModel model, String eventId) {
+    public void updateWalletData(UserWalletDataResponseModel model, String eventId) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(KEY_Wallet_sort, model.getSort());
@@ -356,28 +378,26 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     public ArrayList<UserDataResponseModel> getUserData(String accountid) {
         ArrayList<UserDataResponseModel> modelList = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
-        /*String query = " SELECT * FROM " + TableUserData + " Where " + KEY_UserData_accountId + " = '" + accountid + "'";
-        Cursor cursor = db.rawQuery(query, null);*/
         Cursor cursor = db.query(TableUserData, null, KEY_UserData_accountId + " = ? ", new String[]{accountid}, null, null, null);
 
         if (cursor.moveToFirst()) {
             do {
                 UserDataResponseModel model = new UserDataResponseModel();
-                model.setNumber(cursor.getInt(0));
-                model.setAccount_id(cursor.getString(1));
-                model.setPosition(cursor.getString(2));
-                model.setBirthday(cursor.getString(3));
-                model.setVersion_data(cursor.getString(4));
-                model.setPrivacy_policy(cursor.getString(5));
-                model.setImage_url(cursor.getString(6));
-                model.setImage_url_local(cursor.getString(7));
-                model.setGroup_code(cursor.getString(8));
-                model.setRole_name(cursor.getString(9));
-                model.setCheckin(cursor.getString(10));
-                model.setPhone_number(cursor.getString(11));
-                model.setEmail(cursor.getString(12));
-                model.setGender(cursor.getString(13));
-                model.setFull_name(cursor.getString(14));
+                model.setNumber(cursor.getInt(cursor.getColumnIndex(KEY_UserData_No)));
+                model.setAccount_id(cursor.getString(cursor.getColumnIndex(KEY_UserData_accountId)));
+                model.setPosition(cursor.getString(cursor.getColumnIndex(KEY_UserData_position)));
+                model.setBirthday(cursor.getString(cursor.getColumnIndex(KEY_UserData_birthday)));
+                model.setVersion_data(cursor.getString(cursor.getColumnIndex(KEY_UserData_versionData)));
+                model.setPrivacy_policy(cursor.getString(cursor.getColumnIndex(KEY_UserData_privacyPolicy)));
+                model.setImage_url(cursor.getString(cursor.getColumnIndex(KEY_UserData_imageUrl)));
+                model.setImage_url_local(cursor.getString(cursor.getColumnIndex(KEY_UserData_imageUrl_local)));
+                model.setGroup_code(cursor.getString(cursor.getColumnIndex(KEY_UserData_groupCode)));
+                model.setRole_name(cursor.getString(cursor.getColumnIndex(KEY_UserData_roleName)));
+                model.setCheckin(cursor.getString(cursor.getColumnIndex(KEY_UserData_checkin)));
+                model.setPhone_number(cursor.getString(cursor.getColumnIndex(KEY_UserData_phoneNumber)));
+                model.setEmail(cursor.getString(cursor.getColumnIndex(KEY_UserData_email)));
+                model.setGender(cursor.getString(cursor.getColumnIndex(KEY_UserData_gender)));
+                model.setFull_name(cursor.getString(cursor.getColumnIndex(KEY_UserData_fullName)));
                 modelList.add(model);
             } while (cursor.moveToNext());
         }
@@ -385,8 +405,8 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         return modelList;
     }
 
-    public ArrayList<ListEventResponseModel> getAllListEvent(String accountid) {
-        ArrayList<ListEventResponseModel> modelList = new ArrayList<>();
+    public ArrayList<UserListEventResponseModel> getAllListEvent(String accountid) {
+        ArrayList<UserListEventResponseModel> modelList = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
         /*String query = " SELECT * FROM " + TableListEvent + " Where " + KEY_ListEvent_accountId + " = '" + accountid + "'";
         Cursor cursor = db.rawQuery(query, null);*/
@@ -394,7 +414,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
 
         if (cursor.moveToFirst()) {
             do {
-                ListEventResponseModel model = new ListEventResponseModel();
+                UserListEventResponseModel model = new UserListEventResponseModel();
                 model.setNumber(cursor.getInt(0));
                 model.setEvent_id(cursor.getString(1));
                 model.setAccountId(cursor.getString(2));
@@ -416,8 +436,8 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         return modelList;
     }
 
-    public ArrayList<WalletDataResponseModel> getListWalletData(String eventId) {
-        ArrayList<WalletDataResponseModel> modelList = new ArrayList<>();
+    public ArrayList<UserWalletDataResponseModel> getListWalletData(String eventId) {
+        ArrayList<UserWalletDataResponseModel> modelList = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
         /*String query = " SELECT * FROM " + TableWallet + " Where " + KEY_Wallet_eventId + " = '" + eventId + "'";
         Cursor cursor = db.rawQuery(query, null);*/
@@ -425,7 +445,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
 
         if (cursor.moveToFirst()) {
             do {
-                WalletDataResponseModel model = new WalletDataResponseModel();
+                UserWalletDataResponseModel model = new UserWalletDataResponseModel();
                 model.setNumber(cursor.getInt(0));
                 model.setSort(cursor.getString(1));
                 model.setAccountId(cursor.getString(2));
@@ -456,6 +476,18 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         }
     }
 
+    public boolean checkDataTableNull(String tableName, String targetKey) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(tableName, null, targetKey + " IS NULL ", null, null, null, null);
+        if (cursor == null) {
+            cursor.close();
+            return true;
+        } else {
+            cursor.close();
+            return false;
+        }
+    }
+
     public boolean checkDataTableKeyMultiple(String table, String key, String key2, String value, String value2) {
         SQLiteDatabase db = this.getReadableDatabase();
         //String selectQuery = "SELECT * FROM " + tableName + " WHERE " + targetKey + " = '" + targetValue + "'";
@@ -468,6 +500,14 @@ public class SQLiteHelper extends SQLiteOpenHelper {
             cursor.close();
             return false;
         }
+    }
+
+    public void setOneKey(String table, String key, String value) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(key, value);
+        db.insert(table, null, contentValues);
+        db.close();
     }
 
     public boolean getIsFirstIn(String eventId) {
@@ -492,7 +532,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         db.close();
     }
 
-    public void saveImageListEventToLocal(String backgroundCachePath, String logoCachePath, ListEventResponseModel model1) {
+    public void saveImageListEventToLocal(String backgroundCachePath, String logoCachePath, UserListEventResponseModel model1) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(KEY_ListEvent_background_local, backgroundCachePath);

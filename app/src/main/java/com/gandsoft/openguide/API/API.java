@@ -1,20 +1,22 @@
 package com.gandsoft.openguide.API;
 
+import com.gandsoft.openguide.API.APIrequest.Event.EventDataRequestModel;
 import com.gandsoft.openguide.API.APIrequest.Login.LoginRequestModel;
-import com.gandsoft.openguide.API.APIrespond.Login.LoginResponseModel;
-import com.gandsoft.openguide.API.APIrespond.UserData.UserDataResponseModel;
+import com.gandsoft.openguide.API.APIrequest.UserData.UserDataRequestModel;
+import com.gandsoft.openguide.API.APIresponse.Event.EventDataResponseModel;
+import com.gandsoft.openguide.API.APIresponse.Login.LoginResponseModel;
+import com.gandsoft.openguide.API.APIresponse.UserData.UserDataResponseModel;
 import com.gandsoft.openguide.IConfig;
 
 import java.util.List;
 
-import app.beelabs.com.codebase.base.BaseApi;
 import retrofit2.Call;
 
 /**
  * Created by glenn on 1/25/18.
  */
 
-public class API extends BaseApi implements IConfig {
+public class API {
 
     /*synchronized private static ApiServices initApiDomain(Context context) {
         setApiDomain(API_BASE_URL);
@@ -39,15 +41,19 @@ public class API extends BaseApi implements IConfig {
 
     /**/
     private static ApiServices getAPIService() {
-        return RetrofitClient.getClient(API_BASE_URL).create(ApiServices.class);
+        return RetrofitClient.getClient(IConfig.API_BASE_URL).create(ApiServices.class);
     }
 
     public static Call<List<LoginResponseModel>> doLoginRet(LoginRequestModel requestModel) {
-        return getAPIService().LoginRet(requestModel);
+        return getAPIService().loginRet(requestModel);
     }
 
-    public static Call<List<UserDataResponseModel>> doUserEventRet(UserEventRequestModel requestModel) {
-        return getAPIService().UserEventRet(requestModel);
+    public static Call<List<UserDataResponseModel>> doUserDataRet(UserDataRequestModel requestModel) {
+        return getAPIService().userDataRet(requestModel);
+    }
+
+    public static Call<List<EventDataResponseModel>> doEventDataRet(EventDataRequestModel requestModel) {
+        return getAPIService().eventDataRet(requestModel);
     }
 
 }

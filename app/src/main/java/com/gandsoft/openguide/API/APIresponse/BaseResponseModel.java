@@ -1,6 +1,6 @@
-package com.gandsoft.openguide.API.APIrespond;
+package com.gandsoft.openguide.API.APIresponse;
 
-import com.gandsoft.openguide.API.APIrespond.Login.LoginResponseModel;
+import com.gandsoft.openguide.API.APIresponse.Login.LoginResponseModel;
 
 import java.io.Serializable;
 import java.util.ArrayList;

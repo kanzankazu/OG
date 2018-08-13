@@ -2,6 +2,7 @@ package com.gandsoft.openguide.activity;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -21,7 +22,7 @@ import android.widget.TextView;
 
 import com.gandsoft.openguide.API.API;
 import com.gandsoft.openguide.API.APIrequest.Login.LoginRequestModel;
-import com.gandsoft.openguide.API.APIrespond.Login.LoginResponseModel;
+import com.gandsoft.openguide.API.APIresponse.Login.LoginResponseModel;
 import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
 import com.gandsoft.openguide.database.SQLiteHelper;
@@ -330,9 +331,13 @@ public class LoginActivity extends LocalBaseActivity {
         request.setDevice_app(DeviceDetailUtil.getAllDataPhone2(this));
         request.setPhonenumber(phoneNumberSavedwoPlus);
         request.setLogin_status("1");
+
+        ProgressDialog progressDialog = ProgressDialog.show(LoginActivity.this, "Loading...", "Please Wait..", false, false);
+
         API.doLoginRet(request).enqueue(new Callback<List<LoginResponseModel>>() {
             @Override
             public void onResponse(Call<List<LoginResponseModel>> call, Response<List<LoginResponseModel>> response) {
+                progressDialog.dismiss();
                 if (response.isSuccessful()) {
                     List<LoginResponseModel> s = response.body();
                     if (s.size() == 1) {
@@ -341,7 +346,7 @@ public class LoginActivity extends LocalBaseActivity {
                             if (model.getStatus().equalsIgnoreCase("verify")) {
                                 Snackbar.make(findViewById(android.R.id.content), "verify", Snackbar.LENGTH_LONG).show();
                                 moveToChangeEvent();
-                                db.saveAccountID(phoneNumberSavedwoPlus);
+                                db.setOneKey(SQLiteHelper.TableUserData, SQLiteHelper.KEY_UserData_accountId, phoneNumberSavedwoPlus);
                                 SessionUtil.setStringPreferences(ISeasonConfig.KEY_ACCOUNT_ID, phoneNumberSavedwoPlus);
                             } else {
                                 Snackbar.make(findViewById(android.R.id.content), "no verify", Snackbar.LENGTH_LONG).show();
@@ -359,6 +364,7 @@ public class LoginActivity extends LocalBaseActivity {
 
             @Override
             public void onFailure(Call<List<LoginResponseModel>> call, Throwable t) {
+                progressDialog.dismiss();
                 Log.d("Lihat onFailure LoginActivity", t.getMessage());
             }
         });
