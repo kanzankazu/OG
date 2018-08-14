@@ -69,7 +69,9 @@ public class ChangeEventActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_change_event);
 
-        accountid = SessionUtil.getStringPreferences(ISeasonConfig.KEY_ACCOUNT_ID, null);
+        if (SessionUtil.checkIfExist(ISeasonConfig.KEY_ACCOUNT_ID)) {
+            accountid = SessionUtil.getStringPreferences(ISeasonConfig.KEY_ACCOUNT_ID, null);
+        }
 
         initComponent();
         initContent();
@@ -92,15 +94,8 @@ public class ChangeEventActivity extends AppCompatActivity {
 
     private void initContent() {
         initRecycleView();
-
-        if (SessionUtil.checkIfExist(ISeasonConfig.KEY_ACCOUNT_ID)) {
-            if (accountid != null) {
-                getUserDataValidation();
-            }
-        }
-
+        getUserDataValidation();
         initVersionDataUser();
-
         customText(ceTVInfofvbi);
 
         //getversion
@@ -130,12 +125,12 @@ public class ChangeEventActivity extends AppCompatActivity {
         if (NetworkUtil.isConnected(this)) {
             getUserDataDo(accountid);
         } else {
-            if (db.checkDataTable(SQLiteHelper.TableUserData, SQLiteHelper.KEY_UserData_accountId, accountid)) {
+            if (db.isDataTableValueNull(SQLiteHelper.TableUserData, SQLiteHelper.KEY_UserData_accountId, accountid)) {
+                Snackbar.make(findViewById(android.R.id.content), "Data Kosong", Snackbar.LENGTH_LONG).show();
+            } else {
                 updateRecycleView(db.getAllListEvent(accountid));
                 updateUserInfo(db.getUserData(accountid));
                 Snackbar.make(findViewById(android.R.id.content), "Memunculkan Data Offline", Snackbar.LENGTH_LONG).show();
-            } else {
-                Snackbar.make(findViewById(android.R.id.content), "Data Bermasalah", Snackbar.LENGTH_LONG).show();
             }
         }
     }
@@ -143,6 +138,15 @@ public class ChangeEventActivity extends AppCompatActivity {
     private void getUserDataDo(String accountid) {
         if (srlChangeEventActivityfvbi.isRefreshing()) {
             srlChangeEventActivityfvbi.setRefreshing(false);
+        }
+
+        UserDataRequestModel requestModel = new UserDataRequestModel();
+        requestModel.setAccountid(accountid);
+        requestModel.setDbver(3);
+        if (db.isDataTableKeyNull(SQLiteHelper.TableUserData, SQLiteHelper.KEY_UserData_versionData)) {
+            requestModel.setVersion_data(IConfig.DB_Version);
+        } else {
+            requestModel.setVersion_data(db.getVersionDataIdUser(accountid));
         }
 
         ProgressDialog progressDialog = new ProgressDialog(this);
@@ -158,7 +162,7 @@ public class ChangeEventActivity extends AppCompatActivity {
         new Handler().postDelayed(new Runnable() {
             public void run() {
                 //code here
-                API.doUserDataRet(new UserDataRequestModel(accountid, IConfig.DB_Version, version_data_user)).enqueue(new Callback<List<UserDataResponseModel>>() {
+                API.doUserDataRet(requestModel).enqueue(new Callback<List<UserDataResponseModel>>() {
                     @Override
                     public void onResponse(Call<List<UserDataResponseModel>> call, Response<List<UserDataResponseModel>> response) {
                         progressDialog.dismiss();
@@ -167,32 +171,34 @@ public class ChangeEventActivity extends AppCompatActivity {
                             List<UserDataResponseModel> userDataResponseModels = response.body();
                             for (int i = 0; i < userDataResponseModels.size(); i++) {
                                 UserDataResponseModel model = userDataResponseModels.get(i);
-                                if (db.checkDataTable(SQLiteHelper.TableUserData, SQLiteHelper.KEY_UserData_accountId, accountid)) {
-                                    db.updateUserData(model, accountid);
-                                } else {
+                                if (db.isDataTableValueNull(SQLiteHelper.TableUserData, SQLiteHelper.KEY_UserData_accountId, accountid)) {
+                                    Log.d("Lihat", "onResponse ChangeEventActivity : " + model.getAccount_id());
+                                    Log.d("Lihat", "onResponse ChangeEventActivity : " + model.getFull_name());
                                     db.saveUserData(model);
+                                } else {
+                                    Log.d("Lihat", "onResponse ChangeEventActivity : " + model.getAccount_id());
+                                    Log.d("Lihat", "onResponse ChangeEventActivity : " + model.getFull_name());
+                                    db.updateUserData(model, accountid);
                                 }
                                 updateUserInfo(userDataResponseModels);
-                                //db.saveImageUserToLocal(getImgCachePath(model.getImage_url()),accountid);
 
                                 List<UserListEventResponseModel> userListEventResponseModels = model.getList_event();
                                 for (int j = 0; j < userListEventResponseModels.size(); j++) {
                                     UserListEventResponseModel model1 = userListEventResponseModels.get(j);
-                                    if (db.checkDataTable(SQLiteHelper.TableListEvent, SQLiteHelper.KEY_ListEvent_eventId, model1.event_id)) {
-                                        db.updateListEvent(model1);
-                                    } else {
+                                    if (db.isDataTableValueNull(SQLiteHelper.TableListEvent, SQLiteHelper.KEY_ListEvent_eventId, model1.getEvent_id())) {
                                         db.saveListEvent(model1, accountid);
+                                    } else {
+                                        db.updateListEvent(model1);
                                     }
                                     updateRecycleView(userListEventResponseModels);
-                                    //db.saveImageListEventToLocal(getImgCachePath(model1.getBackground()),getImgCachePath(model1.getLogo()),model1);
 
                                     List<UserWalletDataResponseModel> userWalletDataResponseModels = model1.getWallet_data();
                                     for (int n = 0; n < userWalletDataResponseModels.size(); n++) {
                                         UserWalletDataResponseModel model2 = userWalletDataResponseModels.get(n);
-                                        if (db.checkDataTableKeyMultiple(SQLiteHelper.TableWallet, SQLiteHelper.KEY_Wallet_sort, SQLiteHelper.KEY_Wallet_eventId, model2.getSort(), model1.getEvent_id())) {
-                                            db.updateWalletData(model2, model1.getEvent_id());
-                                        } else {
+                                        if (db.isDataTableValueMultipleNull(SQLiteHelper.TableWallet, SQLiteHelper.KEY_Wallet_sort, SQLiteHelper.KEY_Wallet_eventId, model2.getSort(), model1.getEvent_id())) {
                                             db.saveWalletData(model2, accountid, model1.getEvent_id());
+                                        } else {
+                                            db.updateWalletData(model2, model1.getEvent_id());
                                         }
                                     }
                                 }
@@ -223,7 +229,7 @@ public class ChangeEventActivity extends AppCompatActivity {
     }
 
     private void initVersionDataUser() {
-        if (db.checkDataTableNull(SQLiteHelper.TableGlobalData, SQLiteHelper.KEY_GlobalData_version_data_user)) {
+        if (db.isDataTableKeyNull(SQLiteHelper.TableGlobalData, SQLiteHelper.KEY_GlobalData_version_data_user)) {
             version_data_user = 0;
         } else {
             version_data_user = db.getVersionDataIdUser(accountid);

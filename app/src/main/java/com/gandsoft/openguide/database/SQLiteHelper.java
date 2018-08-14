@@ -18,7 +18,7 @@ import java.util.List;
 public class SQLiteHelper extends SQLiteOpenHelper {
     // Databases information
     private static final String DATABASE_NAME = "openguides.db";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
 
     public static String TableGlobalData = "tabGlobalData";
     public static String KEY_GlobalData_dbver = "dbver";
@@ -26,11 +26,11 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     public static String KEY_GlobalData_version_data_event = "version_data_event";
 
     public static String TableUserData = "tabUserEvent";
+    public static String KEY_UserData_No = "number";
+    public static String KEY_UserData_accountId = "accountId";
     public static String KEY_UserData_position = "position";
     public static String KEY_UserData_birthday = "birthday";
     public static String KEY_UserData_versionData = "versionData";
-    public static String KEY_UserData_No = "number";
-    public static String KEY_UserData_accountId = "accountId";
     public static String KEY_UserData_privacyPolicy = "privacyPolicy";
     public static String KEY_UserData_imageUrl = "imageUrl";
     public static String KEY_UserData_imageUrl_local = "imageUrlLocal";
@@ -70,6 +70,21 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     public static String KEY_Wallet_sort = "sort";
     public static String KEY_Wallet_type = "type";
 
+    public static String TableEventAbout = "tabAbout";
+    public static String Key_Event_About_EventId = "eventId";
+    public static String KEY_Event_About_Background = "background";
+    public static String KEY_Event_About_Background_Local = "background_local";
+    public static String KEY_Event_About_Logo = "logo";
+    public static String KEY_Event_About_Logo_Local = "logo_local";
+    public static String KEY_Event_About_Description = "description";
+
+    public static String TableContactList = "tabContactList";
+    public static String Key_Contact_List_Icon = "icon";
+    public static String KEY_Contact_List_Telephone = "telephone";
+    public static String KEY_Contact_List_Background_Local = "email";
+    public static String KEY_Contact_List_Logo = "name";
+
+
     private static final String query_add_table_UserData = "CREATE TABLE IF NOT EXISTS " + TableUserData + "("
             + KEY_UserData_No + " INTEGER PRIMARY KEY AUTOINCREMENT,"
             + KEY_UserData_accountId + " TEXT,"
@@ -87,7 +102,6 @@ public class SQLiteHelper extends SQLiteOpenHelper {
             + KEY_UserData_gender + " TEXT, "
             + KEY_UserData_fullName + " TEXT) ";
     private static final String query_delete_table_UserData = "DROP TABLE IF EXISTS " + TableUserData;
-
 
     private static final String query_add_table_ListEvent = "CREATE TABLE IF NOT EXISTS " + TableListEvent + "("
             + KEY_ListEvent_No + " INTEGER PRIMARY KEY AUTOINCREMENT,"
@@ -144,10 +158,10 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         db.execSQL(query_delete_table_ListEvent);
         db.execSQL(query_delete_table_Wallet);
         db.execSQL(query_delete_table_GlobalData);
-        replaceDataToNewTable(db, TableUserData, "tabTempUserEvent");
+        /*replaceDataToNewTable(db, TableUserData, "tabTempUserEvent");
         replaceDataToNewTable(db, TableListEvent, "tabTempEvent");
         replaceDataToNewTable(db, TableWallet, "tabTempWallet");
-        replaceDataToNewTable(db, TableGlobalData, "tabTempGlobalData");
+        replaceDataToNewTable(db, TableGlobalData, "tabTempGlobalData");*/
     }
 
     private void replaceDataToNewTable(SQLiteDatabase db, String tableName, String tableString) {
@@ -212,6 +226,8 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         }
     }
 
+    /*Version data*/
+
     public int getVersionDataIdUser(String accountId) {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.query(TableUserData, new String[]{KEY_UserData_versionData}, KEY_UserData_accountId + " = ? ", new String[]{accountId}, null, null, null);
@@ -232,7 +248,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         }
     }
 
-    /**/
+    /*USER*/
     public void saveUserData(UserDataResponseModel model) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
@@ -242,7 +258,6 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         contentValues.put(KEY_UserData_versionData, model.getVersion_data());
         contentValues.put(KEY_UserData_privacyPolicy, model.getPrivacy_policy());
         contentValues.put(KEY_UserData_imageUrl, model.getImage_url());
-        //contentValues.put(KEY_UserData_imageUrl_local, model.getImageUrl());
         contentValues.put(KEY_UserData_groupCode, model.getGroup_code());
         contentValues.put(KEY_UserData_roleName, model.getRole_name());
         contentValues.put(KEY_UserData_checkin, model.getCheckin());
@@ -251,40 +266,6 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         contentValues.put(KEY_UserData_gender, model.getGender());
         contentValues.put(KEY_UserData_fullName, model.getFull_name());
         db.insert(TableUserData, null, contentValues);
-        db.close();
-    }
-
-    public void saveListEvent(UserListEventResponseModel model, String accountId) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(KEY_ListEvent_eventId, model.getEvent_id());
-        contentValues.put(KEY_ListEvent_accountId, accountId);
-        contentValues.put(KEY_ListEvent_startDate, model.getStart_date());
-        contentValues.put(KEY_ListEvent_logo, model.getLogo());
-        //contentValues.put(KEY_ListEvent_logo_local, model.getLogo());
-        contentValues.put(KEY_ListEvent_title, model.getTitle());
-        contentValues.put(KEY_ListEvent_groupCompany, model.getGroup_company());
-        contentValues.put(KEY_ListEvent_status, model.getStatus());
-        //contentValues.put(KEY_ListEvent_background_local, model.getBackground());
-        contentValues.put(KEY_ListEvent_groupCode, model.getGroup_code());
-        contentValues.put(KEY_ListEvent_roleName, model.getRole_name());
-        contentValues.put(KEY_ListEvent_date, model.getDate());
-        contentValues.put(KEY_ListEvent_IsFirstIn, false);
-        long i = db.insert(TableListEvent, null, contentValues);
-        db.close();
-    }
-
-    public void saveWalletData(UserWalletDataResponseModel model, String accountId, String eventId) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(KEY_Wallet_sort, model.getSort());
-        contentValues.put(KEY_Wallet_accountId, accountId);
-        contentValues.put(KEY_Wallet_eventId, eventId);
-        contentValues.put(KEY_Wallet_bodyWallet, model.getBody_wallet());
-        contentValues.put(KEY_Wallet_notif, model.getNotif());
-        contentValues.put(KEY_Wallet_detail, model.getDetail());
-        contentValues.put(KEY_Wallet_type, model.getType());
-        db.insert(TableWallet, null, contentValues);
         db.close();
     }
 
@@ -305,7 +286,63 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         contentValues.put(KEY_UserData_email, model.getEmail());
         contentValues.put(KEY_UserData_gender, model.getGender());
         contentValues.put(KEY_UserData_fullName, model.getFull_name());
-        int q = db.update(TableUserData, contentValues, KEY_UserData_accountId + " = ? ", new String[]{accountId});
+        db.update(TableUserData, contentValues, KEY_UserData_accountId + " = ? ", new String[]{accountId});
+        db.close();
+    }
+
+    public void deleteAllDataUser() {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL("delete from " + TableUserData);
+        db.close();
+    }
+
+    public ArrayList<UserDataResponseModel> getUserData(String accountid) {
+        ArrayList<UserDataResponseModel> modelList = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(TableUserData, null, KEY_UserData_accountId + " = ? ", new String[]{accountid}, null, null, null);
+        if (cursor.moveToFirst()) {
+            do {
+                UserDataResponseModel model = new UserDataResponseModel();
+                model.setNumber(cursor.getInt(cursor.getColumnIndexOrThrow(KEY_UserData_No)));
+                model.setAccount_id(cursor.getString(cursor.getColumnIndexOrThrow(KEY_UserData_accountId)));
+                model.setPosition(cursor.getString(cursor.getColumnIndex(KEY_UserData_position)));
+                model.setBirthday(cursor.getString(cursor.getColumnIndex(KEY_UserData_birthday)));
+                model.setVersion_data(cursor.getString(cursor.getColumnIndex(KEY_UserData_versionData)));
+                model.setPrivacy_policy(cursor.getString(cursor.getColumnIndex(KEY_UserData_privacyPolicy)));
+                model.setImage_url(cursor.getString(cursor.getColumnIndex(KEY_UserData_imageUrl)));
+                model.setImage_url_local(cursor.getString(cursor.getColumnIndex(KEY_UserData_imageUrl_local)));
+                model.setGroup_code(cursor.getString(cursor.getColumnIndex(KEY_UserData_groupCode)));
+                model.setRole_name(cursor.getString(cursor.getColumnIndex(KEY_UserData_roleName)));
+                model.setCheckin(cursor.getString(cursor.getColumnIndex(KEY_UserData_checkin)));
+                model.setPhone_number(cursor.getString(cursor.getColumnIndex(KEY_UserData_phoneNumber)));
+                model.setEmail(cursor.getString(cursor.getColumnIndex(KEY_UserData_email)));
+                model.setGender(cursor.getString(cursor.getColumnIndex(KEY_UserData_gender)));
+                model.setFull_name(cursor.getString(cursor.getColumnIndex(KEY_UserData_fullName)));
+                modelList.add(model);
+            } while (cursor.moveToNext());
+        }
+
+        return modelList;
+    }
+
+    /*EVENT*/
+    public void saveListEvent(UserListEventResponseModel model, String accountId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(KEY_ListEvent_eventId, model.getEvent_id());
+        contentValues.put(KEY_ListEvent_accountId, accountId);
+        contentValues.put(KEY_ListEvent_startDate, model.getStart_date());
+        contentValues.put(KEY_ListEvent_logo, model.getLogo());
+        //contentValues.put(KEY_ListEvent_logo_local, model.getLogo());
+        contentValues.put(KEY_ListEvent_title, model.getTitle());
+        contentValues.put(KEY_ListEvent_groupCompany, model.getGroup_company());
+        contentValues.put(KEY_ListEvent_status, model.getStatus());
+        //contentValues.put(KEY_ListEvent_background_local, model.getBackground());
+        contentValues.put(KEY_ListEvent_groupCode, model.getGroup_code());
+        contentValues.put(KEY_ListEvent_roleName, model.getRole_name());
+        contentValues.put(KEY_ListEvent_date, model.getDate());
+        contentValues.put(KEY_ListEvent_IsFirstIn, false);
+        db.insert(TableListEvent, null, contentValues);
         db.close();
     }
 
@@ -325,27 +362,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         contentValues.put(KEY_ListEvent_roleName, model.getRole_name());
         contentValues.put(KEY_ListEvent_date, model.getDate());
         contentValues.put(KEY_ListEvent_IsFirstIn, false);
-        int q = db.update(TableListEvent, contentValues, KEY_ListEvent_eventId + " = ? ", new String[]{model.getEvent_id()});
-        db.close();
-    }
-
-    public void updateWalletData(UserWalletDataResponseModel model, String eventId) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(KEY_Wallet_sort, model.getSort());
-        //contentValues.put(KEY_Wallet_accountId, accountId);
-        //contentValues.put(KEY_Wallet_eventId, eventId);
-        contentValues.put(KEY_Wallet_bodyWallet, model.getBody_wallet());
-        contentValues.put(KEY_Wallet_notif, model.getNotif());
-        contentValues.put(KEY_Wallet_detail, model.getDetail());
-        contentValues.put(KEY_Wallet_type, model.getType());
-        int q = db.update(TableWallet, contentValues, KEY_Wallet_sort + " = ? AND " + KEY_Wallet_eventId + " = ? ", new String[]{model.getSort(), eventId});
-        db.close();
-    }
-
-    public void deleteAllDataUser() {
-        SQLiteDatabase db = this.getWritableDatabase();
-        db.execSQL("delete from " + TableUserData);
+        db.update(TableListEvent, contentValues, KEY_ListEvent_eventId + " = ? ", new String[]{model.getEvent_id()});
         db.close();
     }
 
@@ -353,56 +370,6 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         db.execSQL("delete from " + TableListEvent);
         db.close();
-    }
-
-    public void deleteAllDataWallet() {
-        SQLiteDatabase db = this.getWritableDatabase();
-        db.execSQL("delete from " + TableWallet);
-        db.close();
-    }
-
-    public void deleleDataByKey(String table, String key, String value) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        db.delete(table, key + " = ? ", new String[]{value});
-        db.close();
-    }
-
-    public void deleleDataByKeyMultiple(String table, String key, String key2, String value, String value2) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        db.delete(table, key + " = ? AND " + key2 + " = ? ", new String[]{value, value2});
-        db.close();
-    }
-
-
-    /**/
-    public ArrayList<UserDataResponseModel> getUserData(String accountid) {
-        ArrayList<UserDataResponseModel> modelList = new ArrayList<>();
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.query(TableUserData, null, KEY_UserData_accountId + " = ? ", new String[]{accountid}, null, null, null);
-
-        if (cursor.moveToFirst()) {
-            do {
-                UserDataResponseModel model = new UserDataResponseModel();
-                model.setNumber(cursor.getInt(cursor.getColumnIndex(KEY_UserData_No)));
-                model.setAccount_id(cursor.getString(cursor.getColumnIndex(KEY_UserData_accountId)));
-                model.setPosition(cursor.getString(cursor.getColumnIndex(KEY_UserData_position)));
-                model.setBirthday(cursor.getString(cursor.getColumnIndex(KEY_UserData_birthday)));
-                model.setVersion_data(cursor.getString(cursor.getColumnIndex(KEY_UserData_versionData)));
-                model.setPrivacy_policy(cursor.getString(cursor.getColumnIndex(KEY_UserData_privacyPolicy)));
-                model.setImage_url(cursor.getString(cursor.getColumnIndex(KEY_UserData_imageUrl)));
-                model.setImage_url_local(cursor.getString(cursor.getColumnIndex(KEY_UserData_imageUrl_local)));
-                model.setGroup_code(cursor.getString(cursor.getColumnIndex(KEY_UserData_groupCode)));
-                model.setRole_name(cursor.getString(cursor.getColumnIndex(KEY_UserData_roleName)));
-                model.setCheckin(cursor.getString(cursor.getColumnIndex(KEY_UserData_checkin)));
-                model.setPhone_number(cursor.getString(cursor.getColumnIndex(KEY_UserData_phoneNumber)));
-                model.setEmail(cursor.getString(cursor.getColumnIndex(KEY_UserData_email)));
-                model.setGender(cursor.getString(cursor.getColumnIndex(KEY_UserData_gender)));
-                model.setFull_name(cursor.getString(cursor.getColumnIndex(KEY_UserData_fullName)));
-                modelList.add(model);
-            } while (cursor.moveToNext());
-        }
-
-        return modelList;
     }
 
     public ArrayList<UserListEventResponseModel> getAllListEvent(String accountid) {
@@ -436,6 +403,40 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         return modelList;
     }
 
+    public void saveWalletData(UserWalletDataResponseModel model, String accountId, String eventId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(KEY_Wallet_sort, model.getSort());
+        contentValues.put(KEY_Wallet_accountId, accountId);
+        contentValues.put(KEY_Wallet_eventId, eventId);
+        contentValues.put(KEY_Wallet_bodyWallet, model.getBody_wallet());
+        contentValues.put(KEY_Wallet_notif, model.getNotif());
+        contentValues.put(KEY_Wallet_detail, model.getDetail());
+        contentValues.put(KEY_Wallet_type, model.getType());
+        db.insert(TableWallet, null, contentValues);
+        db.close();
+    }
+
+    public void updateWalletData(UserWalletDataResponseModel model, String eventId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(KEY_Wallet_sort, model.getSort());
+        //contentValues.put(KEY_Wallet_accountId, accountId);
+        //contentValues.put(KEY_Wallet_eventId, eventId);
+        contentValues.put(KEY_Wallet_bodyWallet, model.getBody_wallet());
+        contentValues.put(KEY_Wallet_notif, model.getNotif());
+        contentValues.put(KEY_Wallet_detail, model.getDetail());
+        contentValues.put(KEY_Wallet_type, model.getType());
+        db.update(TableWallet, contentValues, KEY_Wallet_sort + " = ? AND " + KEY_Wallet_eventId + " = ? ", new String[]{model.getSort(), eventId});
+        db.close();
+    }
+
+    public void deleteAllDataWallet() {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL("delete from " + TableWallet);
+        db.close();
+    }
+
     public ArrayList<UserWalletDataResponseModel> getListWalletData(String eventId) {
         ArrayList<UserWalletDataResponseModel> modelList = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
@@ -462,44 +463,79 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         return modelList;
     }
 
-    public boolean checkDataTable(String tableName, String targetKey, String targetValue) {
+
+    /*CHECK DATA*/
+    public boolean isDataTableKeyNull(String tableName, String targetKey) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(tableName, null, targetKey + " IS NULL ", null, null, null, null);
+        if (cursor.getCount() == 0) {
+            cursor.close();
+            Log.d("Lihat", "isDataTableKeyNull SQLiteHelper : " + true);
+            return true;
+        } else {
+            cursor.close();
+            Log.d("Lihat", "isDataTableKeyNull SQLiteHelper : " + false);
+            return false;
+        }
+    }
+
+    public boolean isDataTableKeyMultipleNull(String table, String key, String key2) {
         SQLiteDatabase db = this.getReadableDatabase();
         //String selectQuery = "SELECT * FROM " + tableName + " WHERE " + targetKey + " = '" + targetValue + "'";
         //Cursor cursor = db.rawQuery(selectQuery, null);
-        Cursor cursor = db.query(tableName, null, targetKey + " = ? ", new String[]{targetValue}, null, null, null);
-        if (cursor != null) {
+        Cursor cursor = db.query(table, null, key + " IS NULL AND " + key2 + " IS NULL ", null, null, null, null);
+        if (cursor.getCount() == 0) {
             cursor.close();
+            Log.d("Lihat", "isDataTableKeyMultipleNull SQLiteHelper : " + true);
             return true;
         } else {
             cursor.close();
+            Log.d("Lihat", "isDataTableKeyMultipleNull SQLiteHelper : " + false);
             return false;
         }
     }
 
-    public boolean checkDataTableNull(String tableName, String targetKey) {
+    public boolean isDataTableValueNull(String tableName, String targetKey, String targetValue) {
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.query(tableName, null, targetKey + " IS NULL ", null, null, null, null);
-        if (cursor == null) {
+        Cursor cursor = db.query(tableName, null, targetKey + " = ? ", new String[]{targetValue}, null, null, null);
+        if (cursor.getCount() == 0) {
             cursor.close();
+            Log.d("Lihat", "isDataTableValueNull SQLiteHelper : " + true);
             return true;
         } else {
             cursor.close();
+            Log.d("Lihat", "isDataTableValueNull SQLiteHelper : " + false);
             return false;
         }
     }
 
-    public boolean checkDataTableKeyMultiple(String table, String key, String key2, String value, String value2) {
+    public boolean isDataTableValueMultipleNull(String table, String key, String key2, String value, String value2) {
         SQLiteDatabase db = this.getReadableDatabase();
         //String selectQuery = "SELECT * FROM " + tableName + " WHERE " + targetKey + " = '" + targetValue + "'";
         //Cursor cursor = db.rawQuery(selectQuery, null);
         Cursor cursor = db.query(table, null, key + " = ? AND " + key2 + " = ? ", new String[]{value, value2}, null, null, null);
-        if (cursor != null) {
+        if (cursor.getCount() == 0) {
             cursor.close();
+            Log.d("Lihat", "isDataTableValueMultipleNull SQLiteHelper : " + true);
             return true;
         } else {
             cursor.close();
+            Log.d("Lihat", "isDataTableValueMultipleNull SQLiteHelper : " + false);
             return false;
         }
+    }
+
+    /**/
+    public void deleleDataByKey(String table, String key, String value) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(table, key + " = ? ", new String[]{value});
+        db.close();
+    }
+
+    public void deleleDataByKeyMultiple(String table, String key, String key2, String value, String value2) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(table, key + " = ? AND " + key2 + " = ? ", new String[]{value, value2});
+        db.close();
     }
 
     public void setOneKey(String table, String key, String value) {

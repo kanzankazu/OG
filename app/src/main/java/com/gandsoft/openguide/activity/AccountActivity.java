@@ -10,6 +10,7 @@ import android.support.v7.app.AlertDialog;
 import android.text.SpannableStringBuilder;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
+import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -47,6 +48,11 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_account);
+
+        if (SessionUtil.checkIfExist(ISeasonConfig.KEY_ACCOUNT_ID)) {
+            accountId = SessionUtil.getStringPreferences(ISeasonConfig.KEY_ACCOUNT_ID, null);
+            Log.d("Lihat", "onCreate AccountActivity : " + accountId);
+        }
 
         initComponent();
         initContent();
@@ -87,15 +93,11 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
             isNewUser = false;
         }
 
-        if (bundle.hasExtra(ISeasonConfig.KEY_ACCOUNT_ID)) {
-            accountId = bundle.getStringExtra(ISeasonConfig.KEY_ACCOUNT_ID);
-            tvAccIDfvbi.setText(accountId);
-        } else {
-            accountId = db.getAccountId();
-            tvAccIDfvbi.setText(accountId);
+        if (!db.isDataTableValueNull(SQLiteHelper.TableUserData, SQLiteHelper.KEY_UserData_accountId, accountId)) {
+            updateData(db.getUserData(accountId));
+        }else {
+            Snackbar.make(findViewById(android.R.id.content), "data kosong", Snackbar.LENGTH_LONG).show();
         }
-
-        updateData(db.getUserData(accountId));
 
         mAuth = FirebaseAuth.getInstance();
 
@@ -112,17 +114,16 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
     }
 
     private void updateData(ArrayList<UserDataResponseModel> models) {
-        if (models.size() == 1) {
-            for (int i = 0; i < models.size(); i++) {
-                UserDataResponseModel model = models.get(i);
-                etAccNamefvbi.setText(model.getFull_name());
-                etAccEmailfvbi.setText(model.getEmail());
-                tvAccGenderfvbi.setText(model.getGender());
-                String[] q = model.getBirthday().split("-");
-                tvAccTahunfvbi.setText(q[0]);
-                tvAccBulanfvbi.setText(q[1]);
-                tvAccTglfvbi.setText(q[2]);
-            }
+        tvAccIDfvbi.setText(accountId);
+        for (int i = 0; i < models.size(); i++) {
+            UserDataResponseModel model = models.get(i);
+            etAccNamefvbi.setText(model.getFull_name());
+            etAccEmailfvbi.setText(model.getEmail());
+            tvAccGenderfvbi.setText(model.getGender());
+            String[] q = model.getBirthday().split("-");
+            tvAccTahunfvbi.setText(q[0]);
+            tvAccBulanfvbi.setText(q[1]);
+            tvAccTglfvbi.setText(q[2]);
         }
     }
 
@@ -211,7 +212,6 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
         Intent intent = new Intent(AccountActivity.this, ChangeEventActivity.class);
         startActivity(intent);
         finish();
-        SessionUtil.setStringPreferences(ISeasonConfig.KEY_ACCOUNT_ID, accountId);
     }
 
     @Override

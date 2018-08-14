@@ -12,6 +12,10 @@ public class UserDataRequestModel {
         this.version_data = version_data;
     }
 
+    public UserDataRequestModel() {
+
+    }
+
     public int getVersion_data() {
         return version_data;
     }

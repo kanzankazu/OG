@@ -343,11 +343,11 @@ public class LoginActivity extends LocalBaseActivity {
                     if (s.size() == 1) {
                         for (int i = 0; i < s.size(); i++) {
                             LoginResponseModel model = s.get(i);
+                            SessionUtil.setStringPreferences(ISeasonConfig.KEY_ACCOUNT_ID, phoneNumberSavedwoPlus);
                             if (model.getStatus().equalsIgnoreCase("verify")) {
                                 Snackbar.make(findViewById(android.R.id.content), "verify", Snackbar.LENGTH_LONG).show();
                                 moveToChangeEvent();
                                 db.setOneKey(SQLiteHelper.TableUserData, SQLiteHelper.KEY_UserData_accountId, phoneNumberSavedwoPlus);
-                                SessionUtil.setStringPreferences(ISeasonConfig.KEY_ACCOUNT_ID, phoneNumberSavedwoPlus);
                             } else {
                                 Snackbar.make(findViewById(android.R.id.content), "no verify", Snackbar.LENGTH_LONG).show();
                                 moveToAccountForNewUser();
@@ -374,7 +374,6 @@ public class LoginActivity extends LocalBaseActivity {
         SessionUtil.setBoolPreferences(ISeasonConfig.KEY_IS_HAS_LOGIN, true);
         startActivity(AccountActivity.getActIntent(LoginActivity.this)
                 .putExtra(ISeasonConfig.KEY_IS_FIRST_ACCOUNT, true)
-                .putExtra(ISeasonConfig.KEY_ACCOUNT_ID, phoneNumberSavedwoPlus)
         );
         finish();
     }
@@ -382,7 +381,6 @@ public class LoginActivity extends LocalBaseActivity {
     private void moveToChangeEvent() {
         SessionUtil.setBoolPreferences(ISeasonConfig.KEY_IS_HAS_LOGIN, true);
         startActivity(ChangeEventActivity.getActIntent(LoginActivity.this)
-                .putExtra(ISeasonConfig.KEY_ACCOUNT_ID, phoneNumberSavedwoPlus)
         );
         finish();
     }

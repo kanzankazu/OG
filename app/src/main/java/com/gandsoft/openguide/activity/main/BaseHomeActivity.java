@@ -30,6 +30,7 @@ import com.gandsoft.openguide.API.APIresponse.Event.EventPlaceList;
 import com.gandsoft.openguide.API.APIresponse.Event.EventScheduleListDate;
 import com.gandsoft.openguide.API.APIresponse.Event.EventScheduleListDateDataList;
 import com.gandsoft.openguide.API.APIresponse.Event.EventTheEvent;
+import com.gandsoft.openguide.IConfig;
 import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
 import com.gandsoft.openguide.database.SQLiteHelper;
@@ -63,8 +64,13 @@ public class BaseHomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_base_home);
 
-        accountId = SessionUtil.getStringPreferences(ISeasonConfig.KEY_ACCOUNT_ID, null);
-        eventId = SessionUtil.getStringPreferences(ISeasonConfig.KEY_EVENT_ID, null);
+        if (SessionUtil.checkIfExist(ISeasonConfig.KEY_ACCOUNT_ID)) {
+            accountId = SessionUtil.getStringPreferences(ISeasonConfig.KEY_ACCOUNT_ID, null);
+        }
+        if (SessionUtil.checkIfExist(ISeasonConfig.KEY_EVENT_ID)) {
+            eventId = SessionUtil.getStringPreferences(ISeasonConfig.KEY_EVENT_ID, null);
+        }
+
 
         initComponent();
         initContent();
@@ -116,10 +122,10 @@ public class BaseHomeActivity extends AppCompatActivity {
         if (NetworkUtil.isConnected(BaseHomeActivity.this)) {
             getEventDataDo();
         } else {
-            if (db.checkDataTable(SQLiteHelper.TableListEvent, SQLiteHelper.KEY_ListEvent_eventId, eventId)) {
-                Snackbar.make(findViewById(android.R.id.content), "Memunculkan Data Offline", Snackbar.LENGTH_LONG).show();
+            if (db.isDataTableValueNull(SQLiteHelper.TableListEvent, SQLiteHelper.KEY_ListEvent_eventId, eventId)) {
+                Snackbar.make(findViewById(android.R.id.content), "Data Kosong", Snackbar.LENGTH_LONG).show();
             } else {
-                Snackbar.make(findViewById(android.R.id.content), "Data Bermasalah", Snackbar.LENGTH_LONG).show();
+                Snackbar.make(findViewById(android.R.id.content), "Memunculkan Data Offline", Snackbar.LENGTH_LONG).show();
             }
         }
     }
@@ -223,8 +229,8 @@ public class BaseHomeActivity extends AppCompatActivity {
     }
 
     private void initVersionDataEvent() {
-        if (db.checkDataTableNull(SQLiteHelper.TableGlobalData, SQLiteHelper.KEY_GlobalData_version_data_event)) {
-            version_data_event = 0;
+        if (db.isDataTableValueNull(SQLiteHelper.TableListEvent, SQLiteHelper.KEY_ListEvent_version_data, eventId)) {
+            version_data_event = IConfig.DB_Version;
         } else {
             version_data_event = db.getVersionDataIdEvent(eventId);
         }
