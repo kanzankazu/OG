@@ -27,7 +27,8 @@ import com.gandsoft.openguide.API.APIresponse.Event.EventDataContactList;
 import com.gandsoft.openguide.API.APIresponse.Event.EventDataResponseModel;
 import com.gandsoft.openguide.API.APIresponse.Event.EventImportanInfo;
 import com.gandsoft.openguide.API.APIresponse.Event.EventPlaceList;
-import com.gandsoft.openguide.API.APIresponse.Event.EventScheduleList;
+import com.gandsoft.openguide.API.APIresponse.Event.EventScheduleListDate;
+import com.gandsoft.openguide.API.APIresponse.Event.EventScheduleListDateDataList;
 import com.gandsoft.openguide.API.APIresponse.Event.EventTheEvent;
 import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
@@ -145,6 +146,7 @@ public class BaseHomeActivity extends AppCompatActivity {
                 progressDialog.dismiss();
                 if (response.isSuccessful()) {
                     for (int i = 0; i < response.body().size(); i++) {
+                        Log.d("Lihat", "onResponse BaseHomeActivity : " + response.body());
                         EventDataResponseModel model = response.body().get(i);
                         db.setOneKey(SQLiteHelper.TableGlobalData, SQLiteHelper.KEY_GlobalData_version_data_event, model.getEvent_id());
 
@@ -154,41 +156,23 @@ public class BaseHomeActivity extends AppCompatActivity {
 
                         }
 
-
                         for (int i2 = 0; i2 < model.getPlace_list().size(); i2++) {
-                            Map<String, List<EventPlaceList>> stringListMap = model.getPlace_list().get(i2);
-                            /*Log.d("Lihat", "onResponse BaseHomeActivity stringListMap : " + stringListMap);
-                            Iterator<String> iterator = stringListMap.keySet().iterator();
-                            Log.d("Lihat", "onResponse BaseHomeActivity iterator : " + iterator);
-                            while (iterator.hasNext()) {
-                                String key = (String) iterator.next();
-                                Log.d("Lihat", "onResponse BaseHomeActivity key : " + key);
-                                List<EventPlaceList> value = (List<EventPlaceList>) stringListMap.get(key);
-                                Log.d("Lihat", "onResponse BaseHomeActivity value.size : " + value.size());
-                                Log.d("Lihat", "onResponse BaseHomeActivity value : " + value);
-                                Log.d("Lihat", "onResponse BaseHomeActivity value.get(0) : " + value.get(0));
-                                for (int i22 = 0; i22 < value.size(); i22++) {
-                                    EventPlaceList placeList = value.get(i22);
-                                    Log.d("Lihat", "onResponse BaseHomeActivity : " + placeList);
-                                    List<EventPlaceListData> q = placeList.getPlaceListDataList();
-                                    Log.d("Lihat", "onResponse BaseHomeActivity : " + q);
-                                    *//*for (int i23 = 0; i23 < q.size(); i23++) {
-                                        EventPlaceListData eventPlaceListData = placeList.getPlaceListDataList().get(i23);
-                                        Log.d("Lihat", "onResponse BaseHomeActivity : " + eventPlaceListData.getTitle());
-                                    }*//*
-                                }
-                            }*/
-                            for (Map.Entry<String, List<EventPlaceList>> entry : stringListMap.entrySet()) {
-                                String key = entry.getKey();
+                            Map<Integer, List<EventPlaceList>> stringListMap = model.getPlace_list().get(i2);
+                            Log.d("Lihat", "onResponse BaseHomeActivity stringListMap : " + stringListMap);
+                            for (Map.Entry<Integer, List<EventPlaceList>> entry : stringListMap.entrySet()) {
+                                Integer key = entry.getKey();
                                 List<EventPlaceList> values = entry.getValue();
-                                Log.d("Lihat", "onResponse BaseHomeActivity : " + key);
+                                Log.d("Lihat", "onResponse BaseHomeActivity key : " + key);
                                 Log.d("Lihat", "onResponse BaseHomeActivity values.size : " + values.size());
                                 Log.d("Lihat", "onResponse BaseHomeActivity values.get : " + values.get(0));
-                                Log.d("Lihat", "onResponse BaseHomeActivity values.get. : " + values.get(0).getPlaceListDataList());
-                                Log.d("Lihat", "onResponse BaseHomeActivity values : " + values);
+                                for (int i22 = 0; i22 < values.size(); i22++) {
+                                    EventPlaceList placeList = values.get(i22);
+                                    Log.d("Lihat", "onResponse BaseHomeActivity getTitle : " + placeList.getTitle());
+                                    Log.d("Lihat", "onResponse BaseHomeActivity getLatitude : " + placeList.getLatitude());
+                                    Log.d("Lihat", "onResponse BaseHomeActivity getLongitude : " + placeList.getLongitude());
+                                }
                             }
                         }
-
 
                         for (int i3 = 0; i3 < model.getImportan_info().size(); i3++) {
                             EventImportanInfo importanInfo = model.getImportan_info().get(i3);
@@ -196,7 +180,7 @@ public class BaseHomeActivity extends AppCompatActivity {
 
                         for (int i4 = 0; i4 < model.getData_contact().size(); i4++) {
                             EventDataContact dataContact = model.getData_contact().get(i4);
-
+                            Log.d("Lihat", "onResponse BaseHomeActivity : " + dataContact.getTitle());
                             for (int i41 = 0; i41 < dataContact.getContact_list().size(); i41++) {
                                 EventDataContactList dataContactList = dataContact.getContact_list().get(i41);
 
@@ -208,10 +192,22 @@ public class BaseHomeActivity extends AppCompatActivity {
                         }
 
                         for (int i6 = 0; i6 < model.getSchedule_list().size(); i6++) {
-                            EventScheduleList scheduleList = model.getSchedule_list().get(i6);
+                            Map<String, List<EventScheduleListDate>> scheduleList = model.getSchedule_list().get(i6);
+                            for (Map.Entry<String, List<EventScheduleListDate>> entry : scheduleList.entrySet()) {
+                                String key = entry.getKey();
+                                Log.d("Lihat", "onResponse BaseHomeActivity key : " + key);
+                                List<EventScheduleListDate> value = entry.getValue();
+                                for (int i61 = 0; i61 < value.size(); i61++) {
+                                    EventScheduleListDate listDate = value.get(i61);
+                                    Log.d("Lihat", "onResponse BaseHomeActivity getDate : " + listDate.getDate());
+                                    List<EventScheduleListDateDataList> value2 = listDate.getData();
+                                    for (int i62 = 0; i62 < value2.size(); i62++) {
+                                        EventScheduleListDateDataList listDateDataList = value2.get(i62);
+                                        Log.d("Lihat", "onResponse BaseHomeActivity getLocation : " + listDateDataList.getLocation());
+                                    }
+                                }
+                            }
                         }
-
-
                     }
                 } else {
                     Log.d("Lihat", "onResponse BaseHomeActivity : " + response.message());

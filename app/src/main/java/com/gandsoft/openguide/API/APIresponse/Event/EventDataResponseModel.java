@@ -12,12 +12,12 @@ public class EventDataResponseModel implements Serializable {
     public List<EventTheEvent> the_event = new ArrayList<>();
     public List<EventHomeContent> homecontent = new ArrayList<>();
     public List<EventGallery> gallery = new ArrayList<>();
-    public List<Map<String, List<EventPlaceList>>> place_list = new ArrayList<>();
+    public List<Map<Integer, List<EventPlaceList>>> place_list = new ArrayList<>();
     public List<EventImportanInfo> importan_info = new ArrayList<>();
     public List<EventDataContact> data_contact = new ArrayList<>();
     public List<EventCommitteeNote> committee_note = new ArrayList<>();
     public List<EventAbout> about = new ArrayList<>();
-    public List<EventScheduleList> schedule_list = new ArrayList<>();
+    public List<Map<String, List<EventScheduleListDate>>> schedule_list = new ArrayList<>();
     public List<EventWalletdata> wallet_data = new ArrayList<>();
     public List<EventEmergencies> emergencies = new ArrayList<>();
     public List<EventSurroundingArea> surrounding_area = new ArrayList<>();
@@ -71,11 +71,11 @@ public class EventDataResponseModel implements Serializable {
         this.gallery = gallery;
     }
 
-    public List<Map<String, List<EventPlaceList>>> getPlace_list() {
+    public List<Map<Integer, List<EventPlaceList>>> getPlace_list() {
         return place_list;
     }
 
-    public void setPlace_list(List<Map<String, List<EventPlaceList>>> place_list) {
+    public void setPlace_list(List<Map<Integer, List<EventPlaceList>>> place_list) {
         this.place_list = place_list;
     }
 
@@ -111,11 +111,11 @@ public class EventDataResponseModel implements Serializable {
         this.about = about;
     }
 
-    public List<EventScheduleList> getSchedule_list() {
+    public List<Map<String, List<EventScheduleListDate>>> getSchedule_list() {
         return schedule_list;
     }
 
-    public void setSchedule_list(List<EventScheduleList> schedule_list) {
+    public void setSchedule_list(List<Map<String, List<EventScheduleListDate>>> schedule_list) {
         this.schedule_list = schedule_list;
     }
 
