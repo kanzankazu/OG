@@ -347,7 +347,7 @@ public class LoginActivity extends LocalBaseActivity {
                             if (model.getStatus().equalsIgnoreCase("verify")) {
                                 Snackbar.make(findViewById(android.R.id.content), "verify", Snackbar.LENGTH_LONG).show();
                                 moveToChangeEvent();
-                                db.setOneKey(SQLiteHelper.TableUserData, SQLiteHelper.KEY_UserData_accountId, phoneNumberSavedwoPlus);
+                                db.insertOneKey(SQLiteHelper.TableUserData, SQLiteHelper.KEY_UserData_accountId, phoneNumberSavedwoPlus);
                             } else {
                                 Snackbar.make(findViewById(android.R.id.content), "no verify", Snackbar.LENGTH_LONG).show();
                                 moveToAccountForNewUser();

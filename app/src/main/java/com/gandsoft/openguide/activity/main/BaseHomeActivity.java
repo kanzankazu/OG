@@ -154,7 +154,7 @@ public class BaseHomeActivity extends AppCompatActivity {
                     for (int i = 0; i < response.body().size(); i++) {
                         Log.d("Lihat", "onResponse BaseHomeActivity : " + response.body());
                         EventDataResponseModel model = response.body().get(i);
-                        db.setOneKey(SQLiteHelper.TableGlobalData, SQLiteHelper.KEY_GlobalData_version_data_event, model.getEvent_id());
+                        db.insertOneKey(SQLiteHelper.TableGlobalData, SQLiteHelper.KEY_GlobalData_version_data_event, model.getEvent_id());
 
                         /*the event*/
                         for (int i1 = 0; i1 < model.getThe_event().size(); i1++) {

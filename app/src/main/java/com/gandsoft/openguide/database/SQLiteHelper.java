@@ -7,6 +7,11 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import com.gandsoft.openguide.API.APIresponse.Event.EventAbout;
+import com.gandsoft.openguide.API.APIresponse.Event.EventDataContactList;
+import com.gandsoft.openguide.API.APIresponse.Event.EventImportanInfo;
+import com.gandsoft.openguide.API.APIresponse.Event.EventScheduleListDateDataList;
+import com.gandsoft.openguide.API.APIresponse.Event.EventTheEvent;
 import com.gandsoft.openguide.API.APIresponse.UserData.UserDataResponseModel;
 import com.gandsoft.openguide.API.APIresponse.UserData.UserListEventResponseModel;
 import com.gandsoft.openguide.API.APIresponse.UserData.UserWalletDataResponseModel;
@@ -174,7 +179,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     private static final String query_delete_table_Wallet = "DROP TABLE IF EXISTS " + TableWallet;
 
     private static final String query_add_table_GlobalData = "CREATE TABLE IF NOT EXISTS " + TableGlobalData + "("
-            + KEY_GlobalData_dbver + " TEXT PRIMARY KEY  , "
+            + KEY_GlobalData_dbver + " TEXT PRIMARY KEY , "
             + KEY_GlobalData_version_data_user + " TEXT, "
             + KEY_GlobalData_version_data_event + " TEXT) ";
     private static final String query_delete_table_GlobalData = "DROP TABLE IF EXISTS " + TableGlobalData;
@@ -220,22 +225,21 @@ public class SQLiteHelper extends SQLiteOpenHelper {
             + Key_Schedule_List_status + " TEXT) ";
     private static final String query_delete_table_ScheduleList = "DROP TABLE IF EXISTS " + TableScheduleList;
 
-    private static final String getQuery_add_table_TheEvent =
-            "CREATE TABLE IF NOT EXISTS" + TableTheEvent +"("
-            + Key_The_Event_No + "TEXT PRIMARY KEY AUTOINCREMENT,"
-            + Key_The_Event_EventId + "TEXT,"
-            + Key_The_Event_background + "TEXT,"
-            + Key_The_Event_logo + "TEXT,"
-            + Key_The_Event_event_name + "TEXT,"
-            + Key_The_Event_event_location + "TEXT,"
-            + Key_The_Event_date_event + "TEXT,"
-            + Key_The_Event_weather + "TEXT,"
-            + Key_The_Event_title_contact + "TEXT,"
-            + Key_The_Event_api_weather + "TEXT,"
-            + Key_The_Event_welcome_note + "TEXT,"
-            + Key_The_Event_commentpost_status + "TEXT,"
-            + Key_The_Event_deletepost_status + "TEXT,"
-            + Key_The_Event_addpost_status + "TEXT)";
+    private static final String query_add_table_TheEvent = "CREATE TABLE IF NOT EXISTS " + TableTheEvent + "("
+            + Key_The_Event_No + " TEXT PRIMARY KEY AUTOINCREMENT, "
+            + Key_The_Event_EventId + " TEXT, "
+            + Key_The_Event_background + " TEXT, "
+            + Key_The_Event_logo + " TEXT, "
+            + Key_The_Event_event_name + " TEXT, "
+            + Key_The_Event_event_location + " TEXT, "
+            + Key_The_Event_date_event + " TEXT, "
+            + Key_The_Event_weather + " TEXT, "
+            + Key_The_Event_title_contact + " TEXT, "
+            + Key_The_Event_api_weather + " TEXT, "
+            + Key_The_Event_welcome_note + " TEXT, "
+            + Key_The_Event_commentpost_status + " TEXT, "
+            + Key_The_Event_deletepost_status + " TEXT, "
+            + Key_The_Event_addpost_status + " TEXT)";
     private static final String query_delete_table_TheEvent = "DROP TABLE IF EXISTS " + TableTheEvent;
 
 
@@ -250,6 +254,12 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         db.execSQL(query_add_table_ListEvent);
         db.execSQL(query_add_table_Wallet);
         db.execSQL(query_add_table_GlobalData);
+        db.execSQL(query_add_table_EventAbout);
+        db.execSQL(query_add_table_ContactList);
+        db.execSQL(query_add_table_ImportantInfo);
+        db.execSQL(query_add_table_ScheduleList);
+        db.execSQL(query_add_table_TheEvent);
+
     }
 
     @Override
@@ -258,6 +268,11 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         db.execSQL(query_delete_table_ListEvent);
         db.execSQL(query_delete_table_Wallet);
         db.execSQL(query_delete_table_GlobalData);
+        db.execSQL(query_delete_table_EventAbout);
+        db.execSQL(query_delete_table_ContactList);
+        db.execSQL(query_delete_table_ImportantInfo);
+        db.execSQL(query_delete_table_ScheduleList);
+        db.execSQL(query_delete_table_TheEvent);
         /*replaceDataToNewTable(db, TableUserData, "tabTempUserEvent");
         replaceDataToNewTable(db, TableListEvent, "tabTempEvent");
         replaceDataToNewTable(db, TableWallet, "tabTempWallet");
@@ -504,7 +519,6 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     }
 
     /*WALLET*/
-
     public void saveWalletData(UserWalletDataResponseModel model, String accountId, String eventId) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
@@ -518,6 +532,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         db.insert(TableWallet, null, contentValues);
         db.close();
     }
+
 
     public void updateWalletData(UserWalletDataResponseModel model, String eventId) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -564,6 +579,79 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         cursor.close();
         return modelList;
     }
+
+    public void saveTheEvent(EventTheEvent model, String eventId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(Key_The_Event_EventId, eventId);
+        contentValues.put(Key_The_Event_background, model.getBackground());
+        contentValues.put(Key_The_Event_logo, model.getLogo());
+        contentValues.put(Key_The_Event_event_name, model.getEvent_name());
+        contentValues.put(Key_The_Event_event_location, model.getEvent_location());
+        contentValues.put(Key_The_Event_date_event, model.getDate_event());
+        contentValues.put(Key_The_Event_weather, model.getWeather());
+        contentValues.put(Key_The_Event_title_contact, model.getTitle_contact());
+        contentValues.put(Key_The_Event_api_weather, model.getApi_weather());
+        contentValues.put(Key_The_Event_welcome_note, model.getWelcome_note());
+        contentValues.put(Key_The_Event_commentpost_status, model.getCommentpost_status());
+        contentValues.put(Key_The_Event_deletepost_status, model.getDeletepost_status());
+        db.insert(TableTheEvent, null, contentValues);
+        db.close();
+    }
+
+    public void saveScheduleList(EventScheduleListDateDataList model, String date, String eventId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(Key_Schedule_List_EventId, eventId);
+        contentValues.put(Key_Schedule_List_date, date);
+        contentValues.put(Key_Schedule_List_id, model.getId());
+        contentValues.put(Key_Schedule_List_waktu, model.getWaktu());
+        contentValues.put(Key_Schedule_List_schedule_title, model.getSchedule_title());
+        contentValues.put(Key_Schedule_List_location, model.getLocation());
+        contentValues.put(Key_Schedule_List_detail, model.getDetail());
+        contentValues.put(Key_Schedule_List_action, model.getAction());
+        contentValues.put(Key_Schedule_List_link, model.getLink());
+        contentValues.put(Key_Schedule_List_status, model.getStatus());
+        db.insert(TableScheduleList, null, contentValues);
+        db.close();
+    }
+
+    public void saveImportanInfo(EventImportanInfo model, String eventId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(Key_Importan_Info_EventId, eventId);
+        contentValues.put(Key_Importan_Info_title, model.getInfo());
+        contentValues.put(Key_Importan_Info_info, model.getInfo());
+        db.insert(TableImportantInfo, null, contentValues);
+        db.close();
+    }
+
+    public void saveDataContactList(EventDataContactList model, String title, String eventId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(Key_Contact_List_EventId, eventId);
+        contentValues.put(Key_Contact_List_Title, title);
+        contentValues.put(KEY_Contact_List_Name, model.getName());
+        contentValues.put(KEY_Contact_List_Email, model.getEmail());
+        contentValues.put(KEY_Contact_List_Telephone, model.getTelephone());
+        contentValues.put(Key_Contact_List_Icon, model.getIcon());
+        db.insert(TableContactList, null, contentValues);
+        db.close();
+    }
+
+    public void saveAbout(EventAbout model, String eventId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(Key_Event_About_EventId, eventId);
+        contentValues.put(KEY_Event_About_Background, model.getBackground());
+        //contentValues.put(KEY_Event_About_Background_Local, model.);
+        contentValues.put(KEY_Event_About_Logo, model.getLogo());
+        //contentValues.put(KEY_Event_About_Logo_Local, model.);
+        contentValues.put(KEY_Event_About_Description, model.getDescription());
+        db.insert(TableEventAbout, null, contentValues);
+        db.close();
+    }
+
 
     /*CHECK DATA*/
     public boolean isDataTableKeyNull(String tableName, String targetKey) {
