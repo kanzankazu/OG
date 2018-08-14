@@ -130,7 +130,6 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
                 updateUI(UI_NEW_USER);
             } else {
                 updateUI(UI_OLD_USER);
-
             }
         } else {
             updateUI(UI_OLD_USER);
@@ -188,10 +187,10 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
     private void updateUI(int ui) {
         if (ui == UI_NEW_USER) {
             llAccAggrementfvbi.setVisibility(View.VISIBLE);
- //           ibAccClosefvbi.setVisibility(View.GONE);
+            ibAccClosefvbi.setVisibility(View.GONE);
             tvSignOutSkipfvbi.setText("SKIP THIS STEP");
         } else if (ui == UI_OLD_USER) {
- //           llAccAggrementfvbi.setVisibility(View.GONE);
+            llAccAggrementfvbi.setVisibility(View.GONE);
             ibAccClosefvbi.setVisibility(View.VISIBLE);
             tvSignOutSkipfvbi.setText("SIGN-OUT");
         }
