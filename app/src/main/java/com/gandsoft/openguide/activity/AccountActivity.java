@@ -78,8 +78,7 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
         initListener();
         DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
             @Override
-            public void onDateSet(DatePicker view, int year, int monthOfYear,
-                                  int dayOfMonth) {
+            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
                 myCalendar.set(Calendar.YEAR, year);
                 myCalendar.set(Calendar.MONTH, monthOfYear);
                 myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
@@ -102,8 +101,10 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
     private void initComponent() {
         tvAccIDfvbi = (TextView) findViewById(R.id.tvAccID);
         ibAccClosefvbi = (ImageButton) findViewById(R.id.ibAccClose);
+
         ibAccCamerafvbi = (ImageButton) findViewById(R.id.ibAccCamera);
         tvAccSelPicfvbi = (TextView) findViewById(R.id.tvAccSelPic);
+
         tvAccGenderfvbi = (TextView) findViewById(R.id.tvAccGender);
         tvAccTglfvbi = (TextView) findViewById(R.id.tvAccTgl);
         tvAccBulanfvbi = (TextView) findViewById(R.id.tvAccBulan);
@@ -278,10 +279,8 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
         } else if (v == llAccGenderfvbi) {
         } else if (v == llAccSavefvbi) {
             saveClick();
-
         } else if (v == tvSignOutSkipfvbi) {
             skipLogoutClick();
-
         } else if (v == ibAccClosefvbi) {
             finish();
         }
@@ -347,8 +346,10 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
     @RequiresApi(api = Build.VERSION_CODES.N)
     private void updateLabel() {
         String myFormat = "yyyy-MM-dd"; //In which you need put here
-        String a[]= myFormat.split("-");
         SimpleDateFormat sdf = new SimpleDateFormat(myFormat, ULocale.US);
+        Log.d("anuu",sdf.format(myCalendar.getTime()));
+        String a[]= sdf.format(myCalendar.getTime()).split("-");
+
         tvAccTglfvbi.setText(a[2]);
         tvAccBulanfvbi.setText(a[1]);
         tvAccTahunfvbi.setText(a[0]);

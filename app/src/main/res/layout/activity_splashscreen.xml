@@ -11,10 +11,10 @@
         android:gravity="center_horizontal"
         android:orientation="vertical">
 
-        <ImageView
-            android:layout_width="@dimen/slide_img_width_height"
-            android:layout_height="@dimen/slide_img_width_height"
-            android:src="@mipmap/ic_launcher" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="OPENGUIDES"/>
 
     </LinearLayout>
 </RelativeLayout>

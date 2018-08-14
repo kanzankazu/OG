@@ -14,7 +14,9 @@
         <ImageView
             android:layout_width="@dimen/slide_img_width_height"
             android:layout_height="@dimen/slide_img_width_height"
-            android:src="@mipmap/ic_launcher" />
+            android:src="@drawable/ic_into1"
+            android:padding="15dp"
+            android:background="@color/colorPrimaryDark"/>
 
         <TextView
             android:layout_width="wrap_content"
@@ -23,7 +25,7 @@
             android:visibility="gone"
             android:textColor="@android:color/white"
             android:textSize="@dimen/slide_title"
-            android:textStyle="bold" />
+            android:textStyle="normal"/>
 
         <TextView
             android:layout_width="wrap_content"
