@@ -5,6 +5,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+    <!--App Bar-->
     <RelativeLayout
         android:id="@+id/rlAccountTop"
         android:layout_width="match_parent"
@@ -57,7 +58,7 @@
                 android:layout_height="match_parent"
                 android:animateLayoutChanges="true"
                 android:orientation="vertical"
-                android:padding="20dp">
+                android:padding="10dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -109,13 +110,14 @@
                         android:layout_height="wrap_content"
                         android:animateLayoutChanges="true"
                         android:gravity="center"
+                        android:layout_marginTop="5dp"
                         android:orientation="horizontal">
 
                         <ImageButton
                             android:id="@+id/ibAccCamera"
-                            android:layout_width="wrap_content"
-                            android:layout_height="match_parent"
-                            android:background="@drawable/flag_transparent"
+                            android:layout_width="14dp"
+                            android:layout_height="14dp"
+                            android:layout_marginTop="3dp"
                             android:src="@drawable/ic_camera_primary_small"
                             android:visibility="visible" />
 
@@ -124,7 +126,8 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Select Picture"
-                            android:padding="5dp"
+                            android:paddingTop="5dp"
+                            android:paddingLeft="10dp"
                             android:selectAllOnFocus="true"
                             android:textColor="@color/colorPrimary"
                             android:textSize="12dp" />
@@ -159,12 +162,12 @@
                         android:id="@+id/etAccName"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="5dp"
                         android:background="@android:color/transparent"
                         android:hint="Full Name"
                         android:inputType="text"
                         android:maxLength="30"
-                        android:padding="5dp"
+                        android:paddingTop="5dp"
+                        android:layout_marginTop="5dp"
                         android:selectAllOnFocus="true"
                         android:textColor="@color/colorPrimary"
                         android:textSize="12dp" />
@@ -203,7 +206,7 @@
                         android:hint="Email Address"
                         android:inputType="textEmailAddress"
                         android:maxLength="30"
-                        android:padding="5dp"
+                        android:paddingTop="5dp"
                         android:selectAllOnFocus="true"
                         android:textColor="@color/colorPrimary"
                         android:textSize="12dp" />
@@ -234,18 +237,16 @@
                         android:textAllCaps="true"
                         android:textColor="@color/colorAccent" />
 
-                    <TextView
-                        android:id="@+id/tvAccGender"
-                        android:layout_width="wrap_content"
+                    <Spinner
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:id="@+id/spinGender"
+                        android:paddingTop="5dp"
                         android:layout_marginTop="5dp"
                         android:background="@android:color/transparent"
-                        android:text="Gender"
-                        android:padding="5dp"
-                        android:selectAllOnFocus="true"
                         android:textColor="@color/colorPrimary"
-                        android:textSize="12dp" />
-
+                        android:textSize="12dp">
+                    </Spinner>
 
                 </LinearLayout>
 
@@ -274,44 +275,52 @@
 
 
                     <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_marginTop="5dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:animateLayoutChanges="true"
+                        android:gravity="center"
+                        android:layout_marginTop="5dp"
                         android:orientation="horizontal">
+
                         <ImageButton
                             android:id="@+id/ibAccCalendar"
-                            android:layout_width="wrap_content"
-                            android:layout_height="match_parent"
-                            android:background="@drawable/flag_transparent"
+                            android:layout_width="14dp"
+                            android:layout_height="14dp"
+                            android:layout_marginTop="3dp"
                             android:src="@drawable/ic_camera_primary_small"
                             android:visibility="visible" />
+
                         <TextView
                             android:id="@+id/tvAccTgl"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_weight="1"
-                            android:padding="3dp"
-                            android:text="tgl"
-                            android:textColor="@color/colorPrimary" />
-
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="DD"
+                            android:paddingTop="5dp"
+                            android:paddingLeft="10dp"
+                            android:selectAllOnFocus="true"
+                            android:textColor="@color/colorPrimary"
+                            android:textSize="12dp" />
                         <TextView
                             android:id="@+id/tvAccBulan"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_weight="1"
-                            android:padding="3dp"
-                            android:text="bulan"
-                            android:textColor="@color/colorPrimary" />
-
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="MM"
+                            android:paddingTop="5dp"
+                            android:paddingLeft="10dp"
+                            android:selectAllOnFocus="true"
+                            android:textColor="@color/colorPrimary"
+                            android:textSize="12dp" />
                         <TextView
                             android:id="@+id/tvAccTahun"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_weight="1"
-                            android:padding="3dp"
-                            android:text="tahun"
-                            android:textColor="@color/colorPrimary" />
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="YYYY"
+                            android:paddingTop="5dp"
+                            android:paddingLeft="10dp"
+                            android:selectAllOnFocus="true"
+                            android:textColor="@color/colorPrimary"
+                            android:textSize="12dp" />
+
                     </LinearLayout>
 
 
