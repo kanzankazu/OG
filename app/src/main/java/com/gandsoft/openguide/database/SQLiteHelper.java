@@ -59,6 +59,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     public static String KEY_ListEvent_roleName = "roleName";
     public static String KEY_ListEvent_date = "date";
     public static String KEY_ListEvent_IsFirstIn = "isFirstIn";
+    public static String KEY_ListEvent_feedback_data = "feedback_data";
 
     public static String TableWallet = "tabWallet";
     public static String KEY_Wallet_No = "number";
@@ -71,6 +72,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     public static String KEY_Wallet_type = "type";
 
     public static String TableEventAbout = "tabAbout";
+    public static String Key_Event_About_No = "number";
     public static String Key_Event_About_EventId = "eventId";
     public static String KEY_Event_About_Background = "background";
     public static String KEY_Event_About_Background_Local = "background_local";
@@ -79,10 +81,48 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     public static String KEY_Event_About_Description = "description";
 
     public static String TableContactList = "tabContactList";
+    public static String Key_Contact_List_No = "number";
+    public static String Key_Contact_List_EventId = "eventId";
+    public static String Key_Contact_List_Title = "title";
     public static String Key_Contact_List_Icon = "icon";
     public static String KEY_Contact_List_Telephone = "telephone";
-    public static String KEY_Contact_List_Background_Local = "email";
-    public static String KEY_Contact_List_Logo = "name";
+    public static String KEY_Contact_List_Email = "email";
+    public static String KEY_Contact_List_Name = "name";
+
+    public static String TableImportantInfo = "tabImportantInfo";
+    public static String Key_Importan_Info_No = "number";
+    public static String Key_Importan_Info_EventId = "eventId";
+    public static String Key_Importan_Info_title = "title";
+    public static String Key_Importan_Info_info = "info";
+
+    public static String TableScheduleList = "tabScheduleList";
+    public static String Key_Schedule_List_No = "number";
+    public static String Key_Schedule_List_EventId = "eventId";
+    public static String Key_Schedule_List_date = "date";
+    public static String Key_Schedule_List_id = "id";
+    public static String Key_Schedule_List_waktu = "waktu";
+    public static String Key_Schedule_List_schedule_title = "schedule_title";
+    public static String Key_Schedule_List_location = "location";
+    public static String Key_Schedule_List_detail = "detail";
+    public static String Key_Schedule_List_action = "action";
+    public static String Key_Schedule_List_link = "link";
+    public static String Key_Schedule_List_status = "status";
+
+    public static String TableTheEvent = "tabTheEvent";
+    public static String Key_The_Event_No = "number";
+    public static String Key_The_Event_EventId = "eventId";
+    public static String Key_The_Event_background = "background";
+    public static String Key_The_Event_logo = "logo";
+    public static String Key_The_Event_event_name = "event_name";
+    public static String Key_The_Event_event_location = "event_location";
+    public static String Key_The_Event_date_event = "date_event";
+    public static String Key_The_Event_weather = "weather";
+    public static String Key_The_Event_title_contact = "title_contact";
+    public static String Key_The_Event_api_weather = "api_weather";
+    public static String Key_The_Event_welcome_note = "welcome_note";
+    public static String Key_The_Event_commentpost_status = "commentpost_status";
+    public static String Key_The_Event_deletepost_status = "deletepost_status";
+    public static String Key_The_Event_addpost_status = "addpost_status";
 
 
     private static final String query_add_table_UserData = "CREATE TABLE IF NOT EXISTS " + TableUserData + "("
@@ -105,7 +145,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
 
     private static final String query_add_table_ListEvent = "CREATE TABLE IF NOT EXISTS " + TableListEvent + "("
             + KEY_ListEvent_No + " INTEGER PRIMARY KEY AUTOINCREMENT,"
-            + KEY_ListEvent_eventId + " TEXT, "
+            + KEY_ListEvent_eventId + " TEXT,"
             + KEY_ListEvent_accountId + " TEXT,"
             + KEY_ListEvent_version_data + " INTEGER,"
             + KEY_ListEvent_startDate + " TEXT, "
@@ -134,10 +174,70 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     private static final String query_delete_table_Wallet = "DROP TABLE IF EXISTS " + TableWallet;
 
     private static final String query_add_table_GlobalData = "CREATE TABLE IF NOT EXISTS " + TableGlobalData + "("
-            + KEY_GlobalData_dbver + " TEXT PRIMARY KEY , "
+            + KEY_GlobalData_dbver + " TEXT PRIMARY KEY  , "
             + KEY_GlobalData_version_data_user + " TEXT, "
             + KEY_GlobalData_version_data_event + " TEXT) ";
     private static final String query_delete_table_GlobalData = "DROP TABLE IF EXISTS " + TableGlobalData;
+
+    private static final String query_add_table_EventAbout = "CREATE TABLE IF NOT EXISTS " + TableEventAbout + "("
+            + Key_Event_About_No + " TEXT PRIMARY KEY AUTOINCREMENT, "
+            + Key_Event_About_EventId + " TEXT, "
+            + KEY_Event_About_Background + " TEXT, "
+            + KEY_Event_About_Background_Local + " TEXT, "
+            + KEY_Event_About_Logo + " TEXT, "
+            + KEY_Event_About_Logo_Local + " TEXT, "
+            + KEY_Event_About_Description + " TEXT) ";
+    private static final String query_delete_table_EventAbout = "DROP TABLE IF EXISTS " + TableEventAbout;
+
+    private static final String query_add_table_ContactList = "CREATE TABLE IF NOT EXISTS " + TableContactList + "("
+            + Key_Contact_List_No + " TEXT PRIMARY KEY AUTOINCREMENT , "
+            + Key_Contact_List_EventId + " TEXT, "
+            + Key_Contact_List_Title + " TEXT, "
+            + KEY_Contact_List_Name + " TEXT, "
+            + KEY_Contact_List_Email + " TEXT, "
+            + KEY_Contact_List_Telephone + " TEXT, "
+            + Key_Contact_List_Icon + " TEXT) ";
+    private static final String query_delete_table_ContactList = "DROP TABLE IF EXISTS " + TableContactList;
+
+    private static final String query_add_table_ImportantInfo = "CREATE TABLE IF NOT EXISTS " + TableImportantInfo + "("
+            + Key_Importan_Info_No + " TEXT PRIMARY KEY AUTOINCREMENT, "
+            + Key_Importan_Info_EventId + " TEXT, "
+            + Key_Importan_Info_title + " TEXT, "
+            + Key_Importan_Info_info + " TEXT) ";
+    private static final String query_delete_table_ImportantInfo = "DROP TABLE IF EXISTS " + TableImportantInfo;
+
+    private static final String query_add_table_ScheduleList = "CREATE TABLE IF NOT EXISTS " + TableScheduleList + "("
+            + Key_Schedule_List_No + " TEXT PRIMARY KEY AUTOINCREMENT, "
+            + Key_Schedule_List_EventId + " TEXT, "
+            + Key_Schedule_List_date + " TEXT, "
+            + Key_Schedule_List_id + " TEXT, "
+            + Key_Schedule_List_waktu + " TEXT, "
+            + Key_Schedule_List_schedule_title + " TEXT, "
+            + Key_Schedule_List_location + " TEXT, "
+            + Key_Schedule_List_detail + " TEXT, "
+            + Key_Schedule_List_action + " TEXT, "
+            + Key_Schedule_List_link + " TEXT, "
+            + Key_Schedule_List_status + " TEXT) ";
+    private static final String query_delete_table_ScheduleList = "DROP TABLE IF EXISTS " + TableScheduleList;
+
+    private static final String getQuery_add_table_TheEvent =
+            "CREATE TABLE IF NOT EXISTS" + TableTheEvent +"("
+            + Key_The_Event_No + "TEXT PRIMARY KEY AUTOINCREMENT,"
+            + Key_The_Event_EventId + "TEXT,"
+            + Key_The_Event_background + "TEXT,"
+            + Key_The_Event_logo + "TEXT,"
+            + Key_The_Event_event_name + "TEXT,"
+            + Key_The_Event_event_location + "TEXT,"
+            + Key_The_Event_date_event + "TEXT,"
+            + Key_The_Event_weather + "TEXT,"
+            + Key_The_Event_title_contact + "TEXT,"
+            + Key_The_Event_api_weather + "TEXT,"
+            + Key_The_Event_welcome_note + "TEXT,"
+            + Key_The_Event_commentpost_status + "TEXT,"
+            + Key_The_Event_deletepost_status + "TEXT,"
+            + Key_The_Event_addpost_status + "TEXT)";
+    private static final String query_delete_table_TheEvent = "DROP TABLE IF EXISTS " + TableTheEvent;
+
 
     public SQLiteHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -403,6 +503,8 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         return modelList;
     }
 
+    /*WALLET*/
+
     public void saveWalletData(UserWalletDataResponseModel model, String accountId, String eventId) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
@@ -462,7 +564,6 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         cursor.close();
         return modelList;
     }
-
 
     /*CHECK DATA*/
     public boolean isDataTableKeyNull(String tableName, String targetKey) {
@@ -538,11 +639,19 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         db.close();
     }
 
-    public void setOneKey(String table, String key, String value) {
+    public void insertOneKey(String table, String key, String value) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(key, value);
         db.insert(table, null, contentValues);
+        db.close();
+    }
+
+    public void updateOneKey(String table, String keyWhere, String valueWhere, String keyParam, String valueParam) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(keyParam, valueParam);
+        db.update(table, contentValues, keyWhere + " = ? ", new String[]{valueWhere});
         db.close();
     }
 
