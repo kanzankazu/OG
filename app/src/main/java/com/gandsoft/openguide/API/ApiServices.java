@@ -36,7 +36,7 @@ public interface ApiServices {
     @POST("get_list_user_event")
     Call<List<UserDataResponseModel>> userDataRet(@Body UserDataRequestModel model);
 
-    @POST("user_update")
+    @POST("save_profile_account_user")
     Call<List<UserUpdateResponseModel>> userUpdateRet(@Body UserUpdateRequestModel model);
 
     @POST("get_data_event")

@@ -99,12 +99,6 @@ public class SessionUtil implements IConfig {
         return Double.longBitsToDouble(pref.getLong(key, Double.doubleToLongBits(doubleValue)));
     }
 
-    public static void deleteKeyPreferences(String key){
-        pref.edit();
-        editor.remove(key);
-        editor.commit();
-    }
-
     public static void removeAllSharedPreferences() {
         pref.edit();
         editor.clear();

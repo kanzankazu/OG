@@ -285,6 +285,7 @@ public class ChangeEventActivity extends AppCompatActivity {
     private void Onclick(View view) {
         if (view == ceBUserAccountfvbi) {
             startActivity(AccountActivity.getActIntent(ChangeEventActivity.this));
+            finish();
         }
     }
 

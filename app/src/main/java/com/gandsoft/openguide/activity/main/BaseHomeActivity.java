@@ -154,12 +154,7 @@ public class BaseHomeActivity extends AppCompatActivity {
                     for (int i = 0; i < response.body().size(); i++) {
                         Log.d("Lihat", "onResponse BaseHomeActivity : " + response.body());
                         EventDataResponseModel model = response.body().get(i);
-                        if (db.isDataTableValueNull(SQLiteHelper.TableListEvent, SQLiteHelper.KEY_ListEvent_eventId, eventId)) {
-                            db.insertOneKey(SQLiteHelper.TableListEvent, SQLiteHelper.KEY_ListEvent_version_data, model.getVersion_data());
-                        } else {
-                            db.updateOneKey(SQLiteHelper.TableListEvent, SQLiteHelper.KEY_ListEvent_eventId, eventId, SQLiteHelper.KEY_ListEvent_version_data, model.getVersion_data());
-                        }
-                        model.getFeedback_data();
+                        db.setOneKey(SQLiteHelper.TableGlobalData, SQLiteHelper.KEY_GlobalData_version_data_event, model.getEvent_id());
 
                         /*the event*/
                         for (int i1 = 0; i1 < model.getThe_event().size(); i1++) {
@@ -175,9 +170,12 @@ public class BaseHomeActivity extends AppCompatActivity {
                                 List<EventPlaceList> values = entry.getValue();
                                 Log.d("Lihat", "onResponse BaseHomeActivity key : " + key);
                                 Log.d("Lihat", "onResponse BaseHomeActivity values.size : " + values.size());
+                                Log.d("Lihat", "onResponse BaseHomeActivity values.get : " + values.get(0));
                                 for (int i22 = 0; i22 < values.size(); i22++) {
                                     EventPlaceList placeList = values.get(i22);
-
+                                    Log.d("Lihat", "onResponse BaseHomeActivity getTitle : " + placeList.getTitle());
+                                    Log.d("Lihat", "onResponse BaseHomeActivity getLatitude : " + placeList.getLatitude());
+                                    Log.d("Lihat", "onResponse BaseHomeActivity getLongitude : " + placeList.getLongitude());
                                 }
                             }
                         }

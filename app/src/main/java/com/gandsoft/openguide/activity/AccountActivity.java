@@ -18,16 +18,19 @@ import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.gandsoft.openguide.API.API;
 import com.gandsoft.openguide.API.APIrequest.UserUpdate.UserUpdateRequestModel;
+import com.gandsoft.openguide.API.APIresponse.Login.LoginResponseModel;
 import com.gandsoft.openguide.API.APIresponse.UserData.UserDataResponseModel;
 import com.gandsoft.openguide.API.APIresponse.UserUpdate.UserUpdateResponseModel;
 import com.gandsoft.openguide.ISeasonConfig;
@@ -60,6 +63,8 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
     /**/
     private boolean isNewUser = false;
     private String accountId;
+
+    private Spinner mySpinner;
 
     Calendar myCalendar = Calendar.getInstance();
 
@@ -105,7 +110,7 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
         ibAccCamerafvbi = (ImageButton) findViewById(R.id.ibAccCamera);
         tvAccSelPicfvbi = (TextView) findViewById(R.id.tvAccSelPic);
 
-        tvAccGenderfvbi = (TextView) findViewById(R.id.tvAccGender);
+//        tvAccGenderfvbi = (TextView) findViewById(R.id.tvAccGender);
         tvAccTglfvbi = (TextView) findViewById(R.id.tvAccTgl);
         tvAccBulanfvbi = (TextView) findViewById(R.id.tvAccBulan);
         tvAccTahunfvbi = (TextView) findViewById(R.id.tvAccTahun);
@@ -121,6 +126,8 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
         llAccAggrementfvbi = (LinearLayout) findViewById(R.id.llAccAggrement);
         llAccSavefvbi = (LinearLayout) findViewById(R.id.llAccSave);
         cbAccAggrementfvbi = (CheckBox) findViewById(R.id.cbAccAggrement);
+
+        mySpinner = (Spinner) findViewById(R.id.spinGender);
     }
 
     private void initContent() {
@@ -131,6 +138,7 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
                 updateUI(UI_NEW_USER);
             } else {
                 updateUI(UI_OLD_USER);
+
             }
         } else {
             updateUI(UI_OLD_USER);
@@ -177,7 +185,16 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
             UserDataResponseModel model = models.get(i);
             etAccNamefvbi.setText(model.getFull_name());
             etAccEmailfvbi.setText(model.getEmail());
-            tvAccGenderfvbi.setText(model.getGender());
+//            tvAccGenderfvbi.setText(model.getGender());
+
+            ArrayAdapter<String> myAdapter = new ArrayAdapter<String>(AccountActivity.this,R.layout.spinner_item,getResources().getStringArray(R.array.names));
+            myAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+            mySpinner.setAdapter(myAdapter);
+            if (model.getGender() != null) {
+                int spinnerPosition = myAdapter.getPosition(model.getGender());
+                mySpinner.setSelection(spinnerPosition);
+            }
             String[] q = model.getBirthday().split("-");
             tvAccTahunfvbi.setText(q[0]);
             tvAccBulanfvbi.setText(q[1]);
@@ -296,43 +313,61 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
     private void saveClick() {
         if (isNewUser) {
             if (cbAccAggrementfvbi.isChecked()) {
-                UserUpdateRequestModel requestModel = new UserUpdateRequestModel();
-                requestModel.setAccounsId(accountId);
-                requestModel.setFileImageB641("");
-                requestModel.setDbver("3");
-                requestModel.setDegree_image("ANDROID");
-                requestModel.setPrivacypolicy(true);
-                requestModel.setName(etAccNamefvbi.getText().toString());
-                requestModel.setEmail(etAccEmailfvbi.getText().toString());
-                requestModel.setGender(tvAccGenderfvbi.getText().toString());
-                requestModel.setDate(tvAccTglfvbi.getText().toString());
-                requestModel.setMonth(tvAccBulanfvbi.getText().toString());
-                requestModel.setYear(tvAccTahunfvbi.getText().toString());
-                API.doUserUpdateRet(requestModel).enqueue(new Callback<List<UserUpdateResponseModel>>() {
-                    @Override
-                    public void onResponse(Call<List<UserUpdateResponseModel>> call, Response<List<UserUpdateResponseModel>> response) {
-                        if(response.isSuccessful()) {
-                            moveToChangeEvent();
-                        }
-                        else {
-                            Log.d("gagal",response.message());
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<List<UserUpdateResponseModel>> call, Throwable t) {
-                        Log.d("gagal",t.getMessage());
-                    }
-                });
+                updateData();
             } else {
                 Snackbar.make(findViewById(android.R.id.content), "Checked Egreement First!!", Snackbar.LENGTH_LONG).show();
                 cbAccAggrementfvbi.requestFocus();
             }
         } else {
-            finish();
+            updateData();
         }
     }
 
+    private void updateData(){
+        UserUpdateRequestModel requestModel = new UserUpdateRequestModel();
+        requestModel.setAccounsId(accountId);
+        requestModel.setFileImageB641("");
+        requestModel.setDbver("3");
+        requestModel.setDegree_image("ANDROID");
+        requestModel.setPrivacypolicy(true);
+        requestModel.setName(etAccNamefvbi.getText().toString());
+        requestModel.setEmail(etAccEmailfvbi.getText().toString());
+        requestModel.setGender(String.valueOf(mySpinner.getSelectedItem()));
+        requestModel.setDate(tvAccTglfvbi.getText().toString());
+        requestModel.setMonth(tvAccBulanfvbi.getText().toString());
+        requestModel.setYear(tvAccTahunfvbi.getText().toString());
+        API.doUserUpdateRet(requestModel).enqueue(new Callback<List<UserUpdateResponseModel>>() {
+            @Override
+            public void onResponse(Call<List<UserUpdateResponseModel>> call, Response<List<UserUpdateResponseModel>> response) {
+                if(response.isSuccessful()) {
+                    List<UserUpdateResponseModel> s = response.body();
+                    if (s.size() == 1) {
+                        for (int i = 0; i < s.size(); i++) {
+                            UserUpdateResponseModel model = s.get(i);
+                            if (model.getStatus().equalsIgnoreCase("verify")) {
+                                Snackbar.make(findViewById(android.R.id.content), "Tersimpan", Snackbar.LENGTH_LONG).show();
+                                moveToChangeEvent();
+                            } else {
+                                Snackbar.make(findViewById(android.R.id.content), "Data Tatersimpan", Snackbar.LENGTH_LONG).show();
+                            }
+                        }
+                    } else {
+                        Snackbar.make(findViewById(android.R.id.content), "Data Tidak Sesuai", Snackbar.LENGTH_LONG).show();
+                    }
+                    Log.d("brasil",response.message());
+                    moveToChangeEvent();
+                }
+                else {
+                    Log.d("gagal",response.message());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<UserUpdateResponseModel>> call, Throwable t) {
+                Log.d("gagal failur",t.getMessage());
+            }
+        });
+    }
     public static Intent getActIntent(Activity activity) {
         return new Intent(activity, AccountActivity.class);
     }
