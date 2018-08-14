@@ -3,9 +3,11 @@ package com.gandsoft.openguide.API;
 import com.gandsoft.openguide.API.APIrequest.Event.EventDataRequestModel;
 import com.gandsoft.openguide.API.APIrequest.Login.LoginRequestModel;
 import com.gandsoft.openguide.API.APIrequest.UserData.UserDataRequestModel;
+import com.gandsoft.openguide.API.APIrequest.UserUpdate.UserUpdateRequestModel;
 import com.gandsoft.openguide.API.APIresponse.Event.EventDataResponseModel;
 import com.gandsoft.openguide.API.APIresponse.Login.LoginResponseModel;
 import com.gandsoft.openguide.API.APIresponse.UserData.UserDataResponseModel;
+import com.gandsoft.openguide.API.APIresponse.UserUpdate.UserUpdateResponseModel;
 import com.gandsoft.openguide.IConfig;
 
 import java.util.List;
@@ -50,6 +52,10 @@ public class API {
 
     public static Call<List<UserDataResponseModel>> doUserDataRet(UserDataRequestModel requestModel) {
         return getAPIService().userDataRet(requestModel);
+    }
+
+    public static Call<List<UserUpdateResponseModel>> doUserUpdateRet(UserUpdateRequestModel requestModel) {
+        return getAPIService().userUpdateRet(requestModel);
     }
 
     public static Call<List<EventDataResponseModel>> doEventDataRet(EventDataRequestModel requestModel) {

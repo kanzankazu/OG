@@ -1,10 +1,16 @@
 package com.gandsoft.openguide.activity;
 
 import android.app.Activity;
+import android.app.DatePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Paint;
+import android.icu.text.SimpleDateFormat;
+import android.icu.util.Calendar;
+import android.icu.util.ULocale;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.text.SpannableStringBuilder;
@@ -13,21 +19,32 @@ import android.text.style.ClickableSpan;
 import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.gandsoft.openguide.API.API;
+import com.gandsoft.openguide.API.APIrequest.UserUpdate.UserUpdateRequestModel;
 import com.gandsoft.openguide.API.APIresponse.UserData.UserDataResponseModel;
+import com.gandsoft.openguide.API.APIresponse.UserUpdate.UserUpdateResponseModel;
 import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
 import com.gandsoft.openguide.database.SQLiteHelper;
 import com.gandsoft.openguide.support.SessionUtil;
+import com.google.android.gms.games.request.Requests;
 import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
+import java.util.List;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
+@RequiresApi(api = Build.VERSION_CODES.N)
 public class AccountActivity extends LocalBaseActivity implements View.OnClickListener {
     SQLiteHelper db = new SQLiteHelper(this);
 
@@ -35,14 +52,16 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
     private static final int UI_OLD_USER = 1;
     private FirebaseAuth mAuth;
     /**/
-    private TextView tvAccIDfvbi, tvAccGenderfvbi, tvAccTglfvbi, tvAccBulanfvbi, tvAccTahunfvbi, tvAccAggrementfvbi, tvSignOutSkipfvbi;
+    private TextView tvAccIDfvbi, tvAccSelPicfvbi,tvAccGenderfvbi, tvAccTglfvbi, tvAccBulanfvbi, tvAccTahunfvbi, tvAccAggrementfvbi, tvSignOutSkipfvbi;
     private EditText etAccNamefvbi, etAccEmailfvbi;
     private LinearLayout llAccPicfvbi, llAccGenderfvbi, llAccBirthdatefvbi, llAccAggrementfvbi, llAccSavefvbi;
     private CheckBox cbAccAggrementfvbi;
-    private ImageButton ibAccClosefvbi;
+    private ImageButton ibAccClosefvbi, ibAccCamerafvbi, ibCalendarfvbi;
     /**/
     private boolean isNewUser = false;
     private String accountId;
+
+    Calendar myCalendar = Calendar.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,11 +76,34 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
         initComponent();
         initContent();
         initListener();
+        DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int year, int monthOfYear,
+                                  int dayOfMonth) {
+                myCalendar.set(Calendar.YEAR, year);
+                myCalendar.set(Calendar.MONTH, monthOfYear);
+                myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                updateLabel();
+            }
+
+        };
+
+        ibCalendarfvbi.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new DatePickerDialog(AccountActivity.this, date, myCalendar
+                        .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
+                        myCalendar.get(Calendar.DAY_OF_MONTH)).show();
+            }
+
+        });
     }
 
     private void initComponent() {
         tvAccIDfvbi = (TextView) findViewById(R.id.tvAccID);
         ibAccClosefvbi = (ImageButton) findViewById(R.id.ibAccClose);
+        ibAccCamerafvbi = (ImageButton) findViewById(R.id.ibAccCamera);
+        tvAccSelPicfvbi = (TextView) findViewById(R.id.tvAccSelPic);
         tvAccGenderfvbi = (TextView) findViewById(R.id.tvAccGender);
         tvAccTglfvbi = (TextView) findViewById(R.id.tvAccTgl);
         tvAccBulanfvbi = (TextView) findViewById(R.id.tvAccBulan);
@@ -72,6 +114,8 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
         etAccEmailfvbi = (EditText) findViewById(R.id.etAccEmail);
         llAccPicfvbi = (LinearLayout) findViewById(R.id.llAccPic);
         llAccGenderfvbi = (LinearLayout) findViewById(R.id.llAccGender);
+
+        ibCalendarfvbi = (ImageButton) findViewById(R.id.ibAccCalendar);
         llAccBirthdatefvbi = (LinearLayout) findViewById(R.id.llAccBirthdate);
         llAccAggrementfvbi = (LinearLayout) findViewById(R.id.llAccAggrement);
         llAccSavefvbi = (LinearLayout) findViewById(R.id.llAccSave);
@@ -111,6 +155,20 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
         llAccSavefvbi.setOnClickListener(this);
         tvSignOutSkipfvbi.setOnClickListener(this);
         ibAccClosefvbi.setOnClickListener(this);
+        ibAccCamerafvbi.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
+                startActivity(intent);
+            }
+        });
+        tvAccSelPicfvbi.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                Intent intent = new Intent();
+                intent.setType("image/*");
+                intent.setAction(Intent.ACTION_GET_CONTENT);
+                startActivity(intent);
+            }
+        });
     }
 
     private void updateData(ArrayList<UserDataResponseModel> models) {
@@ -130,10 +188,10 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
     private void updateUI(int ui) {
         if (ui == UI_NEW_USER) {
             llAccAggrementfvbi.setVisibility(View.VISIBLE);
-            ibAccClosefvbi.setVisibility(View.GONE);
+ //           ibAccClosefvbi.setVisibility(View.GONE);
             tvSignOutSkipfvbi.setText("SKIP THIS STEP");
         } else if (ui == UI_OLD_USER) {
-            llAccAggrementfvbi.setVisibility(View.GONE);
+ //           llAccAggrementfvbi.setVisibility(View.GONE);
             ibAccClosefvbi.setVisibility(View.VISIBLE);
             tvSignOutSkipfvbi.setText("SIGN-OUT");
         }
@@ -240,7 +298,34 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
     private void saveClick() {
         if (isNewUser) {
             if (cbAccAggrementfvbi.isChecked()) {
-                moveToChangeEvent();
+                UserUpdateRequestModel requestModel = new UserUpdateRequestModel();
+                requestModel.setAccounsId(accountId);
+                requestModel.setFileImageB641("");
+                requestModel.setDbver("3");
+                requestModel.setDegree_image("ANDROID");
+                requestModel.setPrivacypolicy(true);
+                requestModel.setName(etAccNamefvbi.getText().toString());
+                requestModel.setEmail(etAccEmailfvbi.getText().toString());
+                requestModel.setGender(tvAccGenderfvbi.getText().toString());
+                requestModel.setDate(tvAccTglfvbi.getText().toString());
+                requestModel.setMonth(tvAccBulanfvbi.getText().toString());
+                requestModel.setYear(tvAccTahunfvbi.getText().toString());
+                API.doUserUpdateRet(requestModel).enqueue(new Callback<List<UserUpdateResponseModel>>() {
+                    @Override
+                    public void onResponse(Call<List<UserUpdateResponseModel>> call, Response<List<UserUpdateResponseModel>> response) {
+                        if(response.isSuccessful()) {
+                            moveToChangeEvent();
+                        }
+                        else {
+                            Log.d("gagal",response.message());
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<List<UserUpdateResponseModel>> call, Throwable t) {
+                        Log.d("gagal",t.getMessage());
+                    }
+                });
             } else {
                 Snackbar.make(findViewById(android.R.id.content), "Checked Egreement First!!", Snackbar.LENGTH_LONG).show();
                 cbAccAggrementfvbi.requestFocus();
@@ -257,5 +342,16 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
     @Override
     public void onBackPressed() {
         saveClick();
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    private void updateLabel() {
+        String myFormat = "yyyy-MM-dd"; //In which you need put here
+        String a[]= myFormat.split("-");
+        SimpleDateFormat sdf = new SimpleDateFormat(myFormat, ULocale.US);
+        tvAccTglfvbi.setText(a[2]);
+        tvAccBulanfvbi.setText(a[1]);
+        tvAccTahunfvbi.setText(a[0]);
+//        etAccBirthdayfvbi.setText(sdf.format(myCalendar.getTime()));
     }
 }
