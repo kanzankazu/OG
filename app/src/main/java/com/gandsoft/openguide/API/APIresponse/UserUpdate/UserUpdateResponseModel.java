@@ -1,4 +1,4 @@
-package com.gandsoft.openguide.API.APIresponse.Login;
+package com.gandsoft.openguide.API.APIresponse.UserUpdate;
 
 
 import com.google.gson.annotations.Expose;
@@ -6,7 +6,7 @@ import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
 
-public class LoginResponseModel implements Serializable {
+public class UserUpdateResponseModel implements Serializable {
     @SerializedName("status")
     @Expose
     private String status;
