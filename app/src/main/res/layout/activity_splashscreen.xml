@@ -11,10 +11,16 @@
         android:gravity="center_horizontal"
         android:orientation="vertical">
 
-    <TextView
+    <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="OPENGUIDES"/>
+        android:src="@drawable/splash"/>
+
+        <ProgressBar
+            android:id="@+id/progressBar2"
+            style="?android:attr/progressBarStyleInverse"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
 
     </LinearLayout>
 </RelativeLayout>

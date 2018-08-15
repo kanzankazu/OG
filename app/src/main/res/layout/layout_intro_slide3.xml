@@ -12,11 +12,14 @@
         android:orientation="vertical">
 
         <ImageView
-            android:layout_width="@dimen/slide_img_width_height"
-            android:layout_height="@dimen/slide_img_width_height"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
             android:src="@drawable/ic_into3"
-            android:padding="15dp"
-            android:background="@color/colorPrimaryDark"/>
+            android:padding="30dp"
+            android:layout_marginBottom="20dp"
+            android:layout_gravity="center_horizontal"
+            android:background="@drawable/background_circle"
+            android:backgroundTint="@color/colorPrimaryDark"/>
 
         <TextView
             android:layout_width="wrap_content"

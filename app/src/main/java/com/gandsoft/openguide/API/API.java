@@ -14,32 +14,7 @@ import java.util.List;
 
 import retrofit2.Call;
 
-/**
- * Created by glenn on 1/25/18.
- */
-
 public class API {
-
-    /*synchronized private static ApiServices initApiDomain(Context context) {
-        setApiDomain(API_BASE_URL);
-        return (ApiServices) setupApi(App.getAppComponent(), ApiServices.class);
-    }
-
-    synchronized public static void doReport(Context context, ReportRequestModel request, Callback callback) {
-        initApiDomain(context).Report(request).enqueue((Callback<ReportRespondModel>) callback);
-    }
-
-    synchronized public static void doUpdate(Context context, UpdateRequestModel request, Callback callback) {
-        initApiDomain(context).Update(request).enqueue((Callback<UpdateAppRespondModel>) callback);
-    }
-
-    synchronized public static void doGetOui(Context context, Callback callback) {
-        initApiDomain(context).Oui().enqueue((Callback<OuiResponseModel>) callback);
-    }
-
-    public static void doLogin(Context context, LoginRequestModel request, Callback callback) {
-        initApiDomain(context).Login(request).enqueue((Callback<List<LoginResponseModel>>) callback);
-    }*/
 
     /**/
     private static ApiServices getAPIService() {

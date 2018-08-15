@@ -3,6 +3,7 @@ package com.gandsoft.openguide.activity.main.fragments;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -28,6 +29,7 @@ import com.gandsoft.openguide.activity.infomenu.hFeedbackActivity;
 import com.gandsoft.openguide.activity.main.adapter.InfoListViewAdapter;
 import com.gandsoft.openguide.activity.main.adapter.InfoListviewModel;
 import com.gandsoft.openguide.activity.main.adapter.RecyclerItemClickListener;
+import com.gandsoft.openguide.database.SQLiteHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -156,42 +158,6 @@ public class eInfoFragment extends Fragment {
 
             }
         }));
-
-        /*rvMenufvbi.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> rvMenufvbi, View view, int position, long id) {
-                String infomenu2 = (String) rvMenufvbi.getAdapter().getItem(position);
-
-                if (infomenu2.equals("Map")) {
-                    Intent intent = new Intent(rvMenufvbi.getContext(), aMapActivity.class);
-                    rvMenufvbi.getContext().startActivity(intent);
-                } else if (infomenu2.equals("Gallery")) {
-                    Intent intent = new Intent(rvMenufvbi.getContext(), bGalleryActivity.class);
-                    rvMenufvbi.getContext().startActivity(intent);
-                } else if (infomenu2.equals("Inbox")) {
-                    Intent intent = new Intent(rvMenufvbi.getContext(), cInboxActivity.class);
-                    rvMenufvbi.getContext().startActivity(intent);
-                } else if (infomenu2.equals("Comitte Contact")) {
-                    Intent intent = new Intent(rvMenufvbi.getContext(), dComitteContactActivity.class);
-                    rvMenufvbi.getContext().startActivity(intent);
-                } else if (infomenu2.equals("Emergencies")) {
-                    Intent intent = new Intent(rvMenufvbi.getContext(), eEmergenciesActivity.class);
-                    rvMenufvbi.getContext().startActivity(intent);
-                } else if (infomenu2.equals("Practical Information")) {
-                    Intent intent = new Intent(rvMenufvbi.getContext(), fPracticalInfoActivity.class);
-                    rvMenufvbi.getContext().startActivity(intent);
-                } else if (infomenu2.equals("Surrounding Area")) {
-                    Intent intent = new Intent(rvMenufvbi.getContext(), gSurroundingAreaActivity.class);
-                    rvMenufvbi.getContext().startActivity(intent);
-                } else if (infomenu2.equals("Feedback")) {
-                    Intent intent = new Intent(rvMenufvbi.getContext(), hFeedbackActivity.class);
-                    rvMenufvbi.getContext().startActivity(intent);
-                } else if (infomenu2.equals("Change Event")) {
-                    Intent intent = new Intent(rvMenufvbi.getContext(), ChangeEventActivity.class);
-                    rvMenufvbi.getContext().startActivity(intent);
-                }
-            }
-        });*/
     }
 }
 
