@@ -2,7 +2,6 @@ package com.gandsoft.openguide.activity;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,10 +14,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.gandsoft.openguide.API.APIresponse.UserData.UserListEventResponseModel;
-import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
-import com.gandsoft.openguide.activity.main.BaseHomeActivity;
-import com.gandsoft.openguide.support.SessionUtil;
 import com.github.siyamed.shapeimageview.RoundedImageView;
 
 import java.util.ArrayList;
@@ -47,26 +43,28 @@ public class ChangeEventPastAdapter extends RecyclerView.Adapter<ChangeEventPast
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         UserListEventResponseModel model = models.get(position);
-        Glide.with((Activity) parent)
-                .load(model.getBackground())
-                .placeholder(R.drawable.template_account_og)
-                .error(R.drawable.template_account_og)
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .into(holder.ivListChangeEventBackgroundfvbi);
-        Glide.with((Activity) parent)
-                .load(model.getLogo())
-                .placeholder(R.drawable.template_account_og)
-                .error(R.drawable.template_account_og)
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .into(holder.ivListChangeEventLogofvbi);
-        holder.tvListChangeEventTitlefvbi.setText(model.getTitle());
-        holder.tvListChangeEventDatefvbi.setText(model.getDate());
-        holder.llListChangeEventfvbi.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                parent.gotoEvent(model.getEvent_id());
-            }
-        });
+        if (model.getStatus().equalsIgnoreCase("PAST EVENT")) {
+            Glide.with((Activity) parent)
+                    .load(model.getBackground())
+                    .placeholder(R.drawable.template_account_og)
+                    .error(R.drawable.template_account_og)
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .into(holder.ivListChangeEventBackgroundfvbi);
+            Glide.with((Activity) parent)
+                    .load(model.getLogo())
+                    .placeholder(R.drawable.template_account_og)
+                    .error(R.drawable.template_account_og)
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .into(holder.ivListChangeEventLogofvbi);
+            holder.tvListChangeEventTitlefvbi.setText(model.getTitle());
+            holder.tvListChangeEventDatefvbi.setText(model.getDate());
+            holder.llListChangeEventfvbi.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    parent.gotoEvent(model.getEvent_id());
+                }
+            });
+        }
     }
 
     @Override
@@ -92,14 +90,17 @@ public class ChangeEventPastAdapter extends RecyclerView.Adapter<ChangeEventPast
     }
 
     public void setData(List<UserListEventResponseModel> datas) {
-        Log.d("Lihat", "setData ChangeEventPastAdapter : " + datas.size());
         models = datas;
         notifyDataSetChanged();
     }
 
     public void replaceData(List<UserListEventResponseModel> datas) {
-        models.clear();
-        models.addAll(datas);
+        if (models.size() > 0) {
+            models.clear();
+            models.addAll(datas);
+        } else {
+            models = datas;
+        }
         notifyDataSetChanged();
     }
 

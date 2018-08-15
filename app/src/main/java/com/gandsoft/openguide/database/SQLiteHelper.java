@@ -28,6 +28,8 @@ public class SQLiteHelper extends SQLiteOpenHelper {
 
     public static String TableGlobalData = "tabGlobalData";
     public static String KEY_GlobalData_dbver = "dbver";
+    public static String KEY_GlobalData_eventId = "eventId";
+    public static String KEY_GlobalData_accountId = "accountId";
     public static String KEY_GlobalData_version_data_user = "version_data_user";
     public static String KEY_GlobalData_version_data_event = "version_data_event";
 
@@ -140,8 +142,8 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     public static String Key_Place_List_icon = "icon";
 
     private static final String query_add_table_UserData = "CREATE TABLE IF NOT EXISTS " + TableUserData + "("
-            + KEY_UserData_No + " INTEGER PRIMARY KEY AUTOINCREMENT,"
-            + KEY_UserData_accountId + " TEXT,"
+            + KEY_UserData_No + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+            + KEY_UserData_accountId + " TEXT, "
             + KEY_UserData_position + " TEXT, "
             + KEY_UserData_birthday + " TEXT, "
             + KEY_UserData_versionData + " INTEGER, "
@@ -158,9 +160,9 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     private static final String query_delete_table_UserData = "DROP TABLE IF EXISTS " + TableUserData;
 
     private static final String query_add_table_ListEvent = "CREATE TABLE IF NOT EXISTS " + TableListEvent + "("
-            + KEY_ListEvent_No + " INTEGER PRIMARY KEY AUTOINCREMENT,"
-            + KEY_ListEvent_eventId + " TEXT,"
-            + KEY_ListEvent_accountId + " TEXT,"
+            + KEY_ListEvent_No + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+            + KEY_ListEvent_eventId + " TEXT, "
+            + KEY_ListEvent_accountId + " TEXT, "
             + KEY_ListEvent_startDate + " TEXT, "
             + KEY_ListEvent_logo + " BLOB, "
             + KEY_ListEvent_logo_local + " BLOB, "
@@ -171,8 +173,8 @@ public class SQLiteHelper extends SQLiteOpenHelper {
             + KEY_ListEvent_background_local + " BLOB, "
             + KEY_ListEvent_groupCode + " TEXT, "
             + KEY_ListEvent_roleName + " TEXT, "
-            + KEY_ListEvent_date + " TEXT,"
-            + KEY_ListEvent_IsFirstIn + " BOOLEAN)";
+            + KEY_ListEvent_date + " TEXT, "
+            + KEY_ListEvent_IsFirstIn + " BOOLEAN) ";
     private static final String query_delete_table_ListEvent = "DROP TABLE IF EXISTS " + TableListEvent;
 
     private static final String query_add_table_Wallet = "CREATE TABLE IF NOT EXISTS " + TableWallet + "("
@@ -188,6 +190,8 @@ public class SQLiteHelper extends SQLiteOpenHelper {
 
     private static final String query_add_table_GlobalData = "CREATE TABLE IF NOT EXISTS " + TableGlobalData + "("
             + KEY_GlobalData_dbver + " TEXT PRIMARY KEY , "
+            + KEY_GlobalData_eventId + " TEXT, "
+            + KEY_GlobalData_accountId + " TEXT, "
             + KEY_GlobalData_version_data_user + " TEXT, "
             + KEY_GlobalData_version_data_event + " TEXT) ";
     private static final String query_delete_table_GlobalData = "DROP TABLE IF EXISTS " + TableGlobalData;
@@ -223,7 +227,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
             + Key_Schedule_List_No + " INTEGER PRIMARY KEY AUTOINCREMENT, "
             + Key_Schedule_List_EventId + " TEXT, "
             + Key_Schedule_List_date + " TEXT, "
-            + Key_Schedule_List_id + " TEXT, "
+            + Key_Schedule_List_id + " INTEGER, "
             + Key_Schedule_List_waktu + " TEXT, "
             + Key_Schedule_List_schedule_title + " TEXT, "
             + Key_Schedule_List_location + " TEXT, "
@@ -240,25 +244,25 @@ public class SQLiteHelper extends SQLiteOpenHelper {
             + Key_The_Event_logo + " TEXT, "
             + Key_The_Event_event_name + " TEXT, "
             + Key_The_Event_event_location + " TEXT, "
-            + Key_The_Event_version_data + " TEXT, "
+            + Key_The_Event_version_data + " INTEGER, "
             + Key_The_Event_feedback + " TEXT, "
             + Key_The_Event_date_event + " TEXT, "
             + Key_The_Event_weather + " TEXT, "
             + Key_The_Event_title_contact + " TEXT, "
             + Key_The_Event_api_weather + " TEXT, "
             + Key_The_Event_welcome_note + " TEXT, "
-            + Key_The_Event_commentpost_status + " TEXT, "
-            + Key_The_Event_deletepost_status + " TEXT, "
-            + Key_The_Event_addpost_status + " TEXT)";
+            + Key_The_Event_commentpost_status + " BOOLEAN, "
+            + Key_The_Event_deletepost_status + " BOOLEAN, "
+            + Key_The_Event_addpost_status + " BOOLEAN) ";
     private static final String query_delete_table_TheEvent = "DROP TABLE IF EXISTS " + TableTheEvent;
 
     private static final String query_add_table_PlaceList = "CREATE TABLE IF NOT EXISTS " + TablePlaceList + "("
-            + Key_Place_List_No + " TEXT PRIMARY KEY AUTOINCREMENT, "
+            + Key_Place_List_No + " INTEGER PRIMARY KEY AUTOINCREMENT, "
             + Key_Place_List_EventId + " TEXT, "
             + Key_Place_List_latitude + " TEXT, "
             + Key_Place_List_longitude + " TEXT, "
             + Key_Place_List_title + " TEXT, "
-            + Key_Place_List_icon + " TEXT)";
+            + Key_Place_List_icon + " TEXT) ";
     private static final String query_delete_table_PlaceList = "DROP TABLE IF EXISTS " + TablePlaceList;
 
 
@@ -279,7 +283,6 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         db.execSQL(query_add_table_ScheduleList);
         db.execSQL(query_add_table_TheEvent);
         db.execSQL(query_add_table_PlaceList);
-
     }
 
     @Override
@@ -294,10 +297,17 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         db.execSQL(query_delete_table_ScheduleList);
         db.execSQL(query_delete_table_TheEvent);
         db.execSQL(query_delete_table_PlaceList);
-        /*replaceDataToNewTable(db, TableUserData, "tabTempUserEvent");
-        replaceDataToNewTable(db, TableListEvent, "tabTempEvent");
-        replaceDataToNewTable(db, TableWallet, "tabTempWallet");
-        replaceDataToNewTable(db, TableGlobalData, "tabTempGlobalData");*/
+
+        db.execSQL(query_add_table_UserData);
+        db.execSQL(query_add_table_ListEvent);
+        db.execSQL(query_add_table_Wallet);
+        db.execSQL(query_add_table_GlobalData);
+        db.execSQL(query_add_table_EventAbout);
+        db.execSQL(query_add_table_ContactList);
+        db.execSQL(query_add_table_ImportantInfo);
+        db.execSQL(query_add_table_ScheduleList);
+        db.execSQL(query_add_table_TheEvent);
+        db.execSQL(query_add_table_PlaceList);
     }
 
     private void replaceDataToNewTable(SQLiteDatabase db, String tableName, String tableString) {
@@ -308,7 +318,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         db.execSQL("CREATE TABLE " + tableString);
 
         columns.retainAll(getColumns(db, tableName));
-        String cols = join(columns, ",");
+        String cols = join(columns, ", ");
         db.execSQL(String.format("INSERT INTO %s (%s) SELECT %s from temp_%s",
                 tableName, cols, cols, tableName));
         db.execSQL("DROP TABLE temp_" + tableName);
@@ -348,7 +358,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(KEY_UserData_accountId, phoneNumberSaved);
-        db.insert(TableUserData, null, contentValues);
+        db.insertWithOnConflict(TableUserData, null, contentValues, SQLiteDatabase.CONFLICT_REPLACE);
         db.close();
     }
 
@@ -376,14 +386,13 @@ public class SQLiteHelper extends SQLiteOpenHelper {
 
     public int getVersionDataIdEvent(String eventId) {
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.query(TableListEvent, new String[]{KEY_ListEvent_version_data}, KEY_ListEvent_eventId + " = ? ", new String[]{eventId}, null, null, null);
+        Cursor cursor = db.query(TableTheEvent, new String[]{Key_The_Event_version_data}, Key_The_Event_EventId + " = ? ", new String[]{eventId}, null, null, null);
         if (cursor.moveToFirst()) {
-            return Integer.parseInt(cursor.getString(0));
+            return cursor.getInt(cursor.getColumnIndex(Key_The_Event_version_data));
         } else {
             return 0;
         }
     }
-
 
     public void saveListEvent(UserListEventResponseModel model, String accountId) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -401,7 +410,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         contentValues.put(KEY_ListEvent_roleName, model.getRole_name());
         contentValues.put(KEY_ListEvent_date, model.getDate());
         contentValues.put(KEY_ListEvent_IsFirstIn, false);
-        db.insert(TableListEvent, null, contentValues);
+        db.insertWithOnConflict(TableListEvent, null, contentValues, SQLiteDatabase.CONFLICT_REPLACE);
         db.close();
     }
 
@@ -421,7 +430,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         contentValues.put(KEY_UserData_email, model.getEmail());
         contentValues.put(KEY_UserData_gender, model.getGender());
         contentValues.put(KEY_UserData_fullName, model.getFull_name());
-        db.insert(TableUserData, null, contentValues);
+        db.insertWithOnConflict(TableUserData, null, contentValues, SQLiteDatabase.CONFLICT_REPLACE);
         db.close();
     }
 
@@ -435,13 +444,17 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         contentValues.put(KEY_Wallet_notif, model.getNotif());
         contentValues.put(KEY_Wallet_detail, model.getDetail());
         contentValues.put(KEY_Wallet_type, model.getType());
-        db.insert(TableWallet, null, contentValues);
+        db.insertWithOnConflict(TableWallet, null, contentValues, SQLiteDatabase.CONFLICT_REPLACE);
         db.close();
     }
 
     public void saveTheEvent(EventTheEvent model, String eventId, String feedback_data, String version_data) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
+        Log.d("Lihat", "saveTheEvent SQLiteHelper : " + model.event_name);
+        Log.d("Lihat", "saveTheEvent SQLiteHelper : " + eventId);
+        Log.d("Lihat", "saveTheEvent SQLiteHelper : " + feedback_data);
+        Log.d("Lihat", "saveTheEvent SQLiteHelper : " + version_data);
         contentValues.put(Key_The_Event_EventId, eventId);
         contentValues.put(Key_The_Event_version_data, version_data);
         contentValues.put(Key_The_Event_feedback, feedback_data);
@@ -456,7 +469,8 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         contentValues.put(Key_The_Event_welcome_note, model.getWelcome_note());
         contentValues.put(Key_The_Event_commentpost_status, model.getCommentpost_status());
         contentValues.put(Key_The_Event_deletepost_status, model.getDeletepost_status());
-        db.insert(TableTheEvent, null, contentValues);
+        long l = db.insertWithOnConflict(TableTheEvent, null, contentValues, SQLiteDatabase.CONFLICT_REPLACE);
+        Log.d("Lihat", "saveTheEvent SQLiteHelper : " + l);
         db.close();
     }
 
@@ -473,7 +487,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         contentValues.put(Key_Schedule_List_action, model.getAction());
         contentValues.put(Key_Schedule_List_link, model.getLink());
         contentValues.put(Key_Schedule_List_status, model.getStatus());
-        db.insert(TableScheduleList, null, contentValues);
+        db.insertWithOnConflict(TableScheduleList, null, contentValues, SQLiteDatabase.CONFLICT_REPLACE);
         db.close();
     }
 
@@ -483,7 +497,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         contentValues.put(Key_Importan_Info_EventId, eventId);
         contentValues.put(Key_Importan_Info_title, model.getInfo());
         contentValues.put(Key_Importan_Info_info, model.getInfo());
-        db.insert(TableImportantInfo, null, contentValues);
+        db.insertWithOnConflict(TableImportantInfo, null, contentValues, SQLiteDatabase.CONFLICT_REPLACE);
         db.close();
     }
 
@@ -496,7 +510,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         contentValues.put(KEY_Contact_List_Email, model.getEmail());
         contentValues.put(KEY_Contact_List_Telephone, model.getTelephone());
         contentValues.put(Key_Contact_List_Icon, model.getIcon());
-        db.insert(TableContactList, null, contentValues);
+        db.insertWithOnConflict(TableContactList, null, contentValues, SQLiteDatabase.CONFLICT_REPLACE);
         db.close();
     }
 
@@ -509,7 +523,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         contentValues.put(KEY_Event_About_Logo, model.getLogo());
         //contentValues.put(KEY_Event_About_Logo_Local, model.);
         contentValues.put(KEY_Event_About_Description, model.getDescription());
-        db.insert(TableEventAbout, null, contentValues);
+        db.insertWithOnConflict(TableEventAbout, null, contentValues, SQLiteDatabase.CONFLICT_REPLACE);
         db.close();
     }
 
@@ -521,7 +535,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         contentValues.put(Key_Place_List_longitude, model.getLongitude());
         contentValues.put(Key_Place_List_title, model.getTitle());
         contentValues.put(Key_Place_List_icon, model.getIcon());
-        db.insert(TableEventAbout, null, contentValues);
+        db.insertWithOnConflict(TablePlaceList, null, contentValues, SQLiteDatabase.CONFLICT_REPLACE);
         db.close();
     }
 
@@ -542,7 +556,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         contentValues.put(KEY_UserData_email, model.getEmail());
         contentValues.put(KEY_UserData_gender, model.getGender());
         contentValues.put(KEY_UserData_fullName, model.getFull_name());
-        db.update(TableUserData, contentValues, KEY_UserData_accountId + " = ? ", new String[]{accountId});
+        db.updateWithOnConflict(TableUserData, contentValues, KEY_UserData_accountId + " = ? ", new String[]{accountId}, SQLiteDatabase.CONFLICT_REPLACE);
         db.close();
     }
 
@@ -562,7 +576,8 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         contentValues.put(KEY_ListEvent_roleName, model.getRole_name());
         contentValues.put(KEY_ListEvent_date, model.getDate());
         contentValues.put(KEY_ListEvent_IsFirstIn, false);
-        db.update(TableListEvent, contentValues, KEY_ListEvent_eventId + " = ? ", new String[]{model.getEvent_id()});
+        int i = db.updateWithOnConflict(TableListEvent, contentValues, KEY_ListEvent_eventId + " = ? ", new String[]{model.getEvent_id()}, SQLiteDatabase.CONFLICT_REPLACE);
+        Log.d("Lihat", "updateListEvent SQLiteHelper : " + i);
         db.close();
     }
 
@@ -576,19 +591,22 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         contentValues.put(KEY_Wallet_notif, model.getNotif());
         contentValues.put(KEY_Wallet_detail, model.getDetail());
         contentValues.put(KEY_Wallet_type, model.getType());
-        db.update(TableWallet, contentValues, KEY_Wallet_sort + " = ? AND " + KEY_Wallet_eventId + " = ? ", new String[]{model.getSort(), eventId});
+        db.updateWithOnConflict(TableWallet, contentValues, KEY_Wallet_sort + " = ? AND " + KEY_Wallet_eventId + " = ? ", new String[]{model.getSort(), eventId}, SQLiteDatabase.CONFLICT_REPLACE);
         db.close();
     }
 
-    public void UpdateTheEvent(EventTheEvent model, String eventId) {
+    public void updateTheEvent(EventTheEvent model, String eventId, String feedback_data, String version_data) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
+        Log.d("Lihat", "updateTheEvent SQLiteHelper : " + model.getEvent_name());
+        Log.d("Lihat", "updateTheEvent SQLiteHelper : " + eventId);
+        Log.d("Lihat", "updateTheEvent SQLiteHelper : " + version_data);
         contentValues.put(Key_The_Event_background, model.getBackground());
         contentValues.put(Key_The_Event_logo, model.getLogo());
         contentValues.put(Key_The_Event_event_name, model.getEvent_name());
         contentValues.put(Key_The_Event_event_location, model.getEvent_location());
-        contentValues.put(Key_The_Event_version_data, model.getVersionData());
-        contentValues.put(Key_The_Event_feedback, model.getFeedback());
+        contentValues.put(Key_The_Event_version_data, version_data);
+        contentValues.put(Key_The_Event_feedback, feedback_data);
         contentValues.put(Key_The_Event_date_event, model.getDate_event());
         contentValues.put(Key_The_Event_weather, model.getWeather());
         contentValues.put(Key_The_Event_title_contact, model.getTitle_contact());
@@ -596,11 +614,11 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         contentValues.put(Key_The_Event_welcome_note, model.getWelcome_note());
         contentValues.put(Key_The_Event_commentpost_status, model.getCommentpost_status());
         contentValues.put(Key_The_Event_deletepost_status, model.getDeletepost_status());
-        db.update(TableTheEvent, contentValues, Key_The_Event_EventId + " = ? ", new String[]{eventId});
+        db.updateWithOnConflict(TableTheEvent, contentValues, Key_The_Event_EventId + " = ? ", new String[]{eventId}, SQLiteDatabase.CONFLICT_REPLACE);
         db.close();
     }
 
-    public void UpdateScheduleList(EventScheduleListDateDataList model, String date, String eventId) {
+    public void updateScheduleList(EventScheduleListDateDataList model, String date, String eventId) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(Key_Schedule_List_date, date);
@@ -612,20 +630,20 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         contentValues.put(Key_Schedule_List_action, model.getAction());
         contentValues.put(Key_Schedule_List_link, model.getLink());
         contentValues.put(Key_Schedule_List_status, model.getStatus());
-        db.update(TableScheduleList, contentValues, Key_Schedule_List_EventId + " = ? ", new String[]{eventId});
+        db.updateWithOnConflict(TableScheduleList, contentValues, Key_Schedule_List_EventId + " = ? ", new String[]{eventId}, SQLiteDatabase.CONFLICT_REPLACE);
         db.close();
     }
 
-    public void UpdateImportanInfo(EventImportanInfo model, String eventId) {
+    public void updateImportanInfo(EventImportanInfo model, String eventId) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(Key_Importan_Info_title, model.getInfo());
         contentValues.put(Key_Importan_Info_info, model.getInfo());
-        db.update(TableImportantInfo, contentValues, Key_Importan_Info_EventId + " = ? ", new String[]{eventId});
+        db.updateWithOnConflict(TableImportantInfo, contentValues, Key_Importan_Info_EventId + " = ? ", new String[]{eventId}, SQLiteDatabase.CONFLICT_REPLACE);
         db.close();
     }
 
-    public void UpdateDataContactList(EventDataContactList model, String title, String eventId) {
+    public void updateDataContactList(EventDataContactList model, String title, String eventId) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(Key_Contact_List_Title, title);
@@ -633,11 +651,11 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         contentValues.put(KEY_Contact_List_Email, model.getEmail());
         contentValues.put(KEY_Contact_List_Telephone, model.getTelephone());
         contentValues.put(Key_Contact_List_Icon, model.getIcon());
-        db.update(TableContactList, contentValues, Key_Contact_List_EventId + " = ? ", new String[]{eventId});
+        db.updateWithOnConflict(TableContactList, contentValues, Key_Contact_List_EventId + " = ? ", new String[]{eventId}, SQLiteDatabase.CONFLICT_REPLACE);
         db.close();
     }
 
-    public void UpdateAbout(EventAbout model, String eventId) {
+    public void updateAbout(EventAbout model, String eventId) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(KEY_Event_About_Background, model.getBackground());
@@ -645,7 +663,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         contentValues.put(KEY_Event_About_Logo, model.getLogo());
         //contentValues.put(KEY_Event_About_Logo_Local, model.);
         contentValues.put(KEY_Event_About_Description, model.getDescription());
-        db.update(TableEventAbout, contentValues, Key_Event_About_EventId + " = ? ", new String[]{eventId});
+        db.updateWithOnConflict(TableEventAbout, contentValues, Key_Event_About_EventId + " = ? ", new String[]{eventId}, SQLiteDatabase.CONFLICT_REPLACE);
         db.close();
     }
 
@@ -656,7 +674,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         contentValues.put(Key_Place_List_longitude, model.getLongitude());
         contentValues.put(Key_Place_List_title, model.getTitle());
         contentValues.put(Key_Place_List_icon, model.getIcon());
-        db.update(TableEventAbout, contentValues, Key_Place_List_EventId + " = ?", new String[]{eventId});
+        db.updateWithOnConflict(TablePlaceList, contentValues, Key_Place_List_EventId + " = ?", new String[]{eventId}, SQLiteDatabase.CONFLICT_REPLACE);
         db.close();
     }
 
@@ -746,19 +764,18 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         return modelList;
     }
 
-    public ArrayList<EventTheEvent> getTheEvent(String eventId) {
+    public ArrayList<EventTheEvent> getTheEvents(String eventId) {
         ArrayList<EventTheEvent> modelList = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.query(TableTheEvent, null, Key_The_Event_EventId + " = ? ", new String[]{eventId}, null, null, null);
+        Cursor cursor = db.query(TableTheEvent, null, Key_The_Event_EventId + " = ? ", new String[]{eventId}, Key_The_Event_EventId, null, null);
 
         if (cursor.moveToFirst()) {
             do {
                 EventTheEvent model = new EventTheEvent();
                 model.setNumber(cursor.getInt(cursor.getColumnIndex(Key_The_Event_No)));
                 model.setBackground(cursor.getString(cursor.getColumnIndex(Key_The_Event_background)));
-                //model.setBackground_local(cursor.getString(Key_The_Event_background));
                 model.setLogo(cursor.getString(cursor.getColumnIndex(Key_The_Event_logo)));
-                //model.setLogo_local(cursor.getString(cursor.getColumnIndex(Key_The_Event_logo)));
+                model.setDate_event(cursor.getString(cursor.getColumnIndex(Key_The_Event_date_event)));
                 model.setEvent_name(cursor.getString(cursor.getColumnIndex(Key_The_Event_event_name)));
                 model.setEvent_location(cursor.getString(cursor.getColumnIndex(Key_The_Event_event_location)));
                 model.setWeather(cursor.getString(cursor.getColumnIndex(Key_The_Event_weather)));
@@ -774,6 +791,30 @@ public class SQLiteHelper extends SQLiteOpenHelper {
 
         cursor.close();
         return modelList;
+    }
+
+    public EventTheEvent getTheEvent(String eventId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(TableTheEvent, null, Key_The_Event_EventId + " = ?", new String[]{String.valueOf(eventId)}, Key_The_Event_EventId, null, null);
+        if (cursor != null)
+            cursor.moveToFirst();
+
+        EventTheEvent model = new EventTheEvent();
+        model.setNumber(cursor.getInt(cursor.getColumnIndex(Key_The_Event_No)));
+        model.setBackground(cursor.getString(cursor.getColumnIndex(Key_The_Event_background)));
+        model.setLogo(cursor.getString(cursor.getColumnIndex(Key_The_Event_logo)));
+        model.setEvent_name(cursor.getString(cursor.getColumnIndex(Key_The_Event_event_name)));
+        model.setEvent_location(cursor.getString(cursor.getColumnIndex(Key_The_Event_event_location)));
+        model.setWeather(cursor.getString(cursor.getColumnIndex(Key_The_Event_weather)));
+        model.setDate_event(cursor.getString(cursor.getColumnIndex(Key_The_Event_date_event)));
+        model.setTitle_contact(cursor.getString(cursor.getColumnIndex(Key_The_Event_title_contact)));
+        model.setApi_weather(cursor.getString(cursor.getColumnIndex(Key_The_Event_api_weather)));
+        model.setWelcome_note(cursor.getString(cursor.getColumnIndex(Key_The_Event_welcome_note)));
+        model.setCommentpost_status(cursor.getString(cursor.getColumnIndex(Key_The_Event_commentpost_status)));
+        model.setDeletepost_status(cursor.getString(cursor.getColumnIndex(Key_The_Event_deletepost_status)));
+        model.setAddpost_status(cursor.getString(cursor.getColumnIndex(Key_The_Event_addpost_status)));
+        // return model
+        return model;
     }
 
     public ArrayList<EventScheduleListDateDataList> getScheduleList(String eventId) {
@@ -913,11 +954,9 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         Cursor cursor = db.query(tableName, null, targetKey + " IS NULL ", null, null, null, null);
         if (cursor.getCount() == 0) {
             cursor.close();
-            Log.d("Lihat", "isDataTableKeyNull SQLiteHelper : " + true);
             return true;
         } else {
             cursor.close();
-            Log.d("Lihat", "isDataTableKeyNull SQLiteHelper : " + false);
             return false;
         }
     }
@@ -929,11 +968,9 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         Cursor cursor = db.query(table, null, key + " IS NULL AND " + key2 + " IS NULL ", null, null, null, null);
         if (cursor.getCount() == 0) {
             cursor.close();
-            Log.d("Lihat", "isDataTableKeyMultipleNull SQLiteHelper : " + true);
             return true;
         } else {
             cursor.close();
-            Log.d("Lihat", "isDataTableKeyMultipleNull SQLiteHelper : " + false);
             return false;
         }
     }
@@ -943,11 +980,9 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         Cursor cursor = db.query(tableName, null, targetKey + " = ? ", new String[]{targetValue}, null, null, null);
         if (cursor.getCount() == 0) {
             cursor.close();
-            Log.d("Lihat", "isDataTableValueNull SQLiteHelper : " + true);
             return true;
         } else {
             cursor.close();
-            Log.d("Lihat", "isDataTableValueNull SQLiteHelper : " + false);
             return false;
         }
     }
@@ -959,11 +994,9 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         Cursor cursor = db.query(table, null, key + " = ? AND " + key2 + " = ? ", new String[]{value, value2}, null, null, null);
         if (cursor.getCount() == 0) {
             cursor.close();
-            Log.d("Lihat", "isDataTableValueMultipleNull SQLiteHelper : " + true);
             return true;
         } else {
             cursor.close();
-            Log.d("Lihat", "isDataTableValueMultipleNull SQLiteHelper : " + false);
             return false;
         }
     }
@@ -985,7 +1018,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(key, value);
-        db.insert(table, null, contentValues);
+        db.insertWithOnConflict(table, null, contentValues, SQLiteDatabase.CONFLICT_REPLACE);
         db.close();
     }
 
@@ -993,7 +1026,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(keyParam, valueParam);
-        db.update(table, contentValues, keyWhere + " = ? ", new String[]{valueWhere});
+        db.updateWithOnConflict(table, contentValues, keyWhere + " = ? ", new String[]{valueWhere}, SQLiteDatabase.CONFLICT_REPLACE);
         db.close();
     }
 
@@ -1027,7 +1060,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(KEY_UserData_imageUrl_local, imgCachePath);
-        db.update(TableUserData, contentValues, KEY_UserData_accountId + " = ? ", new String[]{accountId});
+        db.updateWithOnConflict(TableUserData, contentValues, KEY_UserData_accountId + " = ? ", new String[]{accountId}, SQLiteDatabase.CONFLICT_REPLACE);
         db.close();
     }
 
@@ -1036,7 +1069,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         ContentValues contentValues = new ContentValues();
         contentValues.put(KEY_ListEvent_background_local, backgroundCachePath);
         contentValues.put(KEY_ListEvent_logo_local, logoCachePath);
-        db.update(TableListEvent, contentValues, KEY_ListEvent_eventId + " = ? ", new String[]{model1.getEvent_id()});
+        db.updateWithOnConflict(TableListEvent, contentValues, KEY_ListEvent_eventId + " = ? ", new String[]{model1.getEvent_id()}, SQLiteDatabase.CONFLICT_REPLACE);
         db.close();
     }
 }

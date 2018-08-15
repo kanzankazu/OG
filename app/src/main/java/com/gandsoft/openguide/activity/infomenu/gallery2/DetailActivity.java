@@ -62,6 +62,7 @@ public class DetailActivity extends AppCompatActivity {
         mViewPager.setPageTransformer(true, new DepthPageTransformer());
 
         mViewPager.setAdapter(mSectionsPagerAdapter);
+        mViewPager.setOffscreenPageLimit(3);
         mViewPager.setCurrentItem(pos);
 
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {

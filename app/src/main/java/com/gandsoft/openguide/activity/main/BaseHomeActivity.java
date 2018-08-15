@@ -85,7 +85,6 @@ public class BaseHomeActivity extends AppCompatActivity {
 
     private void initContent() {
 
-        initVersionDataEvent();
         initActionBar();
         initTablayoutViewpager();
     }
@@ -113,14 +112,6 @@ public class BaseHomeActivity extends AppCompatActivity {
             public void onTabReselected(TabLayout.Tab tab) {
             }
         });
-    }
-
-    private void initVersionDataEvent() {
-        if (db.isDataTableValueNull(SQLiteHelper.TableListEvent, SQLiteHelper.KEY_ListEvent_version_data, eventId)) {
-            version_data_event = IConfig.DB_Version;
-        } else {
-            version_data_event = db.getVersionDataIdEvent(eventId);
-        }
     }
 
     private void showFirstDialogEvent() {
@@ -168,6 +159,7 @@ public class BaseHomeActivity extends AppCompatActivity {
 
         mPagerAdapter = new SlidePagerAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
         mPager.setAdapter(mPagerAdapter);
+        mPager.setOffscreenPageLimit(3);
         mPager.setCurrentItem(0);
     }
 

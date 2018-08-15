@@ -16,6 +16,7 @@
         android:layout_alignParentTop="true"
         android:adjustViewBounds="false"
         android:alpha="0.1"
+        android:src="@drawable/gallery"
         android:background="@color/colorPrimaryDark"
         android:scaleType="centerCrop" />
 

@@ -1,17 +1,17 @@
 package com.gandsoft.openguide.API.APIrequest.Event;
 
 public class EventDataRequestModel {
-    public String version_data;
+    public int version_data;
     public String phonenumber;
     public String dbver;
     public String id_event;
     public String pass;
 
-    public String getVersion_data() {
+    public int getVersion_data() {
         return version_data;
     }
 
-    public void setVersion_data(String version_data) {
+    public void setVersion_data(int version_data) {
         this.version_data = version_data;
     }
 

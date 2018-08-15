@@ -9,6 +9,7 @@ import android.support.v4.widget.NestedScrollView;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,7 +20,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.gandsoft.openguide.IConfig;
+import com.bumptech.glide.Glide;
+import com.gandsoft.openguide.API.APIresponse.Event.EventTheEvent;
 import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
 import com.gandsoft.openguide.activity.main.adapter.PostRecViewAdapter;
@@ -32,7 +34,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class aHomeFragment extends Fragment {
-    SQLiteHelper db = new SQLiteHelper(getActivity());
+
 
     private static final String TAG = "Lihat";
     private View view;
@@ -41,7 +43,7 @@ public class aHomeFragment extends Fragment {
     private SwipeRefreshLayout homeSRLHomefvbi;
     private ImageView homeIVOpenCamerafvbi;
     private NestedScrollView homeNSVHomefvbi;
-    private ImageView homeIVEventfvbi;
+    private ImageView homeIVEventfvbi,homeIVEventBackgroundfvbi;
     private ImageView homeIVShareSomethingfvbi;
     private TextView homeTVTitleEventfvbi;
     private TextView homeTVDescEventfvbi;
@@ -53,16 +55,22 @@ public class aHomeFragment extends Fragment {
     private int page = 0;
     private String accountId, eventId;
     private int version_data_event;
+    SQLiteHelper db;
 
     public aHomeFragment() {
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
         view = inflater.inflate(R.layout.fragment_a_home, container, false);
 
+        db = new SQLiteHelper(getActivity());
+
         accountId = SessionUtil.getStringPreferences(ISeasonConfig.KEY_ACCOUNT_ID, null);
+        Log.d("Lihat", "onCreateView aHomeFragment : " + accountId);
         eventId = SessionUtil.getStringPreferences(ISeasonConfig.KEY_EVENT_ID, null);
+        Log.d("Lihat", "onCreateView aHomeFragment : " + eventId);
 
         initComponent();
         initContent(container);
@@ -75,6 +83,7 @@ public class aHomeFragment extends Fragment {
         homeSRLHomefvbi = (SwipeRefreshLayout) view.findViewById(R.id.homeSRLHome);
         homeNSVHomefvbi = (NestedScrollView) view.findViewById(R.id.homeNSVHome);
         homeIVEventfvbi = (ImageView) view.findViewById(R.id.homeIVEvent);
+        homeIVEventBackgroundfvbi = (ImageView) view.findViewById(R.id.homeIVEventBackground);
         homeIVShareSomethingfvbi = (ImageView) view.findViewById(R.id.homeIVShareSomething);
         homeIVOpenCamerafvbi = (ImageView) view.findViewById(R.id.homeIVOpenCamera);
         homeTVTitleEventfvbi = (TextView) view.findViewById(R.id.homeTVTitleEvent);
@@ -87,7 +96,7 @@ public class aHomeFragment extends Fragment {
 
     private void initContent(ViewGroup container) {
 
-        initVersionDataEvent();
+        updateUi();
 
         adapter = new PostRecViewAdapter(menuUi);
         recyclerView.setNestedScrollingEnabled(false);
@@ -150,6 +159,12 @@ public class aHomeFragment extends Fragment {
                 }
             }
         });
+        homeBTapCheckInfvbi.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Snackbar.make(getActivity().findViewById(android.R.id.content), "tes", Snackbar.LENGTH_SHORT).show();
+            }
+        });
         /*recyclerView.setLoadMoreListener(new LoadMoreRecyclerView.LoadMoreListener() {
             @Override
             public void onLoadMore() {
@@ -165,11 +180,28 @@ public class aHomeFragment extends Fragment {
         });*/
     }
 
-    private void initVersionDataEvent() {
-        if (db.isDataTableValueNull(SQLiteHelper.TableListEvent, SQLiteHelper.KEY_ListEvent_version_data, eventId)) {
-            version_data_event = IConfig.DB_Version;
+    private void updateUi() {
+        EventTheEvent model = db.getTheEvent(eventId);
+        if (model != null) {
+            homeTVTitleEventfvbi.setText(model.getEvent_name());
+            homeTVDescEventfvbi.setText("" +
+                    ""+model.getEvent_location()+"\n" +
+                    ""+model.getDate_event()+"\n" +
+                    ""+ Html.fromHtml(model.getWeather())+"");
+            Glide.with(getActivity())
+                    .load(model.getLogo())
+                    .placeholder(R.drawable.template_account_og)
+                    .skipMemoryCache(true)
+                    .error(R.drawable.template_account_og)
+                    .into(homeIVEventfvbi);
+            Glide.with(getActivity())
+                    .load(model.getBackground())
+                    .placeholder(R.drawable.template_account_og)
+                    .skipMemoryCache(true)
+                    .error(R.drawable.template_account_og)
+                    .into(homeIVEventBackgroundfvbi);
         } else {
-            version_data_event = db.getVersionDataIdEvent(eventId);
+            Snackbar.make(getActivity().findViewById(android.R.id.content), "data kosong", Snackbar.LENGTH_LONG).setAction("Action", null).show();
         }
     }
 

@@ -65,8 +65,10 @@ public class cScheduleFragment extends Fragment {
 
         pagerAdapterBig = new SampleAdapter(getActivity(), 0, headervalues);
         pagerBig.setAdapter(pagerAdapterBig);
+        pagerBig.setOffscreenPageLimit(3);
         pagerAdapterSmall = new SampleAdapter(getActivity(), 1, headervalues);
         pagerSmall.setAdapter(pagerAdapterSmall);
+        pagerSmall.setOffscreenPageLimit(3);
 
         adapter = new TaskRecViewAdapter(getActivity());
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));

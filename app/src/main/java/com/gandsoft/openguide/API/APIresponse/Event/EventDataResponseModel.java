@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 public class EventDataResponseModel implements Serializable {
+
     public String status;
     public String event_id;
     public String version_data;

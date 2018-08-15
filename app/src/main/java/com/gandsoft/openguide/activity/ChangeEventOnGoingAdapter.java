@@ -1,13 +1,14 @@
 package com.gandsoft.openguide.activity;
 
+import android.app.Activity;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -20,32 +21,36 @@ import java.util.ArrayList;
 import java.util.List;
 
 class ChangeEventOnGoingAdapter extends RecyclerView.Adapter<ChangeEventOnGoingAdapter.ViewHolder> {
-    private Context context;
+    private ChangeEventPastHook parent;
     private List<UserListEventResponseModel> models = new ArrayList<>();
 
-    public ChangeEventOnGoingAdapter(Context context, List<UserListEventResponseModel> menuUi) {
-        this.context = context;
-        this.models = menuUi;
+    public ChangeEventOnGoingAdapter(Context context, List<UserListEventResponseModel> items) {
+        models = items;
+        try {
+            this.parent = (ChangeEventPastHook) parent;
+        } catch (Exception e) {
+            this.parent = null;
+        }
     }
 
     @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_list_change_event, parent, false);
         return new ViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+    public void onBindViewHolder(ViewHolder holder, int position) {
         UserListEventResponseModel model = models.get(position);
-        if (model.getStatus().equalsIgnoreCase("PAST EVENT")) {
-            Glide.with(context)
+        if (model.getStatus().equalsIgnoreCase("ON GOING")) {
+            Glide.with((Activity) parent)
                     .load(model.getBackground())
                     .placeholder(R.drawable.template_account_og)
                     .error(R.drawable.template_account_og)
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .into(holder.ivListChangeEventBackgroundfvbi);
-            Glide.with(context)
+            Glide.with((Activity) parent)
                     .load(model.getLogo())
                     .placeholder(R.drawable.template_account_og)
                     .error(R.drawable.template_account_og)
@@ -53,8 +58,12 @@ class ChangeEventOnGoingAdapter extends RecyclerView.Adapter<ChangeEventOnGoingA
                     .into(holder.ivListChangeEventLogofvbi);
             holder.tvListChangeEventTitlefvbi.setText(model.getTitle());
             holder.tvListChangeEventDatefvbi.setText(model.getDate());
-            Log.d("Lihat", "onBindViewHolder ChangeEventOnGoingAdapter : " + model.getLogo());
-            Log.d("Lihat", "onBindViewHolder ChangeEventOnGoingAdapter : " + model.getBackground());
+            holder.llListChangeEventfvbi.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    parent.gotoEvent(model.getEvent_id());
+                }
+            });
         }
     }
 
@@ -68,9 +77,11 @@ class ChangeEventOnGoingAdapter extends RecyclerView.Adapter<ChangeEventOnGoingA
         private final ImageView ivListChangeEventBackgroundfvbi;
         private final RoundedImageView ivListChangeEventLogofvbi;
         private final TextView tvListChangeEventTitlefvbi, tvListChangeEventDatefvbi;
+        private final LinearLayout llListChangeEventfvbi;
 
         public ViewHolder(View itemView) {
             super(itemView);
+            llListChangeEventfvbi = (LinearLayout) itemView.findViewById(R.id.llListChangeEvent);
             ivListChangeEventBackgroundfvbi = (ImageView) itemView.findViewById(R.id.ivListChangeEventBackground);
             ivListChangeEventLogofvbi = (RoundedImageView) itemView.findViewById(R.id.ivListChangeEventLogo);
             tvListChangeEventTitlefvbi = (TextView) itemView.findViewById(R.id.tvListChangeEventTitle);
@@ -84,8 +95,12 @@ class ChangeEventOnGoingAdapter extends RecyclerView.Adapter<ChangeEventOnGoingA
     }
 
     public void replaceData(List<UserListEventResponseModel> datas) {
-        models.clear();
-        models.addAll(datas);
+        if (models.size() > 0) {
+            models.clear();
+            models.addAll(datas);
+        } else {
+            models = datas;
+        }
         notifyDataSetChanged();
     }
 

@@ -38,20 +38,22 @@ import android.widget.Toast;
 
 import com.gandsoft.openguide.API.API;
 import com.gandsoft.openguide.API.APIrequest.UserUpdate.UserUpdateRequestModel;
-import com.gandsoft.openguide.API.APIresponse.Login.LoginResponseModel;
 import com.gandsoft.openguide.API.APIresponse.UserData.UserDataResponseModel;
 import com.gandsoft.openguide.API.APIresponse.UserUpdate.UserUpdateResponseModel;
 import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
 import com.gandsoft.openguide.database.SQLiteHelper;
 import com.gandsoft.openguide.support.SessionUtil;
-import com.google.android.gms.games.request.Requests;
-import com.google.android.gms.nearby.connection.Payload;
 import com.google.firebase.auth.FirebaseAuth;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.io.*;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -65,7 +67,7 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
     private static final int UI_OLD_USER = 1;
     private FirebaseAuth mAuth;
     /**/
-    private TextView tvAccIDfvbi, tvAccSelPicfvbi,tvAccGenderfvbi, tvAccTglfvbi, tvAccBulanfvbi, tvAccTahunfvbi, tvAccAggrementfvbi, tvSignOutSkipfvbi;
+    private TextView tvAccIDfvbi, tvAccSelPicfvbi, tvAccGenderfvbi, tvAccTglfvbi, tvAccBulanfvbi, tvAccTahunfvbi, tvAccAggrementfvbi, tvSignOutSkipfvbi;
     private EditText etAccNamefvbi, etAccEmailfvbi;
     private LinearLayout llAccPicfvbi, llAccGenderfvbi, llAccBirthdatefvbi, llAccAggrementfvbi, llAccSavefvbi;
     private CheckBox cbAccAggrementfvbi;
@@ -73,7 +75,7 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
     private ImageView ivWrapPicfvbi;
     /**/
     private boolean isNewUser = false;
-    private String accountId,base64pic;
+    private String accountId, base64pic;
 
     private Spinner mySpinner;
 
@@ -158,10 +160,10 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
             isNewUser = false;
         }
 
-        if (!db.isDataTableValueNull(SQLiteHelper.TableUserData, SQLiteHelper.KEY_UserData_accountId, accountId)) {
-            updateData(db.getUserData(accountId));
-        }else {
+        if (db.isDataTableValueNull(SQLiteHelper.TableUserData, SQLiteHelper.KEY_UserData_accountId, accountId)) {
             Snackbar.make(findViewById(android.R.id.content), "data kosong", Snackbar.LENGTH_LONG).show();
+        } else {
+            updateData(db.getUserData(accountId));
         }
 
         mAuth = FirebaseAuth.getInstance();
@@ -253,7 +255,7 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
 
     private void onSelectFromGalleryResult(Intent data) {
         Uri selectedImageUri = data.getData();
-        String[] projection = { MediaStore.MediaColumns.DATA };
+        String[] projection = {MediaStore.MediaColumns.DATA};
         @SuppressWarnings("deprecation")
         Cursor cursor = managedQuery(selectedImageUri, projection, null, null,
                 null);
@@ -268,8 +270,7 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
         BitmapFactory.decodeFile(selectedImagePath, options);
         final int REQUIRED_SIZE = 200;
         int scale = 1;
-        while (options.outWidth / scale / 2 >= REQUIRED_SIZE
-                && options.outHeight / scale / 2 >= REQUIRED_SIZE)
+        while (options.outWidth / scale / 2 >= REQUIRED_SIZE && options.outHeight / scale / 2 >= REQUIRED_SIZE)
             scale *= 2;
         options.inSampleSize = scale;
         options.inJustDecodeBounds = false;
@@ -277,7 +278,7 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
 
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         bm.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
-        byte[] byteArray = byteArrayOutputStream .toByteArray();
+        byte[] byteArray = byteArrayOutputStream.toByteArray();
 
         base64pic = Base64.encodeToString(byteArray, Base64.DEFAULT);
 
@@ -294,7 +295,7 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
             etAccEmailfvbi.setText(model.getEmail());
 //            tvAccGenderfvbi.setText(model.getGender());
 
-            ArrayAdapter<String> myAdapter = new ArrayAdapter<String>(AccountActivity.this,R.layout.spinner_item,getResources().getStringArray(R.array.names));
+            ArrayAdapter<String> myAdapter = new ArrayAdapter<String>(AccountActivity.this, R.layout.spinner_item, getResources().getStringArray(R.array.names));
             myAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
             mySpinner.setAdapter(myAdapter);
@@ -371,6 +372,7 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
                         startActivity(new Intent(AccountActivity.this, LoginActivity.class));
                         finishAffinity();
                         SessionUtil.setBoolPreferences(ISeasonConfig.KEY_IS_HAS_LOGIN, false);
+                        SessionUtil.deleteKeyPreferences(ISeasonConfig.KEY_ACCOUNT_ID);
                         db.deleteAllDataUser();
                         db.deleteAllDataListEvent();
                         db.deleteAllDataWallet();
@@ -458,13 +460,12 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
         }
     }
 
-    private void updateData(){
+    private void updateData() {
         UserUpdateRequestModel requestModel = new UserUpdateRequestModel();
         requestModel.setAccounsId(accountId);
-        if(base64pic.isEmpty()) {
+        if (base64pic.isEmpty()) {
             requestModel.setFileImageB641("");
-        }
-        else{
+        } else {
             requestModel.setFileImageB641(base64pic);
         }
         requestModel.setDbver("3");
@@ -479,12 +480,12 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
         API.doUserUpdateRet(requestModel).enqueue(new Callback<List<UserUpdateResponseModel>>() {
             @Override
             public void onResponse(Call<List<UserUpdateResponseModel>> call, Response<List<UserUpdateResponseModel>> response) {
-                if(response.isSuccessful()) {
+                if (response.isSuccessful()) {
                     List<UserUpdateResponseModel> s = response.body();
                     if (s.size() == 1) {
                         for (int i = 0; i < s.size(); i++) {
                             UserUpdateResponseModel model = s.get(i);
-                            db.updateOneKey(SQLiteHelper.TableUserData,SQLiteHelper.KEY_UserData_accountId,accountId,SQLiteHelper.KEY_UserData_imageUrl,model.getImage_url());
+                            db.updateOneKey(SQLiteHelper.TableUserData, SQLiteHelper.KEY_UserData_accountId, accountId, SQLiteHelper.KEY_UserData_imageUrl, model.getImage_url());
                             if (model.getStatus().equalsIgnoreCase("ok")) {
                                 Snackbar.make(findViewById(android.R.id.content), "Tersimpan", Snackbar.LENGTH_LONG).show();
                                 moveToChangeEvent();
@@ -495,20 +496,20 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
                     } else {
                         Snackbar.make(findViewById(android.R.id.content), "Data Tidak Sesuai", Snackbar.LENGTH_LONG).show();
                     }
-                    Log.d("brasil",response.message());
+                    Log.d("brasil", response.message());
                     moveToChangeEvent();
-                }
-                else {
-                    Log.d("gagal",response.message());
+                } else {
+                    Log.d("gagal", response.message());
                 }
             }
 
             @Override
             public void onFailure(Call<List<UserUpdateResponseModel>> call, Throwable t) {
-                Log.d("gagal failur",t.getMessage());
+                Log.d("gagal failur", t.getMessage());
             }
         });
     }
+
     public static Intent getActIntent(Activity activity) {
         return new Intent(activity, AccountActivity.class);
     }
@@ -522,8 +523,8 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
     private void updateLabel() {
         String myFormat = "yyyy-MM-dd"; //In which you need put here
         SimpleDateFormat sdf = new SimpleDateFormat(myFormat, ULocale.US);
-        Log.d("anuu",sdf.format(myCalendar.getTime()));
-        String a[]= sdf.format(myCalendar.getTime()).split("-");
+        Log.d("anuu", sdf.format(myCalendar.getTime()));
+        String a[] = sdf.format(myCalendar.getTime()).split("-");
 
         tvAccTglfvbi.setText(a[2]);
         tvAccBulanfvbi.setText(a[1]);

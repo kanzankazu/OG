@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -45,6 +44,7 @@ import com.gandsoft.openguide.API.APIresponse.UserData.UserWalletDataResponseMod
 import com.gandsoft.openguide.IConfig;
 import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
+import com.gandsoft.openguide.activity.main.BaseHomeActivity;
 import com.gandsoft.openguide.database.SQLiteHelper;
 import com.gandsoft.openguide.support.NetworkUtil;
 import com.gandsoft.openguide.support.SessionUtil;
@@ -122,6 +122,7 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
 
     private void initListener() {
         ceBUserAccountfvbi.setOnClickListener(this::Onclick);
+
         srlChangeEventActivityfvbi.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -168,71 +169,63 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
 
         //ProgressDialog progressDialog = ProgressDialog.show(ChangeEventActivity.this, "Loading...", "Please Wait..", true, false);
 
-        new Handler().postDelayed(new Runnable() {
-            public void run() {
-                //code here
-                API.doUserDataRet(requestModel).enqueue(new Callback<List<UserDataResponseModel>>() {
-                    @Override
-                    public void onResponse(Call<List<UserDataResponseModel>> call, Response<List<UserDataResponseModel>> response) {
-                        progressDialog.dismiss();
-                        if (response.isSuccessful()) {
+        //code here
+        API.doUserDataRet(requestModel).enqueue(new Callback<List<UserDataResponseModel>>() {
+            @Override
+            public void onResponse(Call<List<UserDataResponseModel>> call, Response<List<UserDataResponseModel>> response) {
+                progressDialog.dismiss();
+                if (response.isSuccessful()) {
+                    List<UserDataResponseModel> userDataResponseModels = response.body();
+                    for (int i = 0; i < userDataResponseModels.size(); i++) {
+                        UserDataResponseModel model = userDataResponseModels.get(i);
+                        if (db.isDataTableValueNull(SQLiteHelper.TableUserData, SQLiteHelper.KEY_UserData_accountId, accountid)) {
+                            db.saveUserData(model);
+                        } else {
+                            db.updateUserData(model, accountid);
+                        }
+                        SessionUtil.setStringPreferences(ISeasonConfig.KEY_ACCOUNT_VERSION_DATA, model.getVersion_data());
+                        updateUserInfo(userDataResponseModels);
 
-                            List<UserDataResponseModel> userDataResponseModels = response.body();
-                            for (int i = 0; i < userDataResponseModels.size(); i++) {
-                                UserDataResponseModel model = userDataResponseModels.get(i);
-                                if (db.isDataTableValueNull(SQLiteHelper.TableUserData, SQLiteHelper.KEY_UserData_accountId, accountid)) {
-                                    Log.d("Lihat", "onResponse ChangeEventActivity : " + model.getAccount_id());
-                                    Log.d("Lihat", "onResponse ChangeEventActivity : " + model.getFull_name());
-                                    db.saveUserData(model);
+                        List<UserListEventResponseModel> userListEventResponseModels = model.getList_event();
+                        for (int j = 0; j < userListEventResponseModels.size(); j++) {
+                            UserListEventResponseModel model1 = userListEventResponseModels.get(j);
+                            if (db.isDataTableValueNull(SQLiteHelper.TableListEvent, SQLiteHelper.KEY_ListEvent_eventId, model1.getEvent_id())) {
+                                db.saveListEvent(model1, accountid);
+                            } else {
+                                db.updateListEvent(model1);
+                            }
+                            updateRecycleView(userListEventResponseModels);
+
+                            List<UserWalletDataResponseModel> userWalletDataResponseModels = model1.getWallet_data();
+                            for (int n = 0; n < userWalletDataResponseModels.size(); n++) {
+                                UserWalletDataResponseModel model2 = userWalletDataResponseModels.get(n);
+                                if (db.isDataTableValueMultipleNull(SQLiteHelper.TableWallet, SQLiteHelper.KEY_Wallet_sort, SQLiteHelper.KEY_Wallet_eventId, model2.getSort(), model1.getEvent_id())) {
+                                    db.saveWalletData(model2, accountid, model1.getEvent_id());
                                 } else {
-                                    Log.d("Lihat", "onResponse ChangeEventActivity : " + model.getAccount_id());
-                                    Log.d("Lihat", "onResponse ChangeEventActivity : " + model.getFull_name());
-                                    db.updateUserData(model, accountid);
-                                }
-                                updateUserInfo(userDataResponseModels);
-
-                                List<UserListEventResponseModel> userListEventResponseModels = model.getList_event();
-                                for (int j = 0; j < userListEventResponseModels.size(); j++) {
-                                    UserListEventResponseModel model1 = userListEventResponseModels.get(j);
-                                    if (db.isDataTableValueNull(SQLiteHelper.TableListEvent, SQLiteHelper.KEY_ListEvent_eventId, model1.getEvent_id())) {
-                                        db.saveListEvent(model1, accountid);
-                                    } else {
-                                        db.updateListEvent(model1);
-                                    }
-                                    updateRecycleView(userListEventResponseModels);
-
-                                    List<UserWalletDataResponseModel> userWalletDataResponseModels = model1.getWallet_data();
-                                    for (int n = 0; n < userWalletDataResponseModels.size(); n++) {
-                                        UserWalletDataResponseModel model2 = userWalletDataResponseModels.get(n);
-                                        if (db.isDataTableValueMultipleNull(SQLiteHelper.TableWallet, SQLiteHelper.KEY_Wallet_sort, SQLiteHelper.KEY_Wallet_eventId, model2.getSort(), model1.getEvent_id())) {
-                                            db.saveWalletData(model2, accountid, model1.getEvent_id());
-                                        } else {
-                                            db.updateWalletData(model2, model1.getEvent_id());
-                                        }
-                                    }
+                                    db.updateWalletData(model2, model1.getEvent_id());
                                 }
                             }
-                        } else {
-                            Log.e("Lihat", "onResponse ChangeEventActivity : " + response.message());
                         }
                     }
-
-                    @Override
-                    public void onFailure(Call<List<UserDataResponseModel>> call, Throwable t) {
-                        progressDialog.dismiss();
-                        Snackbar.make(findViewById(android.R.id.content), "Tidak Dapat terhubung dengan server", Snackbar.LENGTH_LONG).setAction("Reload", new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                getAPIUserDataValidation();
-                            }
-                        }).show();
-                        updateRecycleView(db.getAllListEvent(accountid));
-                        updateUserInfo(db.getUserData(accountid));
-                        Log.e("Lihat", "onFailure ChangeEventActivity : " + t.getMessage(), t);
-                    }
-                });
+                } else {
+                    Log.e("Lihat", "onResponse ChangeEventActivity : " + response.message());
+                }
             }
-        }, 1000);
+
+            @Override
+            public void onFailure(Call<List<UserDataResponseModel>> call, Throwable t) {
+                progressDialog.dismiss();
+                Snackbar.make(findViewById(android.R.id.content), "Tidak Dapat terhubung dengan server", Snackbar.LENGTH_LONG).setAction("Reload", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        getAPIUserDataValidation();
+                    }
+                }).show();
+                updateRecycleView(db.getAllListEvent(accountid));
+                updateUserInfo(db.getUserData(accountid));
+                Log.e("Lihat", "onFailure ChangeEventActivity : " + t.getMessage(), t);
+            }
+        });
     }
 
     private void getAPIEventDataValid(String eventId) {
@@ -253,7 +246,12 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
         requestModel.setId_event(eventId);
         requestModel.setPass("");
         requestModel.setPhonenumber(accountId);
-        requestModel.setVersion_data(String.valueOf(version_data_event));
+        requestModel.setVersion_data(0);
+        /*if (db.isDataTableValueNull(SQLiteHelper.TableTheEvent, SQLiteHelper.Key_The_Event_EventId, eventId)) {
+            requestModel.setVersion_data(0);
+        } else {
+            requestModel.setVersion_data(db.getVersionDataIdEvent(eventId));
+        }*/
 
         ProgressDialog progressDialog = new ProgressDialog(this);
         progressDialog.setCancelable(false);
@@ -268,19 +266,20 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
             public void onResponse(Call<List<EventDataResponseModel>> call, Response<List<EventDataResponseModel>> response) {
                 progressDialog.dismiss();
                 if (response.isSuccessful()) {
-
-                    for (int i = 0; i < response.body().size(); i++) {
-                        EventDataResponseModel model = response.body().get(i);
-                        db.insertOneKey(SQLiteHelper.TableTheEvent, SQLiteHelper.Key_The_Event_EventId, model.getEvent_id());
-                        version_data_event = Integer.parseInt(model.getVersion_data());
-                        eventIdPub = model.getEvent_id();
-
-                        /*the event*/
+                    gotoBaseHome();
+                    List<EventDataResponseModel> eventDataResponseModels = response.body();
+                    for (int i = 0; i < eventDataResponseModels.size(); i++) {
+                        EventDataResponseModel model = eventDataResponseModels.get(i);
                         for (int i1 = 0; i1 < model.getThe_event().size(); i1++) {
                             EventTheEvent theEvent = model.getThe_event().get(i1);
-                            db.saveTheEvent(theEvent, eventId, model.getFeedback_data(), model.getVersion_data());
+                            if (db.isDataTableValueMultipleNull(SQLiteHelper.TableTheEvent, SQLiteHelper.Key_The_Event_EventId, SQLiteHelper.Key_The_Event_version_data, model.getEvent_id(), model.getVersion_data())) {
+                                db.saveTheEvent(theEvent, eventId, model.getFeedback_data(), model.getVersion_data());
+                            } else {
+                                db.updateTheEvent(theEvent, model.getEvent_id(), model.getFeedback_data(), model.getVersion_data());
+                            }
                         }
 
+                        Log.d("Lihat", "onResponse ChangeEventActivity model.getPlace_list().size : " + model.getPlace_list().size());
                         for (int i2 = 0; i2 < model.getPlace_list().size(); i2++) {
                             Map<Integer, List<EventPlaceList>> stringListMap = model.getPlace_list().get(i2);
                             for (Map.Entry<Integer, List<EventPlaceList>> entry : stringListMap.entrySet()) {
@@ -288,27 +287,47 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
                                 List<EventPlaceList> values = entry.getValue();
                                 for (int i22 = 0; i22 < values.size(); i22++) {
                                     EventPlaceList placeList = values.get(i22);
-                                    db.savePlaceList(placeList, model.getEvent_id());
+                                    if (db.isDataTableValueNull(SQLiteHelper.TablePlaceList, SQLiteHelper.Key_Place_List_EventId, model.getEvent_id())) {
+                                        db.savePlaceList(placeList, model.getEvent_id());
+                                    } else {
+                                        db.updatePlaceList(placeList, model.getEvent_id());
+                                    }
                                 }
                             }
                         }
 
+                        Log.d("Lihat", "onResponse ChangeEventActivity model.importan_info.size : " + model.importan_info.size());
                         for (int i3 = 0; i3 < model.getImportan_info().size(); i3++) {
                             EventImportanInfo importanInfo = model.getImportan_info().get(i3);
-                            db.saveImportanInfo(importanInfo, model.getEvent_id());
-                        }
-
-                        for (int i4 = 0; i4 < model.getData_contact().size(); i4++) {
-                            EventDataContact dataContact = model.getData_contact().get(i4);
-                            for (int i41 = 0; i41 < dataContact.getContact_list().size(); i41++) {
-                                EventDataContactList dataContactList = dataContact.getContact_list().get(i41);
-                                db.saveDataContactList(dataContactList, dataContact.getTitle(), model.getEvent_id());
+                            if (db.isDataTableValueMultipleNull(SQLiteHelper.TableImportantInfo, SQLiteHelper.Key_Importan_Info_EventId, SQLiteHelper.Key_Importan_Info_title, model.getEvent_id(), importanInfo.getTitle())) {
+                                db.saveImportanInfo(importanInfo, model.getEvent_id());
+                            } else {
+                                db.updateImportanInfo(importanInfo, model.getEvent_id());
                             }
                         }
 
+                        Log.d("Lihat", "onResponse ChangeEventActivity model.getPlace_list().size : " + model.getPlace_list().size());
+                        for (int i4 = 0; i4 < model.getData_contact().size(); i4++) {
+                            EventDataContact dataContact = model.getData_contact().get(i4);
+                            Log.d("Lihat", "onResponse ChangeEventActivity dataContact.getContact_list().size : " + dataContact.getContact_list().size());
+                            for (int i41 = 0; i41 < dataContact.getContact_list().size(); i41++) {
+                                EventDataContactList dataContactList = dataContact.getContact_list().get(i41);
+                                if (db.isDataTableValueMultipleNull(SQLiteHelper.TableContactList, SQLiteHelper.Key_Contact_List_EventId, SQLiteHelper.KEY_Contact_List_Telephone, model.getEvent_id(), dataContactList.telephone)) {
+                                    db.saveDataContactList(dataContactList, dataContact.getTitle(), model.getEvent_id());
+                                } else {
+                                    db.updateDataContactList(dataContactList, dataContact.getTitle(), model.getEvent_id());
+                                }
+                            }
+                        }
+
+                        Log.d("Lihat", "onResponse ChangeEventActivity : " + model.getAbout().size());
                         for (int i5 = 0; i5 < model.getAbout().size(); i5++) {
                             EventAbout eventAbout = model.getAbout().get(i5);
-                            db.saveAbout(eventAbout, model.getEvent_id());
+                            if (db.isDataTableValueMultipleNull(SQLiteHelper.TableEventAbout, SQLiteHelper.Key_Event_About_EventId, SQLiteHelper.KEY_Event_About_Description, model.getEvent_id(), eventAbout.description)) {
+                                db.saveAbout(eventAbout, model.getEvent_id());
+                            } else {
+                                db.updateAbout(eventAbout, model.getEvent_id());
+                            }
                         }
 
                         for (int i6 = 0; i6 < model.getSchedule_list().size(); i6++) {
@@ -321,23 +340,40 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
                                     List<EventScheduleListDateDataList> value2 = listDate.getData();
                                     for (int i62 = 0; i62 < value2.size(); i62++) {
                                         EventScheduleListDateDataList listDateDataList = value2.get(i62);
-                                        db.saveScheduleList(listDateDataList, listDate.getDate(), model.getEvent_id());
+                                        if (db.isDataTableValueMultipleNull(SQLiteHelper.TableScheduleList, SQLiteHelper.Key_Schedule_List_EventId, SQLiteHelper.Key_Schedule_List_id, model.getEvent_id(), listDateDataList.getId())) {
+                                            db.saveScheduleList(listDateDataList, listDate.getDate(), model.getEvent_id());
+                                        } else {
+                                            db.updateScheduleList(listDateDataList, listDate.getDate(), model.getEvent_id());
+                                        }
                                     }
                                 }
                             }
                         }
                     }
+
+
                 } else {
-                    Log.d("Lihat", "onResponse BaseHomeActivity : " + response.message());
+                    progressDialog.dismiss();
+                    Log.e("Lihat", "onResponse BaseHomeActivity : " + response.message());
+                    Snackbar.make(findViewById(android.R.id.content), response.message(), Snackbar.LENGTH_LONG).show();
                 }
             }
 
             @Override
             public void onFailure(Call<List<EventDataResponseModel>> call, Throwable t) {
-                progressDialog.dismiss();
+
                 Log.e("Lihat", "onFailure BaseHomeActivity : " + t.getMessage());
+
+                Snackbar.make(findViewById(android.R.id.content), t.getMessage(), Snackbar.LENGTH_LONG).show();
+
             }
         });
+    }
+
+    private void gotoBaseHome() {
+        Intent intent = new Intent(ChangeEventActivity.this, BaseHomeActivity.class);
+        startActivity(intent);
+        finish();
     }
 
     private void initVersionDataUser() {
@@ -367,6 +403,22 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
         ceRVPastEventfvbi.setLayoutManager(new LinearLayoutManager(this));
     }
 
+    private void updateRecycleView(List<UserListEventResponseModel> models) {
+        for (int i = 0; i < models.size(); i++) {
+            UserListEventResponseModel model = models.get(i);
+            Log.d("Lihat", "updateRecycleView ChangeEventActivity models.size : " + models.size());
+            Log.d("Lihat", "updateRecycleView ChangeEventActivity model.getStatus : " + model.getStatus());
+            if (model.getStatus().equalsIgnoreCase("PAST EVENT")) {
+                ceLLPastEventfvbi.setVisibility(View.VISIBLE);
+
+            } else if (model.getStatus().equalsIgnoreCase("ON GOING")) {
+                ceLLOngoingEventfvbi.setVisibility(View.VISIBLE);
+            }
+        }
+        adapterPast.setData(models);
+        adapterOnGoing.setData(models);
+    }
+
     private void updateUserInfo(List<UserDataResponseModel> models) {
         if (models.size() == 1) {
             for (int i = 0; i < models.size(); i++) {
@@ -384,30 +436,20 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
         }
     }
 
-    private void updateRecycleView(List<UserListEventResponseModel> models) {
-        for (int i = 0; i < models.size(); i++) {
-            UserListEventResponseModel model = models.get(i);
-            Log.d("Lihat", "updateRecycleView ChangeEventActivity : " + models.size());
-            Log.d("Lihat", "updateRecycleView ChangeEventActivity : " + model.getStatus());
-            if (model.getStatus().equalsIgnoreCase("PAST EVENT")) {
-                ceLLPastEventfvbi.setVisibility(View.VISIBLE);
-
-            } else if (model.getStatus().equalsIgnoreCase("ON GOING")) {
-                ceLLOngoingEventfvbi.setVisibility(View.VISIBLE);
-            }
-        }
-        adapterPast.setData(models);
-        adapterPast.notifyDataSetChanged();
-        adapterOnGoing.setData(models);
-        adapterOnGoing.notifyDataSetChanged();
-
-    }
-
+    @SuppressLint("NewApi")
     private void Onclick(View view) {
         if (view == ceBUserAccountfvbi) {
             startActivity(AccountActivity.getActIntent(ChangeEventActivity.this));
             finish();
         }
+    }
+
+    @Override
+    public void gotoEvent(String eventId) {
+        getAPIEventDataValid(eventId);
+        this.eventIdPub = eventId;
+        SessionUtil.setStringPreferences(ISeasonConfig.KEY_EVENT_ID, eventId);
+        Log.d("Lihat", "gotoEvent ChangeEventActivity : " + eventId);
     }
 
     private void customText(TextView view) {
@@ -450,18 +492,5 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
 
     public static Intent getActIntent(Activity activity) {
         return new Intent(activity, ChangeEventActivity.class);
-    }
-
-    @SuppressLint("NewApi")
-    private void Onclick(View view) {
-        if (view == ceBUserAccountfvbi) {
-            startActivity(AccountActivity.getActIntent(ChangeEventActivity.this));
-            finish();
-        }
-    }
-
-    @Override
-    public void gotoEvent(String eventId) {
-        getAPIEventDataValid(eventId);
     }
 }
