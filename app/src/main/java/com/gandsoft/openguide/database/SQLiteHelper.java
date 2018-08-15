@@ -10,6 +10,7 @@ import android.util.Log;
 import com.gandsoft.openguide.API.APIresponse.Event.EventAbout;
 import com.gandsoft.openguide.API.APIresponse.Event.EventDataContactList;
 import com.gandsoft.openguide.API.APIresponse.Event.EventImportanInfo;
+import com.gandsoft.openguide.API.APIresponse.Event.EventPlaceList;
 import com.gandsoft.openguide.API.APIresponse.Event.EventScheduleListDateDataList;
 import com.gandsoft.openguide.API.APIresponse.Event.EventTheEvent;
 import com.gandsoft.openguide.API.APIresponse.UserData.UserDataResponseModel;
@@ -64,7 +65,6 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     public static String KEY_ListEvent_roleName = "roleName";
     public static String KEY_ListEvent_date = "date";
     public static String KEY_ListEvent_IsFirstIn = "isFirstIn";
-    public static String KEY_ListEvent_feedback_data = "feedback_data";
 
     public static String TableWallet = "tabWallet";
     public static String KEY_Wallet_No = "number";
@@ -120,6 +120,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     public static String Key_The_Event_logo = "logo";
     public static String Key_The_Event_event_name = "event_name";
     public static String Key_The_Event_event_location = "event_location";
+    public static String Key_The_Event_version_data = "versionData";
     public static String Key_The_Event_date_event = "date_event";
     public static String Key_The_Event_weather = "weather";
     public static String Key_The_Event_title_contact = "title_contact";
@@ -128,7 +129,15 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     public static String Key_The_Event_commentpost_status = "commentpost_status";
     public static String Key_The_Event_deletepost_status = "deletepost_status";
     public static String Key_The_Event_addpost_status = "addpost_status";
+    public static String Key_The_Event_feedback = "feedback_data";
 
+    public static String TablePlaceList = "tabPlaceList";
+    public static String Key_Place_List_No = "number";
+    public static String Key_Place_List_EventId = "eventId";
+    public static String Key_Place_List_latitude = "latitude";
+    public static String Key_Place_List_longitude = "longitude";
+    public static String Key_Place_List_title = "title";
+    public static String Key_Place_List_icon = "icon";
 
     private static final String query_add_table_UserData = "CREATE TABLE IF NOT EXISTS " + TableUserData + "("
             + KEY_UserData_No + " INTEGER PRIMARY KEY AUTOINCREMENT,"
@@ -152,7 +161,6 @@ public class SQLiteHelper extends SQLiteOpenHelper {
             + KEY_ListEvent_No + " INTEGER PRIMARY KEY AUTOINCREMENT,"
             + KEY_ListEvent_eventId + " TEXT,"
             + KEY_ListEvent_accountId + " TEXT,"
-            + KEY_ListEvent_version_data + " INTEGER,"
             + KEY_ListEvent_startDate + " TEXT, "
             + KEY_ListEvent_logo + " BLOB, "
             + KEY_ListEvent_logo_local + " BLOB, "
@@ -232,6 +240,8 @@ public class SQLiteHelper extends SQLiteOpenHelper {
             + Key_The_Event_logo + " TEXT, "
             + Key_The_Event_event_name + " TEXT, "
             + Key_The_Event_event_location + " TEXT, "
+            + Key_The_Event_version_data + " TEXT, "
+            + Key_The_Event_feedback + " TEXT, "
             + Key_The_Event_date_event + " TEXT, "
             + Key_The_Event_weather + " TEXT, "
             + Key_The_Event_title_contact + " TEXT, "
@@ -241,6 +251,15 @@ public class SQLiteHelper extends SQLiteOpenHelper {
             + Key_The_Event_deletepost_status + " TEXT, "
             + Key_The_Event_addpost_status + " TEXT)";
     private static final String query_delete_table_TheEvent = "DROP TABLE IF EXISTS " + TableTheEvent;
+
+    private static final String query_add_table_PlaceList = "CREATE TABLE IF NOT EXISTS " + TablePlaceList + "("
+            + Key_Place_List_No + " TEXT PRIMARY KEY AUTOINCREMENT, "
+            + Key_Place_List_EventId + " TEXT, "
+            + Key_Place_List_latitude + " TEXT, "
+            + Key_Place_List_longitude + " TEXT, "
+            + Key_Place_List_title + " TEXT, "
+            + Key_Place_List_icon + " TEXT)";
+    private static final String query_delete_table_PlaceList = "DROP TABLE IF EXISTS " + TablePlaceList;
 
 
     public SQLiteHelper(Context context) {
@@ -259,6 +278,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         db.execSQL(query_add_table_ImportantInfo);
         db.execSQL(query_add_table_ScheduleList);
         db.execSQL(query_add_table_TheEvent);
+        db.execSQL(query_add_table_PlaceList);
 
     }
 
@@ -273,6 +293,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         db.execSQL(query_delete_table_ImportantInfo);
         db.execSQL(query_delete_table_ScheduleList);
         db.execSQL(query_delete_table_TheEvent);
+        db.execSQL(query_delete_table_PlaceList);
         /*replaceDataToNewTable(db, TableUserData, "tabTempUserEvent");
         replaceDataToNewTable(db, TableListEvent, "tabTempEvent");
         replaceDataToNewTable(db, TableWallet, "tabTempWallet");
@@ -363,84 +384,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         }
     }
 
-    /*USER*/
-    public void saveUserData(UserDataResponseModel model) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(KEY_UserData_accountId, model.getAccount_id());
-        contentValues.put(KEY_UserData_position, model.getPosition());
-        contentValues.put(KEY_UserData_birthday, model.getBirthday());
-        contentValues.put(KEY_UserData_versionData, model.getVersion_data());
-        contentValues.put(KEY_UserData_privacyPolicy, model.getPrivacy_policy());
-        contentValues.put(KEY_UserData_imageUrl, model.getImage_url());
-        contentValues.put(KEY_UserData_groupCode, model.getGroup_code());
-        contentValues.put(KEY_UserData_roleName, model.getRole_name());
-        contentValues.put(KEY_UserData_checkin, model.getCheckin());
-        contentValues.put(KEY_UserData_phoneNumber, model.getPhone_number());
-        contentValues.put(KEY_UserData_email, model.getEmail());
-        contentValues.put(KEY_UserData_gender, model.getGender());
-        contentValues.put(KEY_UserData_fullName, model.getFull_name());
-        db.insert(TableUserData, null, contentValues);
-        db.close();
-    }
 
-    public void updateUserData(UserDataResponseModel model, String accountId) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(KEY_UserData_accountId, model.getAccount_id());
-        contentValues.put(KEY_UserData_position, model.getPosition());
-        contentValues.put(KEY_UserData_birthday, model.getBirthday());
-        contentValues.put(KEY_UserData_versionData, model.getVersion_data());
-        contentValues.put(KEY_UserData_privacyPolicy, model.getPrivacy_policy());
-        contentValues.put(KEY_UserData_imageUrl, model.getImage_url());
-        //contentValues.put(KEY_UserData_imageUrl_local, model.getImageUrl());
-        contentValues.put(KEY_UserData_groupCode, model.getGroup_code());
-        contentValues.put(KEY_UserData_roleName, model.getRole_name());
-        contentValues.put(KEY_UserData_checkin, model.getCheckin());
-        contentValues.put(KEY_UserData_phoneNumber, model.getPhone_number());
-        contentValues.put(KEY_UserData_email, model.getEmail());
-        contentValues.put(KEY_UserData_gender, model.getGender());
-        contentValues.put(KEY_UserData_fullName, model.getFull_name());
-        db.update(TableUserData, contentValues, KEY_UserData_accountId + " = ? ", new String[]{accountId});
-        db.close();
-    }
-
-    public void deleteAllDataUser() {
-        SQLiteDatabase db = this.getWritableDatabase();
-        db.execSQL("delete from " + TableUserData);
-        db.close();
-    }
-
-    public ArrayList<UserDataResponseModel> getUserData(String accountid) {
-        ArrayList<UserDataResponseModel> modelList = new ArrayList<>();
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.query(TableUserData, null, KEY_UserData_accountId + " = ? ", new String[]{accountid}, null, null, null);
-        if (cursor.moveToFirst()) {
-            do {
-                UserDataResponseModel model = new UserDataResponseModel();
-                model.setNumber(cursor.getInt(cursor.getColumnIndexOrThrow(KEY_UserData_No)));
-                model.setAccount_id(cursor.getString(cursor.getColumnIndexOrThrow(KEY_UserData_accountId)));
-                model.setPosition(cursor.getString(cursor.getColumnIndex(KEY_UserData_position)));
-                model.setBirthday(cursor.getString(cursor.getColumnIndex(KEY_UserData_birthday)));
-                model.setVersion_data(cursor.getString(cursor.getColumnIndex(KEY_UserData_versionData)));
-                model.setPrivacy_policy(cursor.getString(cursor.getColumnIndex(KEY_UserData_privacyPolicy)));
-                model.setImage_url(cursor.getString(cursor.getColumnIndex(KEY_UserData_imageUrl)));
-                model.setImage_url_local(cursor.getString(cursor.getColumnIndex(KEY_UserData_imageUrl_local)));
-                model.setGroup_code(cursor.getString(cursor.getColumnIndex(KEY_UserData_groupCode)));
-                model.setRole_name(cursor.getString(cursor.getColumnIndex(KEY_UserData_roleName)));
-                model.setCheckin(cursor.getString(cursor.getColumnIndex(KEY_UserData_checkin)));
-                model.setPhone_number(cursor.getString(cursor.getColumnIndex(KEY_UserData_phoneNumber)));
-                model.setEmail(cursor.getString(cursor.getColumnIndex(KEY_UserData_email)));
-                model.setGender(cursor.getString(cursor.getColumnIndex(KEY_UserData_gender)));
-                model.setFull_name(cursor.getString(cursor.getColumnIndex(KEY_UserData_fullName)));
-                modelList.add(model);
-            } while (cursor.moveToNext());
-        }
-
-        return modelList;
-    }
-
-    /*EVENT*/
     public void saveListEvent(UserListEventResponseModel model, String accountId) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
@@ -461,64 +405,26 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         db.close();
     }
 
-    public void updateListEvent(UserListEventResponseModel model) {
+    public void saveUserData(UserDataResponseModel model) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
-        contentValues.put(KEY_ListEvent_eventId, model.getEvent_id());
-        //contentValues.put(KEY_ListEvent_accountId, eventId);
-        contentValues.put(KEY_ListEvent_startDate, model.getStart_date());
-        contentValues.put(KEY_ListEvent_logo, model.getLogo());
-        //contentValues.put(KEY_ListEvent_logo_local, model.getLogo());
-        contentValues.put(KEY_ListEvent_title, model.getTitle());
-        contentValues.put(KEY_ListEvent_groupCompany, model.getGroup_company());
-        contentValues.put(KEY_ListEvent_status, model.getStatus());
-        //contentValues.put(KEY_ListEvent_background_local, model.getBackground());
-        contentValues.put(KEY_ListEvent_groupCode, model.getGroup_code());
-        contentValues.put(KEY_ListEvent_roleName, model.getRole_name());
-        contentValues.put(KEY_ListEvent_date, model.getDate());
-        contentValues.put(KEY_ListEvent_IsFirstIn, false);
-        db.update(TableListEvent, contentValues, KEY_ListEvent_eventId + " = ? ", new String[]{model.getEvent_id()});
+        contentValues.put(KEY_UserData_accountId, model.getAccount_id());
+        contentValues.put(KEY_UserData_position, model.getPosition());
+        contentValues.put(KEY_UserData_birthday, model.getBirthday());
+        contentValues.put(KEY_UserData_versionData, model.getVersion_data());
+        contentValues.put(KEY_UserData_privacyPolicy, model.getPrivacy_policy());
+        contentValues.put(KEY_UserData_imageUrl, model.getImage_url());
+        contentValues.put(KEY_UserData_groupCode, model.getGroup_code());
+        contentValues.put(KEY_UserData_roleName, model.getRole_name());
+        contentValues.put(KEY_UserData_checkin, model.getCheckin());
+        contentValues.put(KEY_UserData_phoneNumber, model.getPhone_number());
+        contentValues.put(KEY_UserData_email, model.getEmail());
+        contentValues.put(KEY_UserData_gender, model.getGender());
+        contentValues.put(KEY_UserData_fullName, model.getFull_name());
+        db.insert(TableUserData, null, contentValues);
         db.close();
     }
 
-    public void deleteAllDataListEvent() {
-        SQLiteDatabase db = this.getWritableDatabase();
-        db.execSQL("delete from " + TableListEvent);
-        db.close();
-    }
-
-    public ArrayList<UserListEventResponseModel> getAllListEvent(String accountid) {
-        ArrayList<UserListEventResponseModel> modelList = new ArrayList<>();
-        SQLiteDatabase db = this.getReadableDatabase();
-        /*String query = " SELECT * FROM " + TableListEvent + " Where " + KEY_ListEvent_accountId + " = '" + accountid + "'";
-        Cursor cursor = db.rawQuery(query, null);*/
-        Cursor cursor = db.query(TableListEvent, null, KEY_ListEvent_accountId + " = ? ", new String[]{accountid}, null, null, null);
-
-        if (cursor.moveToFirst()) {
-            do {
-                UserListEventResponseModel model = new UserListEventResponseModel();
-                model.setNumber(cursor.getInt(0));
-                model.setEvent_id(cursor.getString(1));
-                model.setAccountId(cursor.getString(2));
-                model.setStart_date(cursor.getString(3));
-                model.setLogo(cursor.getString(4));
-                model.setLogo_local(cursor.getString(5));
-                model.setTitle(cursor.getString(6));
-                model.setGroup_company(cursor.getString(7));
-                model.setStatus(cursor.getString(8));
-                model.setBackground(cursor.getString(9));
-                model.setBackground_local(cursor.getString(10));
-                model.setGroup_code(cursor.getString(11));
-                model.setRole_name(cursor.getString(12));
-                model.setDate(cursor.getString(13));
-                modelList.add(model);
-            } while (cursor.moveToNext());
-        }
-
-        return modelList;
-    }
-
-    /*WALLET*/
     public void saveWalletData(UserWalletDataResponseModel model, String accountId, String eventId) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
@@ -533,57 +439,12 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         db.close();
     }
 
-
-    public void updateWalletData(UserWalletDataResponseModel model, String eventId) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(KEY_Wallet_sort, model.getSort());
-        //contentValues.put(KEY_Wallet_accountId, accountId);
-        //contentValues.put(KEY_Wallet_eventId, eventId);
-        contentValues.put(KEY_Wallet_bodyWallet, model.getBody_wallet());
-        contentValues.put(KEY_Wallet_notif, model.getNotif());
-        contentValues.put(KEY_Wallet_detail, model.getDetail());
-        contentValues.put(KEY_Wallet_type, model.getType());
-        db.update(TableWallet, contentValues, KEY_Wallet_sort + " = ? AND " + KEY_Wallet_eventId + " = ? ", new String[]{model.getSort(), eventId});
-        db.close();
-    }
-
-    public void deleteAllDataWallet() {
-        SQLiteDatabase db = this.getWritableDatabase();
-        db.execSQL("delete from " + TableWallet);
-        db.close();
-    }
-
-    public ArrayList<UserWalletDataResponseModel> getListWalletData(String eventId) {
-        ArrayList<UserWalletDataResponseModel> modelList = new ArrayList<>();
-        SQLiteDatabase db = this.getReadableDatabase();
-        /*String query = " SELECT * FROM " + TableWallet + " Where " + KEY_Wallet_eventId + " = '" + eventId + "'";
-        Cursor cursor = db.rawQuery(query, null);*/
-        Cursor cursor = db.query(TableWallet, null, KEY_Wallet_eventId + " = ? ", new String[]{eventId}, null, null, KEY_Wallet_sort);
-
-        if (cursor.moveToFirst()) {
-            do {
-                UserWalletDataResponseModel model = new UserWalletDataResponseModel();
-                model.setNumber(cursor.getInt(0));
-                model.setSort(cursor.getString(1));
-                model.setAccountId(cursor.getString(2));
-                model.setEventId(cursor.getString(3));
-                model.setBody_wallet(cursor.getString(4));
-                model.setNotif(cursor.getString(5));
-                model.setDetail(cursor.getString(6));
-                model.setType(cursor.getString(7));
-                modelList.add(model);
-            } while (cursor.moveToNext());
-        }
-
-        cursor.close();
-        return modelList;
-    }
-
-    public void saveTheEvent(EventTheEvent model, String eventId) {
+    public void saveTheEvent(EventTheEvent model, String eventId, String feedback_data, String version_data) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(Key_The_Event_EventId, eventId);
+        contentValues.put(Key_The_Event_version_data, version_data);
+        contentValues.put(Key_The_Event_feedback, feedback_data);
         contentValues.put(Key_The_Event_background, model.getBackground());
         contentValues.put(Key_The_Event_logo, model.getLogo());
         contentValues.put(Key_The_Event_event_name, model.getEvent_name());
@@ -649,6 +510,399 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         //contentValues.put(KEY_Event_About_Logo_Local, model.);
         contentValues.put(KEY_Event_About_Description, model.getDescription());
         db.insert(TableEventAbout, null, contentValues);
+        db.close();
+    }
+
+    public void savePlaceList(EventPlaceList model, String eventId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(Key_Place_List_EventId, eventId);
+        contentValues.put(Key_Place_List_latitude, model.getLatitude());
+        contentValues.put(Key_Place_List_longitude, model.getLongitude());
+        contentValues.put(Key_Place_List_title, model.getTitle());
+        contentValues.put(Key_Place_List_icon, model.getIcon());
+        db.insert(TableEventAbout, null, contentValues);
+        db.close();
+    }
+
+    public void updateUserData(UserDataResponseModel model, String accountId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(KEY_UserData_accountId, model.getAccount_id());
+        contentValues.put(KEY_UserData_position, model.getPosition());
+        contentValues.put(KEY_UserData_birthday, model.getBirthday());
+        contentValues.put(KEY_UserData_versionData, model.getVersion_data());
+        contentValues.put(KEY_UserData_privacyPolicy, model.getPrivacy_policy());
+        contentValues.put(KEY_UserData_imageUrl, model.getImage_url());
+        //contentValues.put(KEY_UserData_imageUrl_local, model.getImageUrl());
+        contentValues.put(KEY_UserData_groupCode, model.getGroup_code());
+        contentValues.put(KEY_UserData_roleName, model.getRole_name());
+        contentValues.put(KEY_UserData_checkin, model.getCheckin());
+        contentValues.put(KEY_UserData_phoneNumber, model.getPhone_number());
+        contentValues.put(KEY_UserData_email, model.getEmail());
+        contentValues.put(KEY_UserData_gender, model.getGender());
+        contentValues.put(KEY_UserData_fullName, model.getFull_name());
+        db.update(TableUserData, contentValues, KEY_UserData_accountId + " = ? ", new String[]{accountId});
+        db.close();
+    }
+
+    public void updateListEvent(UserListEventResponseModel model) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(KEY_ListEvent_eventId, model.getEvent_id());
+        //contentValues.put(KEY_ListEvent_accountId, eventId);
+        contentValues.put(KEY_ListEvent_startDate, model.getStart_date());
+        contentValues.put(KEY_ListEvent_logo, model.getLogo());
+        //contentValues.put(KEY_ListEvent_logo_local, model.getLogo());
+        contentValues.put(KEY_ListEvent_title, model.getTitle());
+        contentValues.put(KEY_ListEvent_groupCompany, model.getGroup_company());
+        contentValues.put(KEY_ListEvent_status, model.getStatus());
+        //contentValues.put(KEY_ListEvent_background_local, model.getBackground());
+        contentValues.put(KEY_ListEvent_groupCode, model.getGroup_code());
+        contentValues.put(KEY_ListEvent_roleName, model.getRole_name());
+        contentValues.put(KEY_ListEvent_date, model.getDate());
+        contentValues.put(KEY_ListEvent_IsFirstIn, false);
+        db.update(TableListEvent, contentValues, KEY_ListEvent_eventId + " = ? ", new String[]{model.getEvent_id()});
+        db.close();
+    }
+
+    public void updateWalletData(UserWalletDataResponseModel model, String eventId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(KEY_Wallet_sort, model.getSort());
+        //contentValues.put(KEY_Wallet_accountId, accountId);
+        //contentValues.put(KEY_Wallet_eventId, eventId);
+        contentValues.put(KEY_Wallet_bodyWallet, model.getBody_wallet());
+        contentValues.put(KEY_Wallet_notif, model.getNotif());
+        contentValues.put(KEY_Wallet_detail, model.getDetail());
+        contentValues.put(KEY_Wallet_type, model.getType());
+        db.update(TableWallet, contentValues, KEY_Wallet_sort + " = ? AND " + KEY_Wallet_eventId + " = ? ", new String[]{model.getSort(), eventId});
+        db.close();
+    }
+
+    public void UpdateTheEvent(EventTheEvent model, String eventId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(Key_The_Event_background, model.getBackground());
+        contentValues.put(Key_The_Event_logo, model.getLogo());
+        contentValues.put(Key_The_Event_event_name, model.getEvent_name());
+        contentValues.put(Key_The_Event_event_location, model.getEvent_location());
+        contentValues.put(Key_The_Event_version_data, model.getVersionData());
+        contentValues.put(Key_The_Event_feedback, model.getFeedback());
+        contentValues.put(Key_The_Event_date_event, model.getDate_event());
+        contentValues.put(Key_The_Event_weather, model.getWeather());
+        contentValues.put(Key_The_Event_title_contact, model.getTitle_contact());
+        contentValues.put(Key_The_Event_api_weather, model.getApi_weather());
+        contentValues.put(Key_The_Event_welcome_note, model.getWelcome_note());
+        contentValues.put(Key_The_Event_commentpost_status, model.getCommentpost_status());
+        contentValues.put(Key_The_Event_deletepost_status, model.getDeletepost_status());
+        db.update(TableTheEvent, contentValues, Key_The_Event_EventId + " = ? ", new String[]{eventId});
+        db.close();
+    }
+
+    public void UpdateScheduleList(EventScheduleListDateDataList model, String date, String eventId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(Key_Schedule_List_date, date);
+        contentValues.put(Key_Schedule_List_id, model.getId());
+        contentValues.put(Key_Schedule_List_waktu, model.getWaktu());
+        contentValues.put(Key_Schedule_List_schedule_title, model.getSchedule_title());
+        contentValues.put(Key_Schedule_List_location, model.getLocation());
+        contentValues.put(Key_Schedule_List_detail, model.getDetail());
+        contentValues.put(Key_Schedule_List_action, model.getAction());
+        contentValues.put(Key_Schedule_List_link, model.getLink());
+        contentValues.put(Key_Schedule_List_status, model.getStatus());
+        db.update(TableScheduleList, contentValues, Key_Schedule_List_EventId + " = ? ", new String[]{eventId});
+        db.close();
+    }
+
+    public void UpdateImportanInfo(EventImportanInfo model, String eventId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(Key_Importan_Info_title, model.getInfo());
+        contentValues.put(Key_Importan_Info_info, model.getInfo());
+        db.update(TableImportantInfo, contentValues, Key_Importan_Info_EventId + " = ? ", new String[]{eventId});
+        db.close();
+    }
+
+    public void UpdateDataContactList(EventDataContactList model, String title, String eventId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(Key_Contact_List_Title, title);
+        contentValues.put(KEY_Contact_List_Name, model.getName());
+        contentValues.put(KEY_Contact_List_Email, model.getEmail());
+        contentValues.put(KEY_Contact_List_Telephone, model.getTelephone());
+        contentValues.put(Key_Contact_List_Icon, model.getIcon());
+        db.update(TableContactList, contentValues, Key_Contact_List_EventId + " = ? ", new String[]{eventId});
+        db.close();
+    }
+
+    public void UpdateAbout(EventAbout model, String eventId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(KEY_Event_About_Background, model.getBackground());
+        //contentValues.put(KEY_Event_About_Background_Local, model.);
+        contentValues.put(KEY_Event_About_Logo, model.getLogo());
+        //contentValues.put(KEY_Event_About_Logo_Local, model.);
+        contentValues.put(KEY_Event_About_Description, model.getDescription());
+        db.update(TableEventAbout, contentValues, Key_Event_About_EventId + " = ? ", new String[]{eventId});
+        db.close();
+    }
+
+    public void updatePlaceList(EventPlaceList model, String eventId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(Key_Place_List_latitude, model.getLatitude());
+        contentValues.put(Key_Place_List_longitude, model.getLongitude());
+        contentValues.put(Key_Place_List_title, model.getTitle());
+        contentValues.put(Key_Place_List_icon, model.getIcon());
+        db.update(TableEventAbout, contentValues, Key_Place_List_EventId + " = ?", new String[]{eventId});
+        db.close();
+    }
+
+    public ArrayList<UserDataResponseModel> getUserData(String accountid) {
+        ArrayList<UserDataResponseModel> modelList = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(TableUserData, null, KEY_UserData_accountId + " = ? ", new String[]{accountid}, null, null, null);
+        if (cursor.moveToFirst()) {
+            do {
+                UserDataResponseModel model = new UserDataResponseModel();
+                model.setNumber(cursor.getInt(cursor.getColumnIndexOrThrow(KEY_UserData_No)));
+                model.setAccount_id(cursor.getString(cursor.getColumnIndexOrThrow(KEY_UserData_accountId)));
+                model.setPosition(cursor.getString(cursor.getColumnIndex(KEY_UserData_position)));
+                model.setBirthday(cursor.getString(cursor.getColumnIndex(KEY_UserData_birthday)));
+                model.setVersion_data(cursor.getString(cursor.getColumnIndex(KEY_UserData_versionData)));
+                model.setPrivacy_policy(cursor.getString(cursor.getColumnIndex(KEY_UserData_privacyPolicy)));
+                model.setImage_url(cursor.getString(cursor.getColumnIndex(KEY_UserData_imageUrl)));
+                model.setImage_url_local(cursor.getString(cursor.getColumnIndex(KEY_UserData_imageUrl_local)));
+                model.setGroup_code(cursor.getString(cursor.getColumnIndex(KEY_UserData_groupCode)));
+                model.setRole_name(cursor.getString(cursor.getColumnIndex(KEY_UserData_roleName)));
+                model.setCheckin(cursor.getString(cursor.getColumnIndex(KEY_UserData_checkin)));
+                model.setPhone_number(cursor.getString(cursor.getColumnIndex(KEY_UserData_phoneNumber)));
+                model.setEmail(cursor.getString(cursor.getColumnIndex(KEY_UserData_email)));
+                model.setGender(cursor.getString(cursor.getColumnIndex(KEY_UserData_gender)));
+                model.setFull_name(cursor.getString(cursor.getColumnIndex(KEY_UserData_fullName)));
+                modelList.add(model);
+            } while (cursor.moveToNext());
+        }
+
+        return modelList;
+    }
+
+    public ArrayList<UserListEventResponseModel> getAllListEvent(String accountid) {
+        ArrayList<UserListEventResponseModel> modelList = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        /*String query = " SELECT * FROM " + TableListEvent + " Where " + KEY_ListEvent_accountId + " = '" + accountid + "'";
+        Cursor cursor = db.rawQuery(query, null);*/
+        Cursor cursor = db.query(TableListEvent, null, KEY_ListEvent_accountId + " = ? ", new String[]{accountid}, null, null, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                UserListEventResponseModel model = new UserListEventResponseModel();
+                model.setNumber(cursor.getInt(0));
+                model.setEvent_id(cursor.getString(1));
+                model.setAccountId(cursor.getString(2));
+                model.setStart_date(cursor.getString(3));
+                model.setLogo(cursor.getString(4));
+                model.setLogo_local(cursor.getString(5));
+                model.setTitle(cursor.getString(6));
+                model.setGroup_company(cursor.getString(7));
+                model.setStatus(cursor.getString(8));
+                model.setBackground(cursor.getString(9));
+                model.setBackground_local(cursor.getString(10));
+                model.setGroup_code(cursor.getString(11));
+                model.setRole_name(cursor.getString(12));
+                model.setDate(cursor.getString(13));
+                modelList.add(model);
+            } while (cursor.moveToNext());
+        }
+
+        return modelList;
+    }
+
+    public ArrayList<UserWalletDataResponseModel> getListWalletData(String eventId) {
+        ArrayList<UserWalletDataResponseModel> modelList = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        /*String query = " SELECT * FROM " + TableWallet + " Where " + KEY_Wallet_eventId + " = '" + eventId + "'";
+        Cursor cursor = db.rawQuery(query, null);*/
+        Cursor cursor = db.query(TableWallet, null, KEY_Wallet_eventId + " = ? ", new String[]{eventId}, null, null, KEY_Wallet_sort);
+
+        if (cursor.moveToFirst()) {
+            do {
+                UserWalletDataResponseModel model = new UserWalletDataResponseModel();
+                model.setNumber(cursor.getInt(0));
+                model.setSort(cursor.getString(1));
+                model.setAccountId(cursor.getString(2));
+                model.setEventId(cursor.getString(3));
+                model.setBody_wallet(cursor.getString(4));
+                model.setNotif(cursor.getString(5));
+                model.setDetail(cursor.getString(6));
+                model.setType(cursor.getString(7));
+                modelList.add(model);
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        return modelList;
+    }
+
+    public ArrayList<EventTheEvent> getTheEvent(String eventId) {
+        ArrayList<EventTheEvent> modelList = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(TableTheEvent, null, Key_The_Event_EventId + " = ? ", new String[]{eventId}, null, null, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                EventTheEvent model = new EventTheEvent();
+                model.setNumber(cursor.getInt(cursor.getColumnIndex(Key_The_Event_No)));
+                model.setBackground(cursor.getString(cursor.getColumnIndex(Key_The_Event_background)));
+                //model.setBackground_local(cursor.getString(Key_The_Event_background));
+                model.setLogo(cursor.getString(cursor.getColumnIndex(Key_The_Event_logo)));
+                //model.setLogo_local(cursor.getString(cursor.getColumnIndex(Key_The_Event_logo)));
+                model.setEvent_name(cursor.getString(cursor.getColumnIndex(Key_The_Event_event_name)));
+                model.setEvent_location(cursor.getString(cursor.getColumnIndex(Key_The_Event_event_location)));
+                model.setWeather(cursor.getString(cursor.getColumnIndex(Key_The_Event_weather)));
+                model.setTitle_contact(cursor.getString(cursor.getColumnIndex(Key_The_Event_title_contact)));
+                model.setApi_weather(cursor.getString(cursor.getColumnIndex(Key_The_Event_api_weather)));
+                model.setWelcome_note(cursor.getString(cursor.getColumnIndex(Key_The_Event_welcome_note)));
+                model.setCommentpost_status(cursor.getString(cursor.getColumnIndex(Key_The_Event_commentpost_status)));
+                model.setDeletepost_status(cursor.getString(cursor.getColumnIndex(Key_The_Event_deletepost_status)));
+                model.setAddpost_status(cursor.getString(cursor.getColumnIndex(Key_The_Event_addpost_status)));
+                modelList.add(model);
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        return modelList;
+    }
+
+    public ArrayList<EventScheduleListDateDataList> getScheduleList(String eventId) {
+        ArrayList<EventScheduleListDateDataList> modelList = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(TableScheduleList, null, Key_Schedule_List_EventId + " = ? ", new String[]{eventId}, null, null, Key_Schedule_List_date);
+
+        if (cursor.moveToFirst()) {
+            do {
+                EventScheduleListDateDataList model = new EventScheduleListDateDataList();
+                model.setNumber(cursor.getInt(cursor.getColumnIndex(Key_Schedule_List_No)));
+                model.setEventId(cursor.getString(cursor.getColumnIndex(Key_Schedule_List_EventId)));
+                model.setDate(cursor.getString(cursor.getColumnIndex(Key_Schedule_List_date)));
+                model.setId(cursor.getString(cursor.getColumnIndex(Key_Schedule_List_id)));
+                model.setWaktu(cursor.getString(cursor.getColumnIndex(Key_Schedule_List_waktu)));
+                model.setSchedule_title(cursor.getString(cursor.getColumnIndex(Key_Schedule_List_schedule_title)));
+                model.setLocation(cursor.getString(cursor.getColumnIndex(Key_Schedule_List_location)));
+                model.setAction(cursor.getString(cursor.getColumnIndex(Key_Schedule_List_action)));
+                model.setLink(cursor.getString(cursor.getColumnIndex(Key_Schedule_List_link)));
+                model.setStatus(cursor.getString(cursor.getColumnIndex(Key_Schedule_List_status)));
+                modelList.add(model);
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        return modelList;
+    }
+
+    public ArrayList<EventImportanInfo> getImportanInfo(String eventId) {
+        ArrayList<EventImportanInfo> modelList = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(TableImportantInfo, null, Key_Importan_Info_EventId + " = ? ", new String[]{eventId}, null, null, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                EventImportanInfo model = new EventImportanInfo();
+                model.setNumber(cursor.getInt(cursor.getColumnIndex(Key_Importan_Info_No)));
+                model.setEventId(cursor.getString(cursor.getColumnIndex(Key_Importan_Info_EventId)));
+                model.setTitle(cursor.getString(cursor.getColumnIndex(Key_Importan_Info_title)));
+                model.setInfo(cursor.getString(cursor.getColumnIndex(Key_Importan_Info_info)));
+                modelList.add(model);
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        return modelList;
+    }
+
+    public ArrayList<EventDataContactList> getDataContactList(String eventId) {
+        ArrayList<EventDataContactList> modelList = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(TableContactList, null, Key_Contact_List_EventId + " = ? ", new String[]{eventId}, null, null, KEY_Wallet_sort);
+
+        if (cursor.moveToFirst()) {
+            do {
+                EventDataContactList model = new EventDataContactList();
+                model.setNumber(cursor.getInt(cursor.getColumnIndex(Key_Contact_List_No)));
+                model.setEventId(cursor.getString(cursor.getColumnIndex(Key_Contact_List_EventId)));
+                model.setName(cursor.getString(cursor.getColumnIndex(KEY_Contact_List_Name)));
+                model.setTelephone(cursor.getString(cursor.getColumnIndex(KEY_Contact_List_Telephone)));
+                model.setEmail(cursor.getString(cursor.getColumnIndex(KEY_Contact_List_Email)));
+                model.setIcon(cursor.getString(cursor.getColumnIndex(Key_Contact_List_Icon)));
+                model.setTitle(cursor.getString(cursor.getColumnIndex(Key_Contact_List_Title)));
+                modelList.add(model);
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        return modelList;
+    }
+
+    public ArrayList<EventAbout> getAbout(String eventId) {
+        ArrayList<EventAbout> modelList = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(TableEventAbout, null, Key_Event_About_EventId + " = ? ", new String[]{eventId}, null, null, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                EventAbout model = new EventAbout();
+                model.setNumber(cursor.getInt(cursor.getColumnIndex(Key_Event_About_No)));
+                model.setEventId(cursor.getString(cursor.getColumnIndex(Key_Event_About_No)));
+                model.setBackground(cursor.getString(cursor.getColumnIndex(Key_Event_About_No)));
+                model.setLogo(cursor.getString(cursor.getColumnIndex(Key_Event_About_No)));
+                model.setDescription(cursor.getString(cursor.getColumnIndex(Key_Event_About_No)));
+                modelList.add(model);
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        return modelList;
+    }
+
+    public ArrayList<EventPlaceList> getPlaceList(String eventId) {
+        ArrayList<EventPlaceList> modelList = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(TablePlaceList, null, Key_Place_List_EventId + " = ? ", new String[]{eventId}, null, null, Key_Place_List_No);
+
+        if (cursor.moveToFirst()) {
+            do {
+                EventPlaceList model = new EventPlaceList();
+                model.setNumber(cursor.getInt(cursor.getColumnIndex(Key_Place_List_No)));
+                model.setEventId(cursor.getString(cursor.getColumnIndex(Key_Place_List_EventId)));
+                model.setLatitude(cursor.getString(cursor.getColumnIndex(Key_Place_List_latitude)));
+                model.setLongitude(cursor.getString(cursor.getColumnIndex(Key_Place_List_longitude)));
+                model.setTitle(cursor.getString(cursor.getColumnIndex(Key_Place_List_title)));
+                model.setIcon(cursor.getString(cursor.getColumnIndex(Key_Place_List_icon)));
+                modelList.add(model);
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        return modelList;
+    }
+
+    public void deleteAllDataUser() {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL("delete from " + TableUserData);
+        db.close();
+    }
+
+    public void deleteAllDataListEvent() {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL("delete from " + TableListEvent);
+        db.close();
+    }
+
+    public void deleteAllDataWallet() {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL("delete from " + TableWallet);
         db.close();
     }
 
@@ -741,6 +995,18 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         contentValues.put(keyParam, valueParam);
         db.update(table, contentValues, keyWhere + " = ? ", new String[]{valueWhere});
         db.close();
+    }
+
+    public String getOneKey(String table, String keyWhere, String valueWhere, String keyParam) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(table, null, keyWhere + " = ? ", new String[]{valueWhere}, null, null, null);
+
+        if (cursor.getCount() == 1) {
+            return (cursor.getString(cursor.getColumnIndex(keyParam)));
+        } else {
+            cursor.close();
+            return null;
+        }
     }
 
     public boolean getIsFirstIn(String eventId) {

@@ -1,7 +1,6 @@
 package com.gandsoft.openguide.API.APIresponse.Event;
 
 import java.io.Serializable;
-import java.util.List;
 
 public class EventPlaceList implements Serializable {
 
@@ -9,7 +8,17 @@ public class EventPlaceList implements Serializable {
     public String longitude;
     public String title;
     public String icon;
-    public String number;
+
+    public int number;
+    public String eventId;
+
+    public String getEventId() {
+        return eventId;
+    }
+
+    public void setEventId(String eventId) {
+        this.eventId = eventId;
+    }
 
     public String getLatitude() {
         return latitude;
@@ -43,11 +52,11 @@ public class EventPlaceList implements Serializable {
         this.icon = icon;
     }
 
-    public String getNumber() {
+    public int getNumber() {
         return number;
     }
 
-    public void setNumber(String number) {
+    public void setNumber(int number) {
         this.number = number;
     }
 

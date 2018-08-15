@@ -1,6 +1,5 @@
 package com.gandsoft.openguide.activity.main.fragments;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -20,15 +19,21 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.gandsoft.openguide.IConfig;
+import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
 import com.gandsoft.openguide.activity.main.adapter.PostRecViewAdapter;
 import com.gandsoft.openguide.activity.main.adapter.PostRecViewPojo;
 import com.gandsoft.openguide.activity.main.adapter.PostRecViewPojoDummy;
+import com.gandsoft.openguide.database.SQLiteHelper;
+import com.gandsoft.openguide.support.SessionUtil;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class aHomeFragment extends Fragment {
+    SQLiteHelper db = new SQLiteHelper(getActivity());
+
     private static final String TAG = "Lihat";
     private View view;
     private LinearLayout llLoadModefvbi;
@@ -46,6 +51,8 @@ public class aHomeFragment extends Fragment {
     private PostRecViewAdapter adapter;
     private List<PostRecViewPojo> menuUi = new ArrayList<>();
     private int page = 0;
+    private String accountId, eventId;
+    private int version_data_event;
 
     public aHomeFragment() {
     }
@@ -53,6 +60,9 @@ public class aHomeFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_a_home, container, false);
+
+        accountId = SessionUtil.getStringPreferences(ISeasonConfig.KEY_ACCOUNT_ID, null);
+        eventId = SessionUtil.getStringPreferences(ISeasonConfig.KEY_EVENT_ID, null);
 
         initComponent();
         initContent(container);
@@ -76,6 +86,9 @@ public class aHomeFragment extends Fragment {
     }
 
     private void initContent(ViewGroup container) {
+
+        initVersionDataEvent();
+
         adapter = new PostRecViewAdapter(menuUi);
         recyclerView.setNestedScrollingEnabled(false);
         recyclerView.setAdapter(adapter);
@@ -97,7 +110,6 @@ public class aHomeFragment extends Fragment {
             public void onRefresh() {
                 homeSRLHomefvbi.setRefreshing(false);
                 page = 0;
-                Log.d("Lihat onRefresh aHomeFragment page", String.valueOf(page));
                 adapter.replaceData(PostRecViewPojoDummy.generyData(page));
                 //adapter.notifyDataSetChanged();
             }
@@ -127,14 +139,8 @@ public class aHomeFragment extends Fragment {
                         public void run() {
                             //code here
                             if (PostRecViewPojoDummy.hasMore(page)) {
-                                Log.d("Lihat run aHomeFragment PostRecViewPojoDummy.hasMore(page)1", String.valueOf(PostRecViewPojoDummy.hasMore(page)));
-                                Log.d("Lihat run aHomeFragment page", String.valueOf(page));
-                                Log.d("Lihat run aHomeFragment adapter.getItemCount()", String.valueOf(adapter.getItemCount()));
                                 adapter.addDatas(PostRecViewPojoDummy.generyData(++page));
                                 llLoadModefvbi.setVisibility(View.GONE);
-                                Log.d("Lihat run aHomeFragment PostRecViewPojoDummy.hasMore(page)2", String.valueOf(PostRecViewPojoDummy.hasMore(page)));
-                                Log.d("Lihat run aHomeFragment page", String.valueOf(page));
-                                Log.d("Lihat run aHomeFragment adapter.getItemCount()", String.valueOf(adapter.getItemCount()));
                             } else {
                                 Snackbar.make(getActivity().findViewById(android.R.id.content), "tidak ada data", Snackbar.LENGTH_LONG).show();
                                 llLoadModefvbi.setVisibility(View.GONE);
@@ -157,6 +163,14 @@ public class aHomeFragment extends Fragment {
                 }, 1000);
             }
         });*/
+    }
+
+    private void initVersionDataEvent() {
+        if (db.isDataTableValueNull(SQLiteHelper.TableListEvent, SQLiteHelper.KEY_ListEvent_version_data, eventId)) {
+            version_data_event = IConfig.DB_Version;
+        } else {
+            version_data_event = db.getVersionDataIdEvent(eventId);
+        }
     }
 
     /*private void populateRecyclerViewValues() {

@@ -27,9 +27,18 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.request.FutureTarget;
 import com.gandsoft.openguide.API.API;
+import com.gandsoft.openguide.API.APIrequest.Event.EventDataRequestModel;
 import com.gandsoft.openguide.API.APIrequest.UserData.UserDataRequestModel;
+import com.gandsoft.openguide.API.APIresponse.Event.EventAbout;
+import com.gandsoft.openguide.API.APIresponse.Event.EventDataContact;
+import com.gandsoft.openguide.API.APIresponse.Event.EventDataContactList;
+import com.gandsoft.openguide.API.APIresponse.Event.EventDataResponseModel;
+import com.gandsoft.openguide.API.APIresponse.Event.EventImportanInfo;
+import com.gandsoft.openguide.API.APIresponse.Event.EventPlaceList;
+import com.gandsoft.openguide.API.APIresponse.Event.EventScheduleListDate;
+import com.gandsoft.openguide.API.APIresponse.Event.EventScheduleListDateDataList;
+import com.gandsoft.openguide.API.APIresponse.Event.EventTheEvent;
 import com.gandsoft.openguide.API.APIresponse.UserData.UserDataResponseModel;
 import com.gandsoft.openguide.API.APIresponse.UserData.UserListEventResponseModel;
 import com.gandsoft.openguide.API.APIresponse.UserData.UserWalletDataResponseModel;
@@ -40,15 +49,14 @@ import com.gandsoft.openguide.database.SQLiteHelper;
 import com.gandsoft.openguide.support.NetworkUtil;
 import com.gandsoft.openguide.support.SessionUtil;
 
-import java.io.File;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
+import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class ChangeEventActivity extends AppCompatActivity {
+public class ChangeEventActivity extends AppCompatActivity implements ChangeEventPastHook {
     SQLiteHelper db = new SQLiteHelper(this);
 
     private ImageView ceIVUserPicfvbi;
@@ -57,10 +65,10 @@ public class ChangeEventActivity extends AppCompatActivity {
     private RecyclerView ceRVOngoingEventfvbi, ceRVPastEventfvbi;
     private String appVersionName, appVersionCode, appName, appPkg;
     private Button ceBUserAccountfvbi;
-    private String accountid;
+    private String accountid, eventIdPub;
     private SwipeRefreshLayout srlChangeEventActivityfvbi;
     /**/
-    private int version_data_user;
+    private int version_data_user, version_data_event;
     private List<UserListEventResponseModel> menuUi;
     private ChangeEventOnGoingAdapter adapterOnGoing;
     private ChangeEventPastAdapter adapterPast;
@@ -95,7 +103,7 @@ public class ChangeEventActivity extends AppCompatActivity {
 
     private void initContent() {
         initRecycleView();
-        getUserDataValidation();
+        getAPIUserDataValidation();
         initVersionDataUser();
         customText(ceTVInfofvbi);
 
@@ -117,14 +125,14 @@ public class ChangeEventActivity extends AppCompatActivity {
         srlChangeEventActivityfvbi.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                getUserDataValidation();
+                getAPIUserDataValidation();
             }
         });
     }
 
-    private void getUserDataValidation() {
+    private void getAPIUserDataValidation() {
         if (NetworkUtil.isConnected(this)) {
-            getUserDataDo(accountid);
+            getAPIUserDataDo(accountid);
         } else {
             if (db.isDataTableValueNull(SQLiteHelper.TableUserData, SQLiteHelper.KEY_UserData_accountId, accountid)) {
                 Snackbar.make(findViewById(android.R.id.content), "Data Kosong", Snackbar.LENGTH_LONG).show();
@@ -136,7 +144,7 @@ public class ChangeEventActivity extends AppCompatActivity {
         }
     }
 
-    private void getUserDataDo(String accountid) {
+    private void getAPIUserDataDo(String accountid) {
         if (srlChangeEventActivityfvbi.isRefreshing()) {
             srlChangeEventActivityfvbi.setRefreshing(false);
         }
@@ -215,7 +223,7 @@ public class ChangeEventActivity extends AppCompatActivity {
                         Snackbar.make(findViewById(android.R.id.content), "Tidak Dapat terhubung dengan server", Snackbar.LENGTH_LONG).setAction("Reload", new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                getUserDataValidation();
+                                getAPIUserDataValidation();
                             }
                         }).show();
                         updateRecycleView(db.getAllListEvent(accountid));
@@ -227,11 +235,124 @@ public class ChangeEventActivity extends AppCompatActivity {
         }, 1000);
     }
 
+    private void getAPIEventDataValid(String eventId) {
+        if (NetworkUtil.isConnected(this)) {
+            getAPIEventDataDo(eventId, accountid);
+        } else {
+            if (db.isDataTableValueNull(SQLiteHelper.TableListEvent, SQLiteHelper.KEY_ListEvent_eventId, eventId)) {
+                Snackbar.make(findViewById(android.R.id.content), "Data Kosong", Snackbar.LENGTH_LONG).show();
+            } else {
+                Snackbar.make(findViewById(android.R.id.content), "Memunculkan Data Offline", Snackbar.LENGTH_LONG).show();
+            }
+        }
+    }
+
+    private void getAPIEventDataDo(String eventId, String accountId) {
+        EventDataRequestModel requestModel = new EventDataRequestModel();
+        requestModel.setDbver("3");
+        requestModel.setId_event(eventId);
+        requestModel.setPass("");
+        requestModel.setPhonenumber(accountId);
+        requestModel.setVersion_data(String.valueOf(version_data_event));
+
+        ProgressDialog progressDialog = new ProgressDialog(this);
+        progressDialog.setCancelable(false);
+        progressDialog.setMessage("Please Wait...");
+        progressDialog.setTitle("Get data from server");
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        // show it
+        progressDialog.show();
+
+        API.doEventDataRet(requestModel).enqueue(new Callback<List<EventDataResponseModel>>() {
+            @Override
+            public void onResponse(Call<List<EventDataResponseModel>> call, Response<List<EventDataResponseModel>> response) {
+                progressDialog.dismiss();
+                if (response.isSuccessful()) {
+
+                    for (int i = 0; i < response.body().size(); i++) {
+                        EventDataResponseModel model = response.body().get(i);
+                        db.insertOneKey(SQLiteHelper.TableTheEvent, SQLiteHelper.Key_The_Event_EventId, model.getEvent_id());
+                        version_data_event = Integer.parseInt(model.getVersion_data());
+                        eventIdPub = model.getEvent_id();
+
+                        /*the event*/
+                        for (int i1 = 0; i1 < model.getThe_event().size(); i1++) {
+                            EventTheEvent theEvent = model.getThe_event().get(i1);
+                            db.saveTheEvent(theEvent, eventId, model.getFeedback_data(), model.getVersion_data());
+                        }
+
+                        for (int i2 = 0; i2 < model.getPlace_list().size(); i2++) {
+                            Map<Integer, List<EventPlaceList>> stringListMap = model.getPlace_list().get(i2);
+                            for (Map.Entry<Integer, List<EventPlaceList>> entry : stringListMap.entrySet()) {
+                                Integer key = entry.getKey();
+                                List<EventPlaceList> values = entry.getValue();
+                                for (int i22 = 0; i22 < values.size(); i22++) {
+                                    EventPlaceList placeList = values.get(i22);
+                                    db.savePlaceList(placeList, model.getEvent_id());
+                                }
+                            }
+                        }
+
+                        for (int i3 = 0; i3 < model.getImportan_info().size(); i3++) {
+                            EventImportanInfo importanInfo = model.getImportan_info().get(i3);
+                            db.saveImportanInfo(importanInfo, model.getEvent_id());
+                        }
+
+                        for (int i4 = 0; i4 < model.getData_contact().size(); i4++) {
+                            EventDataContact dataContact = model.getData_contact().get(i4);
+                            for (int i41 = 0; i41 < dataContact.getContact_list().size(); i41++) {
+                                EventDataContactList dataContactList = dataContact.getContact_list().get(i41);
+                                db.saveDataContactList(dataContactList, dataContact.getTitle(), model.getEvent_id());
+                            }
+                        }
+
+                        for (int i5 = 0; i5 < model.getAbout().size(); i5++) {
+                            EventAbout eventAbout = model.getAbout().get(i5);
+                            db.saveAbout(eventAbout, model.getEvent_id());
+                        }
+
+                        for (int i6 = 0; i6 < model.getSchedule_list().size(); i6++) {
+                            Map<String, List<EventScheduleListDate>> scheduleList = model.getSchedule_list().get(i6);
+                            for (Map.Entry<String, List<EventScheduleListDate>> entry : scheduleList.entrySet()) {
+                                String key = entry.getKey();
+                                List<EventScheduleListDate> value = entry.getValue();
+                                for (int i61 = 0; i61 < value.size(); i61++) {
+                                    EventScheduleListDate listDate = value.get(i61);
+                                    List<EventScheduleListDateDataList> value2 = listDate.getData();
+                                    for (int i62 = 0; i62 < value2.size(); i62++) {
+                                        EventScheduleListDateDataList listDateDataList = value2.get(i62);
+                                        db.saveScheduleList(listDateDataList, listDate.getDate(), model.getEvent_id());
+                                    }
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    Log.d("Lihat", "onResponse BaseHomeActivity : " + response.message());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<EventDataResponseModel>> call, Throwable t) {
+                progressDialog.dismiss();
+                Log.e("Lihat", "onFailure BaseHomeActivity : " + t.getMessage());
+            }
+        });
+    }
+
     private void initVersionDataUser() {
-        if (db.isDataTableKeyNull(SQLiteHelper.TableGlobalData, SQLiteHelper.KEY_GlobalData_version_data_user)) {
+        if (db.isDataTableValueNull(SQLiteHelper.TableUserData, SQLiteHelper.KEY_UserData_accountId, accountid)) {
             version_data_user = 0;
         } else {
             version_data_user = db.getVersionDataIdUser(accountid);
+        }
+    }
+
+    private void initVersionDataEvent() {
+        if (db.isDataTableValueNull(SQLiteHelper.TableListEvent, SQLiteHelper.KEY_ListEvent_eventId, eventIdPub)) {
+            version_data_event = 0;
+        } else {
+            version_data_event = db.getVersionDataIdEvent(eventIdPub);
         }
     }
 
@@ -282,7 +403,6 @@ public class ChangeEventActivity extends AppCompatActivity {
 
     }
 
-    @SuppressLint("NewApi")
     private void Onclick(View view) {
         if (view == ceBUserAccountfvbi) {
             startActivity(AccountActivity.getActIntent(ChangeEventActivity.this));
@@ -332,19 +452,16 @@ public class ChangeEventActivity extends AppCompatActivity {
         return new Intent(activity, ChangeEventActivity.class);
     }
 
-    private String getImgCachePath(String url) {
-        FutureTarget<File> futureTarget = Glide.with(getBaseContext())
-                .load(url)
-                .downloadOnly(com.bumptech.glide.request.target.Target.SIZE_ORIGINAL, 100);//-1,-1 Real size
-        try {
-            File file = futureTarget.get();
-            String path = file.getAbsolutePath();
-            return path;
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
+    @SuppressLint("NewApi")
+    private void Onclick(View view) {
+        if (view == ceBUserAccountfvbi) {
+            startActivity(AccountActivity.getActIntent(ChangeEventActivity.this));
+            finish();
         }
-        return null;
+    }
+
+    @Override
+    public void gotoEvent(String eventId) {
+        getAPIEventDataValid(eventId);
     }
 }

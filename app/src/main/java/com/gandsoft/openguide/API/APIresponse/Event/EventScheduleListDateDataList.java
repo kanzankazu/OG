@@ -12,6 +12,34 @@ public class EventScheduleListDateDataList implements Serializable {
     public String link;
     public String status;
 
+    public int number;
+    public String eventId;
+    public String date;
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
+    }
+
+    public int getNumber() {
+        return number;
+    }
+
+    public void setNumber(int number) {
+        this.number = number;
+    }
+
+    public String getEventId() {
+        return eventId;
+    }
+
+    public void setEventId(String eventId) {
+        this.eventId = eventId;
+    }
+
     public String getId() {
         return id;
     }

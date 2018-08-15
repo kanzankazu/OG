@@ -85,10 +85,7 @@ public class BaseHomeActivity extends AppCompatActivity {
 
     private void initContent() {
 
-        getEventDataValid();
-
         initVersionDataEvent();
-
         initActionBar();
         initTablayoutViewpager();
     }
@@ -114,116 +111,6 @@ public class BaseHomeActivity extends AppCompatActivity {
 
             @Override
             public void onTabReselected(TabLayout.Tab tab) {
-            }
-        });
-    }
-
-    private void getEventDataValid() {
-        if (NetworkUtil.isConnected(BaseHomeActivity.this)) {
-            getEventDataDo();
-        } else {
-            if (db.isDataTableValueNull(SQLiteHelper.TableListEvent, SQLiteHelper.KEY_ListEvent_eventId, eventId)) {
-                Snackbar.make(findViewById(android.R.id.content), "Data Kosong", Snackbar.LENGTH_LONG).show();
-            } else {
-                Snackbar.make(findViewById(android.R.id.content), "Memunculkan Data Offline", Snackbar.LENGTH_LONG).show();
-            }
-        }
-    }
-
-    private void getEventDataDo() {
-        EventDataRequestModel requestModel = new EventDataRequestModel();
-        requestModel.setDbver("3");
-        requestModel.setId_event(eventId);
-        requestModel.setPass("");
-        requestModel.setPhonenumber(accountId);
-        requestModel.setVersion_data(String.valueOf(version_data_event));
-
-        ProgressDialog progressDialog = new ProgressDialog(this);
-        progressDialog.setCancelable(false);
-        progressDialog.setMessage("Please Wait...");
-        progressDialog.setTitle("Get data from server");
-        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        // show it
-        progressDialog.show();
-
-        API.doEventDataRet(requestModel).enqueue(new Callback<List<EventDataResponseModel>>() {
-            @Override
-            public void onResponse(Call<List<EventDataResponseModel>> call, Response<List<EventDataResponseModel>> response) {
-                progressDialog.dismiss();
-                if (response.isSuccessful()) {
-                    for (int i = 0; i < response.body().size(); i++) {
-                        Log.d("Lihat", "onResponse BaseHomeActivity : " + response.body());
-                        EventDataResponseModel model = response.body().get(i);
-                        db.insertOneKey(SQLiteHelper.TableGlobalData, SQLiteHelper.KEY_GlobalData_version_data_event, model.getEvent_id());
-
-                        /*the event*/
-                        for (int i1 = 0; i1 < model.getThe_event().size(); i1++) {
-                            EventTheEvent theEvent = model.getThe_event().get(i1);
-
-                        }
-
-                        for (int i2 = 0; i2 < model.getPlace_list().size(); i2++) {
-                            Map<Integer, List<EventPlaceList>> stringListMap = model.getPlace_list().get(i2);
-                            Log.d("Lihat", "onResponse BaseHomeActivity stringListMap : " + stringListMap);
-                            for (Map.Entry<Integer, List<EventPlaceList>> entry : stringListMap.entrySet()) {
-                                Integer key = entry.getKey();
-                                List<EventPlaceList> values = entry.getValue();
-                                Log.d("Lihat", "onResponse BaseHomeActivity key : " + key);
-                                Log.d("Lihat", "onResponse BaseHomeActivity values.size : " + values.size());
-                                Log.d("Lihat", "onResponse BaseHomeActivity values.get : " + values.get(0));
-                                for (int i22 = 0; i22 < values.size(); i22++) {
-                                    EventPlaceList placeList = values.get(i22);
-                                    Log.d("Lihat", "onResponse BaseHomeActivity getTitle : " + placeList.getTitle());
-                                    Log.d("Lihat", "onResponse BaseHomeActivity getLatitude : " + placeList.getLatitude());
-                                    Log.d("Lihat", "onResponse BaseHomeActivity getLongitude : " + placeList.getLongitude());
-                                }
-                            }
-                        }
-
-                        for (int i3 = 0; i3 < model.getImportan_info().size(); i3++) {
-                            EventImportanInfo importanInfo = model.getImportan_info().get(i3);
-                        }
-
-                        for (int i4 = 0; i4 < model.getData_contact().size(); i4++) {
-                            EventDataContact dataContact = model.getData_contact().get(i4);
-                            Log.d("Lihat", "onResponse BaseHomeActivity : " + dataContact.getTitle());
-                            for (int i41 = 0; i41 < dataContact.getContact_list().size(); i41++) {
-                                EventDataContactList dataContactList = dataContact.getContact_list().get(i41);
-
-                            }
-                        }
-
-                        for (int i5 = 0; i5 < model.getAbout().size(); i5++) {
-                            EventAbout eventAbout = model.getAbout().get(i5);
-                        }
-
-                        for (int i6 = 0; i6 < model.getSchedule_list().size(); i6++) {
-                            Map<String, List<EventScheduleListDate>> scheduleList = model.getSchedule_list().get(i6);
-                            for (Map.Entry<String, List<EventScheduleListDate>> entry : scheduleList.entrySet()) {
-                                String key = entry.getKey();
-                                Log.d("Lihat", "onResponse BaseHomeActivity key : " + key);
-                                List<EventScheduleListDate> value = entry.getValue();
-                                for (int i61 = 0; i61 < value.size(); i61++) {
-                                    EventScheduleListDate listDate = value.get(i61);
-                                    Log.d("Lihat", "onResponse BaseHomeActivity getDate : " + listDate.getDate());
-                                    List<EventScheduleListDateDataList> value2 = listDate.getData();
-                                    for (int i62 = 0; i62 < value2.size(); i62++) {
-                                        EventScheduleListDateDataList listDateDataList = value2.get(i62);
-                                        Log.d("Lihat", "onResponse BaseHomeActivity getLocation : " + listDateDataList.getLocation());
-                                    }
-                                }
-                            }
-                        }
-                    }
-                } else {
-                    Log.d("Lihat", "onResponse BaseHomeActivity : " + response.message());
-                }
-            }
-
-            @Override
-            public void onFailure(Call<List<EventDataResponseModel>> call, Throwable t) {
-                progressDialog.dismiss();
-                Log.e("Lihat", "onFailure BaseHomeActivity : " + t.getMessage());
             }
         });
     }

@@ -25,16 +25,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ChangeEventPastAdapter extends RecyclerView.Adapter<ChangeEventPastAdapter.ViewHolder> {
-    private Context context;
+    private ChangeEventPastHook parent;
     private List<UserListEventResponseModel> models = new ArrayList<>();
 
-    public ChangeEventPastAdapter() {
-
-    }
-
-    public ChangeEventPastAdapter(Context context, List<UserListEventResponseModel> items) {
-        this.context = context;
+    public ChangeEventPastAdapter(Activity parent, List<UserListEventResponseModel> items) {
         models = items;
+        try {
+            this.parent = (ChangeEventPastHook) parent;
+        } catch (Exception e) {
+            this.parent = null;
+        }
     }
 
     @Override
@@ -47,19 +47,13 @@ public class ChangeEventPastAdapter extends RecyclerView.Adapter<ChangeEventPast
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         UserListEventResponseModel model = models.get(position);
-        Log.d("Lihat", "onBindViewHolder ChangeEventOnGoingAdapter : " + model.getLogo());
-        Log.d("Lihat", "onBindViewHolder ChangeEventOnGoingAdapter : " + model.getBackground());
-        Log.d("Lihat", "onBindViewHolder ChangeEventPastAdapter : " + model.getStatus());
-        Log.d("Lihat", "onBindViewHolder ChangeEventPastAdapter : " + model.getTitle());
-        model.getBackground();
-        model.getLogo();
-        Glide.with(context)
+        Glide.with((Activity) parent)
                 .load(model.getBackground())
                 .placeholder(R.drawable.template_account_og)
                 .error(R.drawable.template_account_og)
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .into(holder.ivListChangeEventBackgroundfvbi);
-        Glide.with(context)
+        Glide.with((Activity) parent)
                 .load(model.getLogo())
                 .placeholder(R.drawable.template_account_og)
                 .error(R.drawable.template_account_og)
@@ -70,8 +64,7 @@ public class ChangeEventPastAdapter extends RecyclerView.Adapter<ChangeEventPast
         holder.llListChangeEventfvbi.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                context.startActivity(BaseHomeActivity.getActIntent((Activity) context));
-                SessionUtil.setStringPreferences(ISeasonConfig.KEY_EVENT_ID, model.getEvent_id());
+                parent.gotoEvent(model.getEvent_id());
             }
         });
     }

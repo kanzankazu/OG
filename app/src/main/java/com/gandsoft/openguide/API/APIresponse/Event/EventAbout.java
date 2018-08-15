@@ -6,7 +6,21 @@ public class EventAbout implements Serializable {
     public String background;
     public String logo;
     public String description;
-    public String number;
+
+    public int number;
+    public String eventId;
+
+    public void setNumber(int number) {
+        this.number = number;
+    }
+
+    public String getEventId() {
+        return eventId;
+    }
+
+    public void setEventId(String eventId) {
+        this.eventId = eventId;
+    }
 
     public String getBackground() {
         return background;
@@ -30,13 +44,5 @@ public class EventAbout implements Serializable {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public String getNumber() {
-        return number;
-    }
-
-    public void setNumber(String number) {
-        this.number = number;
     }
 }

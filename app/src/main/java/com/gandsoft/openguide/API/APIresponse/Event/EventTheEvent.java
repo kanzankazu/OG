@@ -2,9 +2,11 @@ package com.gandsoft.openguide.API.APIresponse.Event;
 
 import java.io.Serializable;
 
-public class EventTheEvent implements Serializable{
+public class EventTheEvent implements Serializable {
     public String background;
+    public String background_local;
     public String logo;
+    public String logo_local;
     public String event_name;
     public String event_location;
     public String date_event;
@@ -15,6 +17,59 @@ public class EventTheEvent implements Serializable{
     public String commentpost_status;
     public String deletepost_status;
     public String addpost_status;
+
+    public int number;
+    public String eveintId;
+    public String feedback;
+    public String versionData;
+
+    public String getFeedback() {
+        return feedback;
+    }
+
+    public void setFeedback(String feedback) {
+        this.feedback = feedback;
+    }
+
+    public String getVersionData() {
+        return versionData;
+    }
+
+    public void setVersionData(String versionData) {
+        this.versionData = versionData;
+    }
+
+    public String getBackground_local() {
+        return background_local;
+    }
+
+    public void setBackground_local(String background_local) {
+        this.background_local = background_local;
+    }
+
+    public String getLogo_local() {
+        return logo_local;
+    }
+
+    public void setLogo_local(String logo_local) {
+        this.logo_local = logo_local;
+    }
+
+    public int getNumber() {
+        return number;
+    }
+
+    public void setNumber(int number) {
+        this.number = number;
+    }
+
+    public String getEveintId() {
+        return eveintId;
+    }
+
+    public void setEveintId(String eveintId) {
+        this.eveintId = eveintId;
+    }
 
     public String getBackground() {
         return background;
