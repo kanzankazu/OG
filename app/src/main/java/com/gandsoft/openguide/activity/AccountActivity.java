@@ -4,18 +4,25 @@ import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Paint;
 import android.icu.text.SimpleDateFormat;
 import android.icu.util.Calendar;
 import android.icu.util.ULocale;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.text.SpannableStringBuilder;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
+import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -23,6 +30,7 @@ import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -38,10 +46,12 @@ import com.gandsoft.openguide.R;
 import com.gandsoft.openguide.database.SQLiteHelper;
 import com.gandsoft.openguide.support.SessionUtil;
 import com.google.android.gms.games.request.Requests;
+import com.google.android.gms.nearby.connection.Payload;
 import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.io.*;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -60,9 +70,10 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
     private LinearLayout llAccPicfvbi, llAccGenderfvbi, llAccBirthdatefvbi, llAccAggrementfvbi, llAccSavefvbi;
     private CheckBox cbAccAggrementfvbi;
     private ImageButton ibAccClosefvbi, ibAccCamerafvbi, ibCalendarfvbi;
+    private ImageView ivWrapPicfvbi;
     /**/
     private boolean isNewUser = false;
-    private String accountId;
+    private String accountId,base64pic;
 
     private Spinner mySpinner;
 
@@ -127,6 +138,8 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
         llAccSavefvbi = (LinearLayout) findViewById(R.id.llAccSave);
         cbAccAggrementfvbi = (CheckBox) findViewById(R.id.cbAccAggrement);
 
+        ivWrapPicfvbi = (ImageView) findViewById(R.id.ivWrapPic);
+
         mySpinner = (Spinner) findViewById(R.id.spinGender);
     }
 
@@ -165,18 +178,112 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
         ibAccClosefvbi.setOnClickListener(this);
         ibAccCamerafvbi.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
-                startActivity(intent);
+                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                File f = new File(android.os.Environment
+                        .getExternalStorageDirectory(), "temp.jpg");
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(f));
+                startActivityForResult(intent, 1);
             }
         });
         tvAccSelPicfvbi.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                Intent intent = new Intent();
-                intent.setType("image/*");
-                intent.setAction(Intent.ACTION_GET_CONTENT);
-                startActivity(intent);
+                Intent intent = new Intent(
+                        Intent.ACTION_PICK,
+                        android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                startActivityForResult(intent, 2);
             }
         });
+
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK) {
+            if (requestCode == 1) {
+                // onCaptureImageResult(data);
+                try {
+
+                    File f = new File(Environment.getExternalStorageDirectory()
+                            .toString());
+                    for (File temp : f.listFiles()) {
+                        if (temp.getName().equals("temp.jpg")) {
+                            f = temp;
+                            break;
+                        }
+                    }
+                    Bitmap bitmap;
+                    BitmapFactory.Options bitmapOptions = new BitmapFactory.Options();
+
+                    bitmap = BitmapFactory.decodeFile(f.getAbsolutePath(),
+                            bitmapOptions);
+                    ivWrapPicfvbi.setImageBitmap(bitmap);
+                    ivWrapPicfvbi.setVisibility(View.VISIBLE);
+
+                    String path = android.os.Environment
+                            .getExternalStorageDirectory()
+                            + File.separator
+                            + ".Gandsoft" + File.separator + "images";
+                    f.delete();
+                    OutputStream outFile = null;
+                    File file = new File(path, String.valueOf(System
+                            .currentTimeMillis()) + ".jpg");
+                    try {
+                        outFile = new FileOutputStream(file);
+                        bitmap.compress(Bitmap.CompressFormat.JPEG, 85, outFile);
+                        outFile.flush();
+                        outFile.close();
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            } else if (requestCode == 2) {
+                onSelectFromGalleryResult(data);
+            }
+        }
+    }
+
+    private void onSelectFromGalleryResult(Intent data) {
+        Uri selectedImageUri = data.getData();
+        String[] projection = { MediaStore.MediaColumns.DATA };
+        @SuppressWarnings("deprecation")
+        Cursor cursor = managedQuery(selectedImageUri, projection, null, null,
+                null);
+        int column_index = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
+        cursor.moveToFirst();
+
+        String selectedImagePath = cursor.getString(column_index);
+
+        Bitmap bm;
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(selectedImagePath, options);
+        final int REQUIRED_SIZE = 200;
+        int scale = 1;
+        while (options.outWidth / scale / 2 >= REQUIRED_SIZE
+                && options.outHeight / scale / 2 >= REQUIRED_SIZE)
+            scale *= 2;
+        options.inSampleSize = scale;
+        options.inJustDecodeBounds = false;
+        bm = BitmapFactory.decodeFile(selectedImagePath, options);
+
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        bm.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
+        byte[] byteArray = byteArrayOutputStream .toByteArray();
+
+        base64pic = Base64.encodeToString(byteArray, Base64.DEFAULT);
+
+        ivWrapPicfvbi.setImageBitmap(bm);
+        ivWrapPicfvbi.setVisibility(View.VISIBLE);
+        tvAccSelPicfvbi.setText("Image selected");
     }
 
     private void updateData(ArrayList<UserDataResponseModel> models) {
@@ -283,6 +390,33 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
 
     }
 
+    private void quitNotSave() {
+        // Munculkan alert dialog apabila user ingin keluar aplikasi
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+        alertDialogBuilder.setMessage("Discard All of Changes?");
+        alertDialogBuilder.setCancelable(true);
+        alertDialogBuilder.setPositiveButton("YES",
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface arg0, int arg1) {
+                        Snackbar.make(findViewById(android.R.id.content), "Data tak tersimpan", Snackbar.LENGTH_SHORT).show();
+                        moveToChangeEvent();
+                    }
+                });
+        // Pilihan jika NO
+        alertDialogBuilder.setNegativeButton("CANCEL",
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface arg0, int arg1) {
+
+                    }
+                });
+        // Tampilkan alert dialog
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
+
+    }
+
     private void moveToChangeEvent() {
         Intent intent = new Intent(AccountActivity.this, ChangeEventActivity.class);
         startActivity(intent);
@@ -299,6 +433,7 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
             skipLogoutClick();
         } else if (v == ibAccClosefvbi) {
             finish();
+            moveToChangeEvent();
         }
     }
 
@@ -326,7 +461,12 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
     private void updateData(){
         UserUpdateRequestModel requestModel = new UserUpdateRequestModel();
         requestModel.setAccounsId(accountId);
-        requestModel.setFileImageB641("");
+        if(base64pic.isEmpty()) {
+            requestModel.setFileImageB641("");
+        }
+        else{
+            requestModel.setFileImageB641(base64pic);
+        }
         requestModel.setDbver("3");
         requestModel.setDegree_image("ANDROID");
         requestModel.setPrivacypolicy(true);
@@ -344,11 +484,12 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
                     if (s.size() == 1) {
                         for (int i = 0; i < s.size(); i++) {
                             UserUpdateResponseModel model = s.get(i);
-                            if (model.getStatus().equalsIgnoreCase("verify")) {
+                            db.updateOneKey(SQLiteHelper.TableUserData,SQLiteHelper.KEY_UserData_accountId,accountId,SQLiteHelper.KEY_UserData_imageUrl,model.getImage_url());
+                            if (model.getStatus().equalsIgnoreCase("ok")) {
                                 Snackbar.make(findViewById(android.R.id.content), "Tersimpan", Snackbar.LENGTH_LONG).show();
                                 moveToChangeEvent();
                             } else {
-                                Snackbar.make(findViewById(android.R.id.content), "Data Tatersimpan", Snackbar.LENGTH_LONG).show();
+                                Snackbar.make(findViewById(android.R.id.content), "Bad Response", Snackbar.LENGTH_LONG).show();
                             }
                         }
                     } else {
@@ -374,7 +515,7 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
 
     @Override
     public void onBackPressed() {
-        saveClick();
+        quitNotSave();
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
@@ -389,4 +530,31 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
         tvAccTahunfvbi.setText(a[0]);
 //        etAccBirthdayfvbi.setText(sdf.format(myCalendar.getTime()));
     }
+
+/*    private void selectImage() {
+        final CharSequence[] options = { "Take Photo", "Gallery" };
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(
+                EditProfileActivity.this);
+        builder.setItems(options, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int item) {
+                if (options[item].equals("Take Photo")) {
+                    Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    File f = new File(android.os.Environment
+                            .getExternalStorageDirectory(), "temp.jpg");
+                    intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(f));
+                    startActivityForResult(intent, 1);
+                } else if (options[item].equals("Gallery")) {
+                    Intent intent = new Intent(
+                            Intent.ACTION_PICK,
+                            android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                    startActivityForResult(intent, 2);
+
+                }
+            }
+        });
+        builder.show();
+    }*/
+
 }

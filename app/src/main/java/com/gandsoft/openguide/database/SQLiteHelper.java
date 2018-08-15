@@ -185,7 +185,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     private static final String query_delete_table_GlobalData = "DROP TABLE IF EXISTS " + TableGlobalData;
 
     private static final String query_add_table_EventAbout = "CREATE TABLE IF NOT EXISTS " + TableEventAbout + "("
-            + Key_Event_About_No + " TEXT PRIMARY KEY AUTOINCREMENT, "
+            + Key_Event_About_No + " INTEGER PRIMARY KEY AUTOINCREMENT, "
             + Key_Event_About_EventId + " TEXT, "
             + KEY_Event_About_Background + " TEXT, "
             + KEY_Event_About_Background_Local + " TEXT, "
@@ -195,7 +195,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     private static final String query_delete_table_EventAbout = "DROP TABLE IF EXISTS " + TableEventAbout;
 
     private static final String query_add_table_ContactList = "CREATE TABLE IF NOT EXISTS " + TableContactList + "("
-            + Key_Contact_List_No + " TEXT PRIMARY KEY AUTOINCREMENT , "
+            + Key_Contact_List_No + " INTEGER PRIMARY KEY AUTOINCREMENT , "
             + Key_Contact_List_EventId + " TEXT, "
             + Key_Contact_List_Title + " TEXT, "
             + KEY_Contact_List_Name + " TEXT, "
@@ -205,14 +205,14 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     private static final String query_delete_table_ContactList = "DROP TABLE IF EXISTS " + TableContactList;
 
     private static final String query_add_table_ImportantInfo = "CREATE TABLE IF NOT EXISTS " + TableImportantInfo + "("
-            + Key_Importan_Info_No + " TEXT PRIMARY KEY AUTOINCREMENT, "
+            + Key_Importan_Info_No + " INTEGER PRIMARY KEY AUTOINCREMENT, "
             + Key_Importan_Info_EventId + " TEXT, "
             + Key_Importan_Info_title + " TEXT, "
             + Key_Importan_Info_info + " TEXT) ";
     private static final String query_delete_table_ImportantInfo = "DROP TABLE IF EXISTS " + TableImportantInfo;
 
     private static final String query_add_table_ScheduleList = "CREATE TABLE IF NOT EXISTS " + TableScheduleList + "("
-            + Key_Schedule_List_No + " TEXT PRIMARY KEY AUTOINCREMENT, "
+            + Key_Schedule_List_No + " INTEGER PRIMARY KEY AUTOINCREMENT, "
             + Key_Schedule_List_EventId + " TEXT, "
             + Key_Schedule_List_date + " TEXT, "
             + Key_Schedule_List_id + " TEXT, "
@@ -226,7 +226,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     private static final String query_delete_table_ScheduleList = "DROP TABLE IF EXISTS " + TableScheduleList;
 
     private static final String query_add_table_TheEvent = "CREATE TABLE IF NOT EXISTS " + TableTheEvent + "("
-            + Key_The_Event_No + " TEXT PRIMARY KEY AUTOINCREMENT, "
+            + Key_The_Event_No + " INTEGER PRIMARY KEY AUTOINCREMENT, "
             + Key_The_Event_EventId + " TEXT, "
             + Key_The_Event_background + " TEXT, "
             + Key_The_Event_logo + " TEXT, "

@@ -1,5 +1,6 @@
 package com.gandsoft.openguide.activity;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -222,10 +223,8 @@ public class ChangeEventActivity extends AppCompatActivity {
                         Log.e("Lihat", "onFailure ChangeEventActivity : " + t.getMessage(), t);
                     }
                 });
-
             }
         }, 1000);
-
     }
 
     private void initVersionDataUser() {
@@ -257,7 +256,8 @@ public class ChangeEventActivity extends AppCompatActivity {
                         .load(model.getImage_url())
                         .placeholder(R.drawable.template_account_og)
                         .error(R.drawable.template_account_og)
-                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .diskCacheStrategy(DiskCacheStrategy.NONE)
+                        .skipMemoryCache(true)
                         .into(ceIVUserPicfvbi);
             }
         }
@@ -282,6 +282,7 @@ public class ChangeEventActivity extends AppCompatActivity {
 
     }
 
+    @SuppressLint("NewApi")
     private void Onclick(View view) {
         if (view == ceBUserAccountfvbi) {
             startActivity(AccountActivity.getActIntent(ChangeEventActivity.this));
