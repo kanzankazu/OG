@@ -162,7 +162,6 @@ public class ChangeEventActivity extends AppCompatActivity {
 
         new Handler().postDelayed(new Runnable() {
             public void run() {
-                //code here
                 API.doUserDataRet(requestModel).enqueue(new Callback<List<UserDataResponseModel>>() {
                     @Override
                     public void onResponse(Call<List<UserDataResponseModel>> call, Response<List<UserDataResponseModel>> response) {

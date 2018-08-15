@@ -1,9 +1,12 @@
 package com.gandsoft.openguide.activity;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.DatePickerDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -16,6 +19,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
@@ -64,16 +68,17 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
     private static final int UI_NEW_USER = 0;
     private static final int UI_OLD_USER = 1;
     private FirebaseAuth mAuth;
-    /**/
+
     private TextView tvAccIDfvbi, tvAccSelPicfvbi,tvAccGenderfvbi, tvAccTglfvbi, tvAccBulanfvbi, tvAccTahunfvbi, tvAccAggrementfvbi, tvSignOutSkipfvbi;
     private EditText etAccNamefvbi, etAccEmailfvbi;
     private LinearLayout llAccPicfvbi, llAccGenderfvbi, llAccBirthdatefvbi, llAccAggrementfvbi, llAccSavefvbi;
     private CheckBox cbAccAggrementfvbi;
     private ImageButton ibAccClosefvbi, ibAccCamerafvbi, ibCalendarfvbi;
     private ImageView ivWrapPicfvbi;
-    /**/
+
     private boolean isNewUser = false;
-    private String accountId,base64pic;
+    private String accountId;
+    private String base64pic="";
 
     private Spinner mySpinner;
 
@@ -88,7 +93,12 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
             accountId = SessionUtil.getStringPreferences(ISeasonConfig.KEY_ACCOUNT_ID, null);
             Log.d("Lihat", "onCreate AccountActivity : " + accountId);
         }
-
+        if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
+        }
+        if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 2);
+        }
         initComponent();
         initContent();
         initListener();
@@ -255,8 +265,7 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
         Uri selectedImageUri = data.getData();
         String[] projection = { MediaStore.MediaColumns.DATA };
         @SuppressWarnings("deprecation")
-        Cursor cursor = managedQuery(selectedImageUri, projection, null, null,
-                null);
+        Cursor cursor = managedQuery(selectedImageUri, projection, null, null, null);
         int column_index = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
         cursor.moveToFirst();
 
@@ -320,6 +329,7 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
             tvSignOutSkipfvbi.setText("SIGN-OUT");
         }
     }
+    int MY_CAMERA_REQUEST_CODE = 77777;
 
     private void customText(TextView view) {
         SpannableStringBuilder spanTxt = new SpannableStringBuilder("I agree to the ");
@@ -476,9 +486,20 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
         requestModel.setDate(tvAccTglfvbi.getText().toString());
         requestModel.setMonth(tvAccBulanfvbi.getText().toString());
         requestModel.setYear(tvAccTahunfvbi.getText().toString());
+
+
+        ProgressDialog progressDialog = new ProgressDialog(this);
+        progressDialog.setCancelable(false);
+        progressDialog.setMessage("Please Wait...");
+        progressDialog.setTitle("Upload data baru..");
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        // show it
+        progressDialog.show();
+
         API.doUserUpdateRet(requestModel).enqueue(new Callback<List<UserUpdateResponseModel>>() {
             @Override
             public void onResponse(Call<List<UserUpdateResponseModel>> call, Response<List<UserUpdateResponseModel>> response) {
+                progressDialog.dismiss();
                 if(response.isSuccessful()) {
                     List<UserUpdateResponseModel> s = response.body();
                     if (s.size() == 1) {
