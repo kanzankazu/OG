@@ -2,13 +2,6 @@ package com.gandsoft.openguide.activity.main.adapter;
 
 import java.util.ArrayList;
 
-/** Authuor: Hari vignesh Jayapalan
- *  Created on: 6 Feb 2016
- *  Email: hariutd@gmail.com
- *
- *  Implementing custom RecyclerView Adapter
- *  Tutorial @ https://medium.com/@harivigneshjayapalan
- * */
 public class TaskRecViewPojo {
 
     //POJO class consists of get method and set method

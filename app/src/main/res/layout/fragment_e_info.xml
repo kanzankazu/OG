@@ -20,6 +20,9 @@
                 android:animateLayoutChanges="true"
                 android:background="@color/colorPrimary"
                 android:orientation="vertical"
+
+                android:focusable="true"
+                android:focusableInTouchMode="true"
                 android:padding="30dp">
 
                 <LinearLayout
