@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/background_radius"
@@ -15,49 +16,22 @@
         android:background="@drawable/background_radius"
         android:backgroundTint="@color/gray_very_light" />
 
-    <ImageView
+    <TextView
+        android:id="@+id/tvWalletIdCardHtml"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="128dp"
-        android:layout_marginRight="128dp"
         android:layout_marginTop="30dp"
-        android:adjustViewBounds="true"
-        android:src="@mipmap/ic_launcher" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:text="FULLNAME"
-        android:textColor="@color/colorPrimary" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="ACCOUNT ID"
-        android:textColor="@color/colorPrimary" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="25dp"
-        android:text="Bentoel SLA Workshop 2018"
-        android:textColor="@color/gray_very_light"
-        android:textSize="10dp" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="18dp"
-        android:text="The Alana Hotel Convention Centre, Yogyakarta"
-        android:textColor="@color/gray_very_light"
-        android:textSize="10dp" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:text="17-19 Jan 2018"
         android:textColor="@color/gray_very_light"
-        android:textSize="10dp" />
+        android:textSize="10dp"
+        android:visibility="gone" />
+
+    <WebView
+        android:id="@+id/wvWalletIdCardHtml"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        tools:ignore="WebViewLayout" />
 
     <View
         android:layout_width="match_parent"
@@ -66,10 +40,12 @@
         android:background="@color/gray_very_light" />
 
     <android.support.v7.widget.CardView
+        android:id="@+id/cvWalletIDcardDetail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
         android:backgroundTint="@color/colorPrimary"
+        android:visibility="gone"
         app:cardCornerRadius="7dp">
 
         <TextView

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical">
@@ -14,6 +15,7 @@
         app:angle="90">
 
         <TextView
+            android:id="@+id/tvWalletTransportNotif"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingLeft="20dp"
@@ -24,136 +26,31 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:orientation="vertical">
 
         <TextView
+            android:id="@+id/tvWalletTransportHtml"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
             android:gravity="center"
-            android:paddingBottom="20dp"
-            android:paddingTop="20dp"
-            android:text="FULLNAME" />
+            android:lineSpacingExtra="5dp"
+            android:padding="5dp"
+            android:text=""
+            android:textAppearance="@style/TextAppearance.AppCompat.Small"
+            android:textColor="@color/black"
+            android:visibility="gone" />
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@android:color/darker_gray" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:animateLayoutChanges="true"
-            android:orientation="horizontal">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:animateLayoutChanges="true"
-                android:gravity="center"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Departure"
-                    android:textColor="@color/colorPrimary"
-                    android:textSize="13dp" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="CGK"
-                    android:textColor="@color/colorPrimary"
-                    android:textSize="30dp" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="2018-03-15"
-                    android:textColor="@color/colorPrimary"
-                    android:textSize="10dp" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="05.45"
-                    android:textColor="@color/colorPrimary"
-                    android:textSize="23dp" />
-            </LinearLayout>
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:src="@drawable/ic_flight_takeoff" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:animateLayoutChanges="true"
-                android:gravity="center"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Departure"
-                    android:textColor="@color/colorPrimary"
-                    android:textSize="13dp" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="CGK"
-                    android:textColor="@color/colorPrimary"
-                    android:textSize="30dp" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="2018-03-15"
-                    android:textColor="@color/colorPrimary"
-                    android:textSize="10dp" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="05.45"
-                    android:textColor="@color/colorPrimary"
-                    android:textSize="23dp" />
-            </LinearLayout>
-        </LinearLayout>
-
-        <LinearLayout
+        <WebView
+            android:id="@+id/wvWalletTransportHtml"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:animateLayoutChanges="true"
-            android:background="@color/colorPrimaryDark"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:paddingBottom="20dp"
-            android:paddingTop="20dp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Flight Code"
-                android:textColor="@color/colorPrimary"
-                android:textSize="10dp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="QZ 7556"
-                android:textColor="@color/white"
-                android:textSize="23dp" />
-
-        </LinearLayout>
+            tools:ignore="WebViewLayout" />
 
         <Button
+            android:id="@+id/bWalletTransportDetail"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
@@ -164,6 +61,7 @@
             android:visibility="gone" />
 
         <TextView
+            android:id="@+id/tvWalletTransportDetail"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@color/colorPrimaryDark"

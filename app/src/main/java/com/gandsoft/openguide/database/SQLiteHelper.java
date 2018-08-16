@@ -741,21 +741,19 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     public ArrayList<UserWalletDataResponseModel> getListWalletData(String eventId) {
         ArrayList<UserWalletDataResponseModel> modelList = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
-        /*String query = " SELECT * FROM " + TableWallet + " Where " + KEY_Wallet_eventId + " = '" + eventId + "'";
-        Cursor cursor = db.rawQuery(query, null);*/
-        Cursor cursor = db.query(TableWallet, null, KEY_Wallet_eventId + " = ? ", new String[]{eventId}, null, null, KEY_Wallet_sort);
+        Cursor cursor = db.query(TableWallet, null, KEY_Wallet_eventId + " = ? ", new String[]{eventId}, KEY_Wallet_sort, null, KEY_Wallet_sort);
 
         if (cursor.moveToFirst()) {
             do {
                 UserWalletDataResponseModel model = new UserWalletDataResponseModel();
-                model.setNumber(cursor.getInt(0));
-                model.setSort(cursor.getString(1));
-                model.setAccountId(cursor.getString(2));
-                model.setEventId(cursor.getString(3));
-                model.setBody_wallet(cursor.getString(4));
-                model.setNotif(cursor.getString(5));
-                model.setDetail(cursor.getString(6));
-                model.setType(cursor.getString(7));
+                model.setNumber(cursor.getInt(cursor.getColumnIndex(KEY_Wallet_No)));
+                model.setSort(cursor.getString(cursor.getColumnIndex(KEY_Wallet_sort)));
+                model.setAccountId(cursor.getString(cursor.getColumnIndex(KEY_Wallet_accountId)));
+                model.setEventId(cursor.getString(cursor.getColumnIndex(KEY_Wallet_eventId)));
+                model.setBody_wallet(cursor.getString(cursor.getColumnIndex(KEY_Wallet_bodyWallet)));
+                model.setNotif(cursor.getString(cursor.getColumnIndex(KEY_Wallet_notif)));
+                model.setDetail(cursor.getString(cursor.getColumnIndex(KEY_Wallet_detail)));
+                model.setType(cursor.getString(cursor.getColumnIndex(KEY_Wallet_type)));
                 modelList.add(model);
             } while (cursor.moveToNext());
         }
