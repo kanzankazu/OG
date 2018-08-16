@@ -86,6 +86,7 @@ public class eInfoFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        db = new SQLiteHelper(getActivity());
         View view = inflater.inflate(R.layout.fragment_e_info, container, false);
 
         accountId = SessionUtil.getStringPreferences(ISeasonConfig.KEY_ACCOUNT_ID, null);

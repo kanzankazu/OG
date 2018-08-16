@@ -495,7 +495,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(Key_Importan_Info_EventId, eventId);
-        contentValues.put(Key_Importan_Info_title, model.getInfo());
+        contentValues.put(Key_Importan_Info_title, model.getTitle());
         contentValues.put(Key_Importan_Info_info, model.getInfo());
         db.insertWithOnConflict(TableImportantInfo, null, contentValues, SQLiteDatabase.CONFLICT_REPLACE);
         db.close();
@@ -637,9 +637,9 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     public void updateImportanInfo(EventImportanInfo model, String eventId) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
-        contentValues.put(Key_Importan_Info_title, model.getInfo());
+        contentValues.put(Key_Importan_Info_title, model.getTitle());
         contentValues.put(Key_Importan_Info_info, model.getInfo());
-        db.updateWithOnConflict(TableImportantInfo, contentValues, Key_Importan_Info_EventId + " = ? ", new String[]{eventId}, SQLiteDatabase.CONFLICT_REPLACE);
+        db.update(TableImportantInfo, contentValues, Key_Importan_Info_EventId + " = ? ", new String[]{eventId});
         db.close();
     }
 
@@ -886,7 +886,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     public ArrayList<EventImportanInfo> getImportanInfo(String eventId) {
         ArrayList<EventImportanInfo> modelList = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.query(TableImportantInfo, null, Key_Importan_Info_EventId + " = ? ", new String[]{eventId}, null, null, null);
+        Cursor cursor = db.query(TableImportantInfo, null, Key_Importan_Info_EventId + " = ? ", new String[]{eventId}, Key_Importan_Info_title, null, null);
 
         if (cursor.moveToFirst()) {
             do {
