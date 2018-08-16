@@ -86,6 +86,7 @@ dependencies {
     implementation files('libs/universal-image-loader-1.9.5.jar')
     implementation 'com.squareup.picasso:picasso:2.5.2'
     implementation 'com.jsibbold:zoomage:1.1.0'
+    implementation 'org.jsoup:jsoup:1.11.3'
     //implementation 'com.github.stealthcopter:AndroidNetworkTools:0.3.0'
     testImplementation 'junit:junit:4.12'
 }

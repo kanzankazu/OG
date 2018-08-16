@@ -4,16 +4,22 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
-import android.text.Html;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.WebView;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.gandsoft.openguide.API.APIresponse.UserData.UserWalletDataResponseModel;
 import com.gandsoft.openguide.R;
+
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -62,71 +68,102 @@ class WalletViewAdapter extends RecyclerView.Adapter<WalletViewAdapter.ViewHolde
     @Override
     public void onBindViewHolder(@NonNull WalletViewAdapter.ViewHolder holder, int position) {
         UserWalletDataResponseModel model = models.get(position);
+
+
         switch (holder.getItemViewType()) {
             case TYPE_TRANSPORT:
                 ViewHolder holder0 = (ViewHolder) holder;
                 holder0.tvWalletTransportNotiffvbi.setText(model.getNotif());
-                holder0.tvWalletTransportHtmlfvbi.setText(Html.fromHtml(model.getBody_wallet()));
-                holder0.wvWalletTransportHtmlfvbi.getSettings().setJavaScriptEnabled(true);
-                holder0.wvWalletTransportHtmlfvbi.loadDataWithBaseURL("", model.getBody_wallet(), "text/html", "UTF-8", "");
-                if (!model.getDetail().isEmpty() && model.getDetail() != null) {
+
+                Document doc = Jsoup.parse(model.getBody_wallet());
+                String h1 = doc.getElementsByTag("h1").first().text();
+                Elements dd = doc.getElementsByTag("dd");
+                Elements dt = doc.select("dt");
+                Log.d("Lihat", "onBindViewHolder WalletViewAdapter h1); : " + h1);
+                Log.d("Lihat", "onBindViewHolder WalletViewAdapter dd.text()); : " + dd.text());
+                Log.d("Lihat", "onBindViewHolder WalletViewAdapter dd.size()); : " + dd.size());
+                Log.d("Lihat", "onBindViewHolder WalletViewAdapter dt.text()); : " + dt.text());
+                Log.d("Lihat", "onBindViewHolder WalletViewAdapter dt.size()); : " + dt.size());
+                for (int i = 0; i < dd.size(); i++) {
+                    Element element = dd.get(i);
+                    Elements allElements = element.getAllElements();
+                    Log.d("Lihat", "onBindViewHolder WalletViewAdapter element.getAllElements().size: " + element.getAllElements().size());
+                    Log.d("Lihat", "onBindViewHolder WalletViewAdapter  allElements.get(0) : " + allElements.get(0).text());
+                    Log.d("Lihat", "onBindViewHolder WalletViewAdapter  allElements.get(1) : " + allElements.get(1).text());
+                    Log.d("Lihat", "onBindViewHolder WalletViewAdapter : " + element.);
+                }
+
+            {
+                if (!TextUtils.isEmpty(model.getDetail())) {
                     holder0.bWalletTransportDetailfvbi.setVisibility(View.VISIBLE);
                     holder0.tvWalletTransportDetailfvbi.setText(model.getDetail());
                 } else {
                     holder0.bWalletTransportDetailfvbi.setVisibility(View.GONE);
                 }
-                holder0.bWalletTransportDetailfvbi.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        holder0.bWalletTransportDetailfvbi.setVisibility(View.GONE);
-                        holder0.tvWalletTransportDetailfvbi.setVisibility(View.VISIBLE);
-                    }
-                });
-                holder0.tvWalletTransportDetailfvbi.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        holder0.bWalletTransportDetailfvbi.setVisibility(View.VISIBLE);
-                        holder0.tvWalletTransportDetailfvbi.setVisibility(View.GONE);
-                    }
-                });
-                break;
+            }
+            holder0.bWalletTransportDetailfvbi.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    holder0.bWalletTransportDetailfvbi.setVisibility(View.GONE);
+                    holder0.tvWalletTransportDetailfvbi.setVisibility(View.VISIBLE);
+                }
+            });
+            holder0.tvWalletTransportDetailfvbi.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    holder0.bWalletTransportDetailfvbi.setVisibility(View.VISIBLE);
+                    holder0.tvWalletTransportDetailfvbi.setVisibility(View.GONE);
+                }
+            });
+            break;
             case TYPE_IDCARD:
                 ViewHolder1 holder1 = (ViewHolder1) holder;
-                holder1.tvWalletIdCardHtmlfvbi.setText(Html.fromHtml(model.getBody_wallet()));
-                holder1.wvWalletIdCardHtmlfvbi.getSettings().setJavaScriptEnabled(true);
-                holder1.wvWalletIdCardHtmlfvbi.loadDataWithBaseURL("", model.getBody_wallet(), "text/html", "UTF-8", "");
 
                 break;
         }
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        private final TextView tvWalletTransportNotiffvbi;
-        private final TextView tvWalletTransportHtmlfvbi;
+        private final TextView tvWalletTransportNotiffvbi, tvWalletTransportNamefvbi, tvWalletTransportTitleDeparturefvbi, tvWalletTransportAirportDeparturefvbi, tvWalletTransportDateDeparturefvbi, tvWalletTransportTimeDeparturefvbi, tvWalletTransportTitleArrivalfvbi, tvWalletTransportAirportArrivalfvbi, tvWalletTransportDateArrivalfvbi, tvWalletTransportTimeArrivalfvbi, tvWalletTransportDetailfvbi, tvWalletTransportFlightCodeTitlefvbi, tvWalletTransportFlightCodefvbi;
         private final Button bWalletTransportDetailfvbi;
-        private final TextView tvWalletTransportDetailfvbi;
-        private final WebView wvWalletTransportHtmlfvbi;
+        private final ImageView ivWalletTransportIconfvbi;
 
         public ViewHolder(View itemView) {
             super(itemView);
             tvWalletTransportNotiffvbi = (TextView) itemView.findViewById(R.id.tvWalletTransportNotif);
-            tvWalletTransportHtmlfvbi = (TextView) itemView.findViewById(R.id.tvWalletTransportHtml);
-            bWalletTransportDetailfvbi = (Button) itemView.findViewById(R.id.bWalletTransportDetail);
+            tvWalletTransportNamefvbi = (TextView) itemView.findViewById(R.id.tvWalletTransportName);
+            tvWalletTransportTitleDeparturefvbi = (TextView) itemView.findViewById(R.id.tvWalletTransportTitleDeparture);
+            tvWalletTransportAirportDeparturefvbi = (TextView) itemView.findViewById(R.id.tvWalletTransportAirportDeparture);
+            tvWalletTransportDateDeparturefvbi = (TextView) itemView.findViewById(R.id.tvWalletTransportDateDeparture);
+            tvWalletTransportTimeDeparturefvbi = (TextView) itemView.findViewById(R.id.tvWalletTransportTimeDeparture);
+            tvWalletTransportTitleArrivalfvbi = (TextView) itemView.findViewById(R.id.tvWalletTransportTitleArrival);
+            tvWalletTransportAirportArrivalfvbi = (TextView) itemView.findViewById(R.id.tvWalletTransportAirportArrival);
+            tvWalletTransportDateArrivalfvbi = (TextView) itemView.findViewById(R.id.tvWalletTransportDateArrival);
+            tvWalletTransportTimeArrivalfvbi = (TextView) itemView.findViewById(R.id.tvWalletTransportTimeArrival);
             tvWalletTransportDetailfvbi = (TextView) itemView.findViewById(R.id.tvWalletTransportDetail);
-            wvWalletTransportHtmlfvbi = (WebView) itemView.findViewById(R.id.wvWalletTransportHtml);
+            tvWalletTransportFlightCodeTitlefvbi = (TextView) itemView.findViewById(R.id.tvWalletTransportFlightCodeTitle);
+            tvWalletTransportFlightCodefvbi = (TextView) itemView.findViewById(R.id.tvWalletTransportFlightCode);
+            bWalletTransportDetailfvbi = (Button) itemView.findViewById(R.id.bWalletTransportDetail);
+            ivWalletTransportIconfvbi = (ImageView) itemView.findViewById(R.id.ivWalletTransportIcon);
         }
     }
 
     private class ViewHolder1 extends ViewHolder {
-        private final TextView tvWalletIdCardHtmlfvbi;
-        private final CardView cvWalletIDcardDetailfvbi;
-        private final WebView wvWalletIdCardHtmlfvbi;
+
+        private final ImageView ivWalletIdCardfvbi;
+        private final CardView cvWalletIdCardDetailfvbi;
+        private final TextView tvWalletIdCardNamefvbi, tvWalletIdCardIdfvbi, tvWalletIdCardEventTitlefvbi, tvWalletIdCardEventPlacefvbi, tvWalletIdCardDatefvbi, tvWalletIdCardDetailfvbi;
 
         public ViewHolder1(View itemView) {
             super(itemView);
-            tvWalletIdCardHtmlfvbi = (TextView) itemView.findViewById(R.id.tvWalletIdCardHtml);
-            cvWalletIDcardDetailfvbi = (CardView) itemView.findViewById(R.id.cvWalletIDcardDetail);
-            wvWalletIdCardHtmlfvbi = (WebView) itemView.findViewById(R.id.wvWalletIdCardHtml);
+            ivWalletIdCardfvbi = (ImageView) itemView.findViewById(R.id.ivWalletIdCard);
+            tvWalletIdCardNamefvbi = (TextView) itemView.findViewById(R.id.tvWalletIdCardName);
+            tvWalletIdCardIdfvbi = (TextView) itemView.findViewById(R.id.tvWalletIdCardId);
+            tvWalletIdCardEventTitlefvbi = (TextView) itemView.findViewById(R.id.tvWalletIdCardEventTitle);
+            tvWalletIdCardEventPlacefvbi = (TextView) itemView.findViewById(R.id.tvWalletIdCardEventPlace);
+            tvWalletIdCardDatefvbi = (TextView) itemView.findViewById(R.id.tvWalletIdCardDate);
+            tvWalletIdCardDetailfvbi = (TextView) itemView.findViewById(R.id.tvWalletIdCardDetail);
+            cvWalletIdCardDetailfvbi = (CardView) itemView.findViewById(R.id.cvWalletIdCardDetail);
         }
     }
 

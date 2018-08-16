@@ -94,7 +94,7 @@ public class cScheduleFragment extends Fragment {
                 Log.i("SCROOLLL Y = ", String.valueOf(scrollY));
                 Log.i("SCROOLLL old X = ", String.valueOf(oldScrollX));
                 Log.i("SCROOLLL old Y = ", String.valueOf(oldScrollY));
-                if (scrollY <= pagerBig.getMeasuredHeight() + llScheduleDotsfvbi.getMeasuredHeight()) {
+                if (scrollY <= pagerBig.getMeasuredHeight()) {
                     showPager(0);
                 } else {
                     showPager(1);
@@ -103,7 +103,6 @@ public class cScheduleFragment extends Fragment {
                 /*Log.d("Lihat", "onScrollChange cScheduleFragment : " + pagerBig.getMeasuredHeight());
                 Log.d("Lihat", "onScrollChange cScheduleFragment : " + llScheduleDotsfvbi.getMeasuredHeight());
                 Log.d("Lihat", "onScrollChange cScheduleFragment : " + recyclerView.getChildCount());
-
                 Log.d("Lihat", "onScrollChange cScheduleFragment : " + v.getChildCount());
                 Log.d("Lihat", "onScrollChange cScheduleFragment : " + v.getChildAt(0));
                 Log.d("Lihat", "onScrollChange cScheduleFragment : " + v.getChildAt(1));
