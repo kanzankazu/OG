@@ -495,7 +495,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(Key_Importan_Info_EventId, eventId);
-        contentValues.put(Key_Importan_Info_title, model.getInfo());
+        contentValues.put(Key_Importan_Info_title, model.getTitle());
         contentValues.put(Key_Importan_Info_info, model.getInfo());
         db.insertWithOnConflict(TableImportantInfo, null, contentValues, SQLiteDatabase.CONFLICT_REPLACE);
         db.close();
@@ -637,9 +637,9 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     public void updateImportanInfo(EventImportanInfo model, String eventId) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
-        contentValues.put(Key_Importan_Info_title, model.getInfo());
+        contentValues.put(Key_Importan_Info_title, model.getTitle());
         contentValues.put(Key_Importan_Info_info, model.getInfo());
-        db.updateWithOnConflict(TableImportantInfo, contentValues, Key_Importan_Info_EventId + " = ? ", new String[]{eventId}, SQLiteDatabase.CONFLICT_REPLACE);
+        db.update(TableImportantInfo, contentValues, Key_Importan_Info_EventId + " = ? ", new String[]{eventId});
         db.close();
     }
 
@@ -886,7 +886,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     public ArrayList<EventImportanInfo> getImportanInfo(String eventId) {
         ArrayList<EventImportanInfo> modelList = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.query(TableImportantInfo, null, Key_Importan_Info_EventId + " = ? ", new String[]{eventId}, null, null, null);
+        Cursor cursor = db.query(TableImportantInfo, null, Key_Importan_Info_EventId + " = ? ", new String[]{eventId}, Key_Importan_Info_title, null, null);
 
         if (cursor.moveToFirst()) {
             do {
@@ -935,10 +935,10 @@ public class SQLiteHelper extends SQLiteOpenHelper {
             do {
                 EventAbout model = new EventAbout();
                 model.setNumber(cursor.getInt(cursor.getColumnIndex(Key_Event_About_No)));
-                model.setEventId(cursor.getString(cursor.getColumnIndex(Key_Event_About_No)));
-                model.setBackground(cursor.getString(cursor.getColumnIndex(Key_Event_About_No)));
-                model.setLogo(cursor.getString(cursor.getColumnIndex(Key_Event_About_No)));
-                model.setDescription(cursor.getString(cursor.getColumnIndex(Key_Event_About_No)));
+                model.setEventId(cursor.getString(cursor.getColumnIndex(Key_Event_About_EventId)));
+                model.setBackground(cursor.getString(cursor.getColumnIndex(KEY_Event_About_Background)));
+                model.setLogo(cursor.getString(cursor.getColumnIndex(KEY_Event_About_Logo)));
+                model.setDescription(cursor.getString(cursor.getColumnIndex(KEY_Event_About_Description)));
                 modelList.add(model);
             } while (cursor.moveToNext());
         }

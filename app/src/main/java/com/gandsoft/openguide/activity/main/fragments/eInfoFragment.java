@@ -3,17 +3,26 @@ package com.gandsoft.openguide.activity.main.fragments;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+import android.service.autofill.UserData;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.gandsoft.openguide.API.APIrequest.UserData.UserDataRequestModel;
+import com.gandsoft.openguide.API.APIresponse.Event.EventAbout;
+import com.gandsoft.openguide.API.APIresponse.UserData.UserDataResponseModel;
+import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
 import com.gandsoft.openguide.activity.AccountActivity;
 import com.gandsoft.openguide.activity.ChangeEventActivity;
@@ -30,6 +39,9 @@ import com.gandsoft.openguide.activity.main.adapter.InfoListViewAdapter;
 import com.gandsoft.openguide.activity.main.adapter.InfoListviewModel;
 import com.gandsoft.openguide.activity.main.adapter.RecyclerItemClickListener;
 import com.gandsoft.openguide.database.SQLiteHelper;
+import com.gandsoft.openguide.support.SessionUtil;
+
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,10 +49,15 @@ import java.util.List;
 
 public class eInfoFragment extends Fragment {
     private RecyclerView rvMenufvbi;
-    private TextView tvInfoFullNamefvbi;
+    private ImageView ivInfoUserImagefvbi;
+    private TextView tvInfoFullNamefvbi,tvInfoUserNamefvbi,tvInfoUserPhoneNumberfvbi;
     private Button button;
     Button bMyPro;
     InfoListViewAdapter adapter;
+
+    private String accountId, eventId;
+    private int version_data_event;
+    SQLiteHelper db;
     String infoMenu[] = {
             "Map",
             "Gallery",
@@ -69,7 +86,13 @@ public class eInfoFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        db = new SQLiteHelper(getActivity());
         View view = inflater.inflate(R.layout.fragment_e_info, container, false);
+
+        accountId = SessionUtil.getStringPreferences(ISeasonConfig.KEY_ACCOUNT_ID, null);
+        Log.d("Lihat", "onCreateView aHomeFragment : " + accountId);
+        eventId = SessionUtil.getStringPreferences(ISeasonConfig.KEY_EVENT_ID, null);
+        Log.d("Lihat", "onCreateView aHomeFragment : " + eventId);
 
         initComponent(view);
         initContent();
@@ -81,10 +104,14 @@ public class eInfoFragment extends Fragment {
     private void initComponent(View view) {
         button = (Button) view.findViewById(R.id.button);
         rvMenufvbi = (RecyclerView) view.findViewById(R.id.rvMenu);
-        tvInfoFullNamefvbi = (TextView) view.findViewById(R.id.tvInfoFullName);
+
+        ivInfoUserImagefvbi = (ImageView) view.findViewById(R.id.ivInfoUserImage);
+        tvInfoUserNamefvbi = (TextView) view.findViewById(R.id.tvInfoUserName);
+        tvInfoUserPhoneNumberfvbi = (TextView)view.findViewById(R.id.tvInfoUserPhoneNumber);
     }
 
     private void initContent() {
+        updateUi();
         for (int i = 0; i < infoMenu.length; i++) {
             listviewModels.add(new InfoListviewModel(infoMenu[i], infoPic[i]));
         }
@@ -95,7 +122,6 @@ public class eInfoFragment extends Fragment {
     }
 
     private void initListener() {
-
 
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -158,6 +184,26 @@ public class eInfoFragment extends Fragment {
 
             }
         }));
+    }
+
+    private void updateUi() {
+        ArrayList<UserDataResponseModel> models = db.getUserData(accountId);
+        if (models != null) {
+            for (int i = 0; i < models.size(); i++) {
+                UserDataResponseModel model = models.get(i);
+                tvInfoUserNamefvbi.setText(model.getFull_name());
+                tvInfoUserPhoneNumberfvbi.setText(model.getPhone_number());
+
+                Glide.with(getActivity().getApplicationContext())
+                        .load(model.getImage_url())
+                        .placeholder(R.drawable.template_account_og)
+                        .error(R.drawable.template_account_og)
+                        .diskCacheStrategy(DiskCacheStrategy.NONE)
+                        .skipMemoryCache(true)
+                        .into(ivInfoUserImagefvbi);
+
+            }
+        }
     }
 }
 
