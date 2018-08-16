@@ -27,7 +27,7 @@ public class PostRecViewAdapter extends RecyclerView.Adapter<PostRecViewAdapter.
             super(itemView);
             user_name = (TextView) itemView.findViewById(R.id.user_name);
             content = (TextView) itemView.findViewById(R.id.content);
-            time = (TextView) itemView.findViewById(R.id.time);
+            time = (TextView) itemView.findViewById(R.id.tvRvScheduleTime);
         }
     }
 

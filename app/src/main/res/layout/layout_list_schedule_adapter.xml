@@ -21,12 +21,15 @@
             android:padding="3dp">
 
             <ImageView
+                android:id="@+id/ivRvScheduleIndicator"
                 android:layout_width="15dp"
                 android:layout_height="15dp"
                 android:background="@color/colorAccent" />
         </LinearLayout>
 
         <View
+            android:id="@+id/vRvScheduleline"
+            android:visibility="visible"
             android:layout_width="4dp"
             android:layout_height="match_parent"
             android:background="@drawable/dotted"

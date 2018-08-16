@@ -2,6 +2,8 @@ package com.gandsoft.openguide.activity.main.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,13 +17,12 @@ import com.gandsoft.openguide.R;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TaskRecViewAdapter extends RecyclerView.Adapter<TaskRecViewAdapter.MyViewHolder> {
-    private ArrayList<TaskRecViewPojo> list_members = new ArrayList<>();
+public class ScheduleRecycleviewAdapter extends RecyclerView.Adapter<ScheduleRecycleviewAdapter.MyViewHolder> {
     private List<EventScheduleListDateDataList> models;
     private Context context;
 
 
-    public TaskRecViewAdapter(Context context, ArrayList<EventScheduleListDateDataList> models) {
+    public ScheduleRecycleviewAdapter(Context context, ArrayList<EventScheduleListDateDataList> models) {
         this.context = context;
         this.models = models;
     }
@@ -29,19 +30,23 @@ public class TaskRecViewAdapter extends RecyclerView.Adapter<TaskRecViewAdapter.
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_list_schedule_adapter, parent, false);
-        return new TaskRecViewAdapter.MyViewHolder(view);
+        return new ScheduleRecycleviewAdapter.MyViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(final MyViewHolder holder, int position) {
         EventScheduleListDateDataList model = models.get(position);
-        holder.tvRvScheduleTimefvbi.setText(model.getDate());
-        holder.tvRvScheduleTimefvbi.setText(model.getSchedule_title());
-        if (!model.getLocation().isEmpty() || model.getLocation() != null) {
+        holder.tvRvScheduleTimefvbi.setText(model.getWaktu());
+        holder.tvRvScheduleTitlefvbi.setText(model.getSchedule_title());
+        if (!TextUtils.isEmpty(model.getLocation())) {
+            Log.d("Lihat", "onBindViewHolder ScheduleRecycleviewAdapter : " + model.getLocation());
             holder.llRvScheduleLocationfvbi.setVisibility(View.VISIBLE);
-            holder.tvRvScheduleTimefvbi.setText(model.getLocation());
+            holder.tvRvScheduleLocationTitlefvbi.setText(model.getLocation());
+        }else {
+            holder.llRvScheduleLocationfvbi.setVisibility(View.GONE);
         }
-        if (!model.getDetail().isEmpty() || model.getDetail() != null) {
+        if (!TextUtils.isEmpty(model.getDetail())) {
+            Log.d("Lihat", "onBindViewHolder ScheduleRecycleviewAdapter : " + model.getDetail());
             holder.bRvScheduleDetailfvbi.setVisibility(View.VISIBLE);
             holder.bRvScheduleDetailfvbi.setText(model.getAction());
             holder.bRvScheduleDetailfvbi.setOnClickListener(new View.OnClickListener() {
@@ -62,7 +67,7 @@ public class TaskRecViewAdapter extends RecyclerView.Adapter<TaskRecViewAdapter.
 
     @Override
     public int getItemCount() {
-        return list_members.size();
+        return models.size();
     }
 
 
@@ -95,9 +100,9 @@ public class TaskRecViewAdapter extends RecyclerView.Adapter<TaskRecViewAdapter.
     }
 
     public void removeAt(int position) {
-        list_members.remove(position);
+        models.remove(position);
         notifyItemRemoved(position);
-        notifyItemRangeChanged(0, list_members.size());
+        notifyItemRangeChanged(0, models.size());
     }
 
     public void setData(List<EventScheduleListDateDataList> datas) {
@@ -128,9 +133,9 @@ public class TaskRecViewAdapter extends RecyclerView.Adapter<TaskRecViewAdapter.
         }
     }*/
 
-    public void setListContent(ArrayList<TaskRecViewPojo> list_members) {
+    /*public void setListContent(ArrayList<TaskRecViewPojo> list_members) {
         this.list_members = list_members;
         notifyItemRangeChanged(0, list_members.size());
-    }
+    }*/
 
 }

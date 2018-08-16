@@ -12,41 +12,50 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
+import com.gandsoft.openguide.API.APIresponse.Event.EventScheduleListDateDataList;
+import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
-import com.gandsoft.openguide.activity.main.adapter.TaskRecViewAdapter;
-import com.gandsoft.openguide.activity.main.adapter.TaskRecViewPojo;
+import com.gandsoft.openguide.activity.main.adapter.SchedulePagerAdapter;
+import com.gandsoft.openguide.activity.main.adapter.ScheduleRecycleviewAdapter;
+import com.gandsoft.openguide.database.SQLiteHelper;
+import com.gandsoft.openguide.support.SessionUtil;
 
 import java.util.ArrayList;
 
 
 public class cScheduleFragment extends Fragment {
+    private SQLiteHelper db;
+    private ArrayList<String> scheduleDates;
+    private ArrayList<EventScheduleListDateDataList> scheduleListPerDate;
+    private ImageView[] ivIndicatorPromo;
+
     private RecyclerView recyclerView;
-    private TaskRecViewAdapter adapter;
-    private ArrayList<TaskRecViewPojo> listContentArr = new ArrayList<>();
+    private ScheduleRecycleviewAdapter recycleviewAdapter;
     private NestedScrollView scroller;
     private ViewPager pagerBig;
     private ViewPager pagerSmall;
-    private SampleAdapter pagerAdapterBig;
-    private SampleAdapter pagerAdapterSmall;
-    String[] headervalues = new String[]{"11 Jul 2018", "12 Jul 2018", "13 Jul 2018", "14 Jul 2018", "15 Jul 2018"};
-    private boolean isBigVP;
     private LinearLayout llScheduleDotsfvbi;
-    private TextView[] dots;
-    private int iPagerCount;
-    private ImageView[] ivIndicatorPromo;
 
+    private SchedulePagerAdapter pagerAdapterBig;
+    private SchedulePagerAdapter pagerAdapterSmall;
+    private String accountId, eventId;
+    private int iPagerCount;
+    private boolean isBigVP;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_c_schedule, container, false);
 
+        accountId = SessionUtil.getStringPreferences(ISeasonConfig.KEY_ACCOUNT_ID, null);
+        eventId = SessionUtil.getStringPreferences(ISeasonConfig.KEY_EVENT_ID, null);
+
+        db = new SQLiteHelper(getActivity());
+
         initComponent(view);
         initContent(view);
         initListener(view);
-
 
         //Method call for populating the view
         return view;
@@ -61,23 +70,100 @@ public class cScheduleFragment extends Fragment {
     }
 
     private void initContent(View view) {
-        addBottomDots(0);
-
-        pagerAdapterBig = new SampleAdapter(getActivity(), 0, headervalues);
+        scheduleDates = db.getScheduleListDate(eventId);
+        pagerAdapterBig = new SchedulePagerAdapter(getActivity(), 0, scheduleDates);
         pagerBig.setAdapter(pagerAdapterBig);
         pagerBig.setOffscreenPageLimit(3);
-        pagerAdapterSmall = new SampleAdapter(getActivity(), 1, headervalues);
+        pagerAdapterSmall = new SchedulePagerAdapter(getActivity(), 1, scheduleDates);
         pagerSmall.setAdapter(pagerAdapterSmall);
         pagerSmall.setOffscreenPageLimit(3);
 
-        adapter = new TaskRecViewAdapter(getActivity());
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        populateRecyclerViewValues();
+        addBottomDots();
 
+        scheduleListPerDate = db.getScheduleListPerDate(eventId, scheduleDates.get(pagerBig.getCurrentItem()));
+        recycleviewAdapter = new ScheduleRecycleviewAdapter(getActivity(), scheduleListPerDate);
+        recyclerView.setAdapter(recycleviewAdapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
     }
 
-    private void addBottomDots(int currentPage) {
-        iPagerCount = headervalues.length;
+    private void initListener(View view) {
+        scroller.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
+            @Override
+            public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+                Log.i("SCROOLLL X = ", String.valueOf(scrollX));
+                Log.i("SCROOLLL Y = ", String.valueOf(scrollY));
+                Log.i("SCROOLLL old X = ", String.valueOf(oldScrollX));
+                Log.i("SCROOLLL old Y = ", String.valueOf(oldScrollY));
+                if (scrollY <= pagerBig.getMeasuredHeight() + llScheduleDotsfvbi.getMeasuredHeight()) {
+                    showPager(0);
+                } else {
+                    showPager(1);
+                }
+
+                /*Log.d("Lihat", "onScrollChange cScheduleFragment : " + pagerBig.getMeasuredHeight());
+                Log.d("Lihat", "onScrollChange cScheduleFragment : " + llScheduleDotsfvbi.getMeasuredHeight());
+                Log.d("Lihat", "onScrollChange cScheduleFragment : " + recyclerView.getChildCount());
+
+                Log.d("Lihat", "onScrollChange cScheduleFragment : " + v.getChildCount());
+                Log.d("Lihat", "onScrollChange cScheduleFragment : " + v.getChildAt(0));
+                Log.d("Lihat", "onScrollChange cScheduleFragment : " + v.getChildAt(1));
+                Log.d("Lihat", "onScrollChange cScheduleFragment : " + v.getChildAt(0).getId());
+                Log.d("Lihat", "onScrollChange cScheduleFragment : " + v.getChildAt(0).getMeasuredHeight());*/
+
+                /*if (v.getChildAt(v.getChildCount() - 1) != null){
+                    if ((scrollY >= (v.getChildAt(v.getChildCount() - 1).getMeasuredHeight() - v.getMeasuredHeight())) && scrollY > oldScrollY) {
+                        //code to fetch more data for endless scrolling
+                        Log.d("Lihat", "onScrollChange cScheduleFragment : " + );
+                    }
+                }*/
+            }
+        });
+        pagerBig.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                pagerSmall.setCurrentItem(position);
+                recycleviewAdapter.replaceData(db.getScheduleListPerDate(eventId, scheduleDates.get(position)));
+                for (int i = 0; i < iPagerCount; i++) {
+                    ivIndicatorPromo[i].setImageDrawable(getResources().getDrawable(R.drawable.nonselected_item));
+                }
+                ivIndicatorPromo[position].setImageDrawable(getResources().getDrawable(R.drawable.selected_item));
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
+        pagerSmall.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                pagerBig.setCurrentItem(position);
+                recycleviewAdapter.replaceData(db.getScheduleListPerDate(eventId, scheduleDates.get(position)));
+                for (int i = 0; i < iPagerCount; i++) {
+                    ivIndicatorPromo[i].setImageDrawable(getResources().getDrawable(R.drawable.nonselected_item));
+                }
+                ivIndicatorPromo[position].setImageDrawable(getResources().getDrawable(R.drawable.selected_item));
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
+    }
+
+    private void addBottomDots() {
+        iPagerCount = scheduleDates.size();
         ivIndicatorPromo = new ImageView[iPagerCount];
         for (int i = 0; i < iPagerCount; i++) {
             ivIndicatorPromo[i] = new ImageView(getActivity());
@@ -110,80 +196,23 @@ public class cScheduleFragment extends Fragment {
             dots[currentPage].setTextColor(getResources().getColor(R.color.colorPrimaryDark));*/
     }
 
-    private void initListener(View view) {
-        scroller.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
-            @Override
-            public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
-                Log.i("SCROOLLL X = ", String.valueOf(scrollX));
-                Log.i("SCROOLLL Y = ", String.valueOf(scrollY));
-                Log.i("SCROOLLL old X = ", String.valueOf(oldScrollX));
-                Log.i("SCROOLLL old Y = ", String.valueOf(oldScrollY));
-                if (scrollY <= 570) {
-                    showPager(0);
-                } else {
-                    showPager(1);
-                }
-            }
-        });
-        pagerBig.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-                pagerSmall.setCurrentItem(position);
-            }
-
-            @Override
-            public void onPageSelected(int position) {
-                for (int i = 0; i < iPagerCount; i++) {
-                    ivIndicatorPromo[i].setImageDrawable(getResources().getDrawable(R.drawable.nonselected_item));
-                }
-                ivIndicatorPromo[position].setImageDrawable(getResources().getDrawable(R.drawable.selected_item));
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
-
-            }
-        });
-        pagerSmall.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-                pagerBig.setCurrentItem(position);
-            }
-
-            @Override
-            public void onPageSelected(int position) {
-                for (int i = 0; i < iPagerCount; i++) {
-                    ivIndicatorPromo[i].setImageDrawable(getResources().getDrawable(R.drawable.nonselected_item));
-                }
-                ivIndicatorPromo[position].setImageDrawable(getResources().getDrawable(R.drawable.selected_item));
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
-
-            }
-        });
-    }
-
     private void showPager(int pager) {
         if (pager == 0) {
             pagerBig.setVisibility(View.VISIBLE);
             pagerSmall.setVisibility(View.GONE);
         } else if (pager == 1) {
-            pagerBig.setVisibility(View.GONE);
+            pagerBig.setVisibility(View.VISIBLE);
             pagerSmall.setVisibility(View.VISIBLE);
         }
     }
 
-    private void populateRecyclerViewValues() {
+    /*private void populateRecyclerViewValues() {
         for (int iter = 0; iter <= 50; iter++) {
             TaskRecViewPojo pojoObject = new TaskRecViewPojo();
             pojoObject.setContent("Content, number: " + iter);
             pojoObject.setTime("Time");
             listContentArr.add(pojoObject);
         }
-        adapter.setListContent(listContentArr);
-        recyclerView.setAdapter(adapter);
-
-    }
+        recycleviewAdapter.setListContent(listContentArr);
+    }*/
 }

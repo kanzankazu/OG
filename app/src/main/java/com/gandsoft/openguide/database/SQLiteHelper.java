@@ -818,7 +818,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     public ArrayList<EventScheduleListDateDataList> getScheduleList(String eventId) {
         ArrayList<EventScheduleListDateDataList> modelList = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.query(TableScheduleList, null, Key_Schedule_List_EventId + " = ? ", new String[]{eventId}, null, null, Key_Schedule_List_date);
+        Cursor cursor = db.query(TableScheduleList, null, Key_Schedule_List_EventId + " = ? ", new String[]{eventId}, Key_Schedule_List_id, null, null);
 
         if (cursor.moveToFirst()) {
             do {
@@ -834,6 +834,48 @@ public class SQLiteHelper extends SQLiteOpenHelper {
                 model.setLink(cursor.getString(cursor.getColumnIndex(Key_Schedule_List_link)));
                 model.setStatus(cursor.getString(cursor.getColumnIndex(Key_Schedule_List_status)));
                 modelList.add(model);
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        return modelList;
+    }
+
+    public ArrayList<EventScheduleListDateDataList> getScheduleListPerDate(String eventId, String date) {
+        ArrayList<EventScheduleListDateDataList> modelList = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(TableScheduleList, null, Key_Schedule_List_EventId + " = ? AND " + Key_Schedule_List_date + " = ? ", new String[]{eventId, date}, Key_Schedule_List_id, null, Key_Schedule_List_id);
+
+        if (cursor.moveToFirst()) {
+            do {
+                EventScheduleListDateDataList model = new EventScheduleListDateDataList();
+                model.setNumber(cursor.getInt(cursor.getColumnIndex(Key_Schedule_List_No)));
+                model.setEventId(cursor.getString(cursor.getColumnIndex(Key_Schedule_List_EventId)));
+                model.setDate(cursor.getString(cursor.getColumnIndex(Key_Schedule_List_date)));
+                model.setId(cursor.getString(cursor.getColumnIndex(Key_Schedule_List_id)));
+                model.setWaktu(cursor.getString(cursor.getColumnIndex(Key_Schedule_List_waktu)));
+                model.setSchedule_title(cursor.getString(cursor.getColumnIndex(Key_Schedule_List_schedule_title)));
+                model.setLocation(cursor.getString(cursor.getColumnIndex(Key_Schedule_List_location)));
+                model.setAction(cursor.getString(cursor.getColumnIndex(Key_Schedule_List_action)));
+                model.setLink(cursor.getString(cursor.getColumnIndex(Key_Schedule_List_link)));
+                model.setStatus(cursor.getString(cursor.getColumnIndex(Key_Schedule_List_status)));
+                modelList.add(model);
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        return modelList;
+    }
+
+    public ArrayList<String> getScheduleListDate(String eventId) {
+        ArrayList<String> modelList = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(TableScheduleList, new String[]{Key_Schedule_List_date}, Key_Schedule_List_EventId + " = ? ", new String[]{eventId}, Key_Schedule_List_date, null, Key_Schedule_List_No);
+
+        if (cursor.moveToFirst()) {
+            do {
+                modelList.add(cursor.getString(cursor.getColumnIndex(Key_Schedule_List_date)));
+                Log.d("Lihat", "getScheduleListDate SQLiteHelper : " + cursor.getString(cursor.getColumnIndex(Key_Schedule_List_date)) );
             } while (cursor.moveToNext());
         }
 

@@ -73,7 +73,7 @@ public class InboxRecViewAdapter extends RecyclerView.Adapter<InboxRecViewAdapte
             itemView.setOnClickListener(this);
             user_name=(TextView)itemView.findViewById(R.id.user_name);
             content=(TextView)itemView.findViewById(R.id.content);
-            time=(TextView)itemView.findViewById(R.id.time);
+            time=(TextView)itemView.findViewById(R.id.tvRvScheduleTime);
 
         }
 

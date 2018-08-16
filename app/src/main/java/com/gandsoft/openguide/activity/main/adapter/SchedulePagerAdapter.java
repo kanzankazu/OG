@@ -12,7 +12,7 @@
  https://commonsware.com/Android
  */
 
-package com.gandsoft.openguide.activity.main.fragments;
+package com.gandsoft.openguide.activity.main.adapter;
 
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
@@ -26,13 +26,13 @@ import com.gandsoft.openguide.R;
 
 import java.util.ArrayList;
 
-public class SampleAdapter extends PagerAdapter {
+public class SchedulePagerAdapter extends PagerAdapter {
 
     private final FragmentActivity activity;
     private final int pager;
     private ArrayList<String> dates;
 
-    public SampleAdapter(FragmentActivity activity, int pager, ArrayList<String> dates) {
+    public SchedulePagerAdapter(FragmentActivity activity, int pager, ArrayList<String> dates) {
 
         this.activity = activity;
         this.pager = pager;
