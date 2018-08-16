@@ -893,10 +893,10 @@ public class SQLiteHelper extends SQLiteOpenHelper {
             do {
                 EventAbout model = new EventAbout();
                 model.setNumber(cursor.getInt(cursor.getColumnIndex(Key_Event_About_No)));
-                model.setEventId(cursor.getString(cursor.getColumnIndex(Key_Event_About_No)));
-                model.setBackground(cursor.getString(cursor.getColumnIndex(Key_Event_About_No)));
-                model.setLogo(cursor.getString(cursor.getColumnIndex(Key_Event_About_No)));
-                model.setDescription(cursor.getString(cursor.getColumnIndex(Key_Event_About_No)));
+                model.setEventId(cursor.getString(cursor.getColumnIndex(Key_Event_About_EventId)));
+                model.setBackground(cursor.getString(cursor.getColumnIndex(KEY_Event_About_Background)));
+                model.setLogo(cursor.getString(cursor.getColumnIndex(KEY_Event_About_Logo)));
+                model.setDescription(cursor.getString(cursor.getColumnIndex(KEY_Event_About_Description)));
                 modelList.add(model);
             } while (cursor.moveToNext());
         }
