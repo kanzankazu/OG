@@ -12,7 +12,7 @@
  https://commonsware.com/Android
  */
 
-package com.gandsoft.openguide.activity.main.fragments;
+package com.gandsoft.openguide.activity.main.adapter;
 
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
@@ -20,19 +20,19 @@ import android.support.v4.view.PagerAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.gandsoft.openguide.R;
-import com.gandsoft.openguide.support.SystemUtil;
 
-public class SampleAdapter extends PagerAdapter {
+import java.util.ArrayList;
+
+public class SchedulePagerAdapter extends PagerAdapter {
 
     private final FragmentActivity activity;
     private final int pager;
-    private String[] dates;
+    private ArrayList<String> dates;
 
-    public SampleAdapter(FragmentActivity activity, int pager, String[] dates) {
+    public SchedulePagerAdapter(FragmentActivity activity, int pager, ArrayList<String> dates) {
 
         this.activity = activity;
         this.pager = pager;
@@ -48,21 +48,22 @@ public class SampleAdapter extends PagerAdapter {
     @Override
     public Object instantiateItem(@NonNull ViewGroup container, int position) {
         View view = null;
+        String[] split = dates.get(position).split(" ");
         if (pager == 0) {
             LayoutInflater layoutInflater = (LayoutInflater) activity.getSystemService(activity.LAYOUT_INFLATER_SERVICE);
             view = layoutInflater.inflate(R.layout.fragment_cx_fact, container, false);
             TextView tvScheduleFactDayfvbi = (TextView) view.findViewById(R.id.tvScheduleFactDay);
             TextView tvScheduleFactDatefvbi = (TextView) view.findViewById(R.id.tvScheduleFactDate);
             TextView tvScheduleFactMonthYearfvbi = (TextView) view.findViewById(R.id.tvScheduleFactMonthYear);
-            tvScheduleFactDayfvbi.setText(SystemUtil.getDayFromDateString(dates[position], "dd MMM yyyy"));
-            tvScheduleFactDatefvbi.setText(dates[position].substring(0, 2));
-            tvScheduleFactMonthYearfvbi.setText(dates[position].substring(3));
+            tvScheduleFactDayfvbi.setText(split[0]);
+            tvScheduleFactDatefvbi.setText(split[1]);
+            tvScheduleFactMonthYearfvbi.setText(split[2] + " " + split[3]);
             container.addView(view);
         } else if (pager == 1) {
             LayoutInflater layoutInflater = (LayoutInflater) activity.getSystemService(activity.LAYOUT_INFLATER_SERVICE);
             view = layoutInflater.inflate(R.layout.fragment_cx_fact_mini, container, false);
             TextView tvScheduleFactMiniDatefvbi = (TextView) view.findViewById(R.id.tvScheduleFactMiniDate);
-            tvScheduleFactMiniDatefvbi.setText(dates[position]);
+            tvScheduleFactMiniDatefvbi.setText(split[1] + " " + split[2] + " " + split[3]);
             container.addView(view);
         }
         return view;
@@ -70,7 +71,7 @@ public class SampleAdapter extends PagerAdapter {
 
     @Override
     public int getCount() {
-        return dates.length;
+        return dates.size();
     }
 
     @Override
