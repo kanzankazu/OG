@@ -90,7 +90,6 @@ class WalletViewAdapter extends RecyclerView.Adapter<WalletViewAdapter.ViewHolde
                     Log.d("Lihat", "onBindViewHolder WalletViewAdapter element.getAllElements().size: " + element.getAllElements().size());
                     Log.d("Lihat", "onBindViewHolder WalletViewAdapter  allElements.get(0) : " + allElements.get(0).text());
                     Log.d("Lihat", "onBindViewHolder WalletViewAdapter  allElements.get(1) : " + allElements.get(1).text());
-                    Log.d("Lihat", "onBindViewHolder WalletViewAdapter : " + element.);
                 }
 
             {
