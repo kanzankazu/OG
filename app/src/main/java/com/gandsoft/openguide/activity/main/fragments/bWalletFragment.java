@@ -15,8 +15,6 @@ import com.gandsoft.openguide.R;
 import com.gandsoft.openguide.database.SQLiteHelper;
 import com.gandsoft.openguide.support.SessionUtil;
 
-import org.jsoup.Jsoup;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -57,7 +55,7 @@ public class bWalletFragment extends Fragment {
             listWalletData = db.getListWalletData(eventId);
         }
 
-        adapter = new WalletViewAdapter(getActivity(), listWalletData);
+        adapter = new WalletViewAdapter(getActivity(), getActivity(), listWalletData);
         rvWalletfvbi.setAdapter(adapter);
         rvWalletfvbi.setLayoutManager(new LinearLayoutManager(getActivity()));
     }
