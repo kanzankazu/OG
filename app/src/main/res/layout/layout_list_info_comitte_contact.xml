@@ -5,6 +5,7 @@
     android:background="@color/white"
     android:orientation="horizontal">
     <ImageView
+        android:id="@+id/ivComitteIcon"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_marginEnd="15dp"
@@ -19,7 +20,7 @@
         android:orientation="vertical"
         android:paddingBottom="20dp">
         <TextView
-            android:id="@+id/tvRvScheduleTime"
+            android:id="@+id/tvComitteEvent"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/colorAccent"
@@ -31,21 +32,33 @@
             android:text="EVENT" />
 
         <TextView
-            android:id="@+id/tvRvScheduleTitle"
+            android:id="@+id/tvComitteNumber"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="5dp"
             android:text="Commite Number"
             android:textSize="12dp"
             android:textColor="@color/colorPrimary" />
+
         <TextView
-            android:id="@+id/tvRvScheduleLocationTitle"
+            android:id="@+id/tvComitteEmail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Commite Email"
+            android:layout_marginBottom="5dp"
+            android:textSize="12dp"
+            android:textColor="@color/colorPrimary"/>
+        <TextView
+            android:id="@+id/tvComitteName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Commite Name"
+            android:layout_marginBottom="5dp"
             android:textSize="12dp"
             android:textColor="@color/colorPrimary"
             android:textStyle="bold"/>
+
+
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
