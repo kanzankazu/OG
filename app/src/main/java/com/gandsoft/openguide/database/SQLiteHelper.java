@@ -212,7 +212,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
             + Key_Contact_List_Title + " TEXT, "
             + KEY_Contact_List_Name + " TEXT, "
             + KEY_Contact_List_Email + " TEXT, "
-            + KEY_Contact_List_Telephone + " TEXT, "
+            + KEY_Contact_List_Telephone + " INTEGER, "
             + Key_Contact_List_Icon + " TEXT) ";
     private static final String query_delete_table_ContactList = "DROP TABLE IF EXISTS " + TableContactList;
 
@@ -358,7 +358,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(KEY_UserData_accountId, phoneNumberSaved);
-        db.insertWithOnConflict(TableUserData, null, contentValues, SQLiteDatabase.CONFLICT_REPLACE);
+        db.insert(TableUserData, null, contentValues);
         db.close();
     }
 
@@ -410,7 +410,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         contentValues.put(KEY_ListEvent_roleName, model.getRole_name());
         contentValues.put(KEY_ListEvent_date, model.getDate());
         contentValues.put(KEY_ListEvent_IsFirstIn, false);
-        db.insertWithOnConflict(TableListEvent, null, contentValues, SQLiteDatabase.CONFLICT_REPLACE);
+        db.insert(TableListEvent, null, contentValues);
         db.close();
     }
 
@@ -430,7 +430,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         contentValues.put(KEY_UserData_email, model.getEmail());
         contentValues.put(KEY_UserData_gender, model.getGender());
         contentValues.put(KEY_UserData_fullName, model.getFull_name());
-        db.insertWithOnConflict(TableUserData, null, contentValues, SQLiteDatabase.CONFLICT_REPLACE);
+        db.insert(TableUserData, null, contentValues);
         db.close();
     }
 
@@ -444,7 +444,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         contentValues.put(KEY_Wallet_notif, model.getNotif());
         contentValues.put(KEY_Wallet_detail, model.getDetail());
         contentValues.put(KEY_Wallet_type, model.getType());
-        db.insertWithOnConflict(TableWallet, null, contentValues, SQLiteDatabase.CONFLICT_REPLACE);
+        db.insert(TableWallet, null, contentValues);
         db.close();
     }
 
@@ -469,7 +469,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         contentValues.put(Key_The_Event_welcome_note, model.getWelcome_note());
         contentValues.put(Key_The_Event_commentpost_status, model.getCommentpost_status());
         contentValues.put(Key_The_Event_deletepost_status, model.getDeletepost_status());
-        long l = db.insertWithOnConflict(TableTheEvent, null, contentValues, SQLiteDatabase.CONFLICT_REPLACE);
+        long l = db.insert(TableTheEvent, null, contentValues);
         Log.d("Lihat", "saveTheEvent SQLiteHelper : " + l);
         db.close();
     }
@@ -487,7 +487,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         contentValues.put(Key_Schedule_List_action, model.getAction());
         contentValues.put(Key_Schedule_List_link, model.getLink());
         contentValues.put(Key_Schedule_List_status, model.getStatus());
-        db.insertWithOnConflict(TableScheduleList, null, contentValues, SQLiteDatabase.CONFLICT_REPLACE);
+        db.insert(TableScheduleList, null, contentValues);
         db.close();
     }
 
@@ -497,7 +497,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         contentValues.put(Key_Importan_Info_EventId, eventId);
         contentValues.put(Key_Importan_Info_title, model.getTitle());
         contentValues.put(Key_Importan_Info_info, model.getInfo());
-        db.insertWithOnConflict(TableImportantInfo, null, contentValues, SQLiteDatabase.CONFLICT_REPLACE);
+        db.insert(TableImportantInfo, null, contentValues);
         db.close();
     }
 
@@ -510,7 +510,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         contentValues.put(KEY_Contact_List_Email, model.getEmail());
         contentValues.put(KEY_Contact_List_Telephone, model.getTelephone());
         contentValues.put(Key_Contact_List_Icon, model.getIcon());
-        db.insertWithOnConflict(TableContactList, null, contentValues, SQLiteDatabase.CONFLICT_REPLACE);
+        db.insert(TableContactList, null, contentValues);
         db.close();
     }
 
@@ -523,7 +523,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         contentValues.put(KEY_Event_About_Logo, model.getLogo());
         //contentValues.put(KEY_Event_About_Logo_Local, model.);
         contentValues.put(KEY_Event_About_Description, model.getDescription());
-        db.insertWithOnConflict(TableEventAbout, null, contentValues, SQLiteDatabase.CONFLICT_REPLACE);
+        db.insert(TableEventAbout, null, contentValues);
         db.close();
     }
 
@@ -535,7 +535,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         contentValues.put(Key_Place_List_longitude, model.getLongitude());
         contentValues.put(Key_Place_List_title, model.getTitle());
         contentValues.put(Key_Place_List_icon, model.getIcon());
-        db.insertWithOnConflict(TablePlaceList, null, contentValues, SQLiteDatabase.CONFLICT_REPLACE);
+        db.insert(TablePlaceList, null, contentValues);
         db.close();
     }
 
@@ -556,7 +556,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         contentValues.put(KEY_UserData_email, model.getEmail());
         contentValues.put(KEY_UserData_gender, model.getGender());
         contentValues.put(KEY_UserData_fullName, model.getFull_name());
-        db.updateWithOnConflict(TableUserData, contentValues, KEY_UserData_accountId + " = ? ", new String[]{accountId}, SQLiteDatabase.CONFLICT_REPLACE);
+        db.update(TableUserData, contentValues, KEY_UserData_accountId + " = ? ", new String[]{accountId});
         db.close();
     }
 
@@ -576,7 +576,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         contentValues.put(KEY_ListEvent_roleName, model.getRole_name());
         contentValues.put(KEY_ListEvent_date, model.getDate());
         contentValues.put(KEY_ListEvent_IsFirstIn, false);
-        int i = db.updateWithOnConflict(TableListEvent, contentValues, KEY_ListEvent_eventId + " = ? ", new String[]{model.getEvent_id()}, SQLiteDatabase.CONFLICT_REPLACE);
+        int i = db.update(TableListEvent, contentValues, KEY_ListEvent_eventId + " = ? ", new String[]{model.getEvent_id()});
         Log.d("Lihat", "updateListEvent SQLiteHelper : " + i);
         db.close();
     }
@@ -591,7 +591,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         contentValues.put(KEY_Wallet_notif, model.getNotif());
         contentValues.put(KEY_Wallet_detail, model.getDetail());
         contentValues.put(KEY_Wallet_type, model.getType());
-        db.updateWithOnConflict(TableWallet, contentValues, KEY_Wallet_sort + " = ? AND " + KEY_Wallet_eventId + " = ? ", new String[]{model.getSort(), eventId}, SQLiteDatabase.CONFLICT_REPLACE);
+        db.update(TableWallet, contentValues, KEY_Wallet_sort + " = ? AND " + KEY_Wallet_eventId + " = ? ", new String[]{model.getSort(), eventId});
         db.close();
     }
 
@@ -614,7 +614,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         contentValues.put(Key_The_Event_welcome_note, model.getWelcome_note());
         contentValues.put(Key_The_Event_commentpost_status, model.getCommentpost_status());
         contentValues.put(Key_The_Event_deletepost_status, model.getDeletepost_status());
-        db.updateWithOnConflict(TableTheEvent, contentValues, Key_The_Event_EventId + " = ? ", new String[]{eventId}, SQLiteDatabase.CONFLICT_REPLACE);
+        db.update(TableTheEvent, contentValues, Key_The_Event_EventId + " = ? ", new String[]{eventId});
         db.close();
     }
 
@@ -630,7 +630,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         contentValues.put(Key_Schedule_List_action, model.getAction());
         contentValues.put(Key_Schedule_List_link, model.getLink());
         contentValues.put(Key_Schedule_List_status, model.getStatus());
-        db.updateWithOnConflict(TableScheduleList, contentValues, Key_Schedule_List_EventId + " = ? ", new String[]{eventId}, SQLiteDatabase.CONFLICT_REPLACE);
+        db.update(TableScheduleList, contentValues, Key_Schedule_List_EventId + " = ? ", new String[]{eventId});
         db.close();
     }
 
@@ -651,7 +651,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         contentValues.put(KEY_Contact_List_Email, model.getEmail());
         contentValues.put(KEY_Contact_List_Telephone, model.getTelephone());
         contentValues.put(Key_Contact_List_Icon, model.getIcon());
-        db.updateWithOnConflict(TableContactList, contentValues, Key_Contact_List_EventId + " = ? ", new String[]{eventId}, SQLiteDatabase.CONFLICT_REPLACE);
+        db.update(TableContactList, contentValues, Key_Contact_List_EventId + " = ? ", new String[]{eventId});
         db.close();
     }
 
@@ -663,7 +663,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         contentValues.put(KEY_Event_About_Logo, model.getLogo());
         //contentValues.put(KEY_Event_About_Logo_Local, model.);
         contentValues.put(KEY_Event_About_Description, model.getDescription());
-        db.updateWithOnConflict(TableEventAbout, contentValues, Key_Event_About_EventId + " = ? ", new String[]{eventId}, SQLiteDatabase.CONFLICT_REPLACE);
+        db.update(TableEventAbout, contentValues, Key_Event_About_EventId + " = ? ", new String[]{eventId});
         db.close();
     }
 
@@ -674,7 +674,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         contentValues.put(Key_Place_List_longitude, model.getLongitude());
         contentValues.put(Key_Place_List_title, model.getTitle());
         contentValues.put(Key_Place_List_icon, model.getIcon());
-        db.updateWithOnConflict(TablePlaceList, contentValues, Key_Place_List_EventId + " = ?", new String[]{eventId}, SQLiteDatabase.CONFLICT_REPLACE);
+        db.update(TablePlaceList, contentValues, Key_Place_List_EventId + " = ?", new String[]{eventId});
         db.close();
     }
 
@@ -856,6 +856,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
                 model.setWaktu(cursor.getString(cursor.getColumnIndex(Key_Schedule_List_waktu)));
                 model.setSchedule_title(cursor.getString(cursor.getColumnIndex(Key_Schedule_List_schedule_title)));
                 model.setLocation(cursor.getString(cursor.getColumnIndex(Key_Schedule_List_location)));
+                model.setDetail(cursor.getString(cursor.getColumnIndex(Key_Schedule_List_detail)));
                 model.setAction(cursor.getString(cursor.getColumnIndex(Key_Schedule_List_action)));
                 model.setLink(cursor.getString(cursor.getColumnIndex(Key_Schedule_List_link)));
                 model.setStatus(cursor.getString(cursor.getColumnIndex(Key_Schedule_List_status)));
@@ -987,7 +988,6 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         db.close();
     }
 
-
     /*CHECK DATA*/
     public boolean isDataTableKeyNull(String tableName, String targetKey) {
         SQLiteDatabase db = this.getReadableDatabase();
@@ -1058,7 +1058,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(key, value);
-        db.insertWithOnConflict(table, null, contentValues, SQLiteDatabase.CONFLICT_REPLACE);
+        db.insert(table, null, contentValues);
         db.close();
     }
 
@@ -1066,7 +1066,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(keyParam, valueParam);
-        db.updateWithOnConflict(table, contentValues, keyWhere + " = ? ", new String[]{valueWhere}, SQLiteDatabase.CONFLICT_REPLACE);
+        db.update(table, contentValues, keyWhere + " = ? ", new String[]{valueWhere});
         db.close();
     }
 
@@ -1100,7 +1100,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(KEY_UserData_imageUrl_local, imgCachePath);
-        db.updateWithOnConflict(TableUserData, contentValues, KEY_UserData_accountId + " = ? ", new String[]{accountId}, SQLiteDatabase.CONFLICT_REPLACE);
+        db.update(TableUserData, contentValues, KEY_UserData_accountId + " = ? ", new String[]{accountId});
         db.close();
     }
 
@@ -1109,7 +1109,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         ContentValues contentValues = new ContentValues();
         contentValues.put(KEY_ListEvent_background_local, backgroundCachePath);
         contentValues.put(KEY_ListEvent_logo_local, logoCachePath);
-        db.updateWithOnConflict(TableListEvent, contentValues, KEY_ListEvent_eventId + " = ? ", new String[]{model1.getEvent_id()}, SQLiteDatabase.CONFLICT_REPLACE);
+        db.update(TableListEvent, contentValues, KEY_ListEvent_eventId + " = ? ", new String[]{model1.getEvent_id()});
         db.close();
     }
 }

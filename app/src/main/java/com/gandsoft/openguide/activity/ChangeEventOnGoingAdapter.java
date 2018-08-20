@@ -48,13 +48,15 @@ class ChangeEventOnGoingAdapter extends RecyclerView.Adapter<ChangeEventOnGoingA
                     .load(model.getBackground())
                     .placeholder(R.drawable.template_account_og)
                     .error(R.drawable.template_account_og)
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .skipMemoryCache(true)
                     .into(holder.ivListChangeEventBackgroundfvbi);
             Glide.with((Activity) parent)
                     .load(model.getLogo())
                     .placeholder(R.drawable.template_account_og)
                     .error(R.drawable.template_account_og)
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .skipMemoryCache(true)
                     .into(holder.ivListChangeEventLogofvbi);
             holder.tvListChangeEventTitlefvbi.setText(model.getTitle());
             holder.tvListChangeEventDatefvbi.setText(model.getDate());

@@ -6,7 +6,6 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.gandsoft.openguide.API.APIresponse.UserData.UserWalletDataResponseModel;
 import com.gandsoft.openguide.R;
 
@@ -86,105 +86,118 @@ class WalletViewAdapter extends RecyclerView.Adapter<WalletViewAdapter.ViewHolde
                 String imgUrl = doc1.select("img").first().absUrl("src");
                 String name = doc1.select("h1").text();
                 String accountId = doc1.select("h2").text();
-                Log.d("Lihat", "onBindViewHolder WalletViewAdapter : " + doc1.select("h3").text());
-                Log.d("Lihat", "onBindViewHolder WalletViewAdapter : " + doc1.select("h3"));
-
-                /*String[] split = doc1.select("h3").text().split("<br>");
-                String eventName = split[0];
-                String eventLocation = split[1];
-                String eventDate = split[2];*/
-
                 Glide.with(fragment)
                         .load(imgUrl)
                         .placeholder(R.drawable.template_account_og)
+                        .diskCacheStrategy(DiskCacheStrategy.NONE)
                         .skipMemoryCache(true)
                         .error(R.drawable.template_account_og)
                         .into(holder1.ivWalletIdCardfvbi);
                 holder1.tvWalletIdCardNamefvbi.setText(name);
                 holder1.tvWalletIdCardIdfvbi.setText(accountId);
-                /*holder1.tvWalletIdCardEventTitlefvbi.setText(eventName);
-                holder1.tvWalletIdCardEventPlacefvbi.setText(eventLocation);
-                holder1.tvWalletIdCardDatefvbi.setText(eventDate);*/
 
-                break;
+                Elements h3s = doc1.select("h3");
+                for (Element h3 : h3s) {
+                    Element br0 = h3.select("br").get(0);
+                    holder1.tvWalletIdCardEventTitlefvbi.setText(br0.siblingNodes().get(0).toString());
+                    holder1.tvWalletIdCardEventPlacefvbi.setText(br0.siblingNodes().get(1).toString());
+                    holder1.tvWalletIdCardDatefvbi.setText(br0.siblingNodes().get(3).toString());
+                }
+
+            {
+                if (!TextUtils.isEmpty(model.getDetail())) {
+                    holder1.cvWalletIdCardDetailfvbi.setVisibility(View.VISIBLE);
+                    holder1.tvWalletIdCardDetailfvbi.setText(model.getDetail());
+                } else {
+                    holder1.cvWalletIdCardDetailfvbi.setVisibility(View.GONE);
+                }
+            }
+            holder1.cvWalletIdCardDetailfvbi.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    holder1.cvWalletIdCardDetailfvbi.setVisibility(View.GONE);
+                    holder1.tvWalletIdCardDetailfvbi.setVisibility(View.VISIBLE);
+                }
+            });
+            holder1.tvWalletIdCardDetailfvbi.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    holder1.cvWalletIdCardDetailfvbi.setVisibility(View.VISIBLE);
+                    holder1.tvWalletIdCardDetailfvbi.setVisibility(View.GONE);
+                }
+            });
+
+            break;
             case TYPE_TRANSPORT_FLIGHT:
                 ViewHolder holder0 = (ViewHolder) holder;
                 holder0.tvWalletTransportNotiffvbi.setText(model.getNotif());
 
                 Document doc = Jsoup.parse(model.getBody_wallet());
                 String nameFlight = doc.select("h1").text();
+                holder0.tvWalletTransportNamefvbi.setText(nameFlight);
                 Elements dds = doc.select("dd");
                 Elements dts = doc.select("dt");
-                Log.d("Lihat", "onBindViewHolder WalletViewAdapter h1); : " + nameFlight);
-                Log.d("Lihat", "onBindViewHolder WalletViewAdapter dd.text()); : " + dds.text());
-                Log.d("Lihat", "onBindViewHolder WalletViewAdapter dd.size()); : " + dds.size());
-                Log.d("Lihat", "onBindViewHolder WalletViewAdapter dt.text()); : " + dts.text());
-                Log.d("Lihat", "onBindViewHolder WalletViewAdapter dt.size()); : " + dts.size());
-                for (Element dd : dds) {
-                    Elements h2s = dd.select("h2");
-                    String titleFlight = null;
-                    String flightDate = null;
-                    for (Element h2 : h2s) {
-                        Log.d("Lihat", "onBindViewHolder WalletViewAdapter h2.nextSibling().toString : " + h2.siblingNodes().toString());
-                        titleFlight = h2.siblingNodes().get(0).toString();
-                        flightDate = h2.siblingNodes().get(2).toString();
-                    }
+                for (int i = 0; i < dds.size(); i++) {
+                    Element dd = dds.get(i);
                     String flightAirport = dd.select("h2").text();
                     String flightTime = dd.select("h3").text();
-                    Log.d("Lihat", "onBindViewHolder WalletViewAdapter : " + titleFlight);
-                    Log.d("Lihat", "onBindViewHolder WalletViewAdapter : " + flightDate);
-                    Log.d("Lihat", "onBindViewHolder WalletViewAdapter : " + flightAirport);
-                    Log.d("Lihat", "onBindViewHolder WalletViewAdapter : " + flightTime);
                     if (!TextUtils.isEmpty(flightAirport) && !TextUtils.isEmpty(flightTime)) {
-                        if (titleFlight.equalsIgnoreCase("Departure")) {
-                            holder0.tvWalletTransportTitleDeparturefvbi.setText(titleFlight);
+                        if (i == 0) {
                             holder0.tvWalletTransportAirportDeparturefvbi.setText(flightAirport);
-                            holder0.tvWalletTransportDateDeparturefvbi.setText(flightDate);
                             holder0.tvWalletTransportTimeDeparturefvbi.setText(flightTime);
-                        } else if (titleFlight.equalsIgnoreCase("Arrival")) {
-                            holder0.tvWalletTransportTitleArrivalfvbi.setText(titleFlight);
+                        } else if (i == 2) {
                             holder0.tvWalletTransportAirportArrivalfvbi.setText(flightAirport);
-                            holder0.tvWalletTransportDateArrivalfvbi.setText(flightDate);
                             holder0.tvWalletTransportTimeArrivalfvbi.setText(flightTime);
                         }
+                    }
+
+                    Elements h2s = dd.select("h2");
+                    for (Element h2 : h2s) {
+                        String titleFlight = h2.siblingNodes().get(0).toString();
+                        String flightDate = h2.siblingNodes().get(2).toString();
+                        if (i == 0) {
+                            holder0.tvWalletTransportTitleDeparturefvbi.setText(titleFlight);
+                            holder0.tvWalletTransportDateDeparturefvbi.setText(flightDate);
+                        } else if (i == 2) {
+                            holder0.tvWalletTransportTitleArrivalfvbi.setText(titleFlight);
+                            holder0.tvWalletTransportDateArrivalfvbi.setText(flightDate);
+                        }
+
                     }
                 }
                 for (Element dt : dts) {
                     Elements bs = dt.select("b");
-                    Log.d("Lihat", "onBindViewHolder WalletViewAdapter : " + dt.select("h3").text());
-                    String flightCodeTitle = null;
                     for (Element b : bs) {
-                        Log.d("Lihat", "onBindViewHolder WalletViewAdapter b.siblingNodes()) : " + b.siblingNodes().toString());
-                        flightCodeTitle = b.siblingNodes().get(0).toString();
+                        String flightCodeTitle = b.siblingNodes().get(0).toString();
+                        holder0.tvWalletTransportFlightCodeTitlefvbi.setText(flightCodeTitle);
                     }
                     String flightCode = bs.text();
-                    holder0.tvWalletTransportFlightCodeTitlefvbi.setText(flightCodeTitle);
                     holder0.tvWalletTransportFlightCodefvbi.setText(flightCode);
                 }
 
-            {
+
                 if (!TextUtils.isEmpty(model.getDetail())) {
                     holder0.bWalletTransportDetailfvbi.setVisibility(View.VISIBLE);
                     holder0.tvWalletTransportDetailfvbi.setText(model.getDetail());
                 } else {
                     holder0.bWalletTransportDetailfvbi.setVisibility(View.GONE);
                 }
-            }
-            holder0.bWalletTransportDetailfvbi.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    holder0.bWalletTransportDetailfvbi.setVisibility(View.GONE);
-                    holder0.tvWalletTransportDetailfvbi.setVisibility(View.VISIBLE);
-                }
-            });
-            holder0.tvWalletTransportDetailfvbi.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    holder0.bWalletTransportDetailfvbi.setVisibility(View.VISIBLE);
-                    holder0.tvWalletTransportDetailfvbi.setVisibility(View.GONE);
-                }
-            });
-            break;
+
+                holder0.bWalletTransportDetailfvbi.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        holder0.bWalletTransportDetailfvbi.setVisibility(View.GONE);
+                        holder0.tvWalletTransportDetailfvbi.setVisibility(View.VISIBLE);
+                    }
+                });
+                holder0.tvWalletTransportDetailfvbi.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        holder0.bWalletTransportDetailfvbi.setVisibility(View.VISIBLE);
+                        holder0.tvWalletTransportDetailfvbi.setVisibility(View.GONE);
+                    }
+                });
+                break;
 
         }
     }

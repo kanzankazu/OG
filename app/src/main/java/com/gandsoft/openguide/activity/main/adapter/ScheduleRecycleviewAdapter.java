@@ -39,30 +39,33 @@ public class ScheduleRecycleviewAdapter extends RecyclerView.Adapter<ScheduleRec
         holder.tvRvScheduleTimefvbi.setText(model.getWaktu());
         holder.tvRvScheduleTitlefvbi.setText(model.getSchedule_title());
         if (!TextUtils.isEmpty(model.getLocation())) {
-            Log.d("Lihat", "onBindViewHolder ScheduleRecycleviewAdapter : " + model.getLocation());
             holder.llRvScheduleLocationfvbi.setVisibility(View.VISIBLE);
             holder.tvRvScheduleLocationTitlefvbi.setText(model.getLocation());
-        }else {
+        } else {
             holder.llRvScheduleLocationfvbi.setVisibility(View.GONE);
         }
+
         if (!TextUtils.isEmpty(model.getDetail())) {
-            Log.d("Lihat", "onBindViewHolder ScheduleRecycleviewAdapter : " + model.getDetail());
             holder.bRvScheduleDetailfvbi.setVisibility(View.VISIBLE);
-            holder.bRvScheduleDetailfvbi.setText(model.getAction());
-            holder.bRvScheduleDetailfvbi.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                }
-            });
             holder.tvRvScheduleDetailfvbi.setText(model.getDetail());
-            holder.tvRvScheduleDetailfvbi.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    holder.bRvScheduleDetailfvbi.setVisibility(View.VISIBLE);
-                    holder.tvRvScheduleDetailfvbi.setVisibility(View.GONE);
-                }
-            });
+        } else {
+            holder.bRvScheduleDetailfvbi.setVisibility(View.GONE);
         }
+
+        holder.bRvScheduleDetailfvbi.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                holder.bRvScheduleDetailfvbi.setVisibility(View.GONE);
+                holder.tvRvScheduleDetailfvbi.setVisibility(View.VISIBLE);
+            }
+        });
+        holder.tvRvScheduleDetailfvbi.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                holder.bRvScheduleDetailfvbi.setVisibility(View.VISIBLE);
+                holder.tvRvScheduleDetailfvbi.setVisibility(View.GONE);
+            }
+        });
     }
 
     @Override

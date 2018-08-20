@@ -21,6 +21,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.gandsoft.openguide.API.APIresponse.Event.EventTheEvent;
 import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
@@ -191,12 +192,14 @@ public class aHomeFragment extends Fragment {
             Glide.with(getActivity())
                     .load(model.getLogo())
                     .placeholder(R.drawable.template_account_og)
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
                     .skipMemoryCache(true)
                     .error(R.drawable.template_account_og)
                     .into(homeIVEventfvbi);
             Glide.with(getActivity())
                     .load(model.getBackground())
                     .placeholder(R.drawable.template_account_og)
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
                     .skipMemoryCache(true)
                     .error(R.drawable.template_account_og)
                     .into(homeIVEventBackgroundfvbi);

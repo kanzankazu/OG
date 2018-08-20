@@ -3,6 +3,8 @@ package com.gandsoft.openguide.activity.infomenu;
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
@@ -11,22 +13,45 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.util.Log;
+import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.SimpleTarget;
+import com.gandsoft.openguide.API.APIresponse.Event.EventPlaceList;
+import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
 import com.gandsoft.openguide.activity.LocalBaseActivity;
+import com.gandsoft.openguide.database.SQLiteHelper;
+import com.gandsoft.openguide.support.SessionUtil;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.ArrayList;
 
 public class aMapActivity extends LocalBaseActivity implements OnMapReadyCallback {
+    SQLiteHelper db = new SQLiteHelper(this);
 
     private static final int ALL_PERMISSION = 1;
     private GoogleMap mMap;
@@ -35,10 +60,23 @@ public class aMapActivity extends LocalBaseActivity implements OnMapReadyCallbac
     private LatLng mylatlng;
     private Toolbar toolbar;
     private ActionBar ab;
+    private String accountId, eventId;
+    private ArrayList<EventPlaceList> placeLists = new ArrayList<>();
+    private LatLngBounds.Builder builder;
+    private LatLngBounds bounds;
+    private MarkerOptions marker;
+    private CameraUpdate cameraUpdate;
+    private CardView cvMapsMarkerTitlefvbi, cvMapsFocusEventfvbi;
+    private TextView tvMapsMarkerTitlefvbi;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_info_a_map);
+
+        accountId = SessionUtil.getStringPreferences(ISeasonConfig.KEY_ACCOUNT_ID, null);
+        eventId = SessionUtil.getStringPreferences(ISeasonConfig.KEY_EVENT_ID, null);
+
         initMaps();
         initComponent();
         initContent();
@@ -54,28 +92,29 @@ public class aMapActivity extends LocalBaseActivity implements OnMapReadyCallbac
 
     private void initComponent() {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
+        cvMapsFocusEventfvbi = (CardView) findViewById(R.id.cvMapsFocusEvent);
+        cvMapsMarkerTitlefvbi = (CardView) findViewById(R.id.cvMapsMarkerTitle);
+        tvMapsMarkerTitlefvbi = (TextView) findViewById(R.id.tvMapsMarkerTitle);
     }
+
     private void initContent() {
         setSupportActionBar(toolbar);
         ab = getSupportActionBar();
         ab.setTitle("Maps");
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu_activity, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        finish();
-        return super.onOptionsItemSelected(item);
-    }
-
     private void initListener() {
-
+        cvMapsFocusEventfvbi.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                cvMapsMarkerTitlefvbi.setVisibility(View.GONE);
+                int width = getResources().getDisplayMetrics().widthPixels;
+                int height = getResources().getDisplayMetrics().heightPixels;
+                int padding = (int) (width * 0.12); // offset from edges of the map 12% of screen
+                cameraUpdate = CameraUpdateFactory.newLatLngBounds(bounds, width, height, padding);
+                mMap.animateCamera(cameraUpdate);
+            }
+        });
     }
 
     @Override
@@ -88,17 +127,52 @@ public class aMapActivity extends LocalBaseActivity implements OnMapReadyCallbac
         mMap.setMyLocationEnabled(true);
         mMap.getUiSettings().setZoomControlsEnabled(true);
         mMap.getUiSettings().setMyLocationButtonEnabled(true);
-        getMyLocation();
+        //getMyLocation();
 
-        /*mMap.setOnMyLocationChangeListener(new GoogleMap.OnMyLocationChangeListener() {
-            @Override
-            public void onMyLocationChange(Location location) {
-                CameraUpdate center=CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(), location.getLongitude()));
-                CameraUpdate zoom=CameraUpdateFactory.zoomTo(11);
-                mMap.moveCamera(center);
-                mMap.animateCamera(zoom);
+        getPlaceLocation();
+    }
+
+    private void getPlaceLocation() {
+        placeLists = db.getPlaceList(eventId);
+        Log.d("Lihat", "getPlaceLocation aMapActivity : " + placeLists.size());
+        builder = new LatLngBounds.Builder();
+
+        for (int i = 0; i < placeLists.size(); i++) {
+            EventPlaceList placeList = placeLists.get(i);
+            Log.d("Lihat", "getPlaceLocation aMapActivity : " + placeList.getLongitude());
+            Log.d("Lihat", "getPlaceLocation aMapActivity : " + placeList.getTitle());
+            Log.d("Lihat", "getPlaceLocation aMapActivity : " + placeList.getIcon());
+            Log.d("Lihat", "getPlaceLocation aMapActivity : " + placeList.getLatitude());
+
+            if (Double.parseDouble(placeList.getLatitude()) != 0 && Double.parseDouble(placeList.getLongitude()) != 0) {
+                builder.include(new LatLng(Double.parseDouble(placeList.getLatitude()), Double.parseDouble(placeList.getLongitude())));
+                marker = new MarkerOptions();
+                marker.title(placeList.getTitle());
+                marker.snippet(placeList.getTitle());
+                marker.position(new LatLng(Double.parseDouble(placeList.getLatitude()), Double.parseDouble(placeList.getLongitude())));
+                loadMarkerIcon(marker, placeList.getIcon());
+                mMap.addMarker(marker);
+                mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+                    @Override
+                    public boolean onMarkerClick(Marker marker) {
+                        cvMapsMarkerTitlefvbi.setVisibility(View.VISIBLE);
+                        tvMapsMarkerTitlefvbi.setText(marker.getTitle());
+                        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(marker.getPosition(), 16));
+                        return false;
+                    }
+                });
+
             }
-        });*/
+        }
+
+        bounds = builder.build();
+
+        cvMapsFocusEventfvbi.setVisibility(View.VISIBLE);
+        int width = getResources().getDisplayMetrics().widthPixels;
+        int height = getResources().getDisplayMetrics().heightPixels;
+        int padding = (int) (width * 0.12); // offset from edges of the map 12% of screen
+        cameraUpdate = CameraUpdateFactory.newLatLngBounds(bounds, width, height, padding);
+        mMap.animateCamera(cameraUpdate);
     }
 
     private void getMyLocation() {
@@ -151,9 +225,6 @@ public class aMapActivity extends LocalBaseActivity implements OnMapReadyCallbac
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        Log.d("Lihat onRequestPermissionsResult aMapActivity", String.valueOf(permissions));
-        Log.d("Lihat onRequestPermissionsResult aMapActivity", String.valueOf(requestCode));
-        Log.d("Lihat onRequestPermissionsResult aMapActivity", String.valueOf(grantResults));
         switch (requestCode) {
             case ALL_PERMISSION: //private final int = 1
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
@@ -168,5 +239,44 @@ public class aMapActivity extends LocalBaseActivity implements OnMapReadyCallbac
                     finish();
                 }
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_activity, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        finish();
+        return super.onOptionsItemSelected(item);
+    }
+
+    public Bitmap getBitmapFromURL(String strURL) {
+        try {
+            URL url = new URL(strURL);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setDoInput(true);
+            connection.connect();
+            InputStream input = connection.getInputStream();
+            Bitmap myBitmap = BitmapFactory.decodeStream(input);
+            return myBitmap;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private void loadMarkerIcon(MarkerOptions marker, String s) {
+        Glide.with(this).load(s)
+                .asBitmap().fitCenter().into(new SimpleTarget<Bitmap>() {
+            @Override
+            public void onResourceReady(Bitmap bitmap, GlideAnimation<? super Bitmap> glideAnimation) {
+                BitmapDescriptor icon = BitmapDescriptorFactory.fromBitmap(bitmap);
+                marker.icon(icon);
+            }
+        });
     }
 }

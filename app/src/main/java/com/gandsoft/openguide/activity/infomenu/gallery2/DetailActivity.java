@@ -186,7 +186,10 @@ public class DetailActivity extends AppCompatActivity {
 
             final ImageView imageView = (ImageView) rootView.findViewById(R.id.detail_image);
 
-            Glide.with(getActivity()).load(url).thumbnail(0.1f).into(imageView);
+            Glide.with(getActivity())
+                    .load(url)
+                    .thumbnail(0.1f)
+                    .into(imageView);
 
             return rootView;
         }
