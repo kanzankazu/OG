@@ -906,7 +906,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     public ArrayList<EventDataContactList> getDataContactList(String eventId) {
         ArrayList<EventDataContactList> modelList = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.query(TableContactList, null, Key_Contact_List_EventId + " = ? ", new String[]{eventId}, null, null, KEY_Wallet_sort);
+        Cursor cursor = db.query(TableContactList, null, Key_Contact_List_EventId + " = ? ", new String[]{eventId}, KEY_Contact_List_Telephone, null,null);
 
         if (cursor.moveToFirst()) {
             do {
