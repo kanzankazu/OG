@@ -3,70 +3,93 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/white"
-    android:orientation="horizontal">
-    <ImageView
-        android:id="@+id/ivComitteIcon"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_marginEnd="15dp"
-        android:layout_marginStart="15dp"
-        android:layout_marginTop="40dp"
-        android:src="@drawable/ic_option_contact"/>
+    android:orientation="vertical">
+
+    <View
+        android:id="@+id/vComitteline"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/gray_very_light"
+        android:visibility="visible" />
+
+    <LinearLayout
+        android:id="@+id/llComitteEvent"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:animateLayoutChanges="true"
+        android:orientation="horizontal"
+        android:visibility="visible">
+
+        <View
+            android:layout_width="70dp"
+            android:layout_height="1dp" />
+
+        <TextView
+            android:id="@+id/tvComitteEventTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:gravity="center"
+            android:text="EVENT"
+            android:textAllCaps="true"
+            android:textColor="@color/colorAccent"
+            android:textSize="12dp"
+            android:textStyle="bold" />
+
+
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/white"
-        android:orientation="vertical"
-        android:paddingBottom="20dp">
-        <TextView
-            android:id="@+id/tvComitteEvent"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/colorAccent"
-            android:gravity="center"
-            android:textStyle="bold"
-            android:textSize="12dp"
-            android:layout_marginTop="20dp"
-            android:layout_marginBottom="15dp"
-            android:text="EVENT" />
+        android:layout_height="match_parent"
+        android:layout_marginTop="10dp"
+        android:animateLayoutChanges="true"
+        android:orientation="horizontal">
 
-        <TextView
-            android:id="@+id/tvComitteNumber"
-            android:layout_width="wrap_content"
+        <ImageView
+            android:layout_width="70dp"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="5dp"
-            android:text="Commite Number"
-            android:textSize="12dp"
-            android:textColor="@color/colorPrimary" />
+            android:src="@drawable/ic_contact_commite" />
 
-        <TextView
-            android:id="@+id/tvComitteEmail"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Commite Email"
-            android:layout_marginBottom="5dp"
-            android:textSize="12dp"
-            android:textColor="@color/colorPrimary"/>
-        <TextView
-            android:id="@+id/tvComitteName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Commite Name"
-            android:layout_marginBottom="5dp"
-            android:textSize="12dp"
-            android:textColor="@color/colorPrimary"
-            android:textStyle="bold"/>
-
-
-        <View
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_gravity="bottom"
-            android:layout_marginTop="40dp"
-            android:layout_marginBottom="-20dp"
-            android:background="@color/gray_very_light" />
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:orientation="vertical">
 
+            <TextView
+                android:id="@+id/tvComitteName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Commite Name"
+                android:textColor="@color/colorPrimary"
+                android:textSize="12dp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvComitteEmail"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:text="Commite Email"
+                android:textColor="@color/colorPrimary"
+                android:textSize="12dp" />
+
+            <TextView
+                android:id="@+id/tvComitteNumber"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="Commite Number"
+                android:textColor="@color/colorPrimary"
+                android:textSize="12dp" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="10dp" />
+
+        </LinearLayout>
     </LinearLayout>
 
 

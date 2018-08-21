@@ -1,5 +1,6 @@
 package com.gandsoft.openguide.support;
 
+import android.annotation.SuppressLint;
 import android.text.InputFilter;
 import android.text.InputType;
 import android.view.View;
@@ -109,14 +110,17 @@ public class ListArrayUtil {
         return ret;
     }
 
+    @SuppressLint("NewApi")
     public static List<Integer> convertIntArrayToListIntegert(int[] data) {
         return Arrays.stream(data).boxed().collect(Collectors.toList());
     }
 
+    @SuppressLint("NewApi")
     public static Integer[] convertIntArrayToIntegertArray(int[] data) {
         return Arrays.stream(data).boxed().toArray(Integer[]::new);
     }
 
+    @SuppressLint("NewApi")
     public static int[] convertIntegertArrayToIntArray(Integer[] array) {
         return Arrays.stream(array).mapToInt(Integer::intValue).toArray();
     }

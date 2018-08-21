@@ -25,7 +25,7 @@ public class ChangeEventPastAdapter extends RecyclerView.Adapter<ChangeEventPast
     private List<UserListEventResponseModel> models = new ArrayList<>();
 
     public ChangeEventPastAdapter(Activity parent, List<UserListEventResponseModel> items) {
-        models = items;
+        this.models = items;
         try {
             this.parent = (ChangeEventPastHook) parent;
         } catch (Exception e) {

@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.graphics.Paint;
 import android.support.v4.content.ContextCompat;
 import android.text.InputFilter;
 import android.view.View;
@@ -258,6 +259,9 @@ public class SystemUtil {
         return dates;
     }
 
+    public static void setUnderlineTextView (TextView textview){
+        textview.setPaintFlags(textview.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
+    }
 
 
 }

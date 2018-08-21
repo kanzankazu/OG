@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ScheduleRecycleviewAdapter extends RecyclerView.Adapter<ScheduleRecycleviewAdapter.MyViewHolder> {
-    private List<EventScheduleListDateDataList> models;
+    private List<EventScheduleListDateDataList> models = new ArrayList<>();
     private Context context;
 
 

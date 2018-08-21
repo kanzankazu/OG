@@ -14,7 +14,7 @@ import app.beelabs.com.codebase.base.response.BaseResponse;
 public class BaseResponseModel extends BaseResponse implements Serializable {
 
     private String message;
-    private ArrayList<LoginResponseModel> loginModel;
+    private ArrayList<LoginResponseModel> loginModel = new ArrayList<>();
 
     public String getMessage() {
         return message;

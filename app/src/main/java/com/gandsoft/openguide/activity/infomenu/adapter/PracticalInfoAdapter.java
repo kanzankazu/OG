@@ -16,9 +16,10 @@ import com.gandsoft.openguide.R;
 @SuppressWarnings("unchecked")
 public class PracticalInfoAdapter extends BaseExpandableListAdapter {
     private Activity activity;
-    private ArrayList<Object> childtems;
     private LayoutInflater inflater;
-    private ArrayList<String> parentItems, child;
+    private ArrayList<String> parentItems = new ArrayList<>();
+    private ArrayList<Object> childtems = new ArrayList<>();
+    private ArrayList<String> child = new ArrayList<>();
 
     public PracticalInfoAdapter(ArrayList<String> parents, ArrayList<Object> childern) {
         this.parentItems = parents;
@@ -31,6 +32,19 @@ public class PracticalInfoAdapter extends BaseExpandableListAdapter {
     }
 
     @Override
+    public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
+
+        if (convertView == null) {
+            convertView = inflater.inflate(R.layout.layout_list_practical_info_header, null);
+        }
+
+        ((CheckedTextView) convertView).setText(parentItems.get(groupPosition));
+        ((CheckedTextView) convertView).setChecked(isExpanded);
+
+        return convertView;
+    }
+
+    @Override
     public View getChildView(int groupPosition, final int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
 
         child = (ArrayList<String>) childtems.get(groupPosition);
@@ -38,7 +52,7 @@ public class PracticalInfoAdapter extends BaseExpandableListAdapter {
         TextView textView = null;
 
         if (convertView == null) {
-            convertView = inflater.inflate(R.layout.group, null);
+            convertView = inflater.inflate(R.layout.layout_list_practical_info_child, null);
         }
 
         textView = (TextView) convertView.findViewById(R.id.textView1);
@@ -52,19 +66,6 @@ public class PracticalInfoAdapter extends BaseExpandableListAdapter {
                         Toast.LENGTH_SHORT).show();
             }
         });
-
-        return convertView;
-    }
-
-    @Override
-    public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
-
-        if (convertView == null) {
-            convertView = inflater.inflate(R.layout.row, null);
-        }
-
-        ((CheckedTextView) convertView).setText(parentItems.get(groupPosition));
-        ((CheckedTextView) convertView).setChecked(isExpanded);
 
         return convertView;
     }

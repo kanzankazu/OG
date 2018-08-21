@@ -39,6 +39,7 @@ public class fPracticalInfoActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) throws ArrayIndexOutOfBoundsException {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_info_f_practical_info);
         if (SessionUtil.checkIfExist(ISeasonConfig.KEY_ACCOUNT_ID)) {
             accountId = SessionUtil.getStringPreferences(ISeasonConfig.KEY_ACCOUNT_ID, null);
@@ -46,7 +47,6 @@ public class fPracticalInfoActivity extends AppCompatActivity {
         if (SessionUtil.checkIfExist(ISeasonConfig.KEY_EVENT_ID)) {
             eventId = SessionUtil.getStringPreferences(ISeasonConfig.KEY_EVENT_ID, null);
         }
-
 
         initComponent();
         initContent();
@@ -71,22 +71,15 @@ public class fPracticalInfoActivity extends AppCompatActivity {
         ArrayList<EventImportanInfo> models = db.getImportanInfo(eventId);
         if (models != null) {
             for (int i = 0; i < models.size(); i++) {
-                Log.d("model size", String.valueOf(models.size() / (models.size() / 4)));
                 EventImportanInfo model = models.get(i);
-
-                Log.d("string", model.getTitle());
                 parentItems.add(String.valueOf(Html.fromHtml(model.getTitle())));
                 ArrayList<String> child = new ArrayList<String>();
                 child.add(String.valueOf(Html.fromHtml(model.getInfo())));
                 childItems.add(child);
-                Log.d("string value", parentItems.get(i));
-                Log.d("string value", String.valueOf(childItems.get(i)));
-
             }
         }
 
         PracticalInfoAdapter adapter = new PracticalInfoAdapter(parentItems, childItems);
-
         adapter.setInflater((LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE), this);
         expandableList.setAdapter(adapter);
 

@@ -49,6 +49,7 @@ import com.gandsoft.openguide.database.SQLiteHelper;
 import com.gandsoft.openguide.support.NetworkUtil;
 import com.gandsoft.openguide.support.SessionUtil;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -69,7 +70,7 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
     private SwipeRefreshLayout srlChangeEventActivityfvbi;
     /**/
     private int version_data_user, version_data_event;
-    private List<UserListEventResponseModel> menuUi;
+    private List<UserListEventResponseModel> menuUi = new ArrayList<>();
     private ChangeEventOnGoingAdapter adapterOnGoing;
     private ChangeEventPastAdapter adapterPast;
 
