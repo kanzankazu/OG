@@ -73,6 +73,7 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
     private List<UserListEventResponseModel> menuUi = new ArrayList<>();
     private ChangeEventOnGoingAdapter adapterOnGoing;
     private ChangeEventPastAdapter adapterPast;
+    private boolean isRefresh;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -127,26 +128,38 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
         srlChangeEventActivityfvbi.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
+                isRefresh = true;
                 getAPIUserDataValidation();
             }
         });
     }
 
     private void getAPIUserDataValidation() {
-        if (srlChangeEventActivityfvbi.isRefreshing()) {
-            srlChangeEventActivityfvbi.setRefreshing(false);
-        }
+        if (!isRefresh) {
+            if (srlChangeEventActivityfvbi.isRefreshing()) {
+                srlChangeEventActivityfvbi.setRefreshing(false);
+            }
 
-        if (db.isDataTableValueMultipleNull(SQLiteHelper.TableUserData, SQLiteHelper.KEY_UserData_accountId, SQLiteHelper.KEY_UserData_phoneNumber, accountid, accountid)) {
-            Snackbar.make(findViewById(android.R.id.content), "Data Kosong", Snackbar.LENGTH_LONG).show();
+            if (db.isDataTableValueMultipleNull(SQLiteHelper.TableUserData, SQLiteHelper.KEY_UserData_accountId, SQLiteHelper.KEY_UserData_phoneNumber, accountid, accountid)) {
+                Snackbar.make(findViewById(android.R.id.content), "Data Kosong, bersiap mengmbil data", Snackbar.LENGTH_LONG).show();
+                if (NetworkUtil.isConnected(this)) {
+                    getAPIUserDataDo(accountid);
+                }
+            } else {
+                updateRecycleView(db.getAllListEvent(accountid));
+                updateUserInfo(db.getUserData(accountid));
+                Snackbar.make(findViewById(android.R.id.content), "Memunculkan Data Offline", Snackbar.LENGTH_LONG).show();
+            }
+        } else {
+            if (srlChangeEventActivityfvbi.isRefreshing()) {
+                srlChangeEventActivityfvbi.setRefreshing(false);
+            }
+
             if (NetworkUtil.isConnected(this)) {
                 getAPIUserDataDo(accountid);
             }
-        } else {
-            updateRecycleView(db.getAllListEvent(accountid));
-            updateUserInfo(db.getUserData(accountid));
-            Snackbar.make(findViewById(android.R.id.content), "Memunculkan Data Offline", Snackbar.LENGTH_LONG).show();
         }
+
     }
 
     private void getAPIUserDataDo(String accountid) {
@@ -451,36 +464,30 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
     private void customText(TextView view) {
         SpannableStringBuilder spanTxt = new SpannableStringBuilder("To create an event, please contact our phone number: ");
 
+        spanTxt.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.colorPrimary)), 10, spanTxt.length(), 0);
         spanTxt.append("+62 21 53661536");
         spanTxt.setSpan(new ClickableSpan() {
-                            @Override
-                            public void onClick(View widget) {
-                                Toast.makeText(getApplicationContext(), "+62 21 53661536 Clicked", Toast.LENGTH_SHORT).show();
-                                String phone = "+622153661536";
-                                Intent intent = new Intent(Intent.ACTION_DIAL, Uri.fromParts("tel", phone, null));
-                                startActivity(intent);
-                            }
-                        },
-                spanTxt.length() - "+62 21 53661536".length(),
-                spanTxt.length(),
-                0);
+            @Override
+            public void onClick(View widget) {
+                Toast.makeText(getApplicationContext(), "+62 21 53661536 Clicked", Toast.LENGTH_SHORT).show();
+                String phone = "+622153661536";
+                Intent intent = new Intent(Intent.ACTION_DIAL, Uri.fromParts("tel", phone, null));
+                startActivity(intent);
+            }
+        }, spanTxt.length() - "+62 21 53661536".length(), spanTxt.length(), 0);
 
         spanTxt.append(" or by email at: ");
-        spanTxt.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.colorPrimary)), 32, spanTxt.length(), 0);
 
+        spanTxt.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.colorPrimary)), 10, spanTxt.length(), 0);
         spanTxt.append("hello@gandsoft.com");
         spanTxt.setSpan(new ClickableSpan() {
-                            @Override
-                            public void onClick(View widget) {
-                                Toast.makeText(getApplicationContext(), "hello@gandsoft.com Clicked", Toast.LENGTH_SHORT).show();
-                                Intent emailIntent = new Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:" + "hello@gandsoft.com")); //alamat email tujuan
-                                //emailIntent.putExtra(Intent.EXTRA_SUBJECT, ); //subject email
-                                startActivity(Intent.createChooser(emailIntent, "Pilih Aplikasi Email"));
-                            }
-                        },
-                spanTxt.length() - "hello@gandsoft.com".length(),
-                spanTxt.length(),
-                0);
+            @Override
+            public void onClick(View widget) {
+                Toast.makeText(getApplicationContext(), "hello@gandsoft.com Clicked", Toast.LENGTH_SHORT).show();
+                Intent emailIntent = new Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:" + "hello@gandsoft.com")); //alamat email tujuan
+                startActivity(Intent.createChooser(emailIntent, "Pilih Aplikasi Email"));
+            }
+        }, spanTxt.length() - "hello@gandsoft.com".length(), spanTxt.length(), 0);
 
         view.setMovementMethod(LinkMovementMethod.getInstance());
         view.setText(spanTxt, TextView.BufferType.SPANNABLE);

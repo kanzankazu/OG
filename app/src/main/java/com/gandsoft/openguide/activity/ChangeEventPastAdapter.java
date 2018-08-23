@@ -50,6 +50,7 @@ public class ChangeEventPastAdapter extends RecyclerView.Adapter<ChangeEventPast
                     .error(R.drawable.template_account_og)
                     .diskCacheStrategy(DiskCacheStrategy.NONE)
                     .skipMemoryCache(true)
+                    .dontAnimate()
                     .into(holder.ivListChangeEventBackgroundfvbi);
             Glide.with((Activity) parent)
                     .load(model.getLogo())
@@ -57,6 +58,7 @@ public class ChangeEventPastAdapter extends RecyclerView.Adapter<ChangeEventPast
                     .error(R.drawable.template_account_og)
                     .diskCacheStrategy(DiskCacheStrategy.NONE)
                     .skipMemoryCache(true)
+                    .dontAnimate()
                     .into(holder.ivListChangeEventLogofvbi);
             holder.tvListChangeEventTitlefvbi.setText(model.getTitle());
             holder.tvListChangeEventDatefvbi.setText(model.getDate());

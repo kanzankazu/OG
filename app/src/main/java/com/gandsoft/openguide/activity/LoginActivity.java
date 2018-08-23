@@ -73,6 +73,7 @@ public class LoginActivity extends LocalBaseActivity {
     private String phoneNumberSavedwoPlus;
     private String mVerificationId;
     private boolean isLogin, isVerify;
+    private ProgressDialog progressDialogSubmit;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -126,6 +127,8 @@ public class LoginActivity extends LocalBaseActivity {
                 //     user action.
                 Log.d("Lihat onVerificationCompleted LoginActivity", credential.getProvider().toString());
                 Log.d("Lihat onVerificationCompleted LoginActivity", credential.getSignInMethod().toString());
+                progressDialogSubmit.dismiss();
+
                 signInWithPhoneAuthCredential(credential);
 
                 if (credential != null) {
@@ -147,6 +150,8 @@ public class LoginActivity extends LocalBaseActivity {
             public void onVerificationFailed(FirebaseException e) {
                 // This callback is invoked in an invalid request for verification is made,
                 // for instance if the the phone number format is not valid.
+                progressDialogSubmit.dismiss();
+
                 Log.w(TAG, "onVerificationFailed", e);
 
                 if (e instanceof FirebaseAuthInvalidCredentialsException) {
@@ -160,6 +165,9 @@ public class LoginActivity extends LocalBaseActivity {
 
             @Override
             public void onCodeSent(String verificationId, PhoneAuthProvider.ForceResendingToken token) {
+
+                progressDialogSubmit.dismiss();
+
                 Log.d(TAG, "onCodeSentId:" + verificationId);
                 Log.d(TAG, "onCodeSentToken:" + token);
 
@@ -189,6 +197,7 @@ public class LoginActivity extends LocalBaseActivity {
             @Override
             public void onClick(View view) {
                 checkData();
+                progressDialogSubmit = ProgressDialog.show(LoginActivity.this, "Loading...", "Please Wait..", false, false);
             }
         });
 
@@ -292,6 +301,13 @@ public class LoginActivity extends LocalBaseActivity {
                 token);             // ForceResendingToken from callbacks
     }
 
+    private void verifyPhoneNumberWithCode(String verificationId, String code) {
+
+        PhoneAuthCredential credential = PhoneAuthProvider.getCredential(verificationId, code);
+
+        signInWithPhoneAuthCredential(credential);
+    }
+
     private void signInWithPhoneAuthCredential(PhoneAuthCredential credential) {
         mAuth.signInWithCredential(credential).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
             @SuppressLint("LongLogTag")
@@ -299,15 +315,16 @@ public class LoginActivity extends LocalBaseActivity {
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
                     FirebaseUser user = task.getResult().getUser();
-                    //updateUI(STATE_SIGNIN_SUCCESS, user);
                     snackBar("Success", false);
                     Log.d("Lihat onComplete LoginActivity", "success");
                     Log.d("Lihat onComplete LoginActivity getPhoneNumber", user.getPhoneNumber());
                     Log.d("Lihat onComplete LoginActivity getProviderId", user.getProviderId());
                     Log.d("Lihat onComplete LoginActivity getUid", user.getUid());
+                    progressDialogSubmit.dismiss();
                     sendLoginData();
                     //moveToNext();
                 } else {
+                    progressDialogSubmit.dismiss();
                     Log.d("Lihat onComplete LoginActivity getMessage", task.getException().getMessage());
                     Log.d("Lihat onComplete LoginActivity getLocalizedMessage", task.getException().getLocalizedMessage());
                     if (task.getException() instanceof FirebaseAuthInvalidCredentialsException) {
@@ -316,13 +333,6 @@ public class LoginActivity extends LocalBaseActivity {
                 }
             }
         });
-    }
-
-    private void verifyPhoneNumberWithCode(String verificationId, String code) {
-
-        PhoneAuthCredential credential = PhoneAuthProvider.getCredential(verificationId, code);
-
-        signInWithPhoneAuthCredential(credential);
     }
 
     private void sendLoginData() {

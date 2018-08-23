@@ -12,7 +12,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Paint;
 import android.icu.text.SimpleDateFormat;
-import android.icu.util.Calendar;
 import android.icu.util.ULocale;
 import android.net.Uri;
 import android.os.Build;
@@ -22,6 +21,8 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.text.SpannableStringBuilder;
 import android.text.method.LinkMovementMethod;
@@ -57,6 +58,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import retrofit2.Call;
@@ -65,13 +67,14 @@ import retrofit2.Response;
 
 @RequiresApi(api = Build.VERSION_CODES.N)
 public class AccountActivity extends LocalBaseActivity implements View.OnClickListener {
+    private static final int RP_ACCESS = 21;
     SQLiteHelper db = new SQLiteHelper(this);
 
     private static final int UI_NEW_USER = 0;
     private static final int UI_OLD_USER = 1;
     private FirebaseAuth mAuth;
 
-    private TextView tvAccIDfvbi, tvAccSelPicfvbi,tvAccGenderfvbi, tvAccTglfvbi, tvAccBulanfvbi, tvAccTahunfvbi, tvAccAggrementfvbi, tvSignOutSkipfvbi;
+    private TextView tvAccIDfvbi, tvAccSelPicfvbi, tvAccGenderfvbi, tvAccTglfvbi, tvAccBulanfvbi, tvAccTahunfvbi, tvAccAggrementfvbi, tvSignOutSkipfvbi;
     private EditText etAccNamefvbi, etAccEmailfvbi;
     private LinearLayout llAccPicfvbi, llAccGenderfvbi, llAccBirthdatefvbi, llAccAggrementfvbi, llAccSavefvbi;
     private CheckBox cbAccAggrementfvbi;
@@ -80,11 +83,11 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
 
     private boolean isNewUser = false;
     private String accountId;
-    private String base64pic="";
+    private String base64pic = "";
 
     private Spinner mySpinner;
+    private Calendar myCalendar;
 
-    Calendar myCalendar = Calendar.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,35 +98,11 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
             accountId = SessionUtil.getStringPreferences(ISeasonConfig.KEY_ACCOUNT_ID, null);
             Log.d("Lihat", "onCreate AccountActivity : " + accountId);
         }
-        if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
-        }
-        if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 2);
-        }
+
+        getpermission();
         initComponent();
         initContent();
         initListener();
-        DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
-            @Override
-            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                myCalendar.set(Calendar.YEAR, year);
-                myCalendar.set(Calendar.MONTH, monthOfYear);
-                myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-                updateLabel();
-            }
-
-        };
-
-        ibCalendarfvbi.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                new DatePickerDialog(AccountActivity.this, date, myCalendar
-                        .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
-                        myCalendar.get(Calendar.DAY_OF_MONTH)).show();
-            }
-
-        });
     }
 
     private void initComponent() {
@@ -163,7 +142,6 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
                 updateUI(UI_NEW_USER);
             } else {
                 updateUI(UI_OLD_USER);
-
             }
         } else {
             updateUI(UI_OLD_USER);
@@ -175,6 +153,8 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
         } else {
             updateData(db.getUserData(accountId));
         }
+
+        myCalendar = Calendar.getInstance();
 
         mAuth = FirebaseAuth.getInstance();
 
@@ -204,6 +184,26 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
                         android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                 startActivityForResult(intent, 2);
             }
+        });
+        DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+                myCalendar.set(Calendar.YEAR, year);
+                myCalendar.set(Calendar.MONTH, monthOfYear);
+                myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                updateLabel();
+            }
+
+        };
+
+        ibCalendarfvbi.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new DatePickerDialog(AccountActivity.this, date, myCalendar
+                        .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
+                        myCalendar.get(Calendar.DAY_OF_MONTH)).show();
+            }
+
         });
 
     }
@@ -330,6 +330,7 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
             tvSignOutSkipfvbi.setText("SIGN-OUT");
         }
     }
+
     int MY_CAMERA_REQUEST_CODE = 77777;
 
     private void customText(TextView view) {
@@ -501,7 +502,7 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
             @Override
             public void onResponse(Call<List<UserUpdateResponseModel>> call, Response<List<UserUpdateResponseModel>> response) {
                 progressDialog.dismiss();
-                if(response.isSuccessful()) {
+                if (response.isSuccessful()) {
                     List<UserUpdateResponseModel> s = response.body();
                     if (s.size() == 1) {
                         for (int i = 0; i < s.size(); i++) {
@@ -540,7 +541,6 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
         quitNotSave();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     private void updateLabel() {
         String myFormat = "yyyy-MM-dd"; //In which you need put here
         SimpleDateFormat sdf = new SimpleDateFormat(myFormat, ULocale.US);
@@ -579,4 +579,45 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
         builder.show();
     }*/
 
+
+    private void getpermission() {
+        // cek apakah sudah memiliki permission untuk access fine location
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            // cek apakah perlu menampilkan info kenapa membutuhkan access fine location
+            if (ActivityCompat.shouldShowRequestPermissionRationale(AccountActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                Toast.makeText(AccountActivity.this, "Access dibutuhkan untuk menentukan lokasi anda", Toast.LENGTH_LONG).show();
+                String[] perm = {
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                        Manifest.permission.READ_EXTERNAL_STORAGE};
+                ActivityCompat.requestPermissions(AccountActivity.this, perm, RP_ACCESS);
+            } else {
+                // request permission untuk access fine location
+                String[] perm = {
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                        Manifest.permission.READ_EXTERNAL_STORAGE};
+                ActivityCompat.requestPermissions(AccountActivity.this, perm, RP_ACCESS);
+            }
+        } else {
+            // permission access fine location didapat
+//        Toast.makeText(AccountActivity.this, "Yay, has permission", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case RP_ACCESS: //private final int = 1
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // do location thing
+                    // access location didapatkan
+                    Toast.makeText(AccountActivity.this, "Akses di berikan", Toast.LENGTH_SHORT).show();
+                    /*readSMS();*///jalankan alpkasi yang mau di jalankan
+                } else {
+                    // access location ditolak user
+                    Toast.makeText(AccountActivity.this, "Akses di tolak", Toast.LENGTH_SHORT).show();
+                }
+                return;
+        }
+    }
 }
