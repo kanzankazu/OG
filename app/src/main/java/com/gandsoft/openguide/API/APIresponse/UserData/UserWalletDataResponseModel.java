@@ -2,7 +2,7 @@ package com.gandsoft.openguide.API.APIresponse.UserData;
 
 import java.io.Serializable;
 
-public class UserWalletDataResponseModel implements Serializable {
+public class UserWalletDataResponseModel  {
 
     public String sort;
     public String type;

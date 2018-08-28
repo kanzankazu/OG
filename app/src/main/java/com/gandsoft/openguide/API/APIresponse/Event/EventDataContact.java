@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class EventDataContact implements Serializable {
+public class EventDataContact  {
     public String title;
     public List<EventDataContactList> contact_list = new ArrayList<>();
 

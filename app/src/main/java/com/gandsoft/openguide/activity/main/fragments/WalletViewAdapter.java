@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -99,9 +100,9 @@ class WalletViewAdapter extends RecyclerView.Adapter<WalletViewAdapter.ViewHolde
                 Elements h3s = doc1.select("h3");
                 for (Element h3 : h3s) {
                     Element br0 = h3.select("br").get(0);
-                    holder1.tvWalletIdCardEventTitlefvbi.setText(br0.siblingNodes().get(0).toString());
-                    holder1.tvWalletIdCardEventPlacefvbi.setText(br0.siblingNodes().get(1).toString());
-                    holder1.tvWalletIdCardDatefvbi.setText(br0.siblingNodes().get(3).toString());
+                    holder1.tvWalletIdCardEventTitlefvbi.setText(Html.fromHtml(br0.siblingNodes().get(0).toString()));
+                    holder1.tvWalletIdCardEventPlacefvbi.setText(Html.fromHtml(br0.siblingNodes().get(1).toString()));
+                    holder1.tvWalletIdCardDatefvbi.setText(Html.fromHtml(br0.siblingNodes().get(3).toString()));
                 }
 
             {

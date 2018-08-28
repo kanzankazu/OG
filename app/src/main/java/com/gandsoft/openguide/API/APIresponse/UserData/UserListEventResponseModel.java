@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UserListEventResponseModel implements Serializable {
+public class UserListEventResponseModel  {
 
     public String event_id;
     public String background;

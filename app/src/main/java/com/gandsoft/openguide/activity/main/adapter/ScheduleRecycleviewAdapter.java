@@ -1,13 +1,17 @@
 package com.gandsoft.openguide.activity.main.adapter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -33,6 +37,7 @@ public class ScheduleRecycleviewAdapter extends RecyclerView.Adapter<ScheduleRec
         return new ScheduleRecycleviewAdapter.MyViewHolder(view);
     }
 
+    @SuppressLint("ResourceAsColor")
     @Override
     public void onBindViewHolder(final MyViewHolder holder, int position) {
         EventScheduleListDateDataList model = models.get(position);
@@ -40,16 +45,22 @@ public class ScheduleRecycleviewAdapter extends RecyclerView.Adapter<ScheduleRec
         holder.tvRvScheduleTitlefvbi.setText(model.getSchedule_title());
         if (!TextUtils.isEmpty(model.getLocation())) {
             holder.llRvScheduleLocationfvbi.setVisibility(View.VISIBLE);
-            holder.tvRvScheduleLocationTitlefvbi.setText(model.getLocation());
+            holder.tvRvScheduleLocationTitlefvbi.setText(Html.fromHtml(model.getLocation()));
         } else {
             holder.llRvScheduleLocationfvbi.setVisibility(View.GONE);
         }
 
         if (!TextUtils.isEmpty(model.getDetail())) {
             holder.bRvScheduleDetailfvbi.setVisibility(View.VISIBLE);
-            holder.tvRvScheduleDetailfvbi.setText(model.getDetail());
+            holder.tvRvScheduleDetailfvbi.setText(Html.fromHtml(model.getDetail()));
         } else {
             holder.bRvScheduleDetailfvbi.setVisibility(View.GONE);
+        }
+
+        if (!TextUtils.isEmpty(model.getLink())) {
+            holder.bRvScheduleLiveQAfvbi.setVisibility(View.VISIBLE);
+        } else {
+            holder.bRvScheduleLiveQAfvbi.setVisibility(View.GONE);
         }
 
         holder.bRvScheduleDetailfvbi.setOnClickListener(new View.OnClickListener() {
@@ -66,6 +77,20 @@ public class ScheduleRecycleviewAdapter extends RecyclerView.Adapter<ScheduleRec
                 holder.tvRvScheduleDetailfvbi.setVisibility(View.GONE);
             }
         });
+
+        holder.bRvScheduleLiveQAfvbi.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
+
+        //code here
+        /*if (position == getItemCount() - 1) {
+            holder.vRvSchedulelinefvbi.setVisibility(View.GONE);
+            holder.ivRvScheduleIndicatorfvbi.setBackgroundColor(R.color.colorPrimary);
+        }*/
+
     }
 
     @Override
@@ -80,6 +105,8 @@ public class ScheduleRecycleviewAdapter extends RecyclerView.Adapter<ScheduleRec
         private final LinearLayout llRvScheduleLocationfvbi;
         private final TextView tvRvScheduleTimefvbi, tvRvScheduleTitlefvbi, tvRvScheduleLocationTitlefvbi, tvRvScheduleDetailfvbi;
         private final Button bRvScheduleDetailfvbi, bRvScheduleLiveQAfvbi;
+        private final ImageView ivRvScheduleIndicatorfvbi;
+        private final View vRvSchedulelinefvbi;
 
         public MyViewHolder(View itemView) {
             super(itemView);
@@ -92,6 +119,8 @@ public class ScheduleRecycleviewAdapter extends RecyclerView.Adapter<ScheduleRec
             bRvScheduleDetailfvbi = (Button) itemView.findViewById(R.id.bRvScheduleDetail);
             tvRvScheduleDetailfvbi = (TextView) itemView.findViewById(R.id.tvRvScheduleDetail);
             bRvScheduleLiveQAfvbi = (Button) itemView.findViewById(R.id.bRvScheduleLiveQA);
+            ivRvScheduleIndicatorfvbi = (ImageView) itemView.findViewById(R.id.ivRvScheduleIndicator);
+            vRvSchedulelinefvbi = (View) itemView.findViewById(R.id.vRvScheduleline);
 
         }
 
@@ -115,9 +144,8 @@ public class ScheduleRecycleviewAdapter extends RecyclerView.Adapter<ScheduleRec
 
     public void replaceData(List<EventScheduleListDateDataList> datas) {
         models.clear();
-        models = datas;
+        models.addAll(datas);
         notifyDataSetChanged();
-
     }
 
     public void addDatas(List<EventScheduleListDateDataList> datas) {

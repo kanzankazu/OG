@@ -1,12 +1,11 @@
 package com.gandsoft.openguide.activity.main;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
+import android.os.Handler;
 import android.support.design.widget.TabLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
@@ -14,35 +13,15 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.Toast;
 
-import com.gandsoft.openguide.API.API;
-import com.gandsoft.openguide.API.APIrequest.Event.EventDataRequestModel;
-import com.gandsoft.openguide.API.APIresponse.Event.EventAbout;
-import com.gandsoft.openguide.API.APIresponse.Event.EventDataContact;
-import com.gandsoft.openguide.API.APIresponse.Event.EventDataContactList;
-import com.gandsoft.openguide.API.APIresponse.Event.EventDataResponseModel;
-import com.gandsoft.openguide.API.APIresponse.Event.EventImportanInfo;
-import com.gandsoft.openguide.API.APIresponse.Event.EventPlaceList;
-import com.gandsoft.openguide.API.APIresponse.Event.EventScheduleListDate;
-import com.gandsoft.openguide.API.APIresponse.Event.EventScheduleListDateDataList;
-import com.gandsoft.openguide.API.APIresponse.Event.EventTheEvent;
-import com.gandsoft.openguide.IConfig;
 import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
 import com.gandsoft.openguide.database.SQLiteHelper;
-import com.gandsoft.openguide.support.NetworkUtil;
 import com.gandsoft.openguide.support.SessionUtil;
-
-import java.util.List;
-import java.util.Map;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class BaseHomeActivity extends AppCompatActivity {
     SQLiteHelper db = new SQLiteHelper(this);
@@ -58,6 +37,7 @@ public class BaseHomeActivity extends AppCompatActivity {
     private Toolbar toolbar;
     private String accountId, eventId;
     private int version_data_event;
+    private boolean doubleBackToExitPressedOnce;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -69,6 +49,9 @@ public class BaseHomeActivity extends AppCompatActivity {
         }
         if (SessionUtil.checkIfExist(ISeasonConfig.KEY_EVENT_ID)) {
             eventId = SessionUtil.getStringPreferences(ISeasonConfig.KEY_EVENT_ID, null);
+        }
+        if (!db.isFirstIn(eventId)) {
+            showFirstDialogEvent();
         }
 
 
@@ -122,7 +105,7 @@ public class BaseHomeActivity extends AppCompatActivity {
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        //code here
+                        db.updateOneKey(SQLiteHelper.TableListEvent, SQLiteHelper.KEY_ListEvent_eventId, eventId, SQLiteHelper.KEY_ListEvent_IsFirstIn, "true");
                     }
                 })
                 .show();
@@ -177,5 +160,22 @@ public class BaseHomeActivity extends AppCompatActivity {
 
     public static Intent getActIntent(Activity activity) {
         return new Intent(activity, BaseHomeActivity.class);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (doubleBackToExitPressedOnce) {
+            finish();
+        }
+        this.doubleBackToExitPressedOnce = true;
+        Toast.makeText(this, "Tekan sekali lagi untuk keluar", Toast.LENGTH_SHORT).show();
+
+        new Handler().postDelayed(new Runnable() {
+
+            @Override
+            public void run() {
+                doubleBackToExitPressedOnce = false;
+            }
+        }, 2000);
     }
 }

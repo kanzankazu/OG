@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -29,7 +30,11 @@ import com.gandsoft.openguide.activity.main.adapter.PostRecViewAdapter;
 import com.gandsoft.openguide.activity.main.adapter.PostRecViewPojo;
 import com.gandsoft.openguide.activity.main.adapter.PostRecViewPojoDummy;
 import com.gandsoft.openguide.database.SQLiteHelper;
+import com.gandsoft.openguide.support.HtmlUtil;
 import com.gandsoft.openguide.support.SessionUtil;
+import com.squareup.picasso.Picasso;
+
+import org.sufficientlysecure.htmltextview.HtmlTextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,12 +49,13 @@ public class aHomeFragment extends Fragment {
     private SwipeRefreshLayout homeSRLHomefvbi;
     private ImageView homeIVOpenCamerafvbi;
     private NestedScrollView homeNSVHomefvbi;
-    private ImageView homeIVEventfvbi,homeIVEventBackgroundfvbi;
+    private ImageView homeIVEventfvbi, homeIVEventBackgroundfvbi;
     private ImageView homeIVShareSomethingfvbi;
     private TextView homeTVTitleEventfvbi;
     private TextView homeTVDescEventfvbi;
     private Button homeBTapCheckInfvbi;
     private EditText homeETWritePostCreatefvbi;
+    private WebView homeWVTitleEventfvbi;
     /**/
     private PostRecViewAdapter adapter;
     private List<PostRecViewPojo> menuUi = new ArrayList<>();
@@ -57,6 +63,8 @@ public class aHomeFragment extends Fragment {
     private String accountId, eventId;
     private int version_data_event;
     SQLiteHelper db;
+    private HtmlTextView homeHtmlTVTitleEventfvbi;
+    private HtmlTextView homeHtmlTVDescEventfvbi;
 
     public aHomeFragment() {
     }
@@ -69,9 +77,7 @@ public class aHomeFragment extends Fragment {
         db = new SQLiteHelper(getActivity());
 
         accountId = SessionUtil.getStringPreferences(ISeasonConfig.KEY_ACCOUNT_ID, null);
-        Log.d("Lihat", "onCreateView aHomeFragment : " + accountId);
         eventId = SessionUtil.getStringPreferences(ISeasonConfig.KEY_EVENT_ID, null);
-        Log.d("Lihat", "onCreateView aHomeFragment : " + eventId);
 
         initComponent();
         initContent(container);
@@ -88,6 +94,9 @@ public class aHomeFragment extends Fragment {
         homeIVShareSomethingfvbi = (ImageView) view.findViewById(R.id.homeIVShareSomething);
         homeIVOpenCamerafvbi = (ImageView) view.findViewById(R.id.homeIVOpenCamera);
         homeTVTitleEventfvbi = (TextView) view.findViewById(R.id.homeTVTitleEvent);
+        homeHtmlTVTitleEventfvbi = (HtmlTextView) view.findViewById(R.id.homeHtmlTVTitleEvent);
+        homeHtmlTVDescEventfvbi = (HtmlTextView) view.findViewById(R.id.homeHtmlTVDescEvent);
+        homeWVTitleEventfvbi = (WebView) view.findViewById(R.id.homeWVTitleEvent);
         homeTVDescEventfvbi = (TextView) view.findViewById(R.id.homeTVDescEvent);
         homeETWritePostCreatefvbi = (EditText) view.findViewById(R.id.homeETWritePostCreate);
         homeBTapCheckInfvbi = (Button) view.findViewById(R.id.homeBTapCheckIn);
@@ -184,16 +193,15 @@ public class aHomeFragment extends Fragment {
     private void updateUi() {
         EventTheEvent model = db.getTheEvent(eventId);
         if (model != null) {
-            homeTVTitleEventfvbi.setText(model.getEvent_name());
+            homeHtmlTVTitleEventfvbi.setHtml(model.getEvent_name());
+            homeTVTitleEventfvbi.setText(Html.fromHtml(model.getEvent_name()));
             homeTVDescEventfvbi.setText("" +
-                    ""+model.getEvent_location()+"\n" +
-                    ""+model.getDate_event()+"\n" +
-                    ""+ Html.fromHtml(model.getWeather())+"");
-            Glide.with(getActivity())
+                    "" + Html.fromHtml(model.getEvent_location()) + "\n" +
+                    "" + model.getDate_event() + "\n" +
+                    "" + Html.fromHtml(model.getWeather()) + "");
+            Picasso.with(getActivity())
                     .load(model.getLogo())
                     .placeholder(R.drawable.template_account_og)
-                    .diskCacheStrategy(DiskCacheStrategy.NONE)
-                    .skipMemoryCache(true)
                     .error(R.drawable.template_account_og)
                     .into(homeIVEventfvbi);
             Glide.with(getActivity())

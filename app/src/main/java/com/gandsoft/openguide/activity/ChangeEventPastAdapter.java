@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ChangeEventPastAdapter extends RecyclerView.Adapter<ChangeEventPastAdapter.ViewHolder> {
+
     private ChangeEventPastHook parent;
     private List<UserListEventResponseModel> models = new ArrayList<>();
 
@@ -45,21 +46,22 @@ public class ChangeEventPastAdapter extends RecyclerView.Adapter<ChangeEventPast
         UserListEventResponseModel model = models.get(position);
         if (model.getStatus().equalsIgnoreCase("PAST EVENT")) {
             Glide.with((Activity) parent)
-                    .load(model.getBackground())
-                    .placeholder(R.drawable.template_account_og)
-                    .error(R.drawable.template_account_og)
-                    .diskCacheStrategy(DiskCacheStrategy.NONE)
-                    .skipMemoryCache(true)
-                    .dontAnimate()
-                    .into(holder.ivListChangeEventBackgroundfvbi);
-            Glide.with((Activity) parent)
                     .load(model.getLogo())
                     .placeholder(R.drawable.template_account_og)
                     .error(R.drawable.template_account_og)
-                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .animate(R.anim.fadein)
                     .skipMemoryCache(true)
-                    .dontAnimate()
                     .into(holder.ivListChangeEventLogofvbi);
+            Glide.with((Activity) parent)
+                    .load(model.getBackground())
+                    .placeholder(R.drawable.template_account_og)
+                    .error(R.drawable.template_account_og)
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .animate(R.anim.fadein)
+                    .skipMemoryCache(true)
+                    .fitCenter()
+                    .into(holder.ivListChangeEventBackgroundfvbi);
             holder.tvListChangeEventTitlefvbi.setText(model.getTitle());
             holder.tvListChangeEventDatefvbi.setText(model.getDate());
             holder.llListChangeEventfvbi.setOnClickListener(new View.OnClickListener() {
@@ -94,8 +96,17 @@ public class ChangeEventPastAdapter extends RecyclerView.Adapter<ChangeEventPast
     }
 
     public void setData(List<UserListEventResponseModel> datas) {
-        models = datas;
+        /*models = datas;
+        notifyDataSetChanged();*/
+        List<UserListEventResponseModel> ds = new ArrayList<>();
+        for (UserListEventResponseModel d : datas) {
+            if (d.getStatus().equalsIgnoreCase("PAST EVENT")) {
+                ds.add(d);
+            }
+        }
+        models = ds;
         notifyDataSetChanged();
+
     }
 
     public void replaceData(List<UserListEventResponseModel> datas) {

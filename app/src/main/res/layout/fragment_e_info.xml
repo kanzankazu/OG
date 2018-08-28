@@ -1,5 +1,4 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -19,10 +18,10 @@
                 android:layout_height="wrap_content"
                 android:animateLayoutChanges="true"
                 android:background="@color/colorPrimary"
-                android:orientation="vertical"
-
                 android:focusable="true"
+
                 android:focusableInTouchMode="true"
+                android:orientation="vertical"
                 android:padding="30dp">
 
                 <LinearLayout
@@ -40,27 +39,25 @@
 
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="match_parent"
                         android:layout_gravity="center_vertical"
-                        android:animateLayoutChanges="true"
                         android:layout_marginStart="20dp"
+                        android:animateLayoutChanges="true"
                         android:orientation="vertical">
 
                         <TextView
                             android:id="@+id/tvInfoUserName"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="bottom"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="5"
                             android:text="Full Name"
-                            android:paddingBottom="7.5dp"
                             android:textColor="@color/white" />
 
                         <TextView
                             android:id="@+id/tvInfoUserPhoneNumber"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="top"
-                            android:paddingTop="7.5dp"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="5"
                             android:text="Phone Number"
                             android:textColor="@color/white" />
                     </LinearLayout>

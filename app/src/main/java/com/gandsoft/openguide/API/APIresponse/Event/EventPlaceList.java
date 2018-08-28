@@ -2,7 +2,7 @@ package com.gandsoft.openguide.API.APIresponse.Event;
 
 import java.io.Serializable;
 
-public class EventPlaceList implements Serializable {
+public class EventPlaceList  {
 
     public String latitude;
     public String longitude;

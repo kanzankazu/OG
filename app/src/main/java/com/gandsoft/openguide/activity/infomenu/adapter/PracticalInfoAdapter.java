@@ -1,5 +1,4 @@
 package com.gandsoft.openguide.activity.infomenu.adapter;
-import java.util.ArrayList;
 
 import android.app.Activity;
 import android.view.LayoutInflater;
@@ -8,10 +7,13 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.CheckedTextView;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.gandsoft.openguide.R;
+
+import java.util.ArrayList;
 
 @SuppressWarnings("unchecked")
 public class PracticalInfoAdapter extends BaseExpandableListAdapter {
@@ -38,8 +40,19 @@ public class PracticalInfoAdapter extends BaseExpandableListAdapter {
             convertView = inflater.inflate(R.layout.layout_list_practical_info_header, null);
         }
 
-        ((CheckedTextView) convertView).setText(parentItems.get(groupPosition));
-        ((CheckedTextView) convertView).setChecked(isExpanded);
+        ImageView ivPracticalInfoHeader = (ImageView) convertView.findViewById(R.id.ivPracticalInfoHeader);
+        TextView ctvPracticalInfoHeader = (TextView) convertView.findViewById(R.id.ctvPracticalInfoHeader);
+
+        ctvPracticalInfoHeader.setText(parentItems.get(groupPosition));
+        if (isExpanded) {
+            ivPracticalInfoHeader.setImageResource(R.drawable.ic_drop_down);
+        } else {
+            ivPracticalInfoHeader.setImageResource(R.drawable.ic_drop_up);
+
+        }
+
+        /*((CheckedTextView) convertView).setText(parentItems.get(groupPosition));
+        ((CheckedTextView) convertView).setChecked(isExpanded);*/
 
         return convertView;
     }
@@ -56,13 +69,13 @@ public class PracticalInfoAdapter extends BaseExpandableListAdapter {
         }
 
         textView = (TextView) convertView.findViewById(R.id.textView1);
-        textView.setText(child.get(childPosition));
 
+        textView.setText(child.get(childPosition));
         convertView.setOnClickListener(new OnClickListener() {
 
             @Override
             public void onClick(View view) {
-                Toast.makeText(activity, child.get(childPosition)+" holaaa",
+                Toast.makeText(activity, child.get(childPosition) + " holaaa",
                         Toast.LENGTH_SHORT).show();
             }
         });

@@ -127,7 +127,6 @@ public class LoginActivity extends LocalBaseActivity {
                 //     user action.
                 Log.d("Lihat onVerificationCompleted LoginActivity", credential.getProvider().toString());
                 Log.d("Lihat onVerificationCompleted LoginActivity", credential.getSignInMethod().toString());
-                progressDialogSubmit.dismiss();
 
                 signInWithPhoneAuthCredential(credential);
 
@@ -150,7 +149,6 @@ public class LoginActivity extends LocalBaseActivity {
             public void onVerificationFailed(FirebaseException e) {
                 // This callback is invoked in an invalid request for verification is made,
                 // for instance if the the phone number format is not valid.
-                progressDialogSubmit.dismiss();
 
                 Log.w(TAG, "onVerificationFailed", e);
 
@@ -166,7 +164,6 @@ public class LoginActivity extends LocalBaseActivity {
             @Override
             public void onCodeSent(String verificationId, PhoneAuthProvider.ForceResendingToken token) {
 
-                progressDialogSubmit.dismiss();
 
                 Log.d(TAG, "onCodeSentId:" + verificationId);
                 Log.d(TAG, "onCodeSentToken:" + token);
@@ -197,7 +194,6 @@ public class LoginActivity extends LocalBaseActivity {
             @Override
             public void onClick(View view) {
                 checkData();
-                progressDialogSubmit = ProgressDialog.show(LoginActivity.this, "Loading...", "Please Wait..", false, false);
             }
         });
 
@@ -213,6 +209,19 @@ public class LoginActivity extends LocalBaseActivity {
             public void onClick(View view) {
                 signOut();
 
+            }
+        });
+
+        /*bypass login*/
+        tvLoginAppVersionfvbi.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (!ValidUtil.isEmptyField(etLoginfvbi)) {
+                    SessionUtil.setStringPreferences(ISeasonConfig.KEY_ACCOUNT_ID, getNumberValid(etLoginfvbi));
+                    moveToChangeEvent();
+                } else {
+                    SystemUtil.etReqFocus(LoginActivity.this, etLoginfvbi, "Data Kosong");
+                }
             }
         });
     }
@@ -258,7 +267,6 @@ public class LoginActivity extends LocalBaseActivity {
             } else if (isVerify) {
                 verifyPhoneNumberWithCode(mVerificationId, etLoginfvbi.getText().toString());
             }
-
         } else {
             SystemUtil.etReqFocus(LoginActivity.this, etLoginfvbi, "Data Kosong");
         }
@@ -320,11 +328,9 @@ public class LoginActivity extends LocalBaseActivity {
                     Log.d("Lihat onComplete LoginActivity getPhoneNumber", user.getPhoneNumber());
                     Log.d("Lihat onComplete LoginActivity getProviderId", user.getProviderId());
                     Log.d("Lihat onComplete LoginActivity getUid", user.getUid());
-                    progressDialogSubmit.dismiss();
                     sendLoginData();
                     //moveToNext();
                 } else {
-                    progressDialogSubmit.dismiss();
                     Log.d("Lihat onComplete LoginActivity getMessage", task.getException().getMessage());
                     Log.d("Lihat onComplete LoginActivity getLocalizedMessage", task.getException().getLocalizedMessage());
                     if (task.getException() instanceof FirebaseAuthInvalidCredentialsException) {

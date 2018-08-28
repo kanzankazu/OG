@@ -2,7 +2,7 @@ package com.gandsoft.openguide.API.APIresponse.Event;
 
 import java.io.Serializable;
 
-public class EventScheduleListDateDataList implements Serializable {
+public class EventScheduleListDateDataList  {
     public String id;
     public String waktu;
     public String schedule_title;

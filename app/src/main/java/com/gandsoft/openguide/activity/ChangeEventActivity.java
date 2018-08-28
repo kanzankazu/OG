@@ -30,13 +30,16 @@ import com.gandsoft.openguide.API.API;
 import com.gandsoft.openguide.API.APIrequest.Event.EventDataRequestModel;
 import com.gandsoft.openguide.API.APIrequest.UserData.UserDataRequestModel;
 import com.gandsoft.openguide.API.APIresponse.Event.EventAbout;
+import com.gandsoft.openguide.API.APIresponse.Event.EventCommitteeNote;
 import com.gandsoft.openguide.API.APIresponse.Event.EventDataContact;
 import com.gandsoft.openguide.API.APIresponse.Event.EventDataContactList;
 import com.gandsoft.openguide.API.APIresponse.Event.EventDataResponseModel;
+import com.gandsoft.openguide.API.APIresponse.Event.EventEmergencies;
 import com.gandsoft.openguide.API.APIresponse.Event.EventImportanInfo;
 import com.gandsoft.openguide.API.APIresponse.Event.EventPlaceList;
 import com.gandsoft.openguide.API.APIresponse.Event.EventScheduleListDate;
 import com.gandsoft.openguide.API.APIresponse.Event.EventScheduleListDateDataList;
+import com.gandsoft.openguide.API.APIresponse.Event.EventSurroundingArea;
 import com.gandsoft.openguide.API.APIresponse.Event.EventTheEvent;
 import com.gandsoft.openguide.API.APIresponse.UserData.UserDataResponseModel;
 import com.gandsoft.openguide.API.APIresponse.UserData.UserListEventResponseModel;
@@ -140,7 +143,19 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
                 srlChangeEventActivityfvbi.setRefreshing(false);
             }
 
-            if (db.isDataTableValueMultipleNull(SQLiteHelper.TableUserData, SQLiteHelper.KEY_UserData_accountId, SQLiteHelper.KEY_UserData_phoneNumber, accountid, accountid)) {
+            if (NetworkUtil.isConnected(this)) {
+                getAPIUserDataDo(accountid);
+            } else {
+                if (db.isDataTableValueMultipleNull(SQLiteHelper.TableUserData, SQLiteHelper.KEY_UserData_accountId, SQLiteHelper.KEY_UserData_phoneNumber, accountid, accountid)) {
+                    Snackbar.make(findViewById(android.R.id.content), "Belum ada data", Snackbar.LENGTH_LONG).show();
+                } else {
+                    Snackbar.make(findViewById(android.R.id.content), "Memunculkan Data Offline", Snackbar.LENGTH_LONG).show();
+                    updateRecycleView(db.getAllListEvent(accountid));
+                    updateUserInfo(db.getUserData(accountid));
+                }
+            }
+
+            /*if (db.isDataTableValueMultipleNull(SQLiteHelper.TableUserData, SQLiteHelper.KEY_UserData_accountId, SQLiteHelper.KEY_UserData_phoneNumber, accountid, accountid)) {
                 Snackbar.make(findViewById(android.R.id.content), "Data Kosong, bersiap mengmbil data", Snackbar.LENGTH_LONG).show();
                 if (NetworkUtil.isConnected(this)) {
                     getAPIUserDataDo(accountid);
@@ -149,7 +164,7 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
                 updateRecycleView(db.getAllListEvent(accountid));
                 updateUserInfo(db.getUserData(accountid));
                 Snackbar.make(findViewById(android.R.id.content), "Memunculkan Data Offline", Snackbar.LENGTH_LONG).show();
-            }
+            }*/
         } else {
             if (srlChangeEventActivityfvbi.isRefreshing()) {
                 srlChangeEventActivityfvbi.setRefreshing(false);
@@ -246,15 +261,17 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
     }
 
     private void getAPIEventDataValid(String eventId) {
-        if (db.isDataTableValueNull(SQLiteHelper.TableTheEvent, SQLiteHelper.Key_The_Event_EventId, eventId)) {
-            Snackbar.make(findViewById(android.R.id.content), "Data Kosong", Snackbar.LENGTH_LONG).show();
-            if (NetworkUtil.isConnected(this)) {
-                getAPIEventDataDo(eventId, accountid);
-            }
+        if (NetworkUtil.isConnected(this)) {
+            getAPIEventDataDo(eventId, accountid);
         } else {
-            Snackbar.make(findViewById(android.R.id.content), "Memunculkan Data Offline", Snackbar.LENGTH_LONG).show();
-            gotoBaseHome();
+            if (db.isDataTableValueNull(SQLiteHelper.TableTheEvent, SQLiteHelper.Key_The_Event_EventId, eventId)) {
+                Snackbar.make(findViewById(android.R.id.content), "Data Kosong", Snackbar.LENGTH_LONG).show();
+            } else {
+                Snackbar.make(findViewById(android.R.id.content), "Memunculkan Data Offline", Snackbar.LENGTH_LONG).show();
+                gotoBaseHome();
+            }
         }
+
 
     }
 
@@ -270,7 +287,6 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
         } else {
             requestModel.setVersion_data(db.getVersionDataIdEvent(eventId));
         }*/
-
         ProgressDialog progressDialog = new ProgressDialog(this);
         progressDialog.setCancelable(false);
         progressDialog.setMessage("Please Wait...");
@@ -293,6 +309,7 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
                                 EventTheEvent theEvent = model.getThe_event().get(i1);
                                 if (db.isDataTableValueMultipleNull(SQLiteHelper.TableTheEvent, SQLiteHelper.Key_The_Event_EventId, SQLiteHelper.Key_The_Event_version_data, model.getEvent_id(), model.getVersion_data())) {
                                     db.saveTheEvent(theEvent, eventId, model.getFeedback_data(), model.getVersion_data());
+                                    Log.d("Lihat", "onResponse ChangeEventActivity : " + model.getFeedback_data());
                                 } else {
                                     db.updateTheEvent(theEvent, model.getEvent_id(), model.getFeedback_data(), model.getVersion_data());
                                 }
@@ -327,7 +344,7 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
                                 EventDataContact dataContact = model.getData_contact().get(i4);
                                 for (int i41 = 0; i41 < dataContact.getContact_list().size(); i41++) {
                                     EventDataContactList dataContactList = dataContact.getContact_list().get(i41);
-                                    if (db.isDataTableValueMultipleNull(SQLiteHelper.TableContactList, SQLiteHelper.Key_Contact_List_EventId, SQLiteHelper.KEY_Contact_List_Telephone, model.getEvent_id(), dataContactList.telephone)) {
+                                    if (db.isDataTableValueMultipleNull(SQLiteHelper.TableContactList, SQLiteHelper.Key_Contact_List_EventId, SQLiteHelper.KEY_Contact_List_Telephone, model.getEvent_id(), dataContactList.getTelephone())) {
                                         db.saveDataContactList(dataContactList, dataContact.getTitle(), model.getEvent_id());
                                     } else {
                                         db.updateDataContactList(dataContactList, dataContact.getTitle(), model.getEvent_id());
@@ -337,7 +354,7 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
 
                             for (int i5 = 0; i5 < model.getAbout().size(); i5++) {
                                 EventAbout eventAbout = model.getAbout().get(i5);
-                                if (db.isDataTableValueMultipleNull(SQLiteHelper.TableEventAbout, SQLiteHelper.Key_Event_About_EventId, SQLiteHelper.KEY_Event_About_Description, model.getEvent_id(), eventAbout.description)) {
+                                if (db.isDataTableValueMultipleNull(SQLiteHelper.TableEventAbout, SQLiteHelper.Key_Event_About_EventId, SQLiteHelper.KEY_Event_About_Description, model.getEvent_id(), eventAbout.getDescription())) {
                                     db.saveAbout(eventAbout, model.getEvent_id());
                                 } else {
                                     db.updateAbout(eventAbout, model.getEvent_id());
@@ -363,6 +380,36 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
                                     }
                                 }
                             }
+
+                            for (int i7 = 0; i7 < model.getEmergencies().size(); i7++) {
+                                EventEmergencies emergencies = model.getEmergencies().get(i7);
+                                if (db.isDataTableValueMultipleNull(SQLiteHelper.TableEmergencie, SQLiteHelper.Key_Emergencie_EventId, SQLiteHelper.Key_Emergencie_Title, model.getEvent_id(), emergencies.getTitle())) {
+                                    db.saveEmergency(emergencies, model.getEvent_id());
+                                } else {
+                                    db.updateEmergency(emergencies, model.getEvent_id());
+                                }
+                            }
+
+                            for (int i8 = 0; i8 < model.getSurrounding_area().size(); i8++) {
+                                EventSurroundingArea area = model.getSurrounding_area().get(i8);
+                                if (db.isDataTableValueMultipleNull(SQLiteHelper.TableArea, SQLiteHelper.Key_Area_EventId, SQLiteHelper.Key_Area_Title, model.getEvent_id(), area.getTitle())) {
+                                    db.saveArea(area, model.getEvent_id());
+                                } else {
+                                    db.updateArea(area, model.getEvent_id());
+                                }
+                            }
+
+                            for (int i9 = 0; i9 < model.getCommittee_note().size(); i9++) {
+                                EventCommitteeNote note = model.getCommittee_note().get(i9);
+                                if (db.isDataTableValueMultipleNull(SQLiteHelper.TableCommiteNote, SQLiteHelper.Key_CommiteNote_EventId, SQLiteHelper.Key_CommiteNote_Title, model.getEvent_id(), note.getTitle())) {
+                                    db.saveCommiteNote(note, model.getEvent_id());
+                                } else {
+                                    db.updateCommiteNote(note, model.getEvent_id());
+                                }
+                            }
+                            Log.d("Lihat", "onResponse ChangeEventActivity model.getEmergencies().size : " + model.getEmergencies().size());
+                            Log.d("Lihat", "onResponse ChangeEventActivity model.getSurrounding_area().size : " + model.getSurrounding_area().size());
+                            Log.d("Lihat", "onResponse ChangeEventActivity model.getCommittee_note().size : " + model.getCommittee_note().size());
                         } else {
                             Snackbar.make(findViewById(android.R.id.content), model.getStatus(), Snackbar.LENGTH_LONG).show();
                         }
@@ -420,7 +467,7 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
             if (model.getStatus().equalsIgnoreCase("PAST EVENT")) {
                 ceLLPastEventfvbi.setVisibility(View.VISIBLE);
 
-            } else if (model.getStatus().equalsIgnoreCase("ON GOING")) {
+            } else if (model.getStatus().equalsIgnoreCase("ONGOING EVENT")) {
                 ceLLOngoingEventfvbi.setVisibility(View.VISIBLE);
             }
         }

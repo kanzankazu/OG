@@ -8,10 +8,13 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 import com.gandsoft.openguide.API.APIresponse.Event.EventAbout;
+import com.gandsoft.openguide.API.APIresponse.Event.EventCommitteeNote;
 import com.gandsoft.openguide.API.APIresponse.Event.EventDataContactList;
+import com.gandsoft.openguide.API.APIresponse.Event.EventEmergencies;
 import com.gandsoft.openguide.API.APIresponse.Event.EventImportanInfo;
 import com.gandsoft.openguide.API.APIresponse.Event.EventPlaceList;
 import com.gandsoft.openguide.API.APIresponse.Event.EventScheduleListDateDataList;
+import com.gandsoft.openguide.API.APIresponse.Event.EventSurroundingArea;
 import com.gandsoft.openguide.API.APIresponse.Event.EventTheEvent;
 import com.gandsoft.openguide.API.APIresponse.UserData.UserDataResponseModel;
 import com.gandsoft.openguide.API.APIresponse.UserData.UserListEventResponseModel;
@@ -141,6 +144,41 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     public static String Key_Place_List_title = "title";
     public static String Key_Place_List_icon = "icon";
 
+    public static String TableFeedback = "tabFeedback";
+    public static String Key_Feedback_No = "number";
+    public static String Key_Feedback_EventId = "eventId";
+    public static String Key_Feedback_Judul = "judul";
+    public static String Key_Feedback_SubJudul = "subJudul";
+    public static String Key_Feedback_InputType = "inputType";
+    public static String Key_Feedback_Name = "name";
+    public static String Key_Feedback_SubName = "subName";
+    public static String Key_Feedback_Label = "label";
+    public static String Key_Feedback_PlaceHolder = "placeHolder";
+
+    public static String TableEmergencie = "tabEmergencie";
+    public static String Key_Emergencie_No = "number";
+    public static String Key_Emergencie_EventId = "eventId";
+    public static String Key_Emergencie_Icon = "icon";
+    public static String Key_Emergencie_Title = "title";
+    public static String Key_Emergencie_Keterangan = "keterangan";
+
+    public static String TableArea = "tabArea";
+    public static String Key_Area_No = "number";
+    public static String Key_Area_EventId = "eventId";
+    public static String Key_Area_Title = "title";
+    public static String Key_Area_Description = "description";
+
+    public static String TableCommiteNote = "tabCommiteNote";
+    public static String Key_CommiteNote_No = "number";
+    public static String Key_CommiteNote_EventId = "eventId";
+    public static String Key_CommiteNote_Id = "id";
+    public static String Key_CommiteNote_Icon = "icon";
+    public static String Key_CommiteNote_Title = "title";
+    public static String Key_CommiteNote_Note = "note";
+    public static String Key_CommiteNote_Tanggal = "tanggal";
+    public static String Key_CommiteNote_Has_been_opened = "has_been_opened";
+    public static String Key_CommiteNote_Sort_inbox = "sort_inbox";
+
     private static final String query_add_table_UserData = "CREATE TABLE IF NOT EXISTS " + TableUserData + "("
             + KEY_UserData_No + " INTEGER PRIMARY KEY AUTOINCREMENT, "
             + KEY_UserData_accountId + " TEXT, "
@@ -265,6 +303,45 @@ public class SQLiteHelper extends SQLiteOpenHelper {
             + Key_Place_List_icon + " TEXT) ";
     private static final String query_delete_table_PlaceList = "DROP TABLE IF EXISTS " + TablePlaceList;
 
+    private static final String query_add_table_Feedback = "CREATE TABLE IF NOT EXISTS " + TableFeedback + "("
+            + Key_Feedback_No + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+            + Key_Feedback_EventId + " TEXT, "
+            + Key_Feedback_Judul + " TEXT, "
+            + Key_Feedback_SubJudul + " TEXT, "
+            + Key_Feedback_InputType + " TEXT, "
+            + Key_Feedback_Name + " TEXT, "
+            + Key_Feedback_SubName + " TEXT, "
+            + Key_Feedback_Label + " TEXT, "
+            + Key_Feedback_PlaceHolder + " TEXT) ";
+    private static final String query_delete_table_Feedback = "DROP TABLE IF EXISTS " + TableFeedback;
+
+    private static final String query_add_table_Emergencie = "CREATE TABLE IF NOT EXISTS " + TableEmergencie + "("
+            + Key_Emergencie_No + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+            + Key_Emergencie_EventId + " TEXT, "
+            + Key_Emergencie_Icon + " TEXT, "
+            + Key_Emergencie_Title + " TEXT, "
+            + Key_Emergencie_Keterangan + " TEXT) ";
+    private static final String query_delete_table_Emergencie = "DROP TABLE IF EXISTS " + TableEmergencie;
+
+    private static final String query_add_table_Area = "CREATE TABLE IF NOT EXISTS " + TableArea + "("
+            + Key_Area_No + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+            + Key_Area_EventId + " TEXT, "
+            + Key_Area_Title + " TEXT, "
+            + Key_Area_Description + " TEXT) ";
+    private static final String query_delete_table_Area = "DROP TABLE IF EXISTS " + TableArea;
+
+    private static final String query_add_table_CommiteNote = "CREATE TABLE IF NOT EXISTS " + TableCommiteNote + "("
+            + Key_CommiteNote_No + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+            + Key_CommiteNote_EventId + " TEXT, "
+            + Key_CommiteNote_Id + " INTEGER, "
+            + Key_CommiteNote_Icon + " TEXT, "
+            + Key_CommiteNote_Title + " TEXT, "
+            + Key_CommiteNote_Note + " TEXT, "
+            + Key_CommiteNote_Tanggal + " TEXT, "
+            + Key_CommiteNote_Has_been_opened + " TEXT, "
+            + Key_CommiteNote_Sort_inbox + " TEXT) ";
+    private static final String query_delete_table_CommiteNote = "DROP TABLE IF EXISTS " + TableCommiteNote;
+
 
     public SQLiteHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -283,6 +360,10 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         db.execSQL(query_add_table_ScheduleList);
         db.execSQL(query_add_table_TheEvent);
         db.execSQL(query_add_table_PlaceList);
+        db.execSQL(query_add_table_Feedback);
+        db.execSQL(query_add_table_Emergencie);
+        db.execSQL(query_add_table_Area);
+        db.execSQL(query_add_table_CommiteNote);
     }
 
     @Override
@@ -297,6 +378,10 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         db.execSQL(query_delete_table_ScheduleList);
         db.execSQL(query_delete_table_TheEvent);
         db.execSQL(query_delete_table_PlaceList);
+        db.execSQL(query_delete_table_Feedback);
+        db.execSQL(query_delete_table_Emergencie);
+        db.execSQL(query_delete_table_Area);
+        db.execSQL(query_delete_table_CommiteNote);
 
         db.execSQL(query_add_table_UserData);
         db.execSQL(query_add_table_ListEvent);
@@ -308,6 +393,10 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         db.execSQL(query_add_table_ScheduleList);
         db.execSQL(query_add_table_TheEvent);
         db.execSQL(query_add_table_PlaceList);
+        db.execSQL(query_add_table_Feedback);
+        db.execSQL(query_add_table_Emergencie);
+        db.execSQL(query_add_table_Area);
+        db.execSQL(query_add_table_CommiteNote);
     }
 
     private void replaceDataToNewTable(SQLiteDatabase db, String tableName, String tableString) {
@@ -451,10 +540,6 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     public void saveTheEvent(EventTheEvent model, String eventId, String feedback_data, String version_data) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
-        Log.d("Lihat", "saveTheEvent SQLiteHelper : " + model.event_name);
-        Log.d("Lihat", "saveTheEvent SQLiteHelper : " + eventId);
-        Log.d("Lihat", "saveTheEvent SQLiteHelper : " + feedback_data);
-        Log.d("Lihat", "saveTheEvent SQLiteHelper : " + version_data);
         contentValues.put(Key_The_Event_EventId, eventId);
         contentValues.put(Key_The_Event_version_data, version_data);
         contentValues.put(Key_The_Event_feedback, feedback_data);
@@ -470,7 +555,6 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         contentValues.put(Key_The_Event_commentpost_status, model.getCommentpost_status());
         contentValues.put(Key_The_Event_deletepost_status, model.getDeletepost_status());
         long l = db.insert(TableTheEvent, null, contentValues);
-        Log.d("Lihat", "saveTheEvent SQLiteHelper : " + l);
         db.close();
     }
 
@@ -539,6 +623,43 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         db.close();
     }
 
+    public void saveEmergency(EventEmergencies model, String eventId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(Key_Emergencie_EventId, eventId);
+        contentValues.put(Key_Emergencie_Icon, model.getIcon());
+        contentValues.put(Key_Emergencie_Title, model.getTitle());
+        contentValues.put(Key_Emergencie_Keterangan, model.getKeterangan());
+        db.insert(TableEmergencie, null, contentValues);
+        db.close();
+    }
+
+    public void saveArea(EventSurroundingArea model, String eventId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(Key_Area_EventId, eventId);
+        contentValues.put(Key_Area_Title, model.getTitle());
+        contentValues.put(Key_Area_Description, model.getDescription());
+        db.insert(TableArea, null, contentValues);
+        db.close();
+    }
+
+    public void saveCommiteNote(EventCommitteeNote model, String eventId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(Key_CommiteNote_EventId, eventId);
+        contentValues.put(Key_CommiteNote_Id, model.getId());
+        contentValues.put(Key_CommiteNote_Icon, model.getIcon());
+        contentValues.put(Key_CommiteNote_Title, model.getTitle());
+        contentValues.put(Key_CommiteNote_Note, model.getNote());
+        contentValues.put(Key_CommiteNote_Tanggal, model.getTanggal());
+        contentValues.put(Key_CommiteNote_Has_been_opened, model.getHas_been_opened());
+        contentValues.put(Key_CommiteNote_Sort_inbox, model.getSort_inbox());
+        db.insert(TableCommiteNote, null, contentValues);
+        db.close();
+    }
+
+
     public void updateUserData(UserDataResponseModel model, String accountId) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
@@ -577,7 +698,6 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         contentValues.put(KEY_ListEvent_date, model.getDate());
         contentValues.put(KEY_ListEvent_IsFirstIn, false);
         int i = db.update(TableListEvent, contentValues, KEY_ListEvent_eventId + " = ? ", new String[]{model.getEvent_id()});
-        Log.d("Lihat", "updateListEvent SQLiteHelper : " + i);
         db.close();
     }
 
@@ -598,9 +718,6 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     public void updateTheEvent(EventTheEvent model, String eventId, String feedback_data, String version_data) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
-        Log.d("Lihat", "updateTheEvent SQLiteHelper : " + model.getEvent_name());
-        Log.d("Lihat", "updateTheEvent SQLiteHelper : " + eventId);
-        Log.d("Lihat", "updateTheEvent SQLiteHelper : " + version_data);
         contentValues.put(Key_The_Event_background, model.getBackground());
         contentValues.put(Key_The_Event_logo, model.getLogo());
         contentValues.put(Key_The_Event_event_name, model.getEvent_name());
@@ -678,6 +795,41 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         db.close();
     }
 
+    public void updateEmergency(EventEmergencies model, String eventId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(Key_Emergencie_EventId, eventId);
+        contentValues.put(Key_Emergencie_Icon, model.getIcon());
+        contentValues.put(Key_Emergencie_Title, model.getTitle());
+        contentValues.put(Key_Emergencie_Keterangan, model.getKeterangan());
+        db.update(TableEmergencie, contentValues, Key_Emergencie_EventId + " = ? ", new String[]{eventId});
+        db.close();
+    }
+
+    public void updateArea(EventSurroundingArea model, String eventId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(Key_Area_EventId, eventId);
+        contentValues.put(Key_Area_Title, model.getTitle());
+        contentValues.put(Key_Area_Description, model.getDescription());
+        db.update(TableArea, contentValues, Key_Area_EventId + " = ? ", new String[]{eventId});
+        db.close();
+    }
+
+    public void updateCommiteNote(EventCommitteeNote model, String eventId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(Key_CommiteNote_Id, model.getId());
+        contentValues.put(Key_CommiteNote_Icon, model.getIcon());
+        contentValues.put(Key_CommiteNote_Title, model.getTitle());
+        contentValues.put(Key_CommiteNote_Note, model.getNote());
+        contentValues.put(Key_CommiteNote_Tanggal, model.getTanggal());
+        contentValues.put(Key_CommiteNote_Has_been_opened, model.getHas_been_opened());
+        contentValues.put(Key_CommiteNote_Sort_inbox, model.getSort_inbox());
+        db.update(TableCommiteNote, contentValues, Key_CommiteNote_EventId + " = ?", new String[]{eventId});
+        db.close();
+    }
+
     public ArrayList<UserDataResponseModel> getUserData(String accountid) {
         ArrayList<UserDataResponseModel> modelList = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
@@ -710,8 +862,6 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     public ArrayList<UserListEventResponseModel> getAllListEvent(String accountid) {
         ArrayList<UserListEventResponseModel> modelList = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
-        /*String query = " SELECT * FROM " + TableListEvent + " Where " + KEY_ListEvent_accountId + " = '" + accountid + "'";
-        Cursor cursor = db.rawQuery(query, null);*/
         Cursor cursor = db.query(TableListEvent, null, KEY_ListEvent_accountId + " = ? ", new String[]{accountid}, null, null, null);
 
         if (cursor.moveToFirst()) {
@@ -803,8 +953,9 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         model.setLogo(cursor.getString(cursor.getColumnIndex(Key_The_Event_logo)));
         model.setEvent_name(cursor.getString(cursor.getColumnIndex(Key_The_Event_event_name)));
         model.setEvent_location(cursor.getString(cursor.getColumnIndex(Key_The_Event_event_location)));
-        model.setWeather(cursor.getString(cursor.getColumnIndex(Key_The_Event_weather)));
+        model.setFeedback(cursor.getString(cursor.getColumnIndex(Key_The_Event_feedback)));
         model.setDate_event(cursor.getString(cursor.getColumnIndex(Key_The_Event_date_event)));
+        model.setWeather(cursor.getString(cursor.getColumnIndex(Key_The_Event_weather)));
         model.setTitle_contact(cursor.getString(cursor.getColumnIndex(Key_The_Event_title_contact)));
         model.setApi_weather(cursor.getString(cursor.getColumnIndex(Key_The_Event_api_weather)));
         model.setWelcome_note(cursor.getString(cursor.getColumnIndex(Key_The_Event_welcome_note)));
@@ -876,7 +1027,6 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         if (cursor.moveToFirst()) {
             do {
                 modelList.add(cursor.getString(cursor.getColumnIndex(Key_Schedule_List_date)));
-                Log.d("Lihat", "getScheduleListDate SQLiteHelper : " + cursor.getString(cursor.getColumnIndex(Key_Schedule_List_date)) );
             } while (cursor.moveToNext());
         }
 
@@ -907,7 +1057,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     public ArrayList<EventDataContactList> getDataContactList(String eventId) {
         ArrayList<EventDataContactList> modelList = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.query(TableContactList, null, Key_Contact_List_EventId + " = ? ", new String[]{eventId}, KEY_Contact_List_Telephone, null,Key_Contact_List_No);
+        Cursor cursor = db.query(TableContactList, null, Key_Contact_List_EventId + " = ? ", new String[]{eventId}, KEY_Contact_List_Telephone, null, Key_Contact_List_No);
 
         if (cursor.moveToFirst()) {
             do {
@@ -969,6 +1119,73 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         cursor.close();
         return modelList;
     }
+
+    public ArrayList<EventEmergencies> getEmergencie(String eventId) {
+        ArrayList<EventEmergencies> modelList = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(TableEmergencie, null, Key_Emergencie_EventId + " = ? ", new String[]{eventId}, null, null, Key_Emergencie_No);
+
+        if (cursor.moveToFirst()) {
+            do {
+                EventEmergencies model = new EventEmergencies();
+                model.setNumber(cursor.getInt(cursor.getColumnIndex(Key_Emergencie_No)));
+                model.setEventId(cursor.getString(cursor.getColumnIndex(Key_Emergencie_EventId)));
+                model.setIcon(cursor.getString(cursor.getColumnIndex(Key_Emergencie_Icon)));
+                model.setTitle(cursor.getString(cursor.getColumnIndex(Key_Emergencie_Title)));
+                model.setKeterangan(cursor.getString(cursor.getColumnIndex(Key_Emergencie_Keterangan)));
+                modelList.add(model);
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        return modelList;
+    }
+
+    public ArrayList<EventSurroundingArea> getSurroundingArea(String eventId) {
+        ArrayList<EventSurroundingArea> modelList = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(TableArea, null, Key_Area_EventId + " = ? ", new String[]{eventId}, null, null, Key_Area_No);
+
+        if (cursor.moveToFirst()) {
+            do {
+                EventSurroundingArea model = new EventSurroundingArea();
+                model.setNumber(cursor.getInt(cursor.getColumnIndex(Key_Area_No)));
+                model.setEventId(cursor.getString(cursor.getColumnIndex(Key_Area_EventId)));
+                model.setTitle(cursor.getString(cursor.getColumnIndex(Key_Area_Title)));
+                model.setDescription(cursor.getString(cursor.getColumnIndex(Key_Area_Description)));
+                modelList.add(model);
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        return modelList;
+    }
+
+    public ArrayList<EventCommitteeNote> getCommiteNote(String eventId) {
+        ArrayList<EventCommitteeNote> modelList = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(TableCommiteNote, null, Key_CommiteNote_EventId + " = ? ", new String[]{eventId}, null, null, Key_CommiteNote_No);
+
+        if (cursor.moveToFirst()) {
+            do {
+                EventCommitteeNote model = new EventCommitteeNote();
+                model.setNumber(cursor.getInt(cursor.getColumnIndex(Key_CommiteNote_No)));
+                model.setEventId(cursor.getString(cursor.getColumnIndex(Key_CommiteNote_EventId)));
+                model.setId(cursor.getString(cursor.getColumnIndex(Key_CommiteNote_Id)));
+                model.setIcon(cursor.getString(cursor.getColumnIndex(Key_CommiteNote_Icon)));
+                model.setTitle(cursor.getString(cursor.getColumnIndex(Key_CommiteNote_Title)));
+                model.setNote(cursor.getString(cursor.getColumnIndex(Key_CommiteNote_Note)));
+                model.setTanggal(cursor.getString(cursor.getColumnIndex(Key_CommiteNote_Tanggal)));
+                model.setHas_been_opened(cursor.getString(cursor.getColumnIndex(Key_CommiteNote_Has_been_opened)));
+                model.setSort_inbox(cursor.getString(cursor.getColumnIndex(Key_CommiteNote_Sort_inbox)));
+                modelList.add(model);
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        return modelList;
+    }
+
 
     public void deleteAllDataUser() {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -1082,10 +1299,22 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         }
     }
 
-    public boolean getIsFirstIn(String eventId) {
+    public String getFeedback(String eventId) {
         SQLiteDatabase db = this.getReadableDatabase();
-        //String selectQuery = "SELECT * FROM " + TableListEvent + " WHERE " + KEY_ListEvent_eventId + " = '" + eventId + "' AND " + KEY_ListEvent_IsFirstIn + " = " + true;
-        //Cursor cursor = db.rawQuery(selectQuery, null);
+        Cursor cursor = db.query(TableTheEvent, null, Key_The_Event_EventId + " = ? ", new String[]{eventId}, null, null, null);
+
+        cursor.close();
+        return cursor.getString(cursor.getColumnIndex(Key_The_Event_feedback));
+        /*if (cursor.getCount() == 1) {
+            return (cursor.getString(cursor.getColumnIndex(Key_The_Event_feedback)));
+        } else {
+            cursor.close();
+            return "";
+        }*/
+    }
+
+    public boolean isFirstIn(String eventId) {
+        SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.query(TableListEvent, null, KEY_ListEvent_eventId + " = ? AND " + KEY_ListEvent_IsFirstIn + " = ? ", new String[]{eventId, String.valueOf(true)}, null, null, null);
         if (cursor != null) {
             cursor.close();

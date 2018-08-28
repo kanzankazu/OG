@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:animateLayoutChanges="true"
     android:orientation="vertical"
     tools:context=".activity.infomenu.aMapActivity">
 
@@ -72,4 +73,14 @@
         android:layout_height="match_parent"
         android:layout_below="@+id/appbar"
         tools:context=".MapsActivity" />
+
+    <TextView
+        android:id="@+id/tvMapsFocusEvent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/appbar"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="10dp"
+        android:textColor="@color/white" />
+
 </RelativeLayout>

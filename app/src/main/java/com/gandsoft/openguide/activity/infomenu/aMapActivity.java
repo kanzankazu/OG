@@ -39,6 +39,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
@@ -68,6 +69,7 @@ public class aMapActivity extends LocalBaseActivity implements OnMapReadyCallbac
     private CameraUpdate cameraUpdate;
     private CardView cvMapsMarkerTitlefvbi, cvMapsFocusEventfvbi;
     private TextView tvMapsMarkerTitlefvbi;
+    private TextView tvMapsFocusEventfvbi;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,6 +95,7 @@ public class aMapActivity extends LocalBaseActivity implements OnMapReadyCallbac
     private void initComponent() {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         cvMapsFocusEventfvbi = (CardView) findViewById(R.id.cvMapsFocusEvent);
+        tvMapsFocusEventfvbi = (TextView) findViewById(R.id.tvMapsFocusEvent);
         cvMapsMarkerTitlefvbi = (CardView) findViewById(R.id.cvMapsMarkerTitle);
         tvMapsMarkerTitlefvbi = (TextView) findViewById(R.id.tvMapsMarkerTitle);
     }
@@ -130,6 +133,14 @@ public class aMapActivity extends LocalBaseActivity implements OnMapReadyCallbac
         //getMyLocation();
 
         getPlaceLocation();
+
+        mMap.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
+            @Override
+            public void onCameraChange(CameraPosition cameraPosition) {
+                tvMapsFocusEventfvbi.setText("" + cameraPosition.zoom);
+            }
+        });
+
     }
 
     private void getPlaceLocation() {
@@ -172,7 +183,19 @@ public class aMapActivity extends LocalBaseActivity implements OnMapReadyCallbac
         int height = getResources().getDisplayMetrics().heightPixels;
         int padding = (int) (width * 0.12); // offset from edges of the map 12% of screen
         cameraUpdate = CameraUpdateFactory.newLatLngBounds(bounds, width, height, padding);
-        mMap.animateCamera(cameraUpdate);
+        mMap.animateCamera(cameraUpdate, new GoogleMap.CancelableCallback() {
+            @Override
+            public void onFinish() {
+                if (mMap.getCameraPosition().zoom > 15) {
+                    mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
+                }
+            }
+
+            @Override
+            public void onCancel() {
+
+            }
+        });
     }
 
     private void getMyLocation() {

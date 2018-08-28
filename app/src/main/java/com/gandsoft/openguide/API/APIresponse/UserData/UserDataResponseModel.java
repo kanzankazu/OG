@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UserDataResponseModel implements Serializable {
+public class UserDataResponseModel  {
 
     public String account_id;
     public String image_url;

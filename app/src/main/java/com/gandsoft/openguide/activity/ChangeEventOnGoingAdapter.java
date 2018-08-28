@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -24,7 +25,7 @@ class ChangeEventOnGoingAdapter extends RecyclerView.Adapter<ChangeEventOnGoingA
     private ChangeEventPastHook parent;
     private List<UserListEventResponseModel> models = new ArrayList<>();
 
-    public ChangeEventOnGoingAdapter(Context context, List<UserListEventResponseModel> items) {
+    public ChangeEventOnGoingAdapter(Context parent, List<UserListEventResponseModel> items) {
         models = items;
         try {
             this.parent = (ChangeEventPastHook) parent;
@@ -43,7 +44,7 @@ class ChangeEventOnGoingAdapter extends RecyclerView.Adapter<ChangeEventOnGoingA
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         UserListEventResponseModel model = models.get(position);
-        if (model.getStatus().equalsIgnoreCase("ON GOING")) {
+        if (model.getStatus().equalsIgnoreCase("ONGOING EVENT")) {
             Glide.with((Activity) parent)
                     .load(model.getBackground())
                     .placeholder(R.drawable.template_account_og)
@@ -92,7 +93,15 @@ class ChangeEventOnGoingAdapter extends RecyclerView.Adapter<ChangeEventOnGoingA
     }
 
     public void setData(List<UserListEventResponseModel> datas) {
-        models = datas;
+        /*models = datas;
+        notifyDataSetChanged();*/
+        List<UserListEventResponseModel> ds = new ArrayList<>();
+        for (UserListEventResponseModel d : datas) {
+            if (d.getStatus().equalsIgnoreCase("ONGOING EVENT")) {
+                ds.add(d);
+            }
+        }
+        models = ds;
         notifyDataSetChanged();
     }
 

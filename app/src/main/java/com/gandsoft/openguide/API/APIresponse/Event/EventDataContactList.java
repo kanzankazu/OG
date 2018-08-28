@@ -2,7 +2,7 @@ package com.gandsoft.openguide.API.APIresponse.Event;
 
 import java.io.Serializable;
 
-public class EventDataContactList implements Serializable {
+public class EventDataContactList  {
     public String icon;
     public String icon_local;
     public String telephone;

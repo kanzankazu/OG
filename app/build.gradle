@@ -59,9 +59,9 @@ dependencies {
     implementation 'com.google.firebase:firebase-messaging:12.0.1'
     implementation 'com.google.firebase:firebase-crash:12.0.1'
     implementation 'com.google.firebase:firebase-auth:12.0.1'
-    implementation 'com.google.dagger:dagger:2.4'
     /**/
     implementation 'com.github.acan12:coconut:1.0.7'
+    implementation 'com.google.dagger:dagger:2.4'
     annotationProcessor "com.google.dagger:dagger-compiler:2.4"
     implementation 'uk.co.chrisjenx:calligraphy:2.3.0'
     implementation 'com.squareup.retrofit2:retrofit:2.3.0'
@@ -86,6 +86,7 @@ dependencies {
     implementation 'com.squareup.picasso:picasso:2.5.2'
     implementation 'com.jsibbold:zoomage:1.1.0'
     implementation 'org.jsoup:jsoup:1.11.3'
+    implementation 'org.sufficientlysecure:html-textview:3.6'
     implementation files('libs/universal-image-loader-1.9.5.jar')
     testImplementation 'junit:junit:4.12'
 }

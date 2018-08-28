@@ -2,6 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:animateLayoutChanges="true"
     android:background="@color/colorPrimary">
 
     <LinearLayout
@@ -14,21 +15,21 @@
         <ImageView
             android:layout_width="150dp"
             android:layout_height="150dp"
-            android:src="@drawable/ic_into1"
-            android:padding="30dp"
-            android:layout_marginBottom="20dp"
             android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="20dp"
             android:background="@drawable/background_circle"
-            android:backgroundTint="@color/colorPrimaryDark"/>
+            android:backgroundTint="@color/colorPrimaryDark"
+            android:padding="30dp"
+            android:src="@drawable/ic_into1" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/slide_1_title"
-            android:visibility="gone"
             android:textColor="@android:color/white"
             android:textSize="@dimen/slide_title"
-            android:textStyle="normal"/>
+            android:textStyle="normal"
+            android:visibility="gone" />
 
         <TextView
             android:layout_width="wrap_content"

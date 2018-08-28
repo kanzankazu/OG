@@ -2,7 +2,7 @@ package com.gandsoft.openguide.API.APIresponse.Event;
 
 import java.io.Serializable;
 
-public class EventTheEvent implements Serializable {
+public class EventTheEvent  {
     public String background;
     public String background_local;
     public String logo;

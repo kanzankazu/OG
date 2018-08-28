@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.Html;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -69,7 +70,7 @@ public class dComitteContactActivity extends AppCompatActivity implements Comitt
         ab.setTitle("Comitte Contact");
 
         EventTheEvent eventTitle = db.getTheEvent(eventId);
-        tvComitteTitlefvbi.setText(eventTitle.getEvent_name() + "\nCommittee Contacts");
+        tvComitteTitlefvbi.setText(Html.fromHtml(eventTitle.getEvent_name()) + "\nCommittee Contacts");
 
         ArrayList<EventDataContactList> models = db.getDataContactList(eventId);
         recycleviewAdapter = new ComitteContactAdapter(this, models);

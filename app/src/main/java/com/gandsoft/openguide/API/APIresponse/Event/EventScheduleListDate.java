@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class EventScheduleListDate implements Serializable {
+public class EventScheduleListDate  {
     public String date;
     public List<EventScheduleListDateDataList> data = new ArrayList<>();
 
