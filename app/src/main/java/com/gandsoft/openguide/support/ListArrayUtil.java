@@ -3,6 +3,7 @@ package com.gandsoft.openguide.support;
 import android.annotation.SuppressLint;
 import android.text.InputFilter;
 import android.text.InputType;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.EditText;
 
@@ -143,6 +144,38 @@ public class ListArrayUtil {
         return Arrays.asList(strings);
     }
 
+    public static String convertListStringToString1(ArrayList<String> stringList) {
+        String[] myStringList = stringList.toArray(new String[stringList.size()]);
+        return TextUtils.join("‚‗‚", myStringList);
+    }
+
+    public static ArrayList<String> convertStringToListString1(String s) {
+        return new ArrayList<String>(Arrays.asList(TextUtils.split(s, "‚‗‚")));
+    }
+
+    public static String[] convertStringToArrayString1(String s) {
+        return s.split("‚‗‚");
+    }
+
+    public static String strSeparator = "__,__";
+
+    public static String convertStringArrayToString2(String[] array) {
+        String str = "";
+        for (int i = 0; i < array.length; i++) {
+            str = str + array[i];
+            // Do not append comma at the end of last element
+            if (i < array.length - 1) {
+                str = str + strSeparator;
+            }
+        }
+        return str;
+    }
+
+    public static String[] convertStringToStringArray2(String str) {
+        String[] arr = str.split(strSeparator);
+        return arr;
+    }
+
     public static boolean isListContainInt(final int[] array, final int key) {
         Arrays.sort(array);
         return Arrays.binarySearch(array, key) >= 0;
@@ -225,5 +258,6 @@ public class ListArrayUtil {
         }
         return integers;
     }
+
 
 }

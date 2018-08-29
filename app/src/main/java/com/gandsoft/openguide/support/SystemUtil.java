@@ -15,7 +15,6 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
 import com.gandsoft.openguide.App;
 import com.gandsoft.openguide.R;
 import com.google.android.gms.auth.GoogleAuthUtil;
@@ -28,7 +27,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 public class SystemUtil {
 
@@ -259,9 +257,12 @@ public class SystemUtil {
         return dates;
     }
 
-    public static void setUnderlineTextView (TextView textview){
+    public static void setUnderlineTextView(TextView textview) {
         textview.setPaintFlags(textview.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
     }
+
+
+
 
 
 }

@@ -2,10 +2,15 @@ package com.gandsoft.openguide.support;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.text.TextUtils;
 
 import com.gandsoft.openguide.App;
 import com.gandsoft.openguide.IConfig;
 import com.google.gson.Gson;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import static com.gandsoft.openguide.ISeasonConfig.ERROR_RETRIEVAL;
 
@@ -59,6 +64,24 @@ public class SessionUtil implements IConfig {
         return pref != null ? pref.contains(key) : false;
     }
 
+    /*public static void purgeUImodel() {
+        editor.remove(KEY_UITEM).apply();
+        //editor.commit();
+    }*/
+
+    public static void checkForNullKey(String key) {
+        if (key == null) {
+            throw new NullPointerException();
+        }
+    }
+
+    public static void checkForNullValue(String value) {
+        if (value == null) {
+            throw new NullPointerException();
+        }
+    }
+
+    /**/
     public static void setIntPreferences(String key, int value) {
         editor.putInt(key, value);
         editor.commit();
@@ -99,7 +122,34 @@ public class SessionUtil implements IConfig {
         return Double.longBitsToDouble(pref.getLong(key, Double.doubleToLongBits(doubleValue)));
     }
 
-    public static void deleteKeyPreferences(String key){
+    public static void saveListString(String key, List<String> stringList) {
+        checkForNullKey(key);
+        String[] myStringList = stringList.toArray(new String[stringList.size()]);
+        pref.edit().putString(key, TextUtils.join("‚‗‚", myStringList)).apply();
+    }
+
+    public static ArrayList<String> loadListString(String key) {
+        return new ArrayList<String>(Arrays.asList(TextUtils.split(pref.getString(key, ""), "‚‗‚")));
+    }
+
+    public static void saveListInt(String key, ArrayList<Integer> intList) {
+        checkForNullKey(key);
+        Integer[] myIntList = intList.toArray(new Integer[intList.size()]);
+        pref.edit().putString(key, TextUtils.join("‚‗‚", myIntList)).apply();
+    }
+
+    public static ArrayList<Integer> loadListInt(String key) {
+        String[] myList = TextUtils.split(pref.getString(key, ""), "‚‗‚");
+        ArrayList<String> arrayToList = new ArrayList<String>(Arrays.asList(myList));
+        ArrayList<Integer> newList = new ArrayList<Integer>();
+
+        for (String item : arrayToList)
+            newList.add(Integer.parseInt(item));
+
+        return newList;
+    }
+
+    public static void deleteKeyPreferences(String key) {
         pref.edit();
         editor.remove(key);
         editor.commit();

@@ -11,6 +11,7 @@ import com.gandsoft.openguide.API.APIresponse.Event.EventAbout;
 import com.gandsoft.openguide.API.APIresponse.Event.EventCommitteeNote;
 import com.gandsoft.openguide.API.APIresponse.Event.EventDataContactList;
 import com.gandsoft.openguide.API.APIresponse.Event.EventEmergencies;
+import com.gandsoft.openguide.API.APIresponse.Event.EventFeedback;
 import com.gandsoft.openguide.API.APIresponse.Event.EventImportanInfo;
 import com.gandsoft.openguide.API.APIresponse.Event.EventPlaceList;
 import com.gandsoft.openguide.API.APIresponse.Event.EventScheduleListDateDataList;
@@ -659,6 +660,21 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         db.close();
     }
 
+    public void saveFeedback(EventFeedback model, String eventId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(Key_Feedback_EventId, eventId);
+        contentValues.put(Key_Feedback_Judul, model.getJudul());
+        contentValues.put(Key_Feedback_SubJudul, model.getSubJudul());
+        contentValues.put(Key_Feedback_InputType, model.getInputType());
+        contentValues.put(Key_Feedback_Name, model.getName());
+        contentValues.put(Key_Feedback_SubName, model.getSubName());
+        contentValues.put(Key_Feedback_Label, model.getLabel());
+        contentValues.put(Key_Feedback_PlaceHolder, model.getPlaceholder());
+        db.insert(TableFeedback, null, contentValues);
+        db.close();
+    }
+
 
     public void updateUserData(UserDataResponseModel model, String accountId) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -827,6 +843,20 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         contentValues.put(Key_CommiteNote_Has_been_opened, model.getHas_been_opened());
         contentValues.put(Key_CommiteNote_Sort_inbox, model.getSort_inbox());
         db.update(TableCommiteNote, contentValues, Key_CommiteNote_EventId + " = ?", new String[]{eventId});
+        db.close();
+    }
+
+    public void updateFeedback(EventFeedback model, String eventId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(Key_Feedback_Judul, model.getJudul());
+        contentValues.put(Key_Feedback_SubJudul, model.getSubJudul());
+        contentValues.put(Key_Feedback_InputType, model.getInputType());
+        contentValues.put(Key_Feedback_Name, model.getName());
+        contentValues.put(Key_Feedback_SubName, model.getSubName());
+        contentValues.put(Key_Feedback_Label, model.getLabel());
+        contentValues.put(Key_Feedback_PlaceHolder, model.getPlaceholder());
+        db.update(TableFeedback, contentValues, Key_Feedback_EventId + " = ?", new String[]{eventId});
         db.close();
     }
 
@@ -1186,6 +1216,31 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         return modelList;
     }
 
+    public ArrayList<EventFeedback> getFeedback(String eventId) {
+        ArrayList<EventFeedback> modelList = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(TableFeedback, null, Key_Feedback_EventId + " = ? ", new String[]{eventId}, null, null, Key_Feedback_No);
+
+        if (cursor.moveToFirst()) {
+            do {
+                EventFeedback model = new EventFeedback();
+                model.setNumber(cursor.getInt(cursor.getColumnIndex(Key_Feedback_No)));
+                model.setEventId(cursor.getString(cursor.getColumnIndex(Key_Feedback_EventId)));
+                model.setJudul(cursor.getString(cursor.getColumnIndex(Key_Feedback_Judul)));
+                model.setSubJudul(cursor.getString(cursor.getColumnIndex(Key_Feedback_SubJudul)));
+                model.setInputType(cursor.getString(cursor.getColumnIndex(Key_Feedback_InputType)));
+                model.setName(cursor.getString(cursor.getColumnIndex(Key_Feedback_Name)));
+                model.setSubName(cursor.getString(cursor.getColumnIndex(Key_Feedback_SubName)));
+                model.setLabel(cursor.getString(cursor.getColumnIndex(Key_Feedback_Label)));
+                model.setPlaceholder(cursor.getString(cursor.getColumnIndex(Key_Feedback_PlaceHolder)));
+                modelList.add(model);
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        return modelList;
+    }
+
 
     public void deleteAllDataUser() {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -1220,8 +1275,6 @@ public class SQLiteHelper extends SQLiteOpenHelper {
 
     public boolean isDataTableKeyMultipleNull(String table, String key, String key2) {
         SQLiteDatabase db = this.getReadableDatabase();
-        //String selectQuery = "SELECT * FROM " + tableName + " WHERE " + targetKey + " = '" + targetValue + "'";
-        //Cursor cursor = db.rawQuery(selectQuery, null);
         Cursor cursor = db.query(table, null, key + " IS NULL AND " + key2 + " IS NULL ", null, null, null, null);
         if (cursor.getCount() == 0) {
             cursor.close();
@@ -1249,6 +1302,20 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         //String selectQuery = "SELECT * FROM " + tableName + " WHERE " + targetKey + " = '" + targetValue + "'";
         //Cursor cursor = db.rawQuery(selectQuery, null);
         Cursor cursor = db.query(table, null, key + " = ? AND " + key2 + " = ? ", new String[]{value, value2}, null, null, null);
+        if (cursor.getCount() == 0) {
+            cursor.close();
+            return true;
+        } else {
+            cursor.close();
+            return false;
+        }
+    }
+
+    public boolean isDataTableValueMultipleNull2(String table, String key, String key2, String value) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        //String selectQuery = "SELECT * FROM " + tableName + " WHERE " + targetKey + " = '" + targetValue + "'";
+        //Cursor cursor = db.rawQuery(selectQuery, null);
+        Cursor cursor = db.query(table, null, key + " = ? AND " + key2 + " IS NULL ", new String[]{value}, null, null, null);
         if (cursor.getCount() == 0) {
             cursor.close();
             return true;
@@ -1299,7 +1366,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         }
     }
 
-    public String getFeedback(String eventId) {
+    public String getFeedbackString(String eventId) {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.query(TableTheEvent, null, Key_The_Event_EventId + " = ? ", new String[]{eventId}, null, null, null);
 

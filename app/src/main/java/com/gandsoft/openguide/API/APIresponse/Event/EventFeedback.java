@@ -3,12 +3,76 @@ package com.gandsoft.openguide.API.APIresponse.Event;
 import java.io.Serializable;
 
 public class EventFeedback {
-    public String background;
-    public String logo;
-    public String description;
+    public String judul;
+    public String subJudul;
+    public String inputType;
+    public String name;
+    public String subName;
+    public String label;
+    public String placeholder;
 
     public int number;
     public String eventId;
+
+    public String getJudul() {
+        return judul;
+    }
+
+    public void setJudul(String judul) {
+        this.judul = judul;
+    }
+
+    public String getSubJudul() {
+        return subJudul;
+    }
+
+    public void setSubJudul(String subJudul) {
+        this.subJudul = subJudul;
+    }
+
+    public String getInputType() {
+        return inputType;
+    }
+
+    public void setInputType(String inputType) {
+        this.inputType = inputType;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getSubName() {
+        return subName;
+    }
+
+    public void setSubName(String subName) {
+        this.subName = subName;
+    }
+
+    public String getLabel() {
+        return label;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
+    }
+
+    public String getPlaceholder() {
+        return placeholder;
+    }
+
+    public void setPlaceholder(String placeholder) {
+        this.placeholder = placeholder;
+    }
+
+    public int getNumber() {
+        return number;
+    }
 
     public void setNumber(int number) {
         this.number = number;
@@ -20,29 +84,5 @@ public class EventFeedback {
 
     public void setEventId(String eventId) {
         this.eventId = eventId;
-    }
-
-    public String getBackground() {
-        return background;
-    }
-
-    public void setBackground(String background) {
-        this.background = background;
-    }
-
-    public String getLogo() {
-        return logo;
-    }
-
-    public void setLogo(String logo) {
-        this.logo = logo;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
     }
 }
