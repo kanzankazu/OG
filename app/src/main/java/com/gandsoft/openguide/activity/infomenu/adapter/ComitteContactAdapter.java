@@ -22,7 +22,6 @@ public class ComitteContactAdapter extends RecyclerView.Adapter<ComitteContactAd
     private ComitteContactHook parent;
     private List<EventDataContactList> models = new ArrayList<>();
 
-
     public ComitteContactAdapter(Activity parent, ArrayList<EventDataContactList> models) {
         this.models = models;
         try {

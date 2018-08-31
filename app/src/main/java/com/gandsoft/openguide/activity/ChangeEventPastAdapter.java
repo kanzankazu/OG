@@ -112,9 +112,15 @@ public class ChangeEventPastAdapter extends RecyclerView.Adapter<ChangeEventPast
     public void replaceData(List<UserListEventResponseModel> datas) {
         if (models.size() > 0) {
             models.clear();
-            models.addAll(datas);
+            List<UserListEventResponseModel> ds = new ArrayList<>();
+            for (UserListEventResponseModel d : datas) {
+                if (d.getStatus().equalsIgnoreCase("PAST EVENT")) {
+                    ds.add(d);
+                }
+            }
+            models = ds;
         } else {
-            models = datas;
+            setData(datas);
         }
         notifyDataSetChanged();
     }

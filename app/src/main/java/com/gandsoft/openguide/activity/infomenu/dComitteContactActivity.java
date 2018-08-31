@@ -22,19 +22,18 @@ import com.gandsoft.openguide.activity.infomenu.adapter.ComitteContactHook;
 import com.gandsoft.openguide.database.SQLiteHelper;
 import com.gandsoft.openguide.support.SessionUtil;
 
+import org.sufficientlysecure.htmltextview.HtmlHttpImageGetter;
 import org.sufficientlysecure.htmltextview.HtmlTextView;
 
 import java.util.ArrayList;
 
 public class dComitteContactActivity extends AppCompatActivity implements ComitteContactHook {
-    private Toolbar toolbar;
-    private ActionBar ab;
-
-    private String accountId, eventId;
     SQLiteHelper db = new SQLiteHelper(this);
 
+    private Toolbar toolbar;
+    private ActionBar ab;
+    private String accountId, eventId;
     private HtmlTextView tvComitteTitlefvbi;
-
     private ComitteContactAdapter recycleviewAdapter;
     private RecyclerView rvCommiteContactfvbi;
 
@@ -71,7 +70,7 @@ public class dComitteContactActivity extends AppCompatActivity implements Comitt
         ab.setTitle("Comitte Contact");
 
         EventTheEvent eventTitle = db.getTheEvent(eventId);
-        tvComitteTitlefvbi.setText(Html.fromHtml(eventTitle.getEvent_name()) + "\nCommittee Contacts");
+        tvComitteTitlefvbi.setHtml(eventTitle.getEvent_name(), new HtmlHttpImageGetter(tvComitteTitlefvbi));
 
         ArrayList<EventDataContactList> models = db.getDataContactList(eventId);
         recycleviewAdapter = new ComitteContactAdapter(this, models);

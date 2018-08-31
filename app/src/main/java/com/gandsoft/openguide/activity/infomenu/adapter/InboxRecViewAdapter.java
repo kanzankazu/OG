@@ -1,92 +1,100 @@
 package com.gandsoft.openguide.activity.infomenu.adapter;
 
-import android.content.Context;
+import android.app.Activity;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.gandsoft.openguide.API.APIresponse.Event.EventCommitteeNote;
 import com.gandsoft.openguide.R;
 
+import org.sufficientlysecure.htmltextview.HtmlTextView;
+
 import java.util.ArrayList;
+import java.util.List;
 
-/** Authuor: Hari vignesh Jayapalan
- *  Created on: 6 Feb 2016
- *  Email: hariutd@gmail.com
- *
- *  Implementing custom RecyclerView Adapter
- *  Tutorial @ https://medium.com/@harivigneshjayapalan
- * */
-public class InboxRecViewAdapter extends RecyclerView.Adapter<InboxRecViewAdapter.MyViewHolder> {
-
-    //Creating an arraylist of POJO objects
-    private ArrayList<InboxRecViewPojo> list_members=new ArrayList<>();
-    private final LayoutInflater inflater;
-    View view;
-    MyViewHolder holder;
-    private Context context;
+public class InboxRecViewAdapter extends RecyclerView.Adapter<InboxRecViewAdapter.ViewHolder> {
 
 
-    public InboxRecViewAdapter(Context context){
-        this.context=context;
-        inflater= LayoutInflater.from(context);
+    private Activity activity;
+    private List<EventCommitteeNote> models;
+
+    public InboxRecViewAdapter(Activity activity, ArrayList<EventCommitteeNote> models) {
+        this.activity = activity;
+        this.models = models;
     }
 
-
-    //This method inflates view present in the RecyclerView
+    @NonNull
     @Override
-    public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        view=inflater.inflate(R.layout.recview_inbox, parent, false);
-        holder=new MyViewHolder(view);
-        return holder;
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_list_inbox, parent, false);
+        return new InboxRecViewAdapter.ViewHolder(view);
     }
 
-    //Binding the data using get() method of POJO object
     @Override
-    public void onBindViewHolder(final MyViewHolder holder, int position) {
-        InboxRecViewPojo list_items=list_members.get(position);
-        holder.user_name.setText(list_items.getName());
-        holder.content.setText(list_items.getContent());
-        holder.time.setText(list_items.getTime());
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        EventCommitteeNote model = models.get(position);
+        holder.tvInboxTitlefvbi.setText(model.getTitle());
+        holder.tvInboxDateTimefvbi.setText(model.getTanggal());
+        holder.tvInboxDetailfvbi.setHtml(model.getNote());
+
+        holder.bInboxDetailfvbi.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                holder.bInboxDetailfvbi.setVisibility(View.GONE);
+                holder.llInboxNotefvbi.setVisibility(View.VISIBLE);
+            }
+        });
+        holder.tvInboxDetailfvbi.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                holder.bInboxDetailfvbi.setVisibility(View.VISIBLE);
+                holder.llInboxNotefvbi.setVisibility(View.GONE);
+            }
+        });
     }
-
-    //Setting the arraylist
-    public void setListContent(ArrayList<InboxRecViewPojo> list_members){
-        this.list_members=list_members;
-        notifyItemRangeChanged(0,list_members.size());
-
-    }
-
 
     @Override
     public int getItemCount() {
-        return list_members.size();
+        return models.size();
     }
 
+    public class ViewHolder extends RecyclerView.ViewHolder {
 
-    //View holder class, where all view components are defined
-    class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
-        TextView user_name,content,time;
-        public MyViewHolder(View itemView) {
+        private final TextView tvInboxTitlefvbi;
+        private final HtmlTextView tvInboxDetailfvbi;
+        private final TextView tvInboxDateTimefvbi;
+        private final Button bInboxDetailfvbi;
+        private final LinearLayout llInboxNotefvbi;
+
+        public ViewHolder(View itemView) {
             super(itemView);
-            itemView.setOnClickListener(this);
-            user_name=(TextView)itemView.findViewById(R.id.user_name);
-            content=(TextView)itemView.findViewById(R.id.content);
-            time=(TextView)itemView.findViewById(R.id.tvRvScheduleTime);
-
-        }
-
-        @Override
-        public void onClick(View v) {
-
+            tvInboxTitlefvbi = (TextView) itemView.findViewById(R.id.tvInboxTitle);
+            tvInboxDetailfvbi = (HtmlTextView) itemView.findViewById(R.id.tvInboxDetail);
+            tvInboxDateTimefvbi = (TextView) itemView.findViewById(R.id.tvInboxDateTime);
+            bInboxDetailfvbi = (Button) itemView.findViewById(R.id.bInboxDetail);
+            llInboxNotefvbi = (LinearLayout) itemView.findViewById(R.id.llInboxNote);
         }
     }
 
-    public void removeAt(int position) {
-        list_members.remove(position);
-        notifyItemRemoved(position);
-        notifyItemRangeChanged(0, list_members.size());
+    public void setData(List<EventCommitteeNote> datas) {
+        models = datas;
+        notifyDataSetChanged();
     }
 
+    public void replaceData(List<EventCommitteeNote> datas) {
+        models.clear();
+        models.addAll(datas);
+        notifyDataSetChanged();
+    }
+
+    public void addDatas(List<EventCommitteeNote> datas) {
+        models.addAll(datas);
+        notifyItemRangeInserted(models.size(), datas.size());
+    }
 }

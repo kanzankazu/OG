@@ -115,7 +115,19 @@ public class aMapActivity extends LocalBaseActivity implements OnMapReadyCallbac
                 int height = getResources().getDisplayMetrics().heightPixels;
                 int padding = (int) (width * 0.12); // offset from edges of the map 12% of screen
                 cameraUpdate = CameraUpdateFactory.newLatLngBounds(bounds, width, height, padding);
-                mMap.animateCamera(cameraUpdate);
+                mMap.animateCamera(cameraUpdate, new GoogleMap.CancelableCallback() {
+                    @Override
+                    public void onFinish() {
+                        if (mMap.getCameraPosition().zoom > 15) {
+                            mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
+                        }
+                    }
+
+                    @Override
+                    public void onCancel() {
+
+                    }
+                });
             }
         });
     }
@@ -168,8 +180,8 @@ public class aMapActivity extends LocalBaseActivity implements OnMapReadyCallbac
                     public boolean onMarkerClick(Marker marker) {
                         cvMapsMarkerTitlefvbi.setVisibility(View.VISIBLE);
                         tvMapsMarkerTitlefvbi.setText(marker.getTitle());
-                        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(marker.getPosition(), 16));
-                        return false;
+                        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(marker.getPosition(), 15));
+                        return true;
                     }
                 });
 

@@ -69,7 +69,7 @@ public class fPracticalInfoActivity extends AppCompatActivity {
                 EventImportanInfo model = models.get(i);
                 parentItems.add(String.valueOf(Html.fromHtml(model.getTitle())));
                 ArrayList<String> child = new ArrayList<String>();
-                child.add(String.valueOf(Html.fromHtml(model.getInfo())));
+                child.add(model.getInfo());
                 childItems.add(child);
             }
         }

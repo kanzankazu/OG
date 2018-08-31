@@ -77,6 +77,7 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
     private ChangeEventOnGoingAdapter adapterOnGoing;
     private ChangeEventPastAdapter adapterPast;
     private boolean isRefresh;
+    private boolean isMove;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -143,17 +144,20 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
                 srlChangeEventActivityfvbi.setRefreshing(false);
             }
 
-            if (NetworkUtil.isConnected(this)) {
-                getAPIUserDataDo(accountid);
+            if (db.isDataTableValueMultipleNull(SQLiteHelper.TableUserData, SQLiteHelper.KEY_UserData_accountId, SQLiteHelper.KEY_UserData_phoneNumber, accountid, accountid)) {
+                Snackbar.make(findViewById(android.R.id.content), "Belum ada data", Snackbar.LENGTH_SHORT).show();
+                if (NetworkUtil.isConnected(this)) {
+                    getAPIUserDataDo(accountid);
+                }
             } else {
-                if (db.isDataTableValueMultipleNull(SQLiteHelper.TableUserData, SQLiteHelper.KEY_UserData_accountId, SQLiteHelper.KEY_UserData_phoneNumber, accountid, accountid)) {
-                    Snackbar.make(findViewById(android.R.id.content), "Belum ada data", Snackbar.LENGTH_LONG).show();
-                } else {
-                    Snackbar.make(findViewById(android.R.id.content), "Memunculkan Data Offline", Snackbar.LENGTH_LONG).show();
-                    updateRecycleView(db.getAllListEvent(accountid));
-                    updateUserInfo(db.getUserData(accountid));
+                Snackbar.make(findViewById(android.R.id.content), "Memunculkan Data", Snackbar.LENGTH_SHORT).show();
+                updateRecycleView(db.getAllListEvent(accountid));
+                updateUserInfo(db.getUserData(accountid));
+                if (NetworkUtil.isConnected(this)) {
+                    getAPIUserDataDo(accountid);
                 }
             }
+
 
             /*if (db.isDataTableValueMultipleNull(SQLiteHelper.TableUserData, SQLiteHelper.KEY_UserData_accountId, SQLiteHelper.KEY_UserData_phoneNumber, accountid, accountid)) {
                 Snackbar.make(findViewById(android.R.id.content), "Data Kosong, bersiap mengmbil data", Snackbar.LENGTH_LONG).show();
@@ -253,26 +257,30 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
                         getAPIUserDataValidation();
                     }
                 }).show();
-                updateRecycleView(db.getAllListEvent(accountid));
-                updateUserInfo(db.getUserData(accountid));
                 Log.e("Lihat", "onFailure ChangeEventActivity : " + t.getMessage(), t);
+                if (!db.isDataTableValueMultipleNull(SQLiteHelper.TableUserData, SQLiteHelper.KEY_UserData_accountId, SQLiteHelper.KEY_UserData_phoneNumber, accountid, accountid)) {
+                    updateRecycleView(db.getAllListEvent(accountid));
+                    updateUserInfo(db.getUserData(accountid));
+                }
             }
         });
     }
 
     private void getAPIEventDataValid(String eventId) {
-        if (NetworkUtil.isConnected(this)) {
-            getAPIEventDataDo(eventId, accountid);
+
+        if (db.isDataTableValueNull(SQLiteHelper.TableTheEvent, SQLiteHelper.Key_The_Event_EventId, eventId)) {
+            Snackbar.make(findViewById(android.R.id.content), "Belum ada data", Snackbar.LENGTH_SHORT).show();
+            if (NetworkUtil.isConnected(this)) {
+                getAPIEventDataDo(eventId, accountid);
+            }
         } else {
-            if (db.isDataTableValueNull(SQLiteHelper.TableTheEvent, SQLiteHelper.Key_The_Event_EventId, eventId)) {
-                Snackbar.make(findViewById(android.R.id.content), "Data Kosong", Snackbar.LENGTH_LONG).show();
-            } else {
-                Snackbar.make(findViewById(android.R.id.content), "Memunculkan Data Offline", Snackbar.LENGTH_LONG).show();
-                gotoBaseHome();
+            Snackbar.make(findViewById(android.R.id.content), "Memunculkan Data", Snackbar.LENGTH_SHORT).show();
+            gotoBaseHome();//validation
+            isMove = true;
+            if (NetworkUtil.isConnected(this)) {
+                getAPIEventDataDo(eventId, accountid);
             }
         }
-
-
     }
 
     private void getAPIEventDataDo(String eventId, String accountId) {
@@ -300,7 +308,9 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
             public void onResponse(Call<List<EventDataResponseModel>> call, Response<List<EventDataResponseModel>> response) {
                 progressDialog.dismiss();
                 if (response.isSuccessful()) {
-                    gotoBaseHome();
+                    if (!isMove){
+                        gotoBaseHome();//on response
+                    }
                     List<EventDataResponseModel> eventDataResponseModels = response.body();
                     for (int i = 0; i < eventDataResponseModels.size(); i++) {
                         EventDataResponseModel model = eventDataResponseModels.get(i);
@@ -471,8 +481,8 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
                 ceLLOngoingEventfvbi.setVisibility(View.VISIBLE);
             }
         }
-        adapterPast.setData(models);
-        adapterOnGoing.setData(models);
+        adapterPast.replaceData(models);
+        adapterOnGoing.replaceData(models);
     }
 
     private void updateUserInfo(List<UserDataResponseModel> models) {

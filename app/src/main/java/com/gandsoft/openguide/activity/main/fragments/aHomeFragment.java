@@ -30,7 +30,6 @@ import com.gandsoft.openguide.activity.main.adapter.PostRecViewAdapter;
 import com.gandsoft.openguide.activity.main.adapter.PostRecViewPojo;
 import com.gandsoft.openguide.activity.main.adapter.PostRecViewPojoDummy;
 import com.gandsoft.openguide.database.SQLiteHelper;
-import com.gandsoft.openguide.support.HtmlUtil;
 import com.gandsoft.openguide.support.SessionUtil;
 import com.squareup.picasso.Picasso;
 

@@ -1,6 +1,8 @@
 package com.gandsoft.openguide.support;
 
 import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.text.Html;
@@ -14,17 +16,22 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 
-public class URLImageParser implements Html.ImageGetter {
+public class UrlImageParser implements Html.ImageGetter {
     Context c;
     View container;
 
-    public URLImageParser(View t, Context c) {
+    /***
+     * Construct the URLImageParser which will execute AsyncTask and refresh the container
+     * @param t
+     * @param c
+     */
+    public UrlImageParser(View t, Context c) {
         this.c = c;
         this.container = t;
     }
 
     public Drawable getDrawable(String source) {
-        URLDrawable urlDrawable = new URLDrawable();
+        UrlDrawable urlDrawable = new UrlDrawable();
 
         // get the actual source
         ImageGetterAsyncTask asyncTask =
@@ -38,9 +45,9 @@ public class URLImageParser implements Html.ImageGetter {
     }
 
     public class ImageGetterAsyncTask extends AsyncTask<String, Void, Drawable> {
-        URLDrawable urlDrawable;
+        UrlDrawable urlDrawable;
 
-        public ImageGetterAsyncTask(URLDrawable d) {
+        public ImageGetterAsyncTask(UrlDrawable d) {
             this.urlDrawable = d;
         }
 
@@ -61,7 +68,7 @@ public class URLImageParser implements Html.ImageGetter {
             urlDrawable.drawable = result;
 
             // redraw the image by invalidating the container
-            URLImageParser.this.container.invalidate();
+            UrlImageParser.this.container.invalidate();
         }
 
         /***
@@ -86,6 +93,21 @@ public class URLImageParser implements Html.ImageGetter {
             HttpGet request = new HttpGet(urlString);
             HttpResponse response = httpClient.execute(request);
             return response.getEntity().getContent();
+        }
+    }
+
+    @SuppressWarnings("deprecation")
+    public class UrlDrawable extends BitmapDrawable {
+        // the drawable that you need to set, you could set the initial drawing
+        // with the loading image if you need to
+        protected Drawable drawable;
+
+        @Override
+        public void draw(Canvas canvas) {
+            // override the draw to facilitate refresh function later
+            if (drawable != null) {
+                drawable.draw(canvas);
+            }
         }
     }
 }

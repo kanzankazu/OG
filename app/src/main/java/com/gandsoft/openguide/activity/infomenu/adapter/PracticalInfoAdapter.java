@@ -6,12 +6,15 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
-import android.widget.CheckedTextView;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.gandsoft.openguide.R;
+import com.gandsoft.openguide.support.UrlImageParser;
+
+import org.sufficientlysecure.htmltextview.HtmlHttpImageGetter;
+import org.sufficientlysecure.htmltextview.HtmlTextView;
 
 import java.util.ArrayList;
 
@@ -93,19 +96,9 @@ public class PracticalInfoAdapter extends BaseExpandableListAdapter {
 
         child = (ArrayList<String>) childtems.get(groupPosition);
 
-        TextView textView = null;
+        HtmlTextView textView = (HtmlTextView) convertView.findViewById(R.id.tvPracticalInfoChild);
 
-        textView = (TextView) convertView.findViewById(R.id.textView1);
-
-        textView.setText(child.get(childPosition));
-        convertView.setOnClickListener(new OnClickListener() {
-
-            @Override
-            public void onClick(View view) {
-                Toast.makeText(activity, child.get(childPosition) + " holaaa",
-                        Toast.LENGTH_SHORT).show();
-            }
-        });
+        textView.setHtml(child.get(childPosition),new HtmlHttpImageGetter(textView));
 
         return convertView;
     }

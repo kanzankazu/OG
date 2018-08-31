@@ -339,8 +339,8 @@ public class SQLiteHelper extends SQLiteOpenHelper {
             + Key_CommiteNote_Title + " TEXT, "
             + Key_CommiteNote_Note + " TEXT, "
             + Key_CommiteNote_Tanggal + " TEXT, "
-            + Key_CommiteNote_Has_been_opened + " TEXT, "
-            + Key_CommiteNote_Sort_inbox + " TEXT) ";
+            + Key_CommiteNote_Has_been_opened + " BOOLEAN, "
+            + Key_CommiteNote_Sort_inbox + " INTEGER) ";
     private static final String query_delete_table_CommiteNote = "DROP TABLE IF EXISTS " + TableCommiteNote;
 
 
@@ -1194,7 +1194,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     public ArrayList<EventCommitteeNote> getCommiteNote(String eventId) {
         ArrayList<EventCommitteeNote> modelList = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.query(TableCommiteNote, null, Key_CommiteNote_EventId + " = ? ", new String[]{eventId}, null, null, Key_CommiteNote_No);
+        Cursor cursor = db.query(TableCommiteNote, null, Key_CommiteNote_EventId + " = ? ", new String[]{eventId}, Key_CommiteNote_Title, null, Key_CommiteNote_No);
 
         if (cursor.moveToFirst()) {
             do {
