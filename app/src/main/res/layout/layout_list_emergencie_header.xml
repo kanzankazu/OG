@@ -4,8 +4,16 @@
     android:animateLayoutChanges="true"
     android:orientation="horizontal">
 
+    <ImageView
+        android:id="@+id/ivEmergencieHeader"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:background="?android:selectableItemBackground"
+        android:clickable="false"
+        android:layout_marginLeft="20dp"
+        android:src="@drawable/ic_option_contact" />
     <TextView
-        android:id="@+id/ctvPracticalInfoHeader"
+        android:id="@+id/tvEmergencieHeader"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="1"
@@ -17,10 +25,9 @@
         android:textStyle="bold" />
 
     <ImageView
-        android:id="@+id/ivPracticalInfoHeader"
-        android:layout_width="match_parent"
+        android:id="@+id/ivEmergencieHeaderDropdown"
+        android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:layout_weight="5"
         android:background="?android:selectableItemBackground"
         android:clickable="false"
         android:layout_marginRight="20dp"

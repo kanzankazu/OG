@@ -28,9 +28,39 @@ public class PracticalInfoAdapter extends BaseExpandableListAdapter {
         this.childtems = childern;
     }
 
-    public void setInflater(LayoutInflater inflater, Activity activity) {
-        this.inflater = inflater;
-        this.activity = activity;
+    @Override
+    public int getGroupCount() {
+        return parentItems.size();
+    }
+
+    @Override
+    public int getChildrenCount(int groupPosition) {
+        return ((ArrayList<String>) childtems.get(groupPosition)).size();
+    }
+
+    @Override
+    public Object getGroup(int groupPosition) {
+        return null;
+    }
+
+    @Override
+    public Object getChild(int groupPosition, int childPosition) {
+        return null;
+    }
+
+    @Override
+    public long getGroupId(int groupPosition) {
+        return 0;
+    }
+
+    @Override
+    public long getChildId(int groupPosition, int childPosition) {
+        return 0;
+    }
+
+    @Override
+    public boolean hasStableIds() {
+        return false;
     }
 
     @Override
@@ -51,22 +81,19 @@ public class PracticalInfoAdapter extends BaseExpandableListAdapter {
 
         }
 
-        /*((CheckedTextView) convertView).setText(parentItems.get(groupPosition));
-        ((CheckedTextView) convertView).setChecked(isExpanded);*/
-
         return convertView;
     }
 
     @Override
     public View getChildView(int groupPosition, final int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
 
-        child = (ArrayList<String>) childtems.get(groupPosition);
-
-        TextView textView = null;
-
         if (convertView == null) {
             convertView = inflater.inflate(R.layout.layout_list_practical_info_child, null);
         }
+
+        child = (ArrayList<String>) childtems.get(groupPosition);
+
+        TextView textView = null;
 
         textView = (TextView) convertView.findViewById(R.id.textView1);
 
@@ -84,28 +111,8 @@ public class PracticalInfoAdapter extends BaseExpandableListAdapter {
     }
 
     @Override
-    public Object getChild(int groupPosition, int childPosition) {
-        return null;
-    }
-
-    @Override
-    public long getChildId(int groupPosition, int childPosition) {
-        return 0;
-    }
-
-    @Override
-    public int getChildrenCount(int groupPosition) {
-        return ((ArrayList<String>) childtems.get(groupPosition)).size();
-    }
-
-    @Override
-    public Object getGroup(int groupPosition) {
-        return null;
-    }
-
-    @Override
-    public int getGroupCount() {
-        return parentItems.size();
+    public boolean isChildSelectable(int groupPosition, int childPosition) {
+        return false;
     }
 
     @Override
@@ -118,19 +125,8 @@ public class PracticalInfoAdapter extends BaseExpandableListAdapter {
         super.onGroupExpanded(groupPosition);
     }
 
-    @Override
-    public long getGroupId(int groupPosition) {
-        return 0;
+    public void setInflater(LayoutInflater inflater, Activity activity) {
+        this.inflater = inflater;
+        this.activity = activity;
     }
-
-    @Override
-    public boolean hasStableIds() {
-        return false;
-    }
-
-    @Override
-    public boolean isChildSelectable(int groupPosition, int childPosition) {
-        return false;
-    }
-
 }

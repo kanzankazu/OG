@@ -4,11 +4,16 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.text.InputType;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.webkit.WebView;
@@ -46,6 +51,8 @@ public class hFeedbackActivity extends AppCompatActivity {
     private EditText input;
     private RadioGroup rg;
     private WebView wvFeedbackfvbi;
+    private Toolbar toolbar;
+    private ActionBar ab;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -184,12 +191,26 @@ public class hFeedbackActivity extends AppCompatActivity {
     }
 
     private void initComponent() {
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
         llfeedbackfvbi = (LinearLayout) findViewById(R.id.llfeedback);
         tvFeedbackTitlefvbi = (TextView) findViewById(R.id.tvFeedbackTitle);
     }
 
     @SuppressLint("SetTextI18n")
     private void initContent() {
+        setSupportActionBar(toolbar);
+        ab = getSupportActionBar();
+        ab.setTitle("Feedback");
+
+        uiFeedback();
+
+    }
+
+    private void initListener() {
+
+    }
+
+    private void uiFeedback() {
         if (feedbacks.size() > 1) {
             String judul = feedbacks.get(0).getJudul();
             tvFeedbackTitlefvbi.setText(judul);
@@ -294,17 +315,18 @@ public class hFeedbackActivity extends AppCompatActivity {
             tvFeedbackTitlefvbi.setText(judul);
             Log.d("Lihat", "initContent hFeedbackActivity 118 : " + judul);
         }
-
     }
 
-    private void initListener() {
-
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_activity, menu);
+        return true;
     }
 
-    public static int convertPixelsToDp(float px, Context context) {
-        Resources resources = context.getResources();
-        DisplayMetrics metrics = resources.getDisplayMetrics();
-        int dp = (int) (px / (metrics.densityDpi / 160f));
-        return dp;
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        finish();
+        return super.onOptionsItemSelected(item);
     }
 }

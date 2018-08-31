@@ -1153,7 +1153,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     public ArrayList<EventEmergencies> getEmergencie(String eventId) {
         ArrayList<EventEmergencies> modelList = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.query(TableEmergencie, null, Key_Emergencie_EventId + " = ? ", new String[]{eventId}, null, null, Key_Emergencie_No);
+        Cursor cursor = db.query(TableEmergencie, null, Key_Emergencie_EventId + " = ? ", new String[]{eventId}, Key_Emergencie_Title, null, Key_Emergencie_No);
 
         if (cursor.moveToFirst()) {
             do {
@@ -1174,7 +1174,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     public ArrayList<EventSurroundingArea> getSurroundingArea(String eventId) {
         ArrayList<EventSurroundingArea> modelList = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.query(TableArea, null, Key_Area_EventId + " = ? ", new String[]{eventId}, null, null, Key_Area_No);
+        Cursor cursor = db.query(TableArea, null, Key_Area_EventId + " = ? ", new String[]{eventId}, Key_Area_Title, null, Key_Area_No);
 
         if (cursor.moveToFirst()) {
             do {

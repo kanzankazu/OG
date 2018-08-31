@@ -27,13 +27,13 @@ public class fPracticalInfoActivity extends AppCompatActivity {
     private Toolbar toolbar;
     private ActionBar ab;
     private AppCompatActivity aca;
+    private ExpandableListView expandableList;
 
     private String accountId, eventId;
     private ArrayList<String> parentItems = new ArrayList<String>();
     private ArrayList<Object> childItems = new ArrayList<Object>();
 
     private int lastExpandedPosition = -1;
-    private ExpandableListView expandableList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) throws ArrayIndexOutOfBoundsException {
@@ -63,10 +63,6 @@ public class fPracticalInfoActivity extends AppCompatActivity {
         ab = getSupportActionBar();
         ab.setTitle("Practical Information");
 
-        expandableList.setDividerHeight(2);
-        expandableList.setGroupIndicator(null);
-        expandableList.setClickable(true);
-
         ArrayList<EventImportanInfo> models = db.getImportanInfo(eventId);
         if (models != null) {
             for (int i = 0; i < models.size(); i++) {
@@ -80,6 +76,9 @@ public class fPracticalInfoActivity extends AppCompatActivity {
 
         PracticalInfoAdapter adapter = new PracticalInfoAdapter(parentItems, childItems);
         adapter.setInflater((LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE), this);
+        expandableList.setDividerHeight(2);
+        expandableList.setGroupIndicator(null);
+        expandableList.setClickable(true);
         expandableList.setAdapter(adapter);
 
     }

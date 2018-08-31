@@ -12,7 +12,6 @@ import android.text.Html;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.TextView;
 
 import com.gandsoft.openguide.API.APIresponse.Event.EventDataContactList;
 import com.gandsoft.openguide.API.APIresponse.Event.EventTheEvent;
@@ -23,6 +22,8 @@ import com.gandsoft.openguide.activity.infomenu.adapter.ComitteContactHook;
 import com.gandsoft.openguide.database.SQLiteHelper;
 import com.gandsoft.openguide.support.SessionUtil;
 
+import org.sufficientlysecure.htmltextview.HtmlTextView;
+
 import java.util.ArrayList;
 
 public class dComitteContactActivity extends AppCompatActivity implements ComitteContactHook {
@@ -32,7 +33,7 @@ public class dComitteContactActivity extends AppCompatActivity implements Comitt
     private String accountId, eventId;
     SQLiteHelper db = new SQLiteHelper(this);
 
-    private TextView tvComitteTitlefvbi;
+    private HtmlTextView tvComitteTitlefvbi;
 
     private ComitteContactAdapter recycleviewAdapter;
     private RecyclerView rvCommiteContactfvbi;
@@ -59,7 +60,7 @@ public class dComitteContactActivity extends AppCompatActivity implements Comitt
 
     public void initComponent() {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
-        tvComitteTitlefvbi = (TextView) findViewById(R.id.tvComitteTitle);
+        tvComitteTitlefvbi = (HtmlTextView) findViewById(R.id.tvComitteTitle);
         rvCommiteContactfvbi = (RecyclerView) findViewById(R.id.rvCommiteContact);
 
     }
