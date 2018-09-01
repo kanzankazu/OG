@@ -208,94 +208,6 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
 
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-
-        super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK) {
-            if (requestCode == 1) {
-                // onCaptureImageResult(data);
-                try {
-
-                    File f = new File(Environment.getExternalStorageDirectory()
-                            .toString());
-                    for (File temp : f.listFiles()) {
-                        if (temp.getName().equals("temp.jpg")) {
-                            f = temp;
-                            break;
-                        }
-                    }
-                    Bitmap bitmap;
-                    BitmapFactory.Options bitmapOptions = new BitmapFactory.Options();
-
-                    bitmap = BitmapFactory.decodeFile(f.getAbsolutePath(),
-                            bitmapOptions);
-                    ivWrapPicfvbi.setImageBitmap(bitmap);
-                    ivWrapPicfvbi.setVisibility(View.VISIBLE);
-
-                    String path = android.os.Environment
-                            .getExternalStorageDirectory()
-                            + File.separator
-                            + ".Gandsoft" + File.separator + "images";
-                    f.delete();
-                    OutputStream outFile = null;
-                    File file = new File(path, String.valueOf(System
-                            .currentTimeMillis()) + ".jpg");
-                    try {
-                        outFile = new FileOutputStream(file);
-                        bitmap.compress(Bitmap.CompressFormat.JPEG, 85, outFile);
-                        outFile.flush();
-                        outFile.close();
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            } else if (requestCode == 2) {
-                onSelectFromGalleryResult(data);
-            }
-        }
-    }
-
-    private void onSelectFromGalleryResult(Intent data) {
-        Uri selectedImageUri = data.getData();
-        String[] projection = {MediaStore.MediaColumns.DATA};
-        @SuppressWarnings("deprecation")
-        Cursor cursor = managedQuery(selectedImageUri, projection, null, null, null);
-        int column_index = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
-        cursor.moveToFirst();
-
-        String selectedImagePath = cursor.getString(column_index);
-
-        Bitmap bm;
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inJustDecodeBounds = true;
-        BitmapFactory.decodeFile(selectedImagePath, options);
-        final int REQUIRED_SIZE = 200;
-        int scale = 1;
-        while (options.outWidth / scale / 2 >= REQUIRED_SIZE && options.outHeight / scale / 2 >= REQUIRED_SIZE)
-            scale *= 2;
-        options.inSampleSize = scale;
-        options.inJustDecodeBounds = false;
-        bm = BitmapFactory.decodeFile(selectedImagePath, options);
-
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        bm.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
-        byte[] byteArray = byteArrayOutputStream.toByteArray();
-
-        base64pic = Base64.encodeToString(byteArray, Base64.DEFAULT);
-
-        ivWrapPicfvbi.setImageBitmap(bm);
-        ivWrapPicfvbi.setVisibility(View.VISIBLE);
-        tvAccSelPicfvbi.setText("Image selected");
-    }
-
     private void updateData(ArrayList<UserDataResponseModel> models) {
         tvAccIDfvbi.setText(accountId);
         for (int i = 0; i < models.size(); i++) {
@@ -329,44 +241,6 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
             ibAccClosefvbi.setVisibility(View.VISIBLE);
             tvSignOutSkipfvbi.setText("SIGN-OUT");
         }
-    }
-
-    int MY_CAMERA_REQUEST_CODE = 77777;
-
-    private void customText(TextView view) {
-        SpannableStringBuilder spanTxt = new SpannableStringBuilder("I agree to the ");
-        spanTxt.append("PRIVACY POLICY");
-        spanTxt.setSpan(new ClickableSpan() {
-                            @Override
-                            public void onClick(View widget) {
-                                Toast.makeText(getApplicationContext(), "PRIVACY POLICY Clicked", Toast.LENGTH_SHORT).show();
-                            }
-                        },
-                spanTxt.length() - "PRIVACY POLICY".length(),
-                spanTxt.length(),
-                0);
-        view.setMovementMethod(LinkMovementMethod.getInstance());
-        view.setText(spanTxt, TextView.BufferType.SPANNABLE);
-
-        /*SpannableStringBuilder spanTxt = new SpannableStringBuilder("I agree to the ");
-        spanTxt.append("Term of services");
-        spanTxt.setSpan(new ClickableSpan() {
-            @Override
-            public void onClick(View widget) {
-                Toast.makeText(getApplicationContext(), "Terms of services Clicked", Toast.LENGTH_SHORT).show();
-            }
-        }, spanTxt.length() - "Term of services".length(), spanTxt.length(), 0);
-        spanTxt.append(" and");
-        spanTxt.setSpan(new ForegroundColorSpan(Color.BLACK), 32, spanTxt.length(), 0);
-        spanTxt.append(" Privacy Policy");
-        spanTxt.setSpan(new ClickableSpan() {
-            @Override
-            public void onClick(View widget) {
-                Toast.makeText(getApplicationContext(), "Privacy Policy Clicked", Toast.LENGTH_SHORT).show();
-            }
-        }, spanTxt.length() - " Privacy Policy".length(), spanTxt.length(), 0);
-        view.setMovementMethod(LinkMovementMethod.getInstance());
-        view.setText(spanTxt, TextView.BufferType.SPANNABLE);*/
     }
 
     private void signOut() {
@@ -434,20 +308,6 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
         Intent intent = new Intent(AccountActivity.this, ChangeEventActivity.class);
         startActivity(intent);
         finish();
-    }
-
-    @Override
-    public void onClick(View v) {
-        if (v == llAccPicfvbi) {
-        } else if (v == llAccGenderfvbi) {
-        } else if (v == llAccSavefvbi) {
-            saveClick();
-        } else if (v == tvSignOutSkipfvbi) {
-            skipLogoutClick();
-        } else if (v == ibAccClosefvbi) {
-            finish();
-            moveToChangeEvent();
-        }
     }
 
     private void skipLogoutClick() {
@@ -532,15 +392,6 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
         });
     }
 
-    public static Intent getActIntent(Activity activity) {
-        return new Intent(activity, AccountActivity.class);
-    }
-
-    @Override
-    public void onBackPressed() {
-        quitNotSave();
-    }
-
     private void updateLabel() {
         String myFormat = "yyyy-MM-dd"; //In which you need put here
         SimpleDateFormat sdf = new SimpleDateFormat(myFormat, ULocale.US);
@@ -552,33 +403,6 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
         tvAccTahunfvbi.setText(a[0]);
 //        etAccBirthdayfvbi.setText(sdf.format(myCalendar.getTime()));
     }
-
-/*    private void selectImage() {
-        final CharSequence[] options = { "Take Photo", "Gallery" };
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(
-                EditProfileActivity.this);
-        builder.setItems(options, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int item) {
-                if (options[item].equals("Take Photo")) {
-                    Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                    File f = new File(android.os.Environment
-                            .getExternalStorageDirectory(), "temp.jpg");
-                    intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(f));
-                    startActivityForResult(intent, 1);
-                } else if (options[item].equals("Gallery")) {
-                    Intent intent = new Intent(
-                            Intent.ACTION_PICK,
-                            android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                    startActivityForResult(intent, 2);
-
-                }
-            }
-        });
-        builder.show();
-    }*/
-
 
     private void getpermission() {
         // cek apakah sudah memiliki permission untuk access fine location
@@ -603,6 +427,79 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
         }
     }
 
+    private void customText(TextView view) {
+        SpannableStringBuilder spanTxt = new SpannableStringBuilder("I agree to the ");
+        spanTxt.append("PRIVACY POLICY");
+        spanTxt.setSpan(new ClickableSpan() {
+                            @Override
+                            public void onClick(View widget) {
+                                Toast.makeText(getApplicationContext(), "PRIVACY POLICY Clicked", Toast.LENGTH_SHORT).show();
+                            }
+                        },
+                spanTxt.length() - "PRIVACY POLICY".length(),
+                spanTxt.length(),
+                0);
+        view.setMovementMethod(LinkMovementMethod.getInstance());
+        view.setText(spanTxt, TextView.BufferType.SPANNABLE);
+
+        /*SpannableStringBuilder spanTxt = new SpannableStringBuilder("I agree to the ");
+        spanTxt.append("Term of services");
+        spanTxt.setSpan(new ClickableSpan() {
+            @Override
+            public void onClick(View widget) {
+                Toast.makeText(getApplicationContext(), "Terms of services Clicked", Toast.LENGTH_SHORT).show();
+            }
+        }, spanTxt.length() - "Term of services".length(), spanTxt.length(), 0);
+        spanTxt.append(" and");
+        spanTxt.setSpan(new ForegroundColorSpan(Color.BLACK), 32, spanTxt.length(), 0);
+        spanTxt.append(" Privacy Policy");
+        spanTxt.setSpan(new ClickableSpan() {
+            @Override
+            public void onClick(View widget) {
+                Toast.makeText(getApplicationContext(), "Privacy Policy Clicked", Toast.LENGTH_SHORT).show();
+            }
+        }, spanTxt.length() - " Privacy Policy".length(), spanTxt.length(), 0);
+        view.setMovementMethod(LinkMovementMethod.getInstance());
+        view.setText(spanTxt, TextView.BufferType.SPANNABLE);*/
+    }
+
+    public static Intent getActIntent(Activity activity) {
+        return new Intent(activity, AccountActivity.class);
+    }
+
+    private void onSelectFromGalleryResult(Intent data) {
+        Uri selectedImageUri = data.getData();
+        String[] projection = {MediaStore.MediaColumns.DATA};
+        @SuppressWarnings("deprecation")
+        Cursor cursor = managedQuery(selectedImageUri, projection, null, null, null);
+        int column_index = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
+        cursor.moveToFirst();
+
+        String selectedImagePath = cursor.getString(column_index);
+
+        Bitmap bm;
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(selectedImagePath, options);
+        final int REQUIRED_SIZE = 200;
+        int scale = 1;
+        while (options.outWidth / scale / 2 >= REQUIRED_SIZE && options.outHeight / scale / 2 >= REQUIRED_SIZE)
+            scale *= 2;
+        options.inSampleSize = scale;
+        options.inJustDecodeBounds = false;
+        bm = BitmapFactory.decodeFile(selectedImagePath, options);
+
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        bm.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
+        byte[] byteArray = byteArrayOutputStream.toByteArray();
+
+        base64pic = Base64.encodeToString(byteArray, Base64.DEFAULT);
+
+        ivWrapPicfvbi.setImageBitmap(bm);
+        ivWrapPicfvbi.setVisibility(View.VISIBLE);
+        tvAccSelPicfvbi.setText("Image selected");
+    }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -619,5 +516,78 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
                 }
                 return;
         }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK) {
+            if (requestCode == 1) {
+                // onCaptureImageResult(data);
+                try {
+
+                    File f = new File(Environment.getExternalStorageDirectory()
+                            .toString());
+                    for (File temp : f.listFiles()) {
+                        if (temp.getName().equals("temp.jpg")) {
+                            f = temp;
+                            break;
+                        }
+                    }
+                    Bitmap bitmap;
+                    BitmapFactory.Options bitmapOptions = new BitmapFactory.Options();
+
+                    bitmap = BitmapFactory.decodeFile(f.getAbsolutePath(),
+                            bitmapOptions);
+                    ivWrapPicfvbi.setImageBitmap(bitmap);
+                    ivWrapPicfvbi.setVisibility(View.VISIBLE);
+
+                    String path = android.os.Environment
+                            .getExternalStorageDirectory()
+                            + File.separator
+                            + ".Gandsoft" + File.separator + "images";
+                    f.delete();
+                    OutputStream outFile = null;
+                    File file = new File(path, String.valueOf(System
+                            .currentTimeMillis()) + ".jpg");
+                    try {
+                        outFile = new FileOutputStream(file);
+                        bitmap.compress(Bitmap.CompressFormat.JPEG, 85, outFile);
+                        outFile.flush();
+                        outFile.close();
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            } else if (requestCode == 2) {
+                onSelectFromGalleryResult(data);
+            }
+        }
+    }
+
+    @Override
+    public void onClick(View v) {
+        if (v == llAccPicfvbi) {
+        } else if (v == llAccGenderfvbi) {
+        } else if (v == llAccSavefvbi) {
+            saveClick();
+        } else if (v == tvSignOutSkipfvbi) {
+            skipLogoutClick();
+        } else if (v == ibAccClosefvbi) {
+            finish();
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        quitNotSave();
     }
 }

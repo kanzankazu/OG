@@ -308,7 +308,7 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
             public void onResponse(Call<List<EventDataResponseModel>> call, Response<List<EventDataResponseModel>> response) {
                 progressDialog.dismiss();
                 if (response.isSuccessful()) {
-                    if (!isMove){
+                    if (!isMove) {
                         gotoBaseHome();//on response
                     }
                     List<EventDataResponseModel> eventDataResponseModels = response.body();
@@ -506,7 +506,6 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
     private void Onclick(View view) {
         if (view == ceBUserAccountfvbi) {
             startActivity(AccountActivity.getActIntent(ChangeEventActivity.this));
-            finish();
         }
     }
 
