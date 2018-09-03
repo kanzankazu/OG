@@ -1,8 +1,6 @@
 package com.gandsoft.openguide.API.APIrequest.UserUpdate;
 
 public class UserUpdateRequestModel {
-
-
     public String accounsId;
     public String FileImageB641;
     public String Name;

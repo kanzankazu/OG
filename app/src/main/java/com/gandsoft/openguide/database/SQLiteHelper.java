@@ -17,6 +17,7 @@ import com.gandsoft.openguide.API.APIresponse.Event.EventPlaceList;
 import com.gandsoft.openguide.API.APIresponse.Event.EventScheduleListDateDataList;
 import com.gandsoft.openguide.API.APIresponse.Event.EventSurroundingArea;
 import com.gandsoft.openguide.API.APIresponse.Event.EventTheEvent;
+import com.gandsoft.openguide.API.APIresponse.Gallery.GalleryResponseModel;
 import com.gandsoft.openguide.API.APIresponse.UserData.UserDataResponseModel;
 import com.gandsoft.openguide.API.APIresponse.UserData.UserListEventResponseModel;
 import com.gandsoft.openguide.API.APIresponse.UserData.UserWalletDataResponseModel;
@@ -179,6 +180,18 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     public static String Key_CommiteNote_Tanggal = "tanggal";
     public static String Key_CommiteNote_Has_been_opened = "has_been_opened";
     public static String Key_CommiteNote_Sort_inbox = "sort_inbox";
+
+    public static String TableGallery = "tabGallery";
+    public static String Key_Gallery_No = "number";
+    public static String Key_Gallery_galleryId = "galleryId";
+    public static String Key_Gallery_Like = "like";
+    public static String Key_Gallery_accountId = "accountId";
+    public static String Key_Gallery_totalComment = "totalComment";
+    public static String Key_Gallery_statusLike = "statusLike";
+    public static String Key_Gallery_Username = "username";
+    public static String Key_Gallery_Caption = "caption";
+    public static String Key_Gallery_imagePosted = "imagePosted";
+    public static String Key_Gallery_imageIcon = "imageIcon";
 
     private static final String query_add_table_UserData = "CREATE TABLE IF NOT EXISTS " + TableUserData + "("
             + KEY_UserData_No + " INTEGER PRIMARY KEY AUTOINCREMENT, "
@@ -343,6 +356,19 @@ public class SQLiteHelper extends SQLiteOpenHelper {
             + Key_CommiteNote_Sort_inbox + " INTEGER) ";
     private static final String query_delete_table_CommiteNote = "DROP TABLE IF EXISTS " + TableCommiteNote;
 
+    private static final String query_add_table_Gallery = "CREATE TABLE IF NOT EXISTS " + TableGallery + "("
+            + Key_Gallery_No + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+            + Key_Gallery_galleryId + " TEXT, "
+            + Key_Gallery_Like + " TEXT, "
+            + Key_Gallery_accountId + " INTEGER, "
+            + Key_Gallery_totalComment + " TEXT, "
+            + Key_Gallery_statusLike + " TEXT, "
+            + Key_Gallery_Username + " TEXT, "
+            + Key_Gallery_Caption + " TEXT, "
+            + Key_Gallery_imagePosted + " TEXT, "
+            + Key_Gallery_imageIcon + " TEXT) ";
+    private static final String query_delete_table_Gallery = "DROP TABLE IF EXISTS " + TableGallery;
+
 
     public SQLiteHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -365,6 +391,8 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         db.execSQL(query_add_table_Emergencie);
         db.execSQL(query_add_table_Area);
         db.execSQL(query_add_table_CommiteNote);
+
+        db.execSQL(query_add_table_Gallery);
     }
 
     @Override
@@ -384,6 +412,8 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         db.execSQL(query_delete_table_Area);
         db.execSQL(query_delete_table_CommiteNote);
 
+        db.execSQL(query_delete_table_Gallery);
+
         db.execSQL(query_add_table_UserData);
         db.execSQL(query_add_table_ListEvent);
         db.execSQL(query_add_table_Wallet);
@@ -398,6 +428,8 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         db.execSQL(query_add_table_Emergencie);
         db.execSQL(query_add_table_Area);
         db.execSQL(query_add_table_CommiteNote);
+
+        db.execSQL(query_add_table_Gallery);
     }
 
     private void replaceDataToNewTable(SQLiteDatabase db, String tableName, String tableString) {
@@ -675,6 +707,22 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         db.close();
     }
 
+    public void saveGallery(GalleryResponseModel model, String galleryId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(Key_Gallery_galleryId, model.getId());
+        contentValues.put(Key_Gallery_Like,model.getLike());
+        contentValues.put(Key_Gallery_accountId,model.getAccount_id());
+        contentValues.put(Key_Gallery_totalComment,model.getTotal_comment());
+        contentValues.put(Key_Gallery_statusLike,model.getStatus_like());
+        contentValues.put(Key_Gallery_Username,model.getUsername());
+        contentValues.put(Key_Gallery_Caption,model.getCaption());
+        contentValues.put(Key_Gallery_imagePosted,model.getImage_posted());
+        contentValues.put(Key_Gallery_imageIcon,model.getImage_icon());
+        db.insert(TableGallery, null, contentValues);
+        db.close();
+    }
+
 
     public void updateUserData(UserDataResponseModel model, String accountId) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -859,6 +907,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         db.update(TableFeedback, contentValues, Key_Feedback_EventId + " = ?", new String[]{eventId});
         db.close();
     }
+
 
     public ArrayList<UserDataResponseModel> getUserData(String accountid) {
         ArrayList<UserDataResponseModel> modelList = new ArrayList<>();
@@ -1241,6 +1290,31 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         return modelList;
     }
 
+    public ArrayList<GalleryResponseModel> getGallery() {
+        ArrayList<GalleryResponseModel> modelList = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(TableGallery, null, null, null, null, null, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                GalleryResponseModel model = new GalleryResponseModel();
+                model.setNumber(cursor.getInt(cursor.getColumnIndex(Key_Gallery_No)));
+                model.setId(cursor.getString(cursor.getColumnIndex(Key_Gallery_galleryId)));
+                model.setLike(cursor.getString(cursor.getColumnIndex(Key_Gallery_Like)));
+                model.setAccount_id(cursor.getString(cursor.getColumnIndex(Key_Gallery_accountId)));
+                model.setTotal_comment(cursor.getString(cursor.getColumnIndex(Key_Gallery_totalComment)));
+                model.setStatus_like(cursor.getString(cursor.getColumnIndex(Key_Gallery_statusLike)));
+                model.setUsername(cursor.getString(cursor.getColumnIndex(Key_Gallery_Username)));
+                model.setCaption(cursor.getString(cursor.getColumnIndex(Key_Gallery_Caption)));
+                model.setImage_posted(cursor.getString(cursor.getColumnIndex(Key_Gallery_imagePosted)));
+                model.setImage_icon(cursor.getString(cursor.getColumnIndex(Key_Gallery_imageIcon)));
+                modelList.add(model);
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        return modelList;
+    }
 
     public void deleteAllDataUser() {
         SQLiteDatabase db = this.getWritableDatabase();

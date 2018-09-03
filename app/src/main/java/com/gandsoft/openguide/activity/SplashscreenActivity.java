@@ -8,20 +8,20 @@ import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
 import com.gandsoft.openguide.support.SessionUtil;
 
+import io.supercharge.shimmerlayout.ShimmerLayout;
+
 public class SplashscreenActivity extends LocalBaseActivity {
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splashscreen);
+        ShimmerLayout shimmerText = (ShimmerLayout) findViewById(R.id.shimmer_logo);
+        shimmerText.startShimmerAnimation();
 
-        if (SessionUtil.getBoolPreferences(ISeasonConfig.KEY_IS_SPLASH, false)) {
-            moveToIntro();
-        } else {
             initComponent();
             initContent();
             initListener();
-        }
 
     }
 
