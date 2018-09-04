@@ -1,10 +1,12 @@
 package com.gandsoft.openguide.API;
 
 import com.gandsoft.openguide.API.APIrequest.Event.EventDataRequestModel;
+import com.gandsoft.openguide.API.APIrequest.Gallery.GalleryRequestModel;
 import com.gandsoft.openguide.API.APIrequest.Login.LoginRequestModel;
 import com.gandsoft.openguide.API.APIrequest.UserData.UserDataRequestModel;
 import com.gandsoft.openguide.API.APIrequest.UserUpdate.UserUpdateRequestModel;
 import com.gandsoft.openguide.API.APIresponse.Event.EventDataResponseModel;
+import com.gandsoft.openguide.API.APIresponse.Gallery.GalleryResponseModel;
 import com.gandsoft.openguide.API.APIresponse.Login.LoginResponseModel;
 import com.gandsoft.openguide.API.APIresponse.UserData.UserDataResponseModel;
 import com.gandsoft.openguide.API.APIresponse.UserUpdate.UserUpdateResponseModel;
@@ -42,5 +44,6 @@ public interface ApiServices {
     @POST("get_data_event")
     Call<List<EventDataResponseModel>> eventDataRet(@Body EventDataRequestModel model);
 
-
+    @POST("get_new_gallery_content")
+    Call<List<GalleryResponseModel>> galleryDataRet(@Body GalleryRequestModel model);
 }

@@ -50,9 +50,6 @@
             android:name=".activity.infomenu.aMapActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".activity.infomenu.bGalleryActivity"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
             android:name=".activity.infomenu.cInboxActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
