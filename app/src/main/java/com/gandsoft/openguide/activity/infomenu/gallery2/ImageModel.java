@@ -7,9 +7,7 @@ public class ImageModel implements Parcelable {
 
     String name, url;
 
-    public ImageModel() {
-
-    }
+    public ImageModel() {}
 
     protected ImageModel(Parcel in) {
         name = in.readString();

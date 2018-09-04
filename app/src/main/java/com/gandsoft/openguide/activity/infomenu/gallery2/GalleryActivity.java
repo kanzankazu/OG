@@ -1,5 +1,6 @@
 package com.gandsoft.openguide.activity.infomenu.gallery2;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
@@ -16,21 +17,37 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.gandsoft.openguide.API.API;
+import com.gandsoft.openguide.API.APIrequest.Event.EventDataRequestModel;
 import com.gandsoft.openguide.API.APIrequest.Gallery.GalleryRequestModel;
+import com.gandsoft.openguide.API.APIrequest.UserData.UserDataRequestModel;
 import com.gandsoft.openguide.API.APIrequest.UserUpdate.UserUpdateRequestModel;
+import com.gandsoft.openguide.API.APIresponse.Event.EventAbout;
 import com.gandsoft.openguide.API.APIresponse.Event.EventCommitteeNote;
+import com.gandsoft.openguide.API.APIresponse.Event.EventDataContact;
+import com.gandsoft.openguide.API.APIresponse.Event.EventDataContactList;
+import com.gandsoft.openguide.API.APIresponse.Event.EventDataResponseModel;
+import com.gandsoft.openguide.API.APIresponse.Event.EventEmergencies;
 import com.gandsoft.openguide.API.APIresponse.Event.EventImportanInfo;
+import com.gandsoft.openguide.API.APIresponse.Event.EventPlaceList;
+import com.gandsoft.openguide.API.APIresponse.Event.EventScheduleListDate;
+import com.gandsoft.openguide.API.APIresponse.Event.EventScheduleListDateDataList;
+import com.gandsoft.openguide.API.APIresponse.Event.EventSurroundingArea;
+import com.gandsoft.openguide.API.APIresponse.Event.EventTheEvent;
 import com.gandsoft.openguide.API.APIresponse.Gallery.GalleryResponseModel;
 import com.gandsoft.openguide.API.APIresponse.UserData.UserDataResponseModel;
 import com.gandsoft.openguide.API.APIresponse.UserData.UserListEventResponseModel;
+import com.gandsoft.openguide.API.APIresponse.UserData.UserWalletDataResponseModel;
 import com.gandsoft.openguide.API.APIresponse.UserUpdate.UserUpdateResponseModel;
+import com.gandsoft.openguide.IConfig;
 import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
 import com.gandsoft.openguide.database.SQLiteHelper;
+import com.gandsoft.openguide.support.NetworkUtil;
 import com.gandsoft.openguide.support.SessionUtil;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -53,45 +70,14 @@ public class GalleryActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_gallery);
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        ab = getSupportActionBar();
-        ab.setTitle("Gallery");
+
+        checkSession();
+        summonToolbar("Gallery");
+
+        getAPIEventDataValid(eventId);
 
 
-        if (SessionUtil.checkIfExist(ISeasonConfig.KEY_ACCOUNT_ID)) {
-            accountId = SessionUtil.getStringPreferences(ISeasonConfig.KEY_ACCOUNT_ID, null);
-        }
-        if (SessionUtil.checkIfExist(ISeasonConfig.KEY_EVENT_ID)) {
-            eventId = SessionUtil.getStringPreferences(ISeasonConfig.KEY_EVENT_ID, null);
-        }
-        GalleryRequestModel requestModel = new GalleryRequestModel();
-        API.doGalleryRet(requestModel).enqueue(new Callback<List<GalleryResponseModel>>() {
-            @Override
-            public void onResponse(Call<List<GalleryResponseModel>> call, Response<List<GalleryResponseModel>> response) {
-                if (response.isSuccessful()) {
-                    List<GalleryResponseModel> galleryResponseModels = response.body();
-                    for (int j = 0; j < galleryResponseModels.size(); j++) {
-                        GalleryResponseModel model = galleryResponseModels.get(j);
-                        if (db.isDataTableValueNull(SQLiteHelper.TableGallery, SQLiteHelper.Key_Gallery_galleryId, model.getId())) {
-                            db.saveGallery(model, model.getId());
-                        } else {
-                        }
-                    }
-                    Log.d("brasil", response.message());
-                } else {
-                    Log.d("gagal", response.message());
-                }
-            }
-
-
-            @Override
-            public void onFailure(Call<List<GalleryResponseModel>> call, Throwable t) {
-                Log.d("gagal failur", t.getMessage());
-            }
-        });
-
-        ArrayList<GalleryResponseModel> models = db.getGallery();
+        ArrayList<GalleryResponseModel> models = db.getGallery(eventId);
         if (models != null) {
             for (int i = 0; i < models.size(); i++) {
                 GalleryResponseModel model = models.get(i);
@@ -102,13 +88,9 @@ public class GalleryActivity extends AppCompatActivity {
             }
         }
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
         mRecyclerView = (RecyclerView) findViewById(R.id.list);
         mRecyclerView.setLayoutManager(new GridLayoutManager(this, 3));
         mRecyclerView.setHasFixedSize(true);
-
 
         mAdapter = new GalleryAdapter(GalleryActivity.this, data);
         mRecyclerView.setAdapter(mAdapter);
@@ -125,6 +107,86 @@ public class GalleryActivity extends AppCompatActivity {
                 }));
 
     }
+
+    private void getAPIEventDataValid(String eventId) {
+
+        if (db.isDataTableValueNull(SQLiteHelper.TableTheEvent, SQLiteHelper.Key_The_Event_EventId, eventId)) {
+            Snackbar.make(findViewById(android.R.id.content), "Belum ada data", Snackbar.LENGTH_SHORT).show();
+            if (NetworkUtil.isConnected(this)) {
+                getAPIGalleryDataDo(eventId, accountId);
+            }
+        } else {
+            Snackbar.make(findViewById(android.R.id.content), "Memunculkan Data", Snackbar.LENGTH_SHORT).show();
+            if (NetworkUtil.isConnected(this)) {
+                getAPIGalleryDataDo(eventId, accountId);
+            }
+        }
+    }
+    private void getAPIGalleryDataDo(String eventId, String accountId) {
+        GalleryRequestModel requestModel = new GalleryRequestModel();
+        requestModel.setDbver("3");
+        requestModel.setId_event(eventId);
+        requestModel.setPass("");
+        requestModel.setPhonenumber(accountId);
+        requestModel.setVersion_data(0);
+        ProgressDialog progressDialog = new ProgressDialog(this);
+        progressDialog.setCancelable(false);
+        progressDialog.setMessage("Please Wait...");
+        progressDialog.setTitle("Get data from server");
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        // show it
+        progressDialog.show();
+
+        API.doGalleryRet(requestModel).enqueue(new Callback<List<GalleryResponseModel>>() {
+            @Override
+            public void onResponse(Call<List<GalleryResponseModel>> call, Response<List<GalleryResponseModel>> response) {
+                progressDialog.dismiss();
+                if (response.isSuccessful()) {
+                    List<GalleryResponseModel> models = response.body();
+                    for (int i = 0; i < models.size(); i++) {
+                        GalleryResponseModel model = models.get(i);
+                        if (model.getStatus().equalsIgnoreCase("ok")) {//jika status ok
+                            if (db.isDataTableValueMultipleNull(SQLiteHelper.TableGallery, SQLiteHelper.Key_Gallery_Event_Id, SQLiteHelper.Key_Gallery_versionData, model.getId(), model.getVersion_data())) {
+                                db.saveGallery(model, model.getId());
+                                Log.d("Lihat", "onResponse ChangeEventActivity : " + model.getStatus());
+                            } else {
+                                db.updateGallery(model, model.getId());
+                            }
+                        } else {
+                            Snackbar.make(findViewById(android.R.id.content), model.getStatus(), Snackbar.LENGTH_LONG).show();
+                        }
+                    }
+                } else {
+                    Snackbar.make(findViewById(android.R.id.content), response.message(), Snackbar.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<GalleryResponseModel>> call, Throwable t) {
+                progressDialog.dismiss();
+                Snackbar.make(findViewById(android.R.id.content), t.getMessage(), Snackbar.LENGTH_LONG).show();
+
+            }
+        });
+    }
+
+    public void checkSession(){
+        if (SessionUtil.checkIfExist(ISeasonConfig.KEY_ACCOUNT_ID)) {
+            accountId = SessionUtil.getStringPreferences(ISeasonConfig.KEY_ACCOUNT_ID, null);
+        }
+        if (SessionUtil.checkIfExist(ISeasonConfig.KEY_EVENT_ID)) {
+            eventId = SessionUtil.getStringPreferences(ISeasonConfig.KEY_EVENT_ID, null);
+        }
+    }
+
+    public void summonToolbar(String title){
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        ab = getSupportActionBar();
+        ab.setTitle(title);
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();

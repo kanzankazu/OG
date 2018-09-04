@@ -23,7 +23,6 @@ public class GalleryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         this.data = data;
     }
 
-
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         RecyclerView.ViewHolder viewHolder;
@@ -59,8 +58,5 @@ public class GalleryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
             mImg = (ImageView) itemView.findViewById(R.id.item_img);
         }
-
     }
-
-
 }

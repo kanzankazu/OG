@@ -182,6 +182,8 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     public static String Key_CommiteNote_Sort_inbox = "sort_inbox";
 
     public static String TableGallery = "tabGallery";
+    public static String Key_Gallery_Event_Id = "eventId";
+    public static String Key_Gallery_versionData = "versionData";
     public static String Key_Gallery_No = "number";
     public static String Key_Gallery_galleryId = "galleryId";
     public static String Key_Gallery_Like = "like";
@@ -358,6 +360,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
 
     private static final String query_add_table_Gallery = "CREATE TABLE IF NOT EXISTS " + TableGallery + "("
             + Key_Gallery_No + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+            + Key_Gallery_Event_Id + " TEXT, "
             + Key_Gallery_galleryId + " TEXT, "
             + Key_Gallery_Like + " TEXT, "
             + Key_Gallery_accountId + " INTEGER, "
@@ -723,6 +726,21 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         db.close();
     }
 
+    public void updateGallery(GalleryResponseModel model, String galleryId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(Key_Gallery_galleryId, model.getId());
+        contentValues.put(Key_Gallery_Like,model.getLike());
+        contentValues.put(Key_Gallery_accountId,model.getAccount_id());
+        contentValues.put(Key_Gallery_totalComment,model.getTotal_comment());
+        contentValues.put(Key_Gallery_statusLike,model.getStatus_like());
+        contentValues.put(Key_Gallery_Username,model.getUsername());
+        contentValues.put(Key_Gallery_Caption,model.getCaption());
+        contentValues.put(Key_Gallery_imagePosted,model.getImage_posted());
+        contentValues.put(Key_Gallery_imageIcon,model.getImage_icon());
+        db.update(TableGallery, contentValues, Key_Gallery_galleryId + " = ? ", new String[]{galleryId});
+        db.close();
+    }
 
     public void updateUserData(UserDataResponseModel model, String accountId) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -907,7 +925,6 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         db.update(TableFeedback, contentValues, Key_Feedback_EventId + " = ?", new String[]{eventId});
         db.close();
     }
-
 
     public ArrayList<UserDataResponseModel> getUserData(String accountid) {
         ArrayList<UserDataResponseModel> modelList = new ArrayList<>();
@@ -1290,10 +1307,10 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         return modelList;
     }
 
-    public ArrayList<GalleryResponseModel> getGallery() {
+    public ArrayList<GalleryResponseModel> getGallery(String eventId) {
         ArrayList<GalleryResponseModel> modelList = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.query(TableGallery, null, null, null, null, null, null);
+        Cursor cursor = db.query(TableGallery, null, Key_Gallery_Event_Id + " = ? ", new String[]{eventId}, null, null, Key_Gallery_No);
 
         if (cursor.moveToFirst()) {
             do {

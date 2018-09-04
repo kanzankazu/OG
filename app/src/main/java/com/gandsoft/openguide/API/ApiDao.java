@@ -1,9 +1,5 @@
 package com.gandsoft.openguide.API;
 
-/**
- * Created by glenn on 1/25/18.
- */
-
 public class ApiDao /*extends BaseDao*/ {
 
     /*public ApiDao(Object obj) {

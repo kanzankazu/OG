@@ -3,6 +3,24 @@ package com.gandsoft.openguide.API.APIresponse.Gallery;
 public class GalleryResponseModel {
     String id, like, account_id,total_comment,status_like,username,caption,image_posted,image_icon;
     public int number;
+    public String status;
+    public String version_data;
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getVersion_data() {
+        return version_data;
+    }
+
+    public void setVersion_data(String version_data) {
+        this.version_data = version_data;
+    }
 
     public String getImage_icon() {
         return image_icon;

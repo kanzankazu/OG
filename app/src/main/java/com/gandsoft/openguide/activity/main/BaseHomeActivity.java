@@ -67,7 +67,6 @@ public class BaseHomeActivity extends AppCompatActivity {
     }
 
     private void initContent() {
-
         initActionBar();
         initTablayoutViewpager();
     }
