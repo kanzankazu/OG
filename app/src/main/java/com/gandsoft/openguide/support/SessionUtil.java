@@ -14,10 +14,6 @@ import java.util.List;
 
 import static com.gandsoft.openguide.ISeasonConfig.ERROR_RETRIEVAL;
 
-/**
- * Created by kanzan on 3/20/2018.
- */
-
 public class SessionUtil implements IConfig {
     //SHAREDPREFERENCE
     Context mContext;
