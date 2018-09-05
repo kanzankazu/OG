@@ -80,7 +80,6 @@ public class aHomeFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
         view = inflater.inflate(R.layout.fragment_a_home, container, false);
 
         db = new SQLiteHelper(getActivity());
@@ -114,7 +113,6 @@ public class aHomeFragment extends Fragment {
     }
 
     private void initContent(ViewGroup container) {
-
         updateUi();
 
         adapter = new PostRecViewAdapter(getActivity(), menuUi);

@@ -2,6 +2,40 @@ package com.gandsoft.openguide.API.APIresponse.Gallery;
 
 public class GalleryResponseModel {
     String id, like, account_id,total_comment,status_like,username,caption,image_posted,image_icon;
+    String event_id;
+    int number;
+
+    public GalleryResponseModel(String id, String event_id, String like, String account_id, String total_comment, String status_like, String username, String caption, String image_posted, String image_icon, int number) {
+        this.id = id;
+        this.event_id = event_id;
+        this.like = like;
+        this.account_id = account_id;
+        this.total_comment = total_comment;
+        this.status_like = status_like;
+        this.username = username;
+        this.caption = caption;
+        this.image_posted = image_posted;
+        this.image_icon = image_icon;
+        this.number = number;
+    }
+
+    public GalleryResponseModel(){}
+
+    public String getEvent_id() {
+        return event_id;
+    }
+
+    public void setEvent_id(String event_id) {
+        this.event_id = event_id;
+    }
+
+    public int getNumber() {
+        return number;
+    }
+
+    public void setNumber(int number) {
+        this.number = number;
+    }
 
     public String getImage_icon() {
         return image_icon;

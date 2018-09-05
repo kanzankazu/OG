@@ -1,18 +1,83 @@
-<com.jsibbold.zoomage.ZoomageView
+<android.support.constraint.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/detail_image"
+    android:layout_height="match_parent"
     android:layout_width="match_parent"
-    app:zoomage_restrictBounds="true"
-    app:zoomage_animateOnReset="true"
-    app:zoomage_autoResetMode="ALWAYS"
-    app:zoomage_autoCenter="true"
-    app:zoomage_zoomable="true"
-    app:zoomage_translatable="true"
-    zoomage_doubleTapToZoomScaleFactor="3"
-    android:layout_height="wrap_content"
-    android:adjustViewBounds="true"
-    android:scaleType="fitCenter"
-    tools:context="com.gandsoft.openguide.activity.infomenu.gallery2.DetailActivity$PlaceholderFragment" />
+    android:orientation="vertical">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <com.jsibbold.zoomage.ZoomageView
+            android:id="@+id/detail_image"
+            zoomage_doubleTapToZoomScaleFactor="3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter"
+            app:zoomage_animateOnReset="true"
+            app:zoomage_autoCenter="true"
+            app:zoomage_autoResetMode="ALWAYS"
+            app:zoomage_restrictBounds="true"
+            app:zoomage_translatable="true"
+            app:zoomage_zoomable="true"
+            tools:context="com.gandsoft.openguide.activity.infomenu.gallery2.DetailActivity$PlaceholderFragment" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <TextView
+            android:id="@+id/username"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Username"
+            android:textSize="14dp" />
+
+        <TextView
+            android:id="@+id/caption"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Caption"
+            android:textSize="14dp" />
+
+        <TextView
+            android:id="@+id/likee"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Like"
+            android:textSize="14dp" />
+
+        <TextView
+            android:id="@+id/statuslikee"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Status Like"
+            android:textSize="14dp" />
+
+        <TextView
+            android:id="@+id/totcom"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Total Comment"
+            android:textSize="14dp" />
+    </LinearLayout>
+</android.support.constraint.ConstraintLayout>
