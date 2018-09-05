@@ -588,6 +588,6 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
 
     @Override
     public void onBackPressed() {
-        finish();
+        quitNotSave();
     }
 }

@@ -22,12 +22,12 @@ import com.gandsoft.openguide.API.APIresponse.UserData.UserDataResponseModel;
 import com.gandsoft.openguide.API.APIresponse.UserData.UserListEventResponseModel;
 import com.gandsoft.openguide.API.APIresponse.UserData.UserWalletDataResponseModel;
 
+import java.security.Key;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class SQLiteHelper extends SQLiteOpenHelper {
-    // Databases information
     private static final String DATABASE_NAME = "openguides.db";
     private static final int DATABASE_VERSION = 2;
 
@@ -183,7 +183,6 @@ public class SQLiteHelper extends SQLiteOpenHelper {
 
     public static String TableGallery = "tabGallery";
     public static String Key_Gallery_Event_Id = "eventId";
-    public static String Key_Gallery_versionData = "versionData";
     public static String Key_Gallery_No = "number";
     public static String Key_Gallery_galleryId = "galleryId";
     public static String Key_Gallery_Like = "like";
@@ -372,7 +371,6 @@ public class SQLiteHelper extends SQLiteOpenHelper {
             + Key_Gallery_imageIcon + " TEXT) ";
     private static final String query_delete_table_Gallery = "DROP TABLE IF EXISTS " + TableGallery;
 
-
     public SQLiteHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
         // TODO Auto-generated constructor stub
@@ -444,8 +442,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
 
         columns.retainAll(getColumns(db, tableName));
         String cols = join(columns, ", ");
-        db.execSQL(String.format("INSERT INTO %s (%s) SELECT %s from temp_%s",
-                tableName, cols, cols, tableName));
+        db.execSQL(String.format("INSERT INTO %s (%s) SELECT %s from temp_%s", tableName, cols, cols, tableName));
         db.execSQL("DROP TABLE temp_" + tableName);
     }
 
@@ -478,7 +475,6 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         return buf.toString();
     }
 
-    /**/
     public void saveAccountID(String phoneNumberSaved) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
@@ -498,7 +494,6 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     }
 
     /*Version data*/
-
     public int getVersionDataIdUser(String accountId) {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.query(TableUserData, new String[]{KEY_UserData_versionData}, KEY_UserData_accountId + " = ? ", new String[]{accountId}, null, null, null);
@@ -710,9 +705,10 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         db.close();
     }
 
-    public void saveGallery(GalleryResponseModel model, String galleryId) {
+    public void saveGallery(GalleryResponseModel model, String eventId) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
+        contentValues.put(Key_Gallery_Event_Id, eventId);
         contentValues.put(Key_Gallery_galleryId, model.getId());
         contentValues.put(Key_Gallery_Like,model.getLike());
         contentValues.put(Key_Gallery_accountId,model.getAccount_id());
@@ -726,9 +722,10 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         db.close();
     }
 
-    public void updateGallery(GalleryResponseModel model, String galleryId) {
+    public void updateGallery(GalleryResponseModel model, String eventId) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
+        contentValues.put(Key_Gallery_Event_Id,eventId);
         contentValues.put(Key_Gallery_galleryId, model.getId());
         contentValues.put(Key_Gallery_Like,model.getLike());
         contentValues.put(Key_Gallery_accountId,model.getAccount_id());
@@ -738,7 +735,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         contentValues.put(Key_Gallery_Caption,model.getCaption());
         contentValues.put(Key_Gallery_imagePosted,model.getImage_posted());
         contentValues.put(Key_Gallery_imageIcon,model.getImage_icon());
-        db.update(TableGallery, contentValues, Key_Gallery_galleryId + " = ? ", new String[]{galleryId});
+        db.update(TableGallery, contentValues, Key_Gallery_Event_Id + " = ? ", new String[]{eventId});
         db.close();
     }
 
@@ -1315,7 +1312,6 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         if (cursor.moveToFirst()) {
             do {
                 GalleryResponseModel model = new GalleryResponseModel();
-                model.setNumber(cursor.getInt(cursor.getColumnIndex(Key_Gallery_No)));
                 model.setId(cursor.getString(cursor.getColumnIndex(Key_Gallery_galleryId)));
                 model.setLike(cursor.getString(cursor.getColumnIndex(Key_Gallery_Like)));
                 model.setAccount_id(cursor.getString(cursor.getColumnIndex(Key_Gallery_accountId)));
@@ -1351,7 +1347,6 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         db.close();
     }
 
-    /*CHECK DATA*/
     public boolean isDataTableKeyNull(String tableName, String targetKey) {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.query(tableName, null, targetKey + " IS NULL ", null, null, null, null);
@@ -1416,7 +1411,6 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         }
     }
 
-    /**/
     public void deleleDataByKey(String table, String key, String value) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(table, key + " = ? ", new String[]{value});
@@ -1463,12 +1457,6 @@ public class SQLiteHelper extends SQLiteOpenHelper {
 
         cursor.close();
         return cursor.getString(cursor.getColumnIndex(Key_The_Event_feedback));
-        /*if (cursor.getCount() == 1) {
-            return (cursor.getString(cursor.getColumnIndex(Key_The_Event_feedback)));
-        } else {
-            cursor.close();
-            return "";
-        }*/
     }
 
     public boolean isFirstIn(String eventId) {

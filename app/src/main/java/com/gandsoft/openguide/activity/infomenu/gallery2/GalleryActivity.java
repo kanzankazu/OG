@@ -64,7 +64,6 @@ public class GalleryActivity extends AppCompatActivity {
     ArrayList<ImageModel> data = new ArrayList<>();
 
     private String accountId, eventId;
-    private ArrayList<String> parentItems = new ArrayList<String>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,9 +72,7 @@ public class GalleryActivity extends AppCompatActivity {
 
         checkSession();
         summonToolbar("Gallery");
-
-        getAPIEventDataValid(eventId);
-
+        getAPIGalleryValid(eventId);
 
         ArrayList<GalleryResponseModel> models = db.getGallery(eventId);
         if (models != null) {
@@ -105,12 +102,11 @@ public class GalleryActivity extends AppCompatActivity {
                         startActivity(intent);
                     }
                 }));
-
     }
 
-    private void getAPIEventDataValid(String eventId) {
-
-        if (db.isDataTableValueNull(SQLiteHelper.TableTheEvent, SQLiteHelper.Key_The_Event_EventId, eventId)) {
+    private void getAPIGalleryValid(String eventId) {
+        getAPIGalleryDataDo(eventId, accountId);
+        if (SQLiteHelper.TableGallery.isEmpty()) {
             Snackbar.make(findViewById(android.R.id.content), "Belum ada data", Snackbar.LENGTH_SHORT).show();
             if (NetworkUtil.isConnected(this)) {
                 getAPIGalleryDataDo(eventId, accountId);
@@ -122,19 +118,17 @@ public class GalleryActivity extends AppCompatActivity {
             }
         }
     }
+
     private void getAPIGalleryDataDo(String eventId, String accountId) {
         GalleryRequestModel requestModel = new GalleryRequestModel();
         requestModel.setDbver("3");
         requestModel.setId_event(eventId);
-        requestModel.setPass("");
         requestModel.setPhonenumber(accountId);
-        requestModel.setVersion_data(0);
         ProgressDialog progressDialog = new ProgressDialog(this);
         progressDialog.setCancelable(false);
         progressDialog.setMessage("Please Wait...");
         progressDialog.setTitle("Get data from server");
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        // show it
         progressDialog.show();
 
         API.doGalleryRet(requestModel).enqueue(new Callback<List<GalleryResponseModel>>() {
@@ -145,15 +139,10 @@ public class GalleryActivity extends AppCompatActivity {
                     List<GalleryResponseModel> models = response.body();
                     for (int i = 0; i < models.size(); i++) {
                         GalleryResponseModel model = models.get(i);
-                        if (model.getStatus().equalsIgnoreCase("ok")) {//jika status ok
-                            if (db.isDataTableValueMultipleNull(SQLiteHelper.TableGallery, SQLiteHelper.Key_Gallery_Event_Id, SQLiteHelper.Key_Gallery_versionData, model.getId(), model.getVersion_data())) {
-                                db.saveGallery(model, model.getId());
-                                Log.d("Lihat", "onResponse ChangeEventActivity : " + model.getStatus());
-                            } else {
-                                db.updateGallery(model, model.getId());
-                            }
+                        if (SQLiteHelper.TableGallery.isEmpty()) {
+                            db.saveGallery(model, eventId);
                         } else {
-                            Snackbar.make(findViewById(android.R.id.content), model.getStatus(), Snackbar.LENGTH_LONG).show();
+                            db.updateGallery(model, eventId);
                         }
                     }
                 } else {
@@ -165,7 +154,6 @@ public class GalleryActivity extends AppCompatActivity {
             public void onFailure(Call<List<GalleryResponseModel>> call, Throwable t) {
                 progressDialog.dismiss();
                 Snackbar.make(findViewById(android.R.id.content), t.getMessage(), Snackbar.LENGTH_LONG).show();
-
             }
         });
     }
