@@ -276,10 +276,6 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
         } else {
             Snackbar.make(findViewById(android.R.id.content), "Memunculkan Data", Snackbar.LENGTH_SHORT).show();
             gotoBaseHome();//validation
-            isMove = true;
-            if (NetworkUtil.isConnected(this)) {
-                getAPIEventDataDo(eventId, accountid);
-            }
         }
     }
 
@@ -295,6 +291,7 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
         } else {
             requestModel.setVersion_data(db.getVersionDataIdEvent(eventId));
         }*/
+
         ProgressDialog progressDialog = new ProgressDialog(this);
         progressDialog.setCancelable(false);
         progressDialog.setMessage("Please Wait...");
@@ -308,9 +305,6 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
             public void onResponse(Call<List<EventDataResponseModel>> call, Response<List<EventDataResponseModel>> response) {
                 progressDialog.dismiss();
                 if (response.isSuccessful()) {
-                    if (!isMove) {
-                        gotoBaseHome();//on response
-                    }
                     List<EventDataResponseModel> eventDataResponseModels = response.body();
                     for (int i = 0; i < eventDataResponseModels.size(); i++) {
                         EventDataResponseModel model = eventDataResponseModels.get(i);
@@ -417,9 +411,10 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
                                     db.updateCommiteNote(note, model.getEvent_id());
                                 }
                             }
-                            Log.d("Lihat", "onResponse ChangeEventActivity model.getEmergencies().size : " + model.getEmergencies().size());
-                            Log.d("Lihat", "onResponse ChangeEventActivity model.getSurrounding_area().size : " + model.getSurrounding_area().size());
-                            Log.d("Lihat", "onResponse ChangeEventActivity model.getCommittee_note().size : " + model.getCommittee_note().size());
+
+                            if (i == (eventDataResponseModels.size() - 1)) {
+                                gotoBaseHome();//on response
+                            }
                         } else {
                             Snackbar.make(findViewById(android.R.id.content), model.getStatus(), Snackbar.LENGTH_LONG).show();
                         }

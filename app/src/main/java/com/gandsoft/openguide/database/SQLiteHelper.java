@@ -18,6 +18,7 @@ import com.gandsoft.openguide.API.APIresponse.Event.EventScheduleListDateDataLis
 import com.gandsoft.openguide.API.APIresponse.Event.EventSurroundingArea;
 import com.gandsoft.openguide.API.APIresponse.Event.EventTheEvent;
 import com.gandsoft.openguide.API.APIresponse.Gallery.GalleryResponseModel;
+import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentResponseModel;
 import com.gandsoft.openguide.API.APIresponse.UserData.UserDataResponseModel;
 import com.gandsoft.openguide.API.APIresponse.UserData.UserListEventResponseModel;
 import com.gandsoft.openguide.API.APIresponse.UserData.UserWalletDataResponseModel;
@@ -29,7 +30,7 @@ import java.util.List;
 public class SQLiteHelper extends SQLiteOpenHelper {
     // Databases information
     private static final String DATABASE_NAME = "openguides.db";
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 3;
 
     public static String TableGlobalData = "tabGlobalData";
     public static String KEY_GlobalData_dbver = "dbver";
@@ -192,6 +193,24 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     public static String Key_Gallery_Caption = "caption";
     public static String Key_Gallery_imagePosted = "imagePosted";
     public static String Key_Gallery_imageIcon = "imageIcon";
+
+    public static String TableHomeContent = "tabHomeContent";
+    public static String Key_HomeContent_No = "number";
+    public static String Key_HomeContent_EventId = "eventId";
+    public static String Key_HomeContent_id = "id";
+    public static String Key_HomeContent_like = "like";
+    public static String Key_HomeContent_account_id = "account_id";
+    public static String Key_HomeContent_total_comment = "total_comment";
+    public static String Key_HomeContent_status_like = "status_like";
+    public static String Key_HomeContent_username = "username";
+    public static String Key_HomeContent_jabatan = "jabatan";
+    public static String Key_HomeContent_date_created = "date_created";
+    public static String Key_HomeContent_image_icon = "image_icon";
+    public static String Key_HomeContent_image_icon_local = "image_icon_local";
+    public static String Key_HomeContent_image_posted = "image_posted";
+    public static String Key_HomeContent_image_posted_local = "image_posted_local";
+    public static String Key_HomeContent_keterangan = "keterangan";
+    public static String Key_HomeContent_event = "event";
 
     private static final String query_add_table_UserData = "CREATE TABLE IF NOT EXISTS " + TableUserData + "("
             + KEY_UserData_No + " INTEGER PRIMARY KEY AUTOINCREMENT, "
@@ -369,6 +388,24 @@ public class SQLiteHelper extends SQLiteOpenHelper {
             + Key_Gallery_imageIcon + " TEXT) ";
     private static final String query_delete_table_Gallery = "DROP TABLE IF EXISTS " + TableGallery;
 
+    private static final String query_add_table_HomeContent = "CREATE TABLE IF NOT EXISTS " + TableHomeContent + "("
+            + Key_HomeContent_No + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+            + Key_HomeContent_EventId + " TEXT, "
+            + Key_HomeContent_id + " TEXT, "
+            + Key_HomeContent_like + " INTEGER, "
+            + Key_HomeContent_account_id + " TEXT, "
+            + Key_HomeContent_total_comment + " INTEGER, "
+            + Key_HomeContent_status_like + " INTEGER, "
+            + Key_HomeContent_username + " TEXT, "
+            + Key_HomeContent_jabatan + " TEXT, "
+            + Key_HomeContent_date_created + " TEXT, "
+            + Key_HomeContent_image_icon + " TEXT, "
+            + Key_HomeContent_image_icon_local + " TEXT, "
+            + Key_HomeContent_image_posted + " TEXT, "
+            + Key_HomeContent_image_posted_local + " TEXT, "
+            + Key_HomeContent_keterangan + " TEXT, "
+            + Key_HomeContent_event + " TEXT) ";
+    private static final String query_delete_table_HomeContent = "DROP TABLE IF EXISTS " + TableHomeContent;
 
     public SQLiteHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -393,6 +430,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         db.execSQL(query_add_table_CommiteNote);
 
         db.execSQL(query_add_table_Gallery);
+        db.execSQL(query_add_table_HomeContent);
     }
 
     @Override
@@ -413,6 +451,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         db.execSQL(query_delete_table_CommiteNote);
 
         db.execSQL(query_delete_table_Gallery);
+        db.execSQL(query_delete_table_HomeContent);
 
         db.execSQL(query_add_table_UserData);
         db.execSQL(query_add_table_ListEvent);
@@ -430,6 +469,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         db.execSQL(query_add_table_CommiteNote);
 
         db.execSQL(query_add_table_Gallery);
+        db.execSQL(query_add_table_HomeContent);
     }
 
     private void replaceDataToNewTable(SQLiteDatabase db, String tableName, String tableString) {
@@ -711,15 +751,37 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(Key_Gallery_galleryId, model.getId());
-        contentValues.put(Key_Gallery_Like,model.getLike());
-        contentValues.put(Key_Gallery_accountId,model.getAccount_id());
-        contentValues.put(Key_Gallery_totalComment,model.getTotal_comment());
-        contentValues.put(Key_Gallery_statusLike,model.getStatus_like());
-        contentValues.put(Key_Gallery_Username,model.getUsername());
-        contentValues.put(Key_Gallery_Caption,model.getCaption());
-        contentValues.put(Key_Gallery_imagePosted,model.getImage_posted());
-        contentValues.put(Key_Gallery_imageIcon,model.getImage_icon());
+        contentValues.put(Key_Gallery_Like, model.getLike());
+        contentValues.put(Key_Gallery_accountId, model.getAccount_id());
+        contentValues.put(Key_Gallery_totalComment, model.getTotal_comment());
+        contentValues.put(Key_Gallery_statusLike, model.getStatus_like());
+        contentValues.put(Key_Gallery_Username, model.getUsername());
+        contentValues.put(Key_Gallery_Caption, model.getCaption());
+        contentValues.put(Key_Gallery_imagePosted, model.getImage_posted());
+        contentValues.put(Key_Gallery_imageIcon, model.getImage_icon());
         db.insert(TableGallery, null, contentValues);
+        db.close();
+    }
+
+    public void saveHomeContent(HomeContentResponseModel model, String eventId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(Key_HomeContent_EventId, eventId);
+        contentValues.put(Key_HomeContent_id, model.getId());
+        contentValues.put(Key_HomeContent_like, model.getLike());
+        contentValues.put(Key_HomeContent_account_id, model.getAccount_id());
+        contentValues.put(Key_HomeContent_total_comment, model.getTotal_comment());
+        contentValues.put(Key_HomeContent_status_like, model.getStatus_like());
+        contentValues.put(Key_HomeContent_username, model.getUsername());
+        contentValues.put(Key_HomeContent_jabatan, model.getJabatan());
+        contentValues.put(Key_HomeContent_date_created, model.getDate_created());
+        contentValues.put(Key_HomeContent_image_icon, model.getImage_icon());
+        //contentValues.put(Key_HomeContent_image_icon_local, model.getImage_icon_local());
+        contentValues.put(Key_HomeContent_image_posted, model.getImage_posted());
+        //contentValues.put(Key_HomeContent_image_posted_local, model.getSubJudul());
+        contentValues.put(Key_HomeContent_keterangan, model.getKeterangan());
+        contentValues.put(Key_HomeContent_event, model.getEvent());
+        db.insert(TableHomeContent, null, contentValues);
         db.close();
     }
 
@@ -905,6 +967,27 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         contentValues.put(Key_Feedback_Label, model.getLabel());
         contentValues.put(Key_Feedback_PlaceHolder, model.getPlaceholder());
         db.update(TableFeedback, contentValues, Key_Feedback_EventId + " = ?", new String[]{eventId});
+        db.close();
+    }
+
+    public void updateHomeContent(HomeContentResponseModel model, String eventId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(Key_HomeContent_id, model.getId());
+        contentValues.put(Key_HomeContent_like, model.getLike());
+        contentValues.put(Key_HomeContent_account_id, model.getAccount_id());
+        contentValues.put(Key_HomeContent_total_comment, model.getTotal_comment());
+        contentValues.put(Key_HomeContent_status_like, model.getStatus_like());
+        contentValues.put(Key_HomeContent_username, model.getUsername());
+        contentValues.put(Key_HomeContent_jabatan, model.getJabatan());
+        contentValues.put(Key_HomeContent_date_created, model.getDate_created());
+        contentValues.put(Key_HomeContent_image_icon, model.getImage_icon());
+        //contentValues.put(Key_HomeContent_image_icon_local, model.getImage_icon_local());
+        contentValues.put(Key_HomeContent_image_posted, model.getImage_posted());
+        //contentValues.put(Key_HomeContent_image_posted_local, model.getSubJudul());
+        contentValues.put(Key_HomeContent_keterangan, model.getKeterangan());
+        contentValues.put(Key_HomeContent_event, model.getEvent());
+        db.update(TableHomeContent,  contentValues,Key_HomeContent_EventId+" = ?",new String[]{eventId});
         db.close();
     }
 
@@ -1315,6 +1398,40 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         cursor.close();
         return modelList;
     }
+
+    public ArrayList<HomeContentResponseModel> getHomeContent(String eventId) {
+        ArrayList<HomeContentResponseModel> modelList = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(TableHomeContent, null, Key_HomeContent_EventId + " = ? ", new String[]{eventId}, Key_HomeContent_id, null, Key_HomeContent_No);
+
+        if (cursor.moveToFirst()) {
+            do {
+                HomeContentResponseModel model = new HomeContentResponseModel();
+                model.setNumber(cursor.getInt(cursor.getColumnIndex(Key_HomeContent_No)));
+                model.setEventId(cursor.getString(cursor.getColumnIndex(Key_HomeContent_EventId)));
+                model.setId(cursor.getString(cursor.getColumnIndex(Key_HomeContent_id)));
+                model.setLike(cursor.getString(cursor.getColumnIndex(Key_HomeContent_like)));
+                model.setAccount_id(cursor.getString(cursor.getColumnIndex(Key_HomeContent_account_id)));
+                model.setTotal_comment(cursor.getString(cursor.getColumnIndex(Key_HomeContent_total_comment)));
+                model.setStatus_like(cursor.getInt(cursor.getColumnIndex(Key_HomeContent_status_like)));
+                model.setUsername(cursor.getString(cursor.getColumnIndex(Key_HomeContent_username)));
+                model.setJabatan(cursor.getString(cursor.getColumnIndex(Key_HomeContent_jabatan)));
+                model.setDate_created(cursor.getString(cursor.getColumnIndex(Key_HomeContent_date_created)));
+                model.setImage_icon(cursor.getString(cursor.getColumnIndex(Key_HomeContent_image_icon)));
+                model.setImage_icon_local(cursor.getString(cursor.getColumnIndex(Key_HomeContent_image_icon_local)));
+                model.setImage_posted(cursor.getString(cursor.getColumnIndex(Key_HomeContent_image_posted)));
+                model.setImage_posted_local(cursor.getString(cursor.getColumnIndex(Key_HomeContent_image_posted_local)));
+                model.setKeterangan(cursor.getString(cursor.getColumnIndex(Key_HomeContent_keterangan)));
+                model.setEvent(cursor.getString(cursor.getColumnIndex(Key_HomeContent_event)));
+                modelList.add(model);
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        return modelList;
+    }
+
+
 
     public void deleteAllDataUser() {
         SQLiteDatabase db = this.getWritableDatabase();

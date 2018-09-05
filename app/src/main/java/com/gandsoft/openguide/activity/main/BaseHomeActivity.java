@@ -54,7 +54,6 @@ public class BaseHomeActivity extends AppCompatActivity {
             showFirstDialogEvent();
         }
 
-
         initComponent();
         initContent();
         initListener();
