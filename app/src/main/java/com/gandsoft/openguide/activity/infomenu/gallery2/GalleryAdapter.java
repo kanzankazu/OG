@@ -32,12 +32,14 @@ import java.util.Random;
 
 public class GalleryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
+    private final String eventId;
     Context context;
     List<GalleryResponseModel> models = new ArrayList<>();
     List<ImageModel> data = new ArrayList<>();
-    public GalleryAdapter(Context context, List<ImageModel> data) {
+    public GalleryAdapter(Context context, List<ImageModel> data, String eventId) {
         this.context = context;
         this.data = data;
+        this.eventId = eventId;
     }
 
     public void setData(List<GalleryResponseModel> datas) {
@@ -101,7 +103,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         int i1 = r.nextInt(1000);
         String imageFileName = "Saved Image"+ position + ".jpg";
         File storageDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
-                + "/Gandsoft");
+                + "/.Gandsoft/"+eventId);
         boolean success = true;
         if (!storageDir.exists()) {
             success = storageDir.mkdirs();

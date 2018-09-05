@@ -5,6 +5,7 @@ public class GalleryRequestModel {
     public String dbver;
     public String id_event;
     public String kondisi;
+    public String last_date;
     public String lastid;
     public String firstid;
 
@@ -19,6 +20,14 @@ public class GalleryRequestModel {
 
     public GalleryRequestModel() {
 
+    }
+
+    public String getLast_date() {
+        return last_date;
+    }
+
+    public void setLast_date(String last_date) {
+        this.last_date = last_date;
     }
 
     public String getPhonenumber() {

@@ -5,9 +5,15 @@ import android.os.Parcelable;
 
 public class ImageModel implements Parcelable {
 
-    String name, caption, like, statlike, totcom, url;
+    String name;
+    String caption;
+    String like;
+    String statlike;
+    String totcom;
+    String url;
 
-    public ImageModel() {}
+    public ImageModel() {
+    }
 
     protected ImageModel(Parcel in) {
         name = in.readString();
@@ -87,9 +93,9 @@ public class ImageModel implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(name);
         dest.writeString(url);
+        dest.writeString(caption);
         dest.writeString(like);
         dest.writeString(statlike);
         dest.writeString(totcom);
-        dest.writeString(caption);
     }
 }

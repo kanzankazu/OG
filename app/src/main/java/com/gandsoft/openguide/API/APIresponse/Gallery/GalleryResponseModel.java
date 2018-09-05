@@ -1,7 +1,7 @@
 package com.gandsoft.openguide.API.APIresponse.Gallery;
 
 public class GalleryResponseModel {
-    String id, like, account_id,total_comment,status_like,username,caption,image_posted,image_icon;
+    String id, like, account_id,total_comment,status_like,username,caption,image_posted,image_icon,image_postedLocal,image_iconLocal;
     String event_id;
     int number;
 
@@ -16,10 +16,28 @@ public class GalleryResponseModel {
         this.caption = caption;
         this.image_posted = image_posted;
         this.image_icon = image_icon;
+        this.image_postedLocal = image_postedLocal;
+        this.image_iconLocal = image_iconLocal;
         this.number = number;
     }
 
     public GalleryResponseModel(){}
+
+    public String getImage_postedLocal() {
+        return image_postedLocal;
+    }
+
+    public void setImage_postedLocal(String image_postedLocal) {
+        this.image_postedLocal = image_postedLocal;
+    }
+
+    public String getImage_iconLocal() {
+        return image_iconLocal;
+    }
+
+    public void setImage_iconLocal(String image_iconLocal) {
+        this.image_iconLocal = image_iconLocal;
+    }
 
     public String getEvent_id() {
         return event_id;

@@ -81,7 +81,7 @@ public class GalleryActivity extends AppCompatActivity {
         mRecyclerView.setLayoutManager(new GridLayoutManager(this, 3));
         mRecyclerView.setHasFixedSize(true);
 
-        mAdapter = new GalleryAdapter(GalleryActivity.this, data);
+        mAdapter = new GalleryAdapter(GalleryActivity.this, data,eventId);
         mRecyclerView.setAdapter(mAdapter);
 
         mRecyclerView.addOnItemTouchListener(new RecyclerItemClickListener(this,

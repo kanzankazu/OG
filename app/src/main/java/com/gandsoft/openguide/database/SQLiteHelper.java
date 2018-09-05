@@ -30,7 +30,7 @@ import java.util.List;
 public class SQLiteHelper extends SQLiteOpenHelper {
     // Databases information
     private static final String DATABASE_NAME = "openguides.db";
-    private static final int DATABASE_VERSION = 3;
+    private static final int DATABASE_VERSION = 4;
 
     public static String TableGlobalData = "tabGlobalData";
     public static String KEY_GlobalData_dbver = "dbver";
@@ -194,6 +194,9 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     public static String Key_Gallery_Caption = "caption";
     public static String Key_Gallery_imagePosted = "imagePosted";
     public static String Key_Gallery_imageIcon = "imageIcon";
+    public static String Key_Gallery_imagePostedLocal = "imagePostedLocal";
+    public static String Key_Gallery_imageIconLocal = "imageIconLocal";
+
 
     public static String TableHomeContent = "tabHomeContent";
     public static String Key_HomeContent_No = "number";
@@ -387,7 +390,9 @@ public class SQLiteHelper extends SQLiteOpenHelper {
             + Key_Gallery_Username + " TEXT, "
             + Key_Gallery_Caption + " TEXT, "
             + Key_Gallery_imagePosted + " TEXT, "
-            + Key_Gallery_imageIcon + " TEXT) ";
+            + Key_Gallery_imageIcon + " TEXT, "
+            + Key_Gallery_imagePostedLocal + " TEXT, "
+            + Key_Gallery_imageIconLocal + " TEXT) ";
     private static final String query_delete_table_Gallery = "DROP TABLE IF EXISTS " + TableGallery;
 
     private static final String query_add_table_HomeContent = "CREATE TABLE IF NOT EXISTS " + TableHomeContent + "("
@@ -762,6 +767,8 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         contentValues.put(Key_Gallery_Caption, model.getCaption());
         contentValues.put(Key_Gallery_imagePosted, model.getImage_posted());
         contentValues.put(Key_Gallery_imageIcon, model.getImage_icon());
+        contentValues.put(Key_Gallery_imagePostedLocal, model.getImage_postedLocal());
+        contentValues.put(Key_Gallery_imageIconLocal, model.getImage_iconLocal());
         db.insert(TableGallery, null, contentValues);
         db.close();
     }
@@ -1006,6 +1013,8 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         contentValues.put(Key_Gallery_Caption, model.getCaption());
         contentValues.put(Key_Gallery_imagePosted, model.getImage_posted());
         contentValues.put(Key_Gallery_imageIcon, model.getImage_icon());
+        contentValues.put(Key_Gallery_imagePostedLocal, model.getImage_postedLocal());
+        contentValues.put(Key_Gallery_imageIconLocal, model.getImage_iconLocal());
         db.update(TableGallery, contentValues,Key_Gallery_eventId+" = ?",new String[]{eventId});
         db.close();
     }
@@ -1412,6 +1421,8 @@ public class SQLiteHelper extends SQLiteOpenHelper {
                 model.setCaption(cursor.getString(cursor.getColumnIndex(Key_Gallery_Caption)));
                 model.setImage_posted(cursor.getString(cursor.getColumnIndex(Key_Gallery_imagePosted)));
                 model.setImage_icon(cursor.getString(cursor.getColumnIndex(Key_Gallery_imageIcon)));
+                model.setImage_postedLocal(cursor.getString(cursor.getColumnIndex(Key_Gallery_imagePostedLocal)));
+                model.setImage_iconLocal(cursor.getString(cursor.getColumnIndex(Key_Gallery_imageIconLocal)));
                 modelList.add(model);
             } while (cursor.moveToNext());
         }
