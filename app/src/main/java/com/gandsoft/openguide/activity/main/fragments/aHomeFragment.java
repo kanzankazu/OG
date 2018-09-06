@@ -195,6 +195,8 @@ public class aHomeFragment extends Fragment {
     }
 
     private void callHomeContentAPI() {
+        deleteImage(eventId);
+
         db.deleleDataByKey(SQLiteHelper.TableHomeContent, SQLiteHelper.Key_HomeContent_EventId, eventId);
 
         ProgressDialog progressDialog = ProgressDialog.show(getActivity(), "Loading...", "Please Wait..", false, false);
@@ -310,46 +312,6 @@ public class aHomeFragment extends Fragment {
             }
         }, 2000);
 
-    }
-
-    private void initListener(View view) {
-        homeIVOpenCamerafvbi.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
-                startActivity(intent);
-            }
-        });
-        homeSRLHomefvbi.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                homeSRLHomefvbi.setRefreshing(false);
-                deleteImage(eventId);
-                callHomeContentAPI();//swipe refresh
-            }
-        });
-        homeNSVHomefvbi.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
-            @Override
-            public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
-                if (scrollY > oldScrollY) {
-                    //Log.i(TAG, "Scroll DOWN");
-                }
-                if (scrollY < oldScrollY) {
-                    //Log.i(TAG, "Scroll UP");
-                }
-                if (scrollY == 0) {
-                    //Log.i(TAG, "TOP SCROLL");
-                }
-                if (scrollY == (v.getChildAt(0).getMeasuredHeight() - v.getMeasuredHeight())) {
-                    callHomeContentAPILoadMore();
-                }
-            }
-        });
-        homeBTapCheckInfvbi.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(getActivity().findViewById(android.R.id.content), "tes", Snackbar.LENGTH_SHORT).show();
-            }
-        });
     }
 
     private void deleteImage(String eventIds){
