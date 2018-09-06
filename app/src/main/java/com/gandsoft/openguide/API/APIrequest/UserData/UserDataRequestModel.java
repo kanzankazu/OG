@@ -6,7 +6,6 @@ public class UserDataRequestModel {
     private int dbver;
 
     public UserDataRequestModel(String accountid, int db_version, int version_data) {
-
         this.accountid = accountid;
         this.dbver = db_version;
         this.version_data = version_data;

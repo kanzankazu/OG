@@ -1,14 +1,19 @@
 package com.gandsoft.openguide.API.APIrequest.Gallery;
 
 public class GalleryRequestModel {
-    String phone_number,id_event,dbver,kondisi,last_date,lastid,firstid;
+    public String phonenumber;
+    public String dbver;
+    public String id_event;
+    public String kondisi;
+    public String last_date;
+    public String lastid;
+    public String firstid;
 
-    public GalleryRequestModel(String phone_number, String id_event, String dbver, String kondisi, String last_date, String lastid, String firstid) {
-        this.phone_number = phone_number;
-        this.id_event = id_event;
+    public GalleryRequestModel( String phonenumber, String dbver, String id_event) {
+        this.phonenumber = phonenumber;
         this.dbver = dbver;
+        this.id_event = id_event;
         this.kondisi = kondisi;
-        this.last_date = last_date;
         this.lastid = lastid;
         this.firstid = firstid;
     }
@@ -17,20 +22,20 @@ public class GalleryRequestModel {
 
     }
 
-    public String getPhone_number() {
-        return phone_number;
+    public String getLast_date() {
+        return last_date;
     }
 
-    public void setPhone_number(String phone_number) {
-        this.phone_number = phone_number;
+    public void setLast_date(String last_date) {
+        this.last_date = last_date;
     }
 
-    public String getId_event() {
-        return id_event;
+    public String getPhonenumber() {
+        return phonenumber;
     }
 
-    public void setId_event(String id_event) {
-        this.id_event = id_event;
+    public void setPhonenumber(String phonenumber) {
+        this.phonenumber = phonenumber;
     }
 
     public String getDbver() {
@@ -41,6 +46,13 @@ public class GalleryRequestModel {
         this.dbver = dbver;
     }
 
+    public String getId_event() {
+        return id_event;
+    }
+
+    public void setId_event(String id_event) {
+        this.id_event = id_event;
+    }
     public String getKondisi() {
         return kondisi;
     }
@@ -49,13 +61,6 @@ public class GalleryRequestModel {
         this.kondisi = kondisi;
     }
 
-    public String getLast_date() {
-        return last_date;
-    }
-
-    public void setLast_date(String last_date) {
-        this.last_date = last_date;
-    }
 
     public String getLastid() {
         return lastid;
@@ -72,4 +77,5 @@ public class GalleryRequestModel {
     public void setFirstid(String firstid) {
         this.firstid = firstid;
     }
+
 }

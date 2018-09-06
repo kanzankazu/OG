@@ -3,6 +3,7 @@ package com.gandsoft.openguide.activity.main.fragments;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -31,6 +32,8 @@ import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentResponseMod
 import com.gandsoft.openguide.IConfig;
 import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
+import com.gandsoft.openguide.activity.infomenu.gallery2.GalleryActivity;
+import com.gandsoft.openguide.activity.infomenu.gallery2.GalleryAdapter;
 import com.gandsoft.openguide.activity.main.adapter.PostRecViewAdapter;
 import com.gandsoft.openguide.database.SQLiteHelper;
 import com.gandsoft.openguide.support.SessionUtil;
@@ -38,6 +41,7 @@ import com.squareup.picasso.Picasso;
 
 import org.sufficientlysecure.htmltextview.HtmlTextView;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -83,7 +87,6 @@ public class aHomeFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
         view = inflater.inflate(R.layout.fragment_a_home, container, false);
 
         db = new SQLiteHelper(getActivity());
@@ -119,7 +122,6 @@ public class aHomeFragment extends Fragment {
     }
 
     private void initContent(ViewGroup container) {
-
         updateUi();
 
         adapter = new PostRecViewAdapter(getActivity(), menuUi);
@@ -308,6 +310,56 @@ public class aHomeFragment extends Fragment {
             }
         }, 2000);
 
+    }
+
+    private void initListener(View view) {
+        homeIVOpenCamerafvbi.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
+                startActivity(intent);
+            }
+        });
+        homeSRLHomefvbi.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                homeSRLHomefvbi.setRefreshing(false);
+                deleteImage(eventId);
+                callHomeContentAPI();//swipe refresh
+            }
+        });
+        homeNSVHomefvbi.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
+            @Override
+            public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+                if (scrollY > oldScrollY) {
+                    //Log.i(TAG, "Scroll DOWN");
+                }
+                if (scrollY < oldScrollY) {
+                    //Log.i(TAG, "Scroll UP");
+                }
+                if (scrollY == 0) {
+                    //Log.i(TAG, "TOP SCROLL");
+                }
+                if (scrollY == (v.getChildAt(0).getMeasuredHeight() - v.getMeasuredHeight())) {
+                    callHomeContentAPILoadMore();
+                }
+            }
+        });
+        homeBTapCheckInfvbi.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Snackbar.make(getActivity().findViewById(android.R.id.content), "tes", Snackbar.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void deleteImage(String eventIds){
+        File dir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)+"/.Gandsoft/"+eventIds);
+        if (dir.isDirectory()) {
+            String[] children = dir.list();
+            for (int i = 0; i < children.length; i++) {
+                new File(dir, children[i]).delete();
+            }
+        }
     }
 
     private void updateUi() {

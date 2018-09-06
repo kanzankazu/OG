@@ -30,7 +30,7 @@ import java.util.List;
 public class SQLiteHelper extends SQLiteOpenHelper {
     // Databases information
     private static final String DATABASE_NAME = "openguides.db";
-    private static final int DATABASE_VERSION = 3;
+    private static final int DATABASE_VERSION = 4;
 
     public static String TableGlobalData = "tabGlobalData";
     public static String KEY_GlobalData_dbver = "dbver";
@@ -184,6 +184,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
 
     public static String TableGallery = "tabGallery";
     public static String Key_Gallery_No = "number";
+    public static String Key_Gallery_eventId = "eventId";
     public static String Key_Gallery_galleryId = "galleryId";
     public static String Key_Gallery_Like = "like";
     public static String Key_Gallery_accountId = "accountId";
@@ -193,6 +194,9 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     public static String Key_Gallery_Caption = "caption";
     public static String Key_Gallery_imagePosted = "imagePosted";
     public static String Key_Gallery_imageIcon = "imageIcon";
+    public static String Key_Gallery_imagePostedLocal = "imagePostedLocal";
+    public static String Key_Gallery_imageIconLocal = "imageIconLocal";
+
 
     public static String TableHomeContent = "tabHomeContent";
     public static String Key_HomeContent_No = "number";
@@ -377,6 +381,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
 
     private static final String query_add_table_Gallery = "CREATE TABLE IF NOT EXISTS " + TableGallery + "("
             + Key_Gallery_No + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+            + Key_Gallery_eventId + " TEXT, "
             + Key_Gallery_galleryId + " TEXT, "
             + Key_Gallery_Like + " TEXT, "
             + Key_Gallery_accountId + " INTEGER, "
@@ -385,7 +390,9 @@ public class SQLiteHelper extends SQLiteOpenHelper {
             + Key_Gallery_Username + " TEXT, "
             + Key_Gallery_Caption + " TEXT, "
             + Key_Gallery_imagePosted + " TEXT, "
-            + Key_Gallery_imageIcon + " TEXT) ";
+            + Key_Gallery_imageIcon + " TEXT, "
+            + Key_Gallery_imagePostedLocal + " TEXT, "
+            + Key_Gallery_imageIconLocal + " TEXT) ";
     private static final String query_delete_table_Gallery = "DROP TABLE IF EXISTS " + TableGallery;
 
     private static final String query_add_table_HomeContent = "CREATE TABLE IF NOT EXISTS " + TableHomeContent + "("
@@ -747,9 +754,10 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         db.close();
     }
 
-    public void saveGallery(GalleryResponseModel model, String galleryId) {
+    public void saveGallery(GalleryResponseModel model, String eventId) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
+        contentValues.put(Key_Gallery_eventId, eventId);
         contentValues.put(Key_Gallery_galleryId, model.getId());
         contentValues.put(Key_Gallery_Like, model.getLike());
         contentValues.put(Key_Gallery_accountId, model.getAccount_id());
@@ -759,6 +767,8 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         contentValues.put(Key_Gallery_Caption, model.getCaption());
         contentValues.put(Key_Gallery_imagePosted, model.getImage_posted());
         contentValues.put(Key_Gallery_imageIcon, model.getImage_icon());
+        contentValues.put(Key_Gallery_imagePostedLocal, model.getImage_postedLocal());
+        contentValues.put(Key_Gallery_imageIconLocal, model.getImage_iconLocal());
         db.insert(TableGallery, null, contentValues);
         db.close();
     }
@@ -784,7 +794,6 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         db.insert(TableHomeContent, null, contentValues);
         db.close();
     }
-
 
     public void updateUserData(UserDataResponseModel model, String accountId) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -988,6 +997,25 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         contentValues.put(Key_HomeContent_keterangan, model.getKeterangan());
         contentValues.put(Key_HomeContent_event, model.getEvent());
         db.update(TableHomeContent,  contentValues,Key_HomeContent_EventId+" = ?",new String[]{eventId});
+        db.close();
+    }
+
+    public void updateGallery(GalleryResponseModel model,String eventId){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(Key_Gallery_eventId, eventId);
+        contentValues.put(Key_Gallery_galleryId, model.getId());
+        contentValues.put(Key_Gallery_Like, model.getLike());
+        contentValues.put(Key_Gallery_accountId, model.getAccount_id());
+        contentValues.put(Key_Gallery_totalComment, model.getTotal_comment());
+        contentValues.put(Key_Gallery_statusLike, model.getStatus_like());
+        contentValues.put(Key_Gallery_Username, model.getUsername());
+        contentValues.put(Key_Gallery_Caption, model.getCaption());
+        contentValues.put(Key_Gallery_imagePosted, model.getImage_posted());
+        contentValues.put(Key_Gallery_imageIcon, model.getImage_icon());
+        contentValues.put(Key_Gallery_imagePostedLocal, model.getImage_postedLocal());
+        contentValues.put(Key_Gallery_imageIconLocal, model.getImage_iconLocal());
+        db.update(TableGallery, contentValues,Key_Gallery_eventId+" = ?",new String[]{eventId});
         db.close();
     }
 
@@ -1373,15 +1401,17 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         return modelList;
     }
 
-    public ArrayList<GalleryResponseModel> getGallery() {
+    public ArrayList<GalleryResponseModel> getGallery(String eventId) {
         ArrayList<GalleryResponseModel> modelList = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.query(TableGallery, null, null, null, null, null, null);
+        Cursor cursor = db.query(TableGallery, null, Key_Gallery_eventId + " = ? ",
+                new String[]{eventId}, Key_Gallery_galleryId, null, Key_Gallery_No);
 
         if (cursor.moveToFirst()) {
             do {
                 GalleryResponseModel model = new GalleryResponseModel();
                 model.setNumber(cursor.getInt(cursor.getColumnIndex(Key_Gallery_No)));
+                model.setEvent_id(cursor.getString(cursor.getColumnIndex(Key_Gallery_eventId)));
                 model.setId(cursor.getString(cursor.getColumnIndex(Key_Gallery_galleryId)));
                 model.setLike(cursor.getString(cursor.getColumnIndex(Key_Gallery_Like)));
                 model.setAccount_id(cursor.getString(cursor.getColumnIndex(Key_Gallery_accountId)));
@@ -1391,6 +1421,8 @@ public class SQLiteHelper extends SQLiteOpenHelper {
                 model.setCaption(cursor.getString(cursor.getColumnIndex(Key_Gallery_Caption)));
                 model.setImage_posted(cursor.getString(cursor.getColumnIndex(Key_Gallery_imagePosted)));
                 model.setImage_icon(cursor.getString(cursor.getColumnIndex(Key_Gallery_imageIcon)));
+                model.setImage_postedLocal(cursor.getString(cursor.getColumnIndex(Key_Gallery_imagePostedLocal)));
+                model.setImage_iconLocal(cursor.getString(cursor.getColumnIndex(Key_Gallery_imageIconLocal)));
                 modelList.add(model);
             } while (cursor.moveToNext());
         }
@@ -1430,8 +1462,6 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         cursor.close();
         return modelList;
     }
-
-
 
     public void deleteAllDataUser() {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -1490,8 +1520,6 @@ public class SQLiteHelper extends SQLiteOpenHelper {
 
     public boolean isDataTableValueMultipleNull(String table, String key, String key2, String value, String value2) {
         SQLiteDatabase db = this.getReadableDatabase();
-        //String selectQuery = "SELECT * FROM " + tableName + " WHERE " + targetKey + " = '" + targetValue + "'";
-        //Cursor cursor = db.rawQuery(selectQuery, null);
         Cursor cursor = db.query(table, null, key + " = ? AND " + key2 + " = ? ", new String[]{value, value2}, null, null, null);
         if (cursor.getCount() == 0) {
             cursor.close();

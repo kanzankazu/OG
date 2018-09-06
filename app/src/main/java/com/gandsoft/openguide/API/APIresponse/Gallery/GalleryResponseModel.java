@@ -1,15 +1,50 @@
 package com.gandsoft.openguide.API.APIresponse.Gallery;
 
 public class GalleryResponseModel {
-    String id, like, account_id,total_comment,status_like,username,caption,image_posted,image_icon;
-    public int number;
+    String id, like, account_id,total_comment,status_like,username,caption,image_posted,image_icon,image_postedLocal,image_iconLocal;
+    String event_id;
+    int number;
 
-    public String getImage_icon() {
-        return image_icon;
+    public GalleryResponseModel(String id, String event_id, String like, String account_id, String total_comment, String status_like, String username, String caption, String image_posted, String image_icon, int number) {
+        this.id = id;
+        this.event_id = event_id;
+        this.like = like;
+        this.account_id = account_id;
+        this.total_comment = total_comment;
+        this.status_like = status_like;
+        this.username = username;
+        this.caption = caption;
+        this.image_posted = image_posted;
+        this.image_icon = image_icon;
+        this.image_postedLocal = image_postedLocal;
+        this.image_iconLocal = image_iconLocal;
+        this.number = number;
     }
 
-    public void setImage_icon(String image_icon) {
-        this.image_icon = image_icon;
+    public GalleryResponseModel(){}
+
+    public String getImage_postedLocal() {
+        return image_postedLocal;
+    }
+
+    public void setImage_postedLocal(String image_postedLocal) {
+        this.image_postedLocal = image_postedLocal;
+    }
+
+    public String getImage_iconLocal() {
+        return image_iconLocal;
+    }
+
+    public void setImage_iconLocal(String image_iconLocal) {
+        this.image_iconLocal = image_iconLocal;
+    }
+
+    public String getEvent_id() {
+        return event_id;
+    }
+
+    public void setEvent_id(String event_id) {
+        this.event_id = event_id;
     }
 
     public int getNumber() {
@@ -18,6 +53,14 @@ public class GalleryResponseModel {
 
     public void setNumber(int number) {
         this.number = number;
+    }
+
+    public String getImage_icon() {
+        return image_icon;
+    }
+
+    public void setImage_icon(String image_icon) {
+        this.image_icon = image_icon;
     }
 
     public String getId() {

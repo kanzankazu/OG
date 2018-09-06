@@ -108,9 +108,9 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
     }
 
     private void initContent() {
-        initVersionDataUser();
         initRecycleView();
         getAPIUserDataValidation();
+        initVersionDataUser();
         customText(ceTVInfofvbi);
 
         //getversion
@@ -426,6 +426,7 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
             public void onFailure(Call<List<EventDataResponseModel>> call, Throwable t) {
                 progressDialog.dismiss();
                 Snackbar.make(findViewById(android.R.id.content), t.getMessage(), Snackbar.LENGTH_LONG).show();
+
             }
         });
     }
@@ -444,6 +445,14 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
         }
     }
 
+    private void initVersionDataEvent() {
+        if (db.isDataTableValueNull(SQLiteHelper.TableListEvent, SQLiteHelper.KEY_ListEvent_eventId, eventIdPub)) {
+            version_data_event = 0;
+        } else {
+            version_data_event = db.getVersionDataIdEvent(eventIdPub);
+        }
+    }
+
     private void initRecycleView() {
         adapterOnGoing = new ChangeEventOnGoingAdapter(this, menuUi);
         adapterPast = new ChangeEventPastAdapter(this, menuUi);
@@ -453,14 +462,6 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
         ceRVPastEventfvbi.setAdapter(adapterPast);
         ceRVOngoingEventfvbi.setLayoutManager(new LinearLayoutManager(this));
         ceRVPastEventfvbi.setLayoutManager(new LinearLayoutManager(this));
-    }
-
-    private void initVersionDataEvent() {
-        if (db.isDataTableValueNull(SQLiteHelper.TableListEvent, SQLiteHelper.KEY_ListEvent_eventId, eventIdPub)) {
-            version_data_event = 0;
-        } else {
-            version_data_event = db.getVersionDataIdEvent(eventIdPub);
-        }
     }
 
     private void updateRecycleView(List<UserListEventResponseModel> models) {

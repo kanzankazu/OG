@@ -8,7 +8,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,7 +22,7 @@ import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
 import com.gandsoft.openguide.support.SessionUtil;
 
-public class IntroActivity extends AppCompatActivity {
+public class IntroActivity extends LocalBaseActivity {
 
     private ViewPager viewPager;
     private MyViewPagerAdapter myViewPagerAdapter;
