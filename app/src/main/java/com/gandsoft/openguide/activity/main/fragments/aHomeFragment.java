@@ -3,6 +3,7 @@ package com.gandsoft.openguide.activity.main.fragments;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -30,6 +31,8 @@ import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentResponseMod
 import com.gandsoft.openguide.IConfig;
 import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
+import com.gandsoft.openguide.activity.infomenu.gallery2.GalleryActivity;
+import com.gandsoft.openguide.activity.infomenu.gallery2.GalleryAdapter;
 import com.gandsoft.openguide.activity.main.adapter.PostRecViewAdapter;
 import com.gandsoft.openguide.database.SQLiteHelper;
 import com.gandsoft.openguide.support.SessionUtil;
@@ -37,6 +40,7 @@ import com.squareup.picasso.Picasso;
 
 import org.sufficientlysecure.htmltextview.HtmlTextView;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -229,6 +233,7 @@ public class aHomeFragment extends Fragment {
             @Override
             public void onRefresh() {
                 homeSRLHomefvbi.setRefreshing(false);
+                deleteImage(eventId);
                 callHomeContentAPI();//swipe refresh
             }
         });
@@ -245,7 +250,6 @@ public class aHomeFragment extends Fragment {
                     //Log.i(TAG, "TOP SCROLL");
                 }
                 if (scrollY == (v.getChildAt(0).getMeasuredHeight() - v.getMeasuredHeight())) {
-
                     callHomeContentAPILoadMore();
                 }
             }
@@ -256,6 +260,16 @@ public class aHomeFragment extends Fragment {
                 Snackbar.make(getActivity().findViewById(android.R.id.content), "tes", Snackbar.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void deleteImage(String eventIds){
+        File dir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)+"/.Gandsoft/"+eventIds);
+        if (dir.isDirectory()) {
+            String[] children = dir.list();
+            for (int i = 0; i < children.length; i++) {
+                new File(dir, children[i]).delete();
+            }
+        }
     }
 
     private void updateUi() {

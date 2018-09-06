@@ -77,7 +77,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                     .into(new SimpleTarget<Bitmap>() {
                         @Override
                         public void onResourceReady(Bitmap resource, GlideAnimation glideAnimation)  {
-                            deleteImage(eventId);
+                            saveImage(resource,position);
                         }
                     });
     }
@@ -121,16 +121,4 @@ public class GalleryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         }
         return savedImagePath;
     }
-
-    private void deleteImage(String eventId){
-        File dir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)+"/.Gandsoft/"+eventId);
-        if (dir.isDirectory())
-        {
-            String[] children = dir.list();
-            for (int i = 0; i < children.length; i++) {
-                new File(dir, children[i]).delete();
-            }
-        }
-    }
-
 }
