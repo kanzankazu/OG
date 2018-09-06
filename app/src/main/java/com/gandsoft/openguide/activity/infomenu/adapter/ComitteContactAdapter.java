@@ -40,11 +40,6 @@ public class ComitteContactAdapter extends RecyclerView.Adapter<ComitteContactAd
     @Override
     public void onBindViewHolder(final MyViewHolder holder, int position) {
         EventDataContactList model = models.get(position);
-        Log.d("Lihat", "onBindViewHolder ComitteContactAdapter : " + position);
-        Log.d("Lihat", "onBindViewHolder ComitteContactAdapter : " + model.getTitle());
-        Log.d("Lihat", "onBindViewHolder ComitteContactAdapter : " + model.getTelephone());
-        Log.d("Lihat", "onBindViewHolder ComitteContactAdapter : " + model.getName());
-        Log.d("Lihat", "onBindViewHolder ComitteContactAdapter : " + model.getEmail());
         if (position > 0) {
             if (model.getTitle().equalsIgnoreCase(models.get(position - 1).getTitle())) {
                 holder.llComitteEventfvbi.setVisibility(View.GONE);

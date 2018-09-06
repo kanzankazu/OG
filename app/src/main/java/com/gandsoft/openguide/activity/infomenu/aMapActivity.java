@@ -157,15 +157,10 @@ public class aMapActivity extends LocalBaseActivity implements OnMapReadyCallbac
 
     private void getPlaceLocation() {
         placeLists = db.getPlaceList(eventId);
-        Log.d("Lihat", "getPlaceLocation aMapActivity : " + placeLists.size());
         builder = new LatLngBounds.Builder();
 
         for (int i = 0; i < placeLists.size(); i++) {
             EventPlaceList placeList = placeLists.get(i);
-            Log.d("Lihat", "getPlaceLocation aMapActivity : " + placeList.getLongitude());
-            Log.d("Lihat", "getPlaceLocation aMapActivity : " + placeList.getTitle());
-            Log.d("Lihat", "getPlaceLocation aMapActivity : " + placeList.getIcon());
-            Log.d("Lihat", "getPlaceLocation aMapActivity : " + placeList.getLatitude());
 
             if (Double.parseDouble(placeList.getLatitude()) != 0 && Double.parseDouble(placeList.getLongitude()) != 0) {
                 builder.include(new LatLng(Double.parseDouble(placeList.getLatitude()), Double.parseDouble(placeList.getLongitude())));

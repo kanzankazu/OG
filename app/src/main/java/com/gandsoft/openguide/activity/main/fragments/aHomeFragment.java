@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.NestedScrollView;
@@ -49,7 +50,7 @@ public class aHomeFragment extends Fragment {
 
     private static final String TAG = "Lihat";
     private View view;
-    private LinearLayout llLoadModefvbi;
+    private LinearLayout llLoadModefvbi, homeLLWriteSomethingfvbi;
     private RecyclerView recyclerView;
     private SwipeRefreshLayout homeSRLHomefvbi;
     private ImageView homeIVOpenCamerafvbi;
@@ -61,6 +62,7 @@ public class aHomeFragment extends Fragment {
     private Button homeBTapCheckInfvbi;
     private EditText homeETWritePostCreatefvbi;
     private WebView homeWVTitleEventfvbi;
+    private FloatingActionButton homeFABHomeUpfvbi;
     /**/
     private PostRecViewAdapter adapter;
     private List<HomeContentResponseModel> menuUi = new ArrayList<>();
@@ -74,6 +76,7 @@ public class aHomeFragment extends Fragment {
     private String last_id = "";
     private String first_id = "";
     private String last_date = "";
+    private boolean last_data = false;
 
     public aHomeFragment() {
     }
@@ -96,6 +99,7 @@ public class aHomeFragment extends Fragment {
     }
 
     private void initComponent() {
+        homeFABHomeUpfvbi = (FloatingActionButton) view.findViewById(R.id.homeFABHomeUp);
         homeSRLHomefvbi = (SwipeRefreshLayout) view.findViewById(R.id.homeSRLHome);
         homeNSVHomefvbi = (NestedScrollView) view.findViewById(R.id.homeNSVHome);
         homeIVEventfvbi = (ImageView) view.findViewById(R.id.homeIVEvent);
@@ -111,6 +115,7 @@ public class aHomeFragment extends Fragment {
         homeBTapCheckInfvbi = (Button) view.findViewById(R.id.homeBTapCheckIn);
         recyclerView = (RecyclerView) view.findViewById(R.id.homeRVEvent);
         llLoadModefvbi = (LinearLayout) view.findViewById(R.id.llLoadMode);
+        homeLLWriteSomethingfvbi = (LinearLayout) view.findViewById(R.id.homeLLWriteSomething);
     }
 
     private void initContent(ViewGroup container) {
@@ -123,101 +128,6 @@ public class aHomeFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         callHomeContentAPI();//content
-    }
-
-    private void callHomeContentAPI() {
-        ProgressDialog progressDialog = ProgressDialog.show(getActivity(), "Loading...", "Please Wait..", false, false);
-
-        HomeContentRequestModel model = new HomeContentRequestModel();
-        model.setPhonenumber(accountId);
-        model.setId_event(eventId);
-        model.setDbver(String.valueOf(IConfig.DB_Version));
-        model.setKondisi("up");
-        model.setLast_date("");
-        model.setLastid("");
-        model.setFirstid("");
-
-        API.doHomeContentDataRet(model).enqueue(new Callback<List<HomeContentResponseModel>>() {
-            @Override
-            public void onResponse(Call<List<HomeContentResponseModel>> call, Response<List<HomeContentResponseModel>> response) {
-                progressDialog.dismiss();
-                if (response.isSuccessful()) {
-                    List<HomeContentResponseModel> models = response.body();
-                    adapter.setData(models);
-                    last_id = models.get(9).getId();
-                    last_date = models.get(9).getDate_created();
-                    first_id = models.get(0).getId();
-                    for (int i1 = 0; i1 < models.size(); i1++) {
-                        HomeContentResponseModel responseModel = models.get(i1);
-                        if (db.isDataTableValueMultipleNull(SQLiteHelper.TableHomeContent, SQLiteHelper.Key_HomeContent_EventId, SQLiteHelper.Key_HomeContent_id, eventId, responseModel.getId())) {
-                            db.saveHomeContent(responseModel, eventId);
-                        } else {
-                            db.updateHomeContent(responseModel, eventId);
-                        }
-                    }
-                } else {
-                    Snackbar.make(getActivity().findViewById(android.R.id.content), response.message(), Snackbar.LENGTH_LONG).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<List<HomeContentResponseModel>> call, Throwable t) {
-                progressDialog.dismiss();
-                Snackbar.make(getActivity().findViewById(android.R.id.content), t.getMessage(), Snackbar.LENGTH_LONG).show();
-            }
-        });
-    }
-
-    private void callHomeContentAPILoadMore() {
-
-        llLoadModefvbi.setVisibility(View.VISIBLE);
-
-        homeNSVHomefvbi.fullScroll(View.FOCUS_DOWN);
-
-        new Handler().postDelayed(new Runnable() {
-            public void run() {
-                //code here
-                HomeContentRequestModel model = new HomeContentRequestModel();
-                model.setPhonenumber(accountId);
-                model.setId_event(eventId);
-                model.setDbver(String.valueOf(IConfig.DB_Version));
-                model.setKondisi("down");
-                model.setLast_date(last_date);
-                model.setLastid(last_id);
-                model.setFirstid(first_id);
-
-                API.doHomeContentDataRet(model).enqueue(new Callback<List<HomeContentResponseModel>>() {
-                    @Override
-                    public void onResponse(Call<List<HomeContentResponseModel>> call, Response<List<HomeContentResponseModel>> response) {
-                        llLoadModefvbi.setVisibility(View.GONE);
-                        if (response.isSuccessful()) {
-                            List<HomeContentResponseModel> models = response.body();
-                            adapter.addDatas(models);
-                            last_id = models.get(9).getId();
-                            last_date = models.get(9).getDate_created();
-                            first_id = models.get(0).getId();
-                            for (int i1 = 0; i1 < models.size(); i1++) {
-                                HomeContentResponseModel responseModel = models.get(i1);
-                                if (db.isDataTableValueMultipleNull(SQLiteHelper.TableHomeContent, SQLiteHelper.Key_HomeContent_EventId, SQLiteHelper.Key_HomeContent_id, eventId, responseModel.getId())) {
-                                    db.saveHomeContent(responseModel, eventId);
-                                } else {
-                                    db.updateHomeContent(responseModel, eventId);
-                                }
-                            }
-                        } else {
-                            Snackbar.make(getActivity().findViewById(android.R.id.content), response.message(), Snackbar.LENGTH_LONG).show();
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<List<HomeContentResponseModel>> call, Throwable t) {
-                        llLoadModefvbi.setVisibility(View.GONE);
-                        Snackbar.make(getActivity().findViewById(android.R.id.content), t.getMessage(), Snackbar.LENGTH_LONG).show();
-                    }
-                });
-            }
-        }, 2000);
-
     }
 
     private void initListener(View view) {
@@ -247,9 +157,25 @@ public class aHomeFragment extends Fragment {
                     //Log.i(TAG, "TOP SCROLL");
                 }
                 if (scrollY == (v.getChildAt(0).getMeasuredHeight() - v.getMeasuredHeight())) {
-
-                    callHomeContentAPILoadMore();
+                    if (!last_data) {
+                        callHomeContentAPILoadMore();
+                    } else {
+                        Snackbar.make(getActivity().findViewById(android.R.id.content), "Sudah tidak ada data", Snackbar.LENGTH_LONG).show();
+                    }
                 }
+
+                int measuredHeight = homeIVEventBackgroundfvbi.getMeasuredHeight();
+                int measuredHeight1 = homeLLWriteSomethingfvbi.getMeasuredHeight();
+                int measuredHeight2 = 0;
+                for (int i = 0; i < 4; i++) {
+                    measuredHeight2 = measuredHeight2 + recyclerView.getChildAt(i).getMeasuredHeight();
+                }
+
+                /*if (scrollY > measuredHeight + measuredHeight1 + measuredHeight2) {
+                    homeFABHomeUpfvbi.setVisibility(View.VISIBLE);
+                } else {
+                    homeFABHomeUpfvbi.setVisibility(View.GONE);
+                }*/
             }
         });
         homeBTapCheckInfvbi.setOnClickListener(new View.OnClickListener() {
@@ -258,6 +184,130 @@ public class aHomeFragment extends Fragment {
                 Snackbar.make(getActivity().findViewById(android.R.id.content), "tes", Snackbar.LENGTH_SHORT).show();
             }
         });
+        homeFABHomeUpfvbi.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                homeNSVHomefvbi.smoothScrollTo(0, 0);
+            }
+        });
+    }
+
+    private void callHomeContentAPI() {
+        db.deleleDataByKey(SQLiteHelper.TableHomeContent, SQLiteHelper.Key_HomeContent_EventId, eventId);
+
+        ProgressDialog progressDialog = ProgressDialog.show(getActivity(), "Loading...", "Please Wait..", false, false);
+
+        HomeContentRequestModel model = new HomeContentRequestModel();
+        model.setPhonenumber(accountId);
+        model.setId_event(eventId);
+        model.setDbver(String.valueOf(IConfig.DB_Version));
+        model.setKondisi("up");
+        model.setLast_date("");
+        model.setLastid("");
+        model.setFirstid("");
+
+        API.doHomeContentDataRet(model).enqueue(new Callback<List<HomeContentResponseModel>>() {
+            @Override
+            public void onResponse(Call<List<HomeContentResponseModel>> call, Response<List<HomeContentResponseModel>> response) {
+                progressDialog.dismiss();
+                if (response.isSuccessful()) {
+                    List<HomeContentResponseModel> models = response.body();
+                    adapter.setData(models);
+                    if (models.size() >= 10) {
+                        last_data = false;
+                        last_id = models.get(9).getId();
+                        last_date = models.get(9).getDate_created();
+                        first_id = models.get(0).getId();
+                    } else {
+                        last_data = true;
+                        last_id = "";
+                        last_date = "";
+                        first_id = "";
+                    }
+                    for (int i1 = 0; i1 < models.size(); i1++) {
+                        HomeContentResponseModel responseModel = models.get(i1);
+                        if (db.isDataTableValueMultipleNull(SQLiteHelper.TableHomeContent, SQLiteHelper.Key_HomeContent_EventId, SQLiteHelper.Key_HomeContent_id, eventId, responseModel.getId())) {
+                            db.saveHomeContent(responseModel, eventId);
+                        } else {
+                            db.updateHomeContent(responseModel, eventId);
+                        }
+                    }
+                } else {
+                    Snackbar.make(getActivity().findViewById(android.R.id.content), response.message(), Snackbar.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<HomeContentResponseModel>> call, Throwable t) {
+                progressDialog.dismiss();
+                Snackbar.make(getActivity().findViewById(android.R.id.content), t.getMessage(), Snackbar.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    private void callHomeContentAPILoadMore() {
+
+        llLoadModefvbi.setVisibility(View.VISIBLE);
+
+        new Handler().postDelayed(new Runnable() {
+            public void run() {
+                //code here
+                homeNSVHomefvbi.fullScroll(View.FOCUS_DOWN);
+            }
+        }, 500);
+
+        new Handler().postDelayed(new Runnable() {
+            public void run() {
+                //code here
+                HomeContentRequestModel model = new HomeContentRequestModel();
+                model.setPhonenumber(accountId);
+                model.setId_event(eventId);
+                model.setDbver(String.valueOf(IConfig.DB_Version));
+                model.setKondisi("down");
+                model.setLast_date(last_date);
+                model.setLastid(last_id);
+                model.setFirstid(first_id);
+
+                API.doHomeContentDataRet(model).enqueue(new Callback<List<HomeContentResponseModel>>() {
+                    @Override
+                    public void onResponse(Call<List<HomeContentResponseModel>> call, Response<List<HomeContentResponseModel>> response) {
+                        llLoadModefvbi.setVisibility(View.GONE);
+                        if (response.isSuccessful()) {
+                            List<HomeContentResponseModel> models = response.body();
+                            adapter.addDatas(models);
+                            if (models.size() >= 10) {
+                                last_data = false;
+                                last_id = models.get(9).getId();
+                                last_date = models.get(9).getDate_created();
+                                first_id = models.get(0).getId();
+                            } else {
+                                last_data = true;
+                                last_id = "";
+                                last_date = "";
+                                first_id = "";
+                            }
+                            for (int i1 = 0; i1 < models.size(); i1++) {
+                                HomeContentResponseModel responseModel = models.get(i1);
+                                if (db.isDataTableValueMultipleNull(SQLiteHelper.TableHomeContent, SQLiteHelper.Key_HomeContent_EventId, SQLiteHelper.Key_HomeContent_id, eventId, responseModel.getId())) {
+                                    db.saveHomeContent(responseModel, eventId);
+                                } else {
+                                    db.updateHomeContent(responseModel, eventId);
+                                }
+                            }
+                        } else {
+                            Snackbar.make(getActivity().findViewById(android.R.id.content), response.message(), Snackbar.LENGTH_LONG).show();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<List<HomeContentResponseModel>> call, Throwable t) {
+                        llLoadModefvbi.setVisibility(View.GONE);
+                        Snackbar.make(getActivity().findViewById(android.R.id.content), t.getMessage(), Snackbar.LENGTH_LONG).show();
+                    }
+                });
+            }
+        }, 2000);
+
     }
 
     private void updateUi() {

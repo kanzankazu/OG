@@ -214,7 +214,6 @@ public class eInfoFragment extends Fragment implements InfoListViewAdapter.ListA
 
     @Override
     public void click(String s) {
-        Log.d("Lihat", "click eInfoFragment : " + s);
         //"Map","Gallery","Inbox","Comitee Contact","Emergencies","Practical Information","Surrounding Area","Feedback","Change Event";
         if (s.equalsIgnoreCase("Map")) {
             Intent intent1 = new Intent(getActivity(), aMapActivity.class);
@@ -243,6 +242,7 @@ public class eInfoFragment extends Fragment implements InfoListViewAdapter.ListA
         } else if (s.equalsIgnoreCase("Change Event")) {
             Intent intent9 = new Intent(getActivity(), ChangeEventActivity.class);
             getActivity().startActivity(intent9);
+            getActivity().finish();
         }
     }
 }

@@ -1,4 +1,5 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="20dp"
@@ -7,42 +8,53 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="26dp"
+        android:layout_height="wrap_content"
         android:animateLayoutChanges="true"
         android:gravity="end"
         android:orientation="horizontal">
 
-        <LinearLayout
+        <android.support.v7.widget.CardView
             android:layout_width="wrap_content"
-            android:layout_height="26dp"
+            android:layout_height="30dp"
             android:layout_marginRight="20dp"
-            android:animateLayoutChanges="true"
-            android:background="@drawable/background_radius_bottom"
-            android:backgroundTint="#e4e4e4"
-            android:gravity="center"
-            android:orientation="horizontal"
-            android:paddingLeft="10dp"
-            android:paddingRight="10dp">
+            app:cardBackgroundColor="#e4e4e4"
+            app:cardCornerRadius="10dp"
+            app:cardPreventCornerOverlap="true">
 
-            <TextView
-                android:id="@+id/tvRVHomeContentComment"
+            <LinearLayout
+                android:id="@+id/llRVHomeContentStatus"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
+                android:animateLayoutChanges="true"
+                android:backgroundTint="#e4e4e4"
                 android:gravity="center"
-                android:text="1" />
+                android:orientation="horizontal"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_marginLeft="5dp"
-                android:gravity="center"
-                android:text="Comment" />
+                <TextView
+                    android:id="@+id/tvRVHomeContentComment"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="0" />
 
-        </LinearLayout>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="5dp"
+                    android:gravity="center"
+                    android:text="Comment" />
+
+            </LinearLayout>
+
+        </android.support.v7.widget.CardView>
+
 
         <LinearLayout
+            android:id="@+id/llRVHomeContentLike"
             android:layout_width="wrap_content"
-            android:layout_height="26dp"
+            android:layout_height="30dp"
             android:animateLayoutChanges="true"
             android:background="@drawable/background_radius_left_down"
             android:backgroundTint="#e4e4e4"
@@ -56,7 +68,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:gravity="center"
-                android:text="1" />
+                android:text="0" />
 
             <ImageView
                 android:id="@+id/ivRVHomeContentLike"
@@ -73,7 +85,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginLeft="20dp"
+        android:layout_margin="20dp"
         android:animateLayoutChanges="true"
         android:orientation="horizontal">
 
@@ -111,19 +123,18 @@
         android:id="@+id/ivRVHomeContentImage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:layout_marginBottom="20dp"
         android:adjustViewBounds="true"
         android:scaleType="fitCenter"
         android:src="@drawable/gallery" />
 
-    <TextView
+    <org.sufficientlysecure.htmltextview.HtmlTextView
         android:id="@+id/tvRVHomeContentKeterangan"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="20dp"
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
-        android:layout_marginTop="20dp"
         android:text="Content"
         android:visibility="visible" />
 

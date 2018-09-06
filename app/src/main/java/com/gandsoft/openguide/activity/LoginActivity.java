@@ -125,8 +125,6 @@ public class LoginActivity extends LocalBaseActivity {
                 // 2 - Auto-retrieval. On some devices Google Play services can automatically
                 //     detect the incoming verification SMS and perform verification without
                 //     user action.
-                Log.d("Lihat onVerificationCompleted LoginActivity", credential.getProvider().toString());
-                Log.d("Lihat onVerificationCompleted LoginActivity", credential.getSignInMethod().toString());
 
                 signInWithPhoneAuthCredential(credential);
 
@@ -163,10 +161,6 @@ public class LoginActivity extends LocalBaseActivity {
 
             @Override
             public void onCodeSent(String verificationId, PhoneAuthProvider.ForceResendingToken token) {
-
-
-                Log.d(TAG, "onCodeSentId:" + verificationId);
-                Log.d(TAG, "onCodeSentToken:" + token);
 
                 // Save verification ID and resending token so we can use them later
                 mVerificationId = verificationId;
@@ -324,15 +318,8 @@ public class LoginActivity extends LocalBaseActivity {
                 if (task.isSuccessful()) {
                     FirebaseUser user = task.getResult().getUser();
                     snackBar("Success", false);
-                    Log.d("Lihat onComplete LoginActivity", "success");
-                    Log.d("Lihat onComplete LoginActivity getPhoneNumber", user.getPhoneNumber());
-                    Log.d("Lihat onComplete LoginActivity getProviderId", user.getProviderId());
-                    Log.d("Lihat onComplete LoginActivity getUid", user.getUid());
                     sendLoginData();
-                    //moveToNext();
                 } else {
-                    Log.d("Lihat onComplete LoginActivity getMessage", task.getException().getMessage());
-                    Log.d("Lihat onComplete LoginActivity getLocalizedMessage", task.getException().getLocalizedMessage());
                     if (task.getException() instanceof FirebaseAuthInvalidCredentialsException) {
                         snackBar("Invalid code.", true);
                     }

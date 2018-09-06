@@ -96,7 +96,6 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
 
         if (SessionUtil.checkIfExist(ISeasonConfig.KEY_ACCOUNT_ID)) {
             accountId = SessionUtil.getStringPreferences(ISeasonConfig.KEY_ACCOUNT_ID, null);
-            Log.d("Lihat", "onCreate AccountActivity : " + accountId);
         }
 
         getpermission();
@@ -378,16 +377,15 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
                     } else {
                         Snackbar.make(findViewById(android.R.id.content), "Data Tidak Sesuai", Snackbar.LENGTH_LONG).show();
                     }
-                    Log.d("brasil", response.message());
                     moveToChangeEvent();
                 } else {
-                    Log.d("gagal", response.message());
+                    Snackbar.make(findViewById(android.R.id.content), response.message(), Snackbar.LENGTH_LONG).show();
                 }
             }
 
             @Override
             public void onFailure(Call<List<UserUpdateResponseModel>> call, Throwable t) {
-                Log.d("gagal failur", t.getMessage());
+                Snackbar.make(findViewById(android.R.id.content), t.getMessage(), Snackbar.LENGTH_LONG).show();
             }
         });
     }
@@ -395,7 +393,6 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
     private void updateLabel() {
         String myFormat = "yyyy-MM-dd"; //In which you need put here
         SimpleDateFormat sdf = new SimpleDateFormat(myFormat, ULocale.US);
-        Log.d("anuu", sdf.format(myCalendar.getTime()));
         String a[] = sdf.format(myCalendar.getTime()).split("-");
 
         tvAccTglfvbi.setText(a[2]);

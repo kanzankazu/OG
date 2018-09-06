@@ -38,9 +38,7 @@ public class dAboutFragment extends Fragment {
 		db = new SQLiteHelper(getActivity());
 
 		accountId = SessionUtil.getStringPreferences(ISeasonConfig.KEY_ACCOUNT_ID, null);
-		Log.d("Lihat", "onCreateView aHomeFragment : " + accountId);
 		eventId = SessionUtil.getStringPreferences(ISeasonConfig.KEY_EVENT_ID, null);
-		Log.d("Lihat", "onCreateView aHomeFragment : " + eventId);
 
 		initComponent();
 		initContent();

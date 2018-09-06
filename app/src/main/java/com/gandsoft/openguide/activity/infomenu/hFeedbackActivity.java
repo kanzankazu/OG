@@ -69,7 +69,6 @@ public class hFeedbackActivity extends AppCompatActivity {
     }
 
     private void initFeedback() {
-        Log.d("Lihat", "initFeedback hFeedbackActivity : " + "feedback sqlite kosong");
         EventTheEvent theEvent = db.getTheEvent(eventId);
         Document doc = Jsoup.parse(theEvent.getFeedback());
         Elements subTitles = doc.select("h1");
@@ -80,8 +79,6 @@ public class hFeedbackActivity extends AppCompatActivity {
                 ArrayList<String> labels = new ArrayList<>();
                 String title = doc.select("h2").text();
                 Element subTitle = subTitles.get(i1);
-                Log.d("Lihat", "initFeedback hFeedbackActivity title : " + title);
-                Log.d("Lihat", "initFeedback hFeedbackActivity subTitle.text : " + subTitle.text());
                 feedback.setJudul(title);
                 feedback.setSubJudul(subTitle.text());
 
@@ -95,17 +92,11 @@ public class hFeedbackActivity extends AppCompatActivity {
                         String name = input.attr("name");
                         String id = input.attr("id");
                         String label = doc.select("label[for='q" + (i1 + 1) + i2 + "']").text();
-                        Log.d("Lihat", "initFeedback hFeedbackActivity type : " + type);
-                        Log.d("Lihat", "initFeedback hFeedbackActivity name : " + name);
-                        Log.d("Lihat", "initFeedback hFeedbackActivity subname : " + id);
-                        Log.d("Lihat", "initFeedback hFeedbackActivity label : " + label);
                         subnames.add(id);
                         labels.add(label);
                         feedback.setInputType(type);
                         feedback.setName(name);
                     }
-                    Log.d("Lihat", "initFeedback hFeedbackActivity subnames.add(id): " + subnames);
-                    Log.d("Lihat", "initFeedback hFeedbackActivity labels.add(label): " + labels);
                     feedback.setSubName(ListArrayUtil.convertListStringToString1(subnames));
                     feedback.setLabel(ListArrayUtil.convertListStringToString1(labels));
                 } else if (inputs.size() == 0 && textareas.size() > 0) {
@@ -113,8 +104,6 @@ public class hFeedbackActivity extends AppCompatActivity {
                         Element textarea = textareas.get(i3);
                         String name = textarea.attr("name");
                         String placeholder = textarea.attr("placeholder");
-                        Log.d("Lihat", "initFeedback hFeedbackActivity name : " + name);
-                        Log.d("Lihat", "initFeedback hFeedbackActivity placeholder : " + placeholder);
                         feedback.setInputType("textarea");
                         feedback.setName(name);
                         feedback.setPlaceholder(placeholder);
@@ -214,7 +203,6 @@ public class hFeedbackActivity extends AppCompatActivity {
         if (feedbacks.size() > 1) {
             String judul = feedbacks.get(0).getJudul();
             tvFeedbackTitlefvbi.setText(judul);
-            Log.d("Lihat", "initContent hFeedbackActivity 118 : " + judul);
 
             for (int i1 = 0; i1 < feedbacks.size(); i1++) {
                 EventFeedback feedback = feedbacks.get(i1);
@@ -224,12 +212,6 @@ public class hFeedbackActivity extends AppCompatActivity {
                 String subName = feedback.getSubName();
                 String label = feedback.getLabel();
                 String placeholder = feedback.getPlaceholder();
-                Log.d("Lihat", "initContent hFeedbackActivity subJudul : " + subJudul);
-                Log.d("Lihat", "initContent hFeedbackActivity inputType : " + inputType);
-                Log.d("Lihat", "initContent hFeedbackActivity name : " + name);
-                Log.d("Lihat", "initContent hFeedbackActivity subName : " + subName);
-                Log.d("Lihat", "initContent hFeedbackActivity label : " + label);
-                Log.d("Lihat", "initContent hFeedbackActivity placeholder : " + placeholder);
 
                 int paddingDp = 10;
                 float density = getApplicationContext().getResources().getDisplayMetrics().density;
@@ -257,7 +239,6 @@ public class hFeedbackActivity extends AppCompatActivity {
 
                     String[] labels = ListArrayUtil.convertStringToArrayString1(feedback.getLabel());
                     String[] subNames = ListArrayUtil.convertStringToArrayString1(feedback.getSubName());
-                    Log.d("Lihat", "initContent hFeedbackActivity : " + Arrays.toString(labels));
                     TableRow row = new TableRow(this);
                     row.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
                     for (int i = 0; i < labels.length; i++) {
@@ -272,7 +253,6 @@ public class hFeedbackActivity extends AppCompatActivity {
 
                     String[] labels = ListArrayUtil.convertStringToArrayString1(feedback.getLabel());
                     String[] subNames = ListArrayUtil.convertStringToArrayString1(feedback.getSubName());
-                    Log.d("Lihat", "initContent hFeedbackActivity : " + Arrays.toString(labels));
                     rg = new RadioGroup(this); //create the RadioGroup
                     rg.setOrientation(RadioGroup.VERTICAL);//or RadioGroup.VERTICAL
                     for (int i = 0; i < labels.length; i++) {
@@ -313,7 +293,6 @@ public class hFeedbackActivity extends AppCompatActivity {
         } else {
             String judul = feedbacks.get(0).getJudul();
             tvFeedbackTitlefvbi.setText(judul);
-            Log.d("Lihat", "initContent hFeedbackActivity 118 : " + judul);
         }
     }
 

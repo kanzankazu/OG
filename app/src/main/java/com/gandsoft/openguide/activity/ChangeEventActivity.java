@@ -244,7 +244,7 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
                         }
                     }
                 } else {
-                    Log.e("Lihat", "onResponse ChangeEventActivity : " + response.message());
+                    Snackbar.make(findViewById(android.R.id.content), response.message(), Snackbar.LENGTH_LONG).show();
                 }
             }
 
@@ -257,7 +257,6 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
                         getAPIUserDataValidation();
                     }
                 }).show();
-                Log.e("Lihat", "onFailure ChangeEventActivity : " + t.getMessage(), t);
                 if (!db.isDataTableValueMultipleNull(SQLiteHelper.TableUserData, SQLiteHelper.KEY_UserData_accountId, SQLiteHelper.KEY_UserData_phoneNumber, accountid, accountid)) {
                     updateRecycleView(db.getAllListEvent(accountid));
                     updateUserInfo(db.getUserData(accountid));
@@ -313,7 +312,6 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
                                 EventTheEvent theEvent = model.getThe_event().get(i1);
                                 if (db.isDataTableValueMultipleNull(SQLiteHelper.TableTheEvent, SQLiteHelper.Key_The_Event_EventId, SQLiteHelper.Key_The_Event_version_data, model.getEvent_id(), model.getVersion_data())) {
                                     db.saveTheEvent(theEvent, eventId, model.getFeedback_data(), model.getVersion_data());
-                                    Log.d("Lihat", "onResponse ChangeEventActivity : " + model.getFeedback_data());
                                 } else {
                                     db.updateTheEvent(theEvent, model.getEvent_id(), model.getFeedback_data(), model.getVersion_data());
                                 }
@@ -508,7 +506,6 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
         getAPIEventDataValid(eventId);
         this.eventIdPub = eventId;
         SessionUtil.setStringPreferences(ISeasonConfig.KEY_EVENT_ID, eventId);
-        Log.d("Lihat", "gotoEvent ChangeEventActivity : " + eventId);
     }
 
     private void customText(TextView view) {

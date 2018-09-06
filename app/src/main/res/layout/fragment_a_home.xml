@@ -1,4 +1,4 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -7,212 +7,232 @@
     android:orientation="vertical"
     app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-    <View
-        android:id="@+id/focus_thief"
-        android:layout_width="1dp"
-        android:layout_height="1dp"
-        android:focusable="true"
-        android:focusableInTouchMode="true" />
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:descendantFocusability="blocksDescendants">
 
-    <android.support.v4.widget.SwipeRefreshLayout
-        android:id="@+id/homeSRLHome"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/homeFABHomeUp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/homeSRLHome"
+            android:layout_alignEnd="@id/homeSRLHome"
+            android:layout_marginBottom="20dp"
+            android:layout_marginRight="20dp"
+            android:src="@drawable/ic_drop_up_white"
+            android:visibility="gone" />
 
-        <android.support.v4.widget.NestedScrollView
-            android:id="@+id/homeNSVHome"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:descendantFocusability="blocksDescendants">
+        <View
+            android:id="@+id/focus_thief"
+            android:layout_width="1dp"
+            android:layout_height="1dp"
+            android:focusable="true"
+            android:focusableInTouchMode="true" />
 
-            <LinearLayout
+        <android.support.v4.widget.SwipeRefreshLayout
+            android:id="@+id/homeSRLHome"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <android.support.v4.widget.NestedScrollView
+                android:id="@+id/homeNSVHome"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:animateLayoutChanges="true"
-                android:orientation="vertical">
-
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:animateLayoutChanges="true">
-
-                    <ImageView
-                        android:id="@+id/homeIVEventBackground"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_alignBottom="@+id/asd"
-                        android:layout_alignParentStart="true"
-                        android:layout_alignParentTop="true"
-                        android:adjustViewBounds="true"
-                        android:alpha="0.09"
-                        android:scaleType="fitXY"
-                        android:src="@drawable/gallery"
-                        android:translationZ="1dp" />
-
-                    <LinearLayout
-                        android:id="@+id/asd"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@color/colorPrimaryDark"
-                        android:gravity="end"
-                        android:orientation="vertical"
-                        android:padding="20dp">
-
-                        <com.github.siyamed.shapeimageview.RoundedImageView
-                            android:id="@+id/homeIVEvent"
-                            android:layout_width="72dp"
-                            android:layout_height="72dp"
-                            android:src="@mipmap/ic_launcher"
-                            app:siBorderColor="@color/white"
-                            app:siBorderWidth="2dp"
-                            app:siRadius="10dp"
-                            app:siSquare="true" />
-
-                        <TextView
-                            android:id="@+id/homeTVTitleEvent"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="10dp"
-                            android:text="Event Title"
-                            android:textAlignment="textEnd"
-                            android:textColor="@color/white"
-                            android:textSize="15dp"
-                            android:textStyle="bold"
-                            android:visibility="gone" />
-
-                        <org.sufficientlysecure.htmltextview.HtmlTextView
-                            android:id="@+id/homeHtmlTVTitleEvent"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="10dp"
-                            android:text="Event Title"
-                            android:textAlignment="textEnd"
-                            android:textColor="@color/white"
-                            android:textSize="15dp"
-                            android:textStyle="bold" />
-
-                        <org.sufficientlysecure.htmltextview.HtmlTextView
-                            android:id="@+id/homeHtmlTVDescEvent"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="Event Description"
-                            android:textAlignment="textEnd"
-                            android:textColor="@color/white"
-                            android:textSize="15dp"
-                            android:visibility="gone" />
-
-                        <WebView
-                            android:id="@+id/homeWVTitleEvent"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="10dp"
-                            android:visibility="gone"
-                            tools:ignore="WebViewLayout" />
-
-                        <TextView
-                            android:id="@+id/homeTVDescEvent"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="Event Description"
-                            android:textAlignment="textEnd"
-                            android:textColor="@color/white"
-                            android:textSize="15dp" />
-
-                        <Button
-                            android:id="@+id/homeBTapCheckIn"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="10dp"
-                            android:background="@drawable/background_radius_borderwhite"
-                            android:paddingLeft="10dp"
-                            android:paddingRight="10dp"
-                            android:text="Tap To Check In"
-                            android:textColor="@color/white"
-                            android:textSize="14dp" />
-                    </LinearLayout>
-
-                </RelativeLayout>
+                android:descendantFocusability="blocksDescendants">
 
                 <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="12dp"
-                    android:background="@color/white"
-                    android:gravity="center"
-                    android:orientation="horizontal"
-                    android:padding="15dp">
-
-                    <ImageView
-                        android:id="@+id/homeIVOpenCamera"
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
-                        android:background="@android:color/transparent"
-                        android:backgroundTint="@color/colorPrimary"
-                        android:padding="5dp"
-                        android:src="@drawable/ic_action_camera" />
-
-                    <EditText
-                        android:id="@+id/homeETWritePostCreate"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="10dp"
-                        android:layout_marginRight="10dp"
-                        android:layout_weight="1"
-                        android:hint="Write Something..."
-                        android:textSize="14dp" />
-
-                    <ImageView
-                        android:id="@+id/homeIVShareSomething"
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
-                        android:background="@android:color/transparent"
-                        android:backgroundTint="@color/colorPrimary"
-                        android:padding="5dp"
-                        android:src="@drawable/ic_action_send" />
-                </LinearLayout>
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="2dp"
-                    android:background="@color/gray_very_light" />
-
-                <android.support.v7.widget.RecyclerView
-                    android:id="@+id/homeRVEvent"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:padding="12dp"
-                    android:visibility="visible"
-                    tools:listitem="@layout/layout_list_home_adapter" />
+                    android:animateLayoutChanges="true"
+                    android:orientation="vertical">
 
-                <LinearLayout
-                    android:id="@+id/llLoadMode"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@color/colorPrimary"
-                    android:gravity="center"
-                    android:orientation="horizontal"
-                    android:paddingBottom="10dp"
-                    android:paddingTop="10dp"
-                    android:visibility="gone">
-
-                    <ProgressBar
-                        android:layout_width="25dp"
-                        android:layout_height="25dp"></ProgressBar>
-
-                    <TextView
-                        android:layout_width="wrap_content"
+                    <RelativeLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="10dp"
-                        android:text="Loading..."
-                        android:textColor="@color/white"
-                        android:textSize="16dp"></TextView>
+                        android:animateLayoutChanges="true">
+
+                        <ImageView
+                            android:id="@+id/homeIVEventBackground"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_alignBottom="@+id/asd"
+                            android:layout_alignParentStart="true"
+                            android:layout_alignParentTop="true"
+                            android:adjustViewBounds="true"
+                            android:alpha="0.09"
+                            android:scaleType="fitXY"
+                            android:src="@drawable/gallery"
+                            android:translationZ="1dp" />
+
+                        <LinearLayout
+                            android:id="@+id/asd"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@color/colorPrimaryDark"
+                            android:gravity="end"
+                            android:orientation="vertical"
+                            android:padding="20dp">
+
+                            <com.github.siyamed.shapeimageview.RoundedImageView
+                                android:id="@+id/homeIVEvent"
+                                android:layout_width="72dp"
+                                android:layout_height="72dp"
+                                android:src="@mipmap/ic_launcher"
+                                app:siBorderColor="@color/white"
+                                app:siBorderWidth="2dp"
+                                app:siRadius="10dp"
+                                app:siSquare="true" />
+
+                            <TextView
+                                android:id="@+id/homeTVTitleEvent"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="10dp"
+                                android:text="Event Title"
+                                android:textAlignment="textEnd"
+                                android:textColor="@color/white"
+                                android:textSize="15dp"
+                                android:textStyle="bold"
+                                android:visibility="gone" />
+
+                            <org.sufficientlysecure.htmltextview.HtmlTextView
+                                android:id="@+id/homeHtmlTVTitleEvent"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="10dp"
+                                android:text="Event Title"
+                                android:textAlignment="textEnd"
+                                android:textColor="@color/white"
+                                android:textSize="15dp"
+                                android:textStyle="bold" />
+
+                            <org.sufficientlysecure.htmltextview.HtmlTextView
+                                android:id="@+id/homeHtmlTVDescEvent"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Event Description"
+                                android:textAlignment="textEnd"
+                                android:textColor="@color/white"
+                                android:textSize="15dp"
+                                android:visibility="gone" />
+
+                            <WebView
+                                android:id="@+id/homeWVTitleEvent"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="10dp"
+                                android:visibility="gone"
+                                tools:ignore="WebViewLayout" />
+
+                            <TextView
+                                android:id="@+id/homeTVDescEvent"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Event Description"
+                                android:textAlignment="textEnd"
+                                android:textColor="@color/white"
+                                android:textSize="15dp" />
+
+                            <Button
+                                android:id="@+id/homeBTapCheckIn"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="10dp"
+                                android:background="@drawable/background_radius_borderwhite"
+                                android:paddingLeft="10dp"
+                                android:paddingRight="10dp"
+                                android:text="Tap To Check In"
+                                android:textColor="@color/white"
+                                android:textSize="14dp" />
+                        </LinearLayout>
+
+                    </RelativeLayout>
+
+                    <LinearLayout
+                        android:id="@+id/homeLLWriteSomething"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="12dp"
+                        android:background="@color/white"
+                        android:gravity="center"
+                        android:orientation="horizontal"
+                        android:padding="15dp">
+
+                        <ImageView
+                            android:id="@+id/homeIVOpenCamera"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:background="@android:color/transparent"
+                            android:backgroundTint="@color/colorPrimary"
+                            android:padding="5dp"
+                            android:src="@drawable/ic_action_camera" />
+
+                        <EditText
+                            android:id="@+id/homeETWritePostCreate"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="10dp"
+                            android:layout_marginRight="10dp"
+                            android:layout_weight="1"
+                            android:hint="Write Something..."
+                            android:textSize="14dp" />
+
+                        <ImageView
+                            android:id="@+id/homeIVShareSomething"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:background="@android:color/transparent"
+                            android:backgroundTint="@color/colorPrimary"
+                            android:padding="5dp"
+                            android:src="@drawable/ic_action_send" />
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="2dp"
+                        android:background="@color/gray_very_light" />
+
+                    <android.support.v7.widget.RecyclerView
+                        android:id="@+id/homeRVEvent"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:padding="12dp"
+                        android:visibility="visible"
+                        tools:listitem="@layout/layout_list_home_adapter" />
+
+                    <LinearLayout
+                        android:id="@+id/llLoadMode"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@color/colorPrimary"
+                        android:gravity="center"
+                        android:orientation="horizontal"
+                        android:paddingBottom="10dp"
+                        android:paddingTop="10dp"
+                        android:visibility="gone">
+
+                        <ProgressBar
+                            android:layout_width="25dp"
+                            android:layout_height="25dp"></ProgressBar>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="10dp"
+                            android:text="Loading..."
+                            android:textColor="@color/white"
+                            android:textSize="16dp"></TextView>
+
+                    </LinearLayout>
 
                 </LinearLayout>
+            </android.support.v4.widget.NestedScrollView>
 
-            </LinearLayout>
-        </android.support.v4.widget.NestedScrollView>
+        </android.support.v4.widget.SwipeRefreshLayout>
+    </RelativeLayout>
 
-    </android.support.v4.widget.SwipeRefreshLayout>
-</LinearLayout>
+
+</android.support.design.widget.CoordinatorLayout>
 
 

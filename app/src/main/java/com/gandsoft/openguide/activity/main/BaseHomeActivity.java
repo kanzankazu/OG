@@ -20,6 +20,7 @@ import android.widget.Toast;
 
 import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
+import com.gandsoft.openguide.activity.ChangeEventActivity;
 import com.gandsoft.openguide.database.SQLiteHelper;
 import com.gandsoft.openguide.support.SessionUtil;
 
@@ -141,7 +142,7 @@ public class BaseHomeActivity extends AppCompatActivity {
 
         mPagerAdapter = new SlidePagerAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
         mPager.setAdapter(mPagerAdapter);
-        mPager.setOffscreenPageLimit(3);
+        mPager.setOffscreenPageLimit(4);
         mPager.setCurrentItem(0);
     }
 
@@ -164,6 +165,8 @@ public class BaseHomeActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         if (doubleBackToExitPressedOnce) {
+            Intent intent9 = new Intent(this, ChangeEventActivity.class);
+            startActivity(intent9);
             finish();
         }
         this.doubleBackToExitPressedOnce = true;

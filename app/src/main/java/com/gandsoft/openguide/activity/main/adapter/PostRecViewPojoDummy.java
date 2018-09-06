@@ -10,14 +10,10 @@ public class PostRecViewPojoDummy {
     private static final int TOTALPAGE = 5;//5+1*10
 
     public static List<PostRecViewPojo> generyData(int page) {
-        Log.d("Lihat generyData PostRecViewPojoDummy page", String.valueOf(page));
         int start = page * COUNT;//0
-        Log.d("Lihat generyData PostRecViewPojoDummy start", String.valueOf(start));
         int end = TOTALPAGE == page ? start + COUNT : start + COUNT;
-        Log.d("Lihat generyData PostRecViewPojoDummy end", String.valueOf(end));
         List<PostRecViewPojo> items = new ArrayList<PostRecViewPojo>();
         for (int i = start; i < end; i++) {
-            //Log.d("Lihat generyData PostRecViewPojoDummy i", String.valueOf(i));
             items.add(createDummyItem(i));
         }
         return items;
