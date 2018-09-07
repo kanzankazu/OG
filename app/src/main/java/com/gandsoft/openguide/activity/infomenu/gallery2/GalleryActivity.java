@@ -66,16 +66,7 @@ public class GalleryActivity extends AppCompatActivity {
         initContent();
         initListener();
 
-        for(int i = 0; i<db.getGallery(eventId).size();i++) {
-            ImageModel imageModel = new ImageModel();
-            imageModel.setName(db.getGallery(eventId).get(i).getUsername());
-            imageModel.setCaption(db.getGallery(eventId).get(i).getCaption());
-            imageModel.setStatlike(db.getGallery(eventId).get(i).getStatus_like());
-            imageModel.setLike(db.getGallery(eventId).get(i).getLike());
-            imageModel.setTotcom(db.getGallery(eventId).get(i).getTotal_comment());
-            imageModel.setUrl(db.getGallery(eventId).get(i).getImage_posted());
-            data.add(imageModel);
-        }
+        addData();
 
         mRecyclerView = (RecyclerView) findViewById(R.id.list);
         mRecyclerView.setLayoutManager(new GridLayoutManager(this, 3));
@@ -123,8 +114,6 @@ public class GalleryActivity extends AppCompatActivity {
                 progressDialog.dismiss();
                 if (response.isSuccessful()) {
                     List<GalleryResponseModel> models = response.body();
-                    last_id = models.get(9).getId();
-                    first_id = models.get(0).getId();
                     for(int i=0;i<models.size();i++) {
                         GalleryResponseModel model = models.get(i);
                         if (db.isDataTableValueMultipleNull(SQLiteHelper.TableGallery, SQLiteHelper.Key_Gallery_eventId,
@@ -133,11 +122,7 @@ public class GalleryActivity extends AppCompatActivity {
                         } else {
                             db.updateGallery(model, eventId);
                         }
-/*                        Log.d("model value", String.valueOf(models.get(i).getImage_posted()));
-                        ImageModel imageModel = new ImageModel();
-                        imageModel.setName("Image " + i);
-                        imageModel.setUrl("http://api.openguides.id:3000/get_list_image?im=24c8b523-3a53-2e7e-1dda-005b83d4fca9_dataimage_&s=event/0c800db4-25ae-11e8-803d-0606d457636e/2018317/7");
-                        data.add(imageModel);*/
+                        addData();
                     }
                 } else {
                     Snackbar.make(findViewById(android.R.id.content), response.message(), Snackbar.LENGTH_LONG).show();
@@ -150,6 +135,20 @@ public class GalleryActivity extends AppCompatActivity {
                 Snackbar.make(findViewById(android.R.id.content), t.getMessage(), Snackbar.LENGTH_LONG).show();
             }
         });
+    }
+
+    public void addData(){
+        for(int i = 0; i<db.getGallery(eventId).size();i++) {
+            ImageModel imageModel = new ImageModel();
+            imageModel.setName(db.getGallery(eventId).get(i).getUsername());
+            imageModel.setCaption(db.getGallery(eventId).get(i).getCaption());
+            imageModel.setStatlike(db.getGallery(eventId).get(i).getStatus_like());
+            imageModel.setLike(db.getGallery(eventId).get(i).getLike());
+            imageModel.setTotcom(db.getGallery(eventId).get(i).getTotal_comment());
+            imageModel.setUrl(db.getGallery(eventId).get(i).getImage_posted());
+            data.add(imageModel);
+        }
+
     }
 
     public void checkSession(){
