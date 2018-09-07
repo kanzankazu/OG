@@ -50,6 +50,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class LoginActivity extends LocalBaseActivity {
+
     SQLiteHelper db = new SQLiteHelper(this);
 
     private static final int UI_LOGIN = 0;
@@ -126,7 +127,7 @@ public class LoginActivity extends LocalBaseActivity {
                 //     detect the incoming verification SMS and perform verification without
                 //     user action.
 
-                signInWithPhoneAuthCredential(credential);
+                signInWithPhoneAuthCredential(credential);//onVerificationCompleted
 
                 if (credential != null) {
                     if (credential.getSmsCode() != null) {
@@ -194,7 +195,7 @@ public class LoginActivity extends LocalBaseActivity {
         tvLoginResendCodefvbi.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                resendVerificationCode(/*etLoginfvbi.getText().toString()*/phoneNumberSavedwPlus, mResendToken);
+                resendVerificationCode(phoneNumberSavedwPlus, mResendToken);
             }
         });
 
@@ -307,7 +308,7 @@ public class LoginActivity extends LocalBaseActivity {
 
         PhoneAuthCredential credential = PhoneAuthProvider.getCredential(verificationId, code);
 
-        signInWithPhoneAuthCredential(credential);
+        signInWithPhoneAuthCredential(credential);//verifyPhoneNumberWithCode
     }
 
     private void signInWithPhoneAuthCredential(PhoneAuthCredential credential) {

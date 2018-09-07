@@ -419,6 +419,8 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         // TODO Auto-generated constructor stub
     }
 
+
+
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(query_add_table_UserData);
@@ -435,7 +437,6 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         db.execSQL(query_add_table_Emergencie);
         db.execSQL(query_add_table_Area);
         db.execSQL(query_add_table_CommiteNote);
-
         db.execSQL(query_add_table_Gallery);
         db.execSQL(query_add_table_HomeContent);
     }
@@ -456,7 +457,6 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         db.execSQL(query_delete_table_Emergencie);
         db.execSQL(query_delete_table_Area);
         db.execSQL(query_delete_table_CommiteNote);
-
         db.execSQL(query_delete_table_Gallery);
         db.execSQL(query_delete_table_HomeContent);
 
@@ -474,10 +474,48 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         db.execSQL(query_add_table_Emergencie);
         db.execSQL(query_add_table_Area);
         db.execSQL(query_add_table_CommiteNote);
-
         db.execSQL(query_add_table_Gallery);
         db.execSQL(query_add_table_HomeContent);
     }
+
+    @Override
+    public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        db.execSQL(query_delete_table_UserData);
+        db.execSQL(query_delete_table_ListEvent);
+        db.execSQL(query_delete_table_Wallet);
+        db.execSQL(query_delete_table_GlobalData);
+        db.execSQL(query_delete_table_EventAbout);
+        db.execSQL(query_delete_table_ContactList);
+        db.execSQL(query_delete_table_ImportantInfo);
+        db.execSQL(query_delete_table_ScheduleList);
+        db.execSQL(query_delete_table_TheEvent);
+        db.execSQL(query_delete_table_PlaceList);
+        db.execSQL(query_delete_table_Feedback);
+        db.execSQL(query_delete_table_Emergencie);
+        db.execSQL(query_delete_table_Area);
+        db.execSQL(query_delete_table_CommiteNote);
+        db.execSQL(query_delete_table_Gallery);
+        db.execSQL(query_delete_table_HomeContent);
+
+        db.execSQL(query_add_table_UserData);
+        db.execSQL(query_add_table_ListEvent);
+        db.execSQL(query_add_table_Wallet);
+        db.execSQL(query_add_table_GlobalData);
+        db.execSQL(query_add_table_EventAbout);
+        db.execSQL(query_add_table_ContactList);
+        db.execSQL(query_add_table_ImportantInfo);
+        db.execSQL(query_add_table_ScheduleList);
+        db.execSQL(query_add_table_TheEvent);
+        db.execSQL(query_add_table_PlaceList);
+        db.execSQL(query_add_table_Feedback);
+        db.execSQL(query_add_table_Emergencie);
+        db.execSQL(query_add_table_Area);
+        db.execSQL(query_add_table_CommiteNote);
+        db.execSQL(query_add_table_Gallery);
+        db.execSQL(query_add_table_HomeContent);
+    }
+
+
 
     private void replaceDataToNewTable(SQLiteDatabase db, String tableName, String tableString) {
         db.execSQL("CREATE TABLE IF NOT EXISTS " + tableString);
@@ -996,11 +1034,11 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         //contentValues.put(Key_HomeContent_image_posted_local, model.getSubJudul());
         contentValues.put(Key_HomeContent_keterangan, model.getKeterangan());
         contentValues.put(Key_HomeContent_event, model.getEvent());
-        db.update(TableHomeContent,  contentValues,Key_HomeContent_EventId+" = ?",new String[]{eventId});
+        db.update(TableHomeContent, contentValues, Key_HomeContent_EventId + " = ?", new String[]{eventId});
         db.close();
     }
 
-    public void updateGallery(GalleryResponseModel model,String eventId){
+    public void updateGallery(GalleryResponseModel model, String eventId) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(Key_Gallery_eventId, eventId);
@@ -1015,7 +1053,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         contentValues.put(Key_Gallery_imageIcon, model.getImage_icon());
         contentValues.put(Key_Gallery_imagePostedLocal, model.getImage_postedLocal());
         contentValues.put(Key_Gallery_imageIconLocal, model.getImage_iconLocal());
-        db.update(TableGallery, contentValues,Key_Gallery_eventId+" = ?",new String[]{eventId});
+        db.update(TableGallery, contentValues, Key_Gallery_eventId + " = ?", new String[]{eventId});
         db.close();
     }
 

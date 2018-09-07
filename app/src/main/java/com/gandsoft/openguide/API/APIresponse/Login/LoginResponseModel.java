@@ -7,8 +7,7 @@ import com.google.gson.annotations.SerializedName;
 import java.io.Serializable;
 
 public class LoginResponseModel  {
-    @SerializedName("status")
-    @Expose
+
     private String status;
 
     public String getStatus() {
