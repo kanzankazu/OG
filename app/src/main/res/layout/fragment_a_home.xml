@@ -155,37 +155,93 @@
                         android:layout_height="wrap_content"
                         android:layout_margin="12dp"
                         android:background="@color/white"
-                        android:gravity="center"
-                        android:orientation="horizontal"
+                        android:orientation="vertical"
                         android:padding="15dp">
 
-                        <ImageView
-                            android:id="@+id/homeIVOpenCamera"
-                            android:layout_width="30dp"
-                            android:layout_height="30dp"
-                            android:background="@android:color/transparent"
-                            android:backgroundTint="@color/colorPrimary"
-                            android:padding="5dp"
-                            android:src="@drawable/ic_action_camera" />
-
-                        <EditText
-                            android:id="@+id/homeETWritePostCreate"
+                        <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginLeft="10dp"
-                            android:layout_marginRight="10dp"
-                            android:layout_weight="1"
-                            android:hint="Write Something..."
-                            android:textSize="14dp" />
+                            android:layout_gravity="center_vertical"
+                            android:orientation="horizontal">
 
+                            <ImageView
+                                android:id="@+id/homeIVOpenCamera"
+                                android:layout_width="35dp"
+                                android:layout_height="35dp"
+                                android:layout_gravity="center_vertical"
+                                android:background="@android:color/transparent"
+                                android:padding="5dp"
+                                android:src="@drawable/ic_action_camera" />
+
+                            <EditText
+                                android:id="@+id/homeETWritePostCreate"
+                                android:layout_width="match_parent"
+                                android:layout_height="35dp"
+                                android:layout_marginLeft="10dp"
+                                android:layout_gravity="center_vertical"
+                                android:layout_marginRight="10dp"
+                                android:layout_weight="1"
+                                android:hint="Write Something..."
+                                android:textSize="14dp" />
+
+                            <ImageView
+                                android:id="@+id/homeIVShareSomething"
+                                android:layout_width="35dp"
+                                android:layout_height="35dp"
+                                android:layout_gravity="center_vertical"
+                                android:background="@android:color/transparent"
+                                android:backgroundTint="@color/colorPrimary"
+                                android:padding="5dp"
+                                android:src="@drawable/ic_action_send" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:id="@+id/homeTVOpenCamera"
+                                android:layout_width="wrap_content"
+                                android:layout_height="35dp"
+                                android:layout_gravity="center_vertical"
+                                android:background="@android:color/transparent"
+                                android:gravity="center_horizontal"
+                                android:visibility="gone"
+                                android:text="Open Camera"
+                                android:padding="5dp"/>
+                            <TextView
+                                android:id="@+id/homeTVOpenGallery"
+                                android:layout_width="wrap_content"
+                                android:layout_height="35dp"
+                                android:layout_gravity="center_vertical"
+                                android:background="@android:color/transparent"
+                                android:text="Open Gallery"
+                                android:visibility="gone"
+                                android:gravity="center_horizontal"
+                                android:padding="5dp"/>
+
+
+                        </LinearLayout>
+
+                        <TextView
+                            android:id="@+id/homeTVImageUrl"
+                            android:layout_marginTop="20dp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="No Image Uploaded"
+                            android:visibility="gone"
+                            android:textSize="12dp"
+                            android:textColor="@color/colorPrimaryText"/>
                         <ImageView
-                            android:id="@+id/homeIVShareSomething"
-                            android:layout_width="30dp"
-                            android:layout_height="30dp"
-                            android:background="@android:color/transparent"
-                            android:backgroundTint="@color/colorPrimary"
-                            android:padding="5dp"
-                            android:src="@drawable/ic_action_send" />
+                            android:id="@+id/homeIVWrapPic"
+                            android:layout_marginTop="20dp"
+                            android:layout_width="match_parent"
+                            android:layout_height="300dp"
+                            android:visibility="gone"
+                            android:background="@drawable/flag_indonesia"
+                            android:scaleType="fitXY"/>
                     </LinearLayout>
 
                     <View
