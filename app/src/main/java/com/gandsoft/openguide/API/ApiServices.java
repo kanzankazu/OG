@@ -2,6 +2,11 @@ package com.gandsoft.openguide.API;
 
 import com.gandsoft.openguide.API.APIrequest.Event.EventDataRequestModel;
 import com.gandsoft.openguide.API.APIrequest.Gallery.GalleryRequestModel;
+import com.gandsoft.openguide.API.APIrequest.HomeContent.HomeContentCheckinRequestModel;
+import com.gandsoft.openguide.API.APIrequest.HomeContent.HomeContentPostCaptionRequestModel;
+import com.gandsoft.openguide.API.APIrequest.HomeContent.HomeContentPostCommentRequestModel;
+import com.gandsoft.openguide.API.APIrequest.HomeContent.HomeContentPostImageCaptionRequestModel;
+import com.gandsoft.openguide.API.APIrequest.HomeContent.HomeContentPostLikeRequestModel;
 import com.gandsoft.openguide.API.APIrequest.HomeContent.HomeContentRequestModel;
 import com.gandsoft.openguide.API.APIrequest.Login.LoginRequestModel;
 import com.gandsoft.openguide.API.APIrequest.UserData.UserDataRequestModel;
@@ -9,6 +14,7 @@ import com.gandsoft.openguide.API.APIrequest.UserUpdate.UserUpdateRequestModel;
 import com.gandsoft.openguide.API.APIresponse.Event.EventDataResponseModel;
 import com.gandsoft.openguide.API.APIresponse.Gallery.GalleryResponseModel;
 import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentResponseModel;
+import com.gandsoft.openguide.API.APIresponse.LocalBaseResponseModel;
 import com.gandsoft.openguide.API.APIresponse.Login.LoginResponseModel;
 import com.gandsoft.openguide.API.APIresponse.UserData.UserDataResponseModel;
 import com.gandsoft.openguide.API.APIresponse.UserUpdate.UserUpdateResponseModel;
@@ -52,5 +58,18 @@ public interface ApiServices {
     @POST("get_new_home_content")
     Call<List<HomeContentResponseModel>> homeContentDataRet(@Body HomeContentRequestModel model);
 
+    @POST("checkin_event_verification_status")
+    Call<List<LocalBaseResponseModel>> homeContentCheckinRet(@Body HomeContentCheckinRequestModel model);
 
+    @POST("post_caption_home_content")
+    Call<List<LocalBaseResponseModel>> homeContentPostCaptionRet(@Body HomeContentPostCaptionRequestModel model);
+
+    @POST("post_imagecaption_home_content")
+    Call<List<LocalBaseResponseModel>> homeContentPostImageCaptionRet(@Body HomeContentPostImageCaptionRequestModel model);
+
+    @POST("set_post_comment_data")
+    Call<List<LocalBaseResponseModel>> homeContentPostCommentRet(@Body HomeContentPostCommentRequestModel model);
+
+    @POST("post_like_contentevent")
+    Call<List<LocalBaseResponseModel>> homeContentPostLikeRet(@Body HomeContentPostLikeRequestModel model);
 }
