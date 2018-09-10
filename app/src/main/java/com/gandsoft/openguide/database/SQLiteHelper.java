@@ -579,7 +579,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         }
     }
 
-    /*Version data*/
+    /*Version models*/
 
     public int getVersionDataIdUser(String accountId) {
         SQLiteDatabase db = this.getReadableDatabase();

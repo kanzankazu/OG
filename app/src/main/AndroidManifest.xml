@@ -92,7 +92,7 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".activity.infomenu.gallery2.DetailActivity"
+            android:name=".activity.infomenu.gallery2.GalleryDetailActivity"
             android:configChanges="orientation|screenSize"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />

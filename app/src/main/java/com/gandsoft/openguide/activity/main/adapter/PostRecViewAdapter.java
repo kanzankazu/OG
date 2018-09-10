@@ -27,36 +27,7 @@ public class PostRecViewAdapter extends RecyclerView.Adapter<PostRecViewAdapter.
 
     public PostRecViewAdapter(FragmentActivity activity, List<HomeContentResponseModel> items) {
         this.activity = activity;
-        models = items;
-    }
-
-    class ViewHolder extends RecyclerView.ViewHolder {
-
-
-        private final TextView tvRVHomeContentUsername;
-        private final HtmlTextView tvRVHomeContentKeterangan;
-        private final TextView tvRVHomeContentComment;
-        private final TextView tvRVHomeContentLike;
-        private final TextView tvRVHomeContentTime;
-        private final ImageView ivRVHomeContentImage;
-        private final ImageView ivRVHomeContentLike;
-        private final ImageView ivRVRVHomeContentIcon;
-        private final LinearLayout llRVHomeContentLike;
-        private final LinearLayout llRVHomeContentStatus;
-
-        public ViewHolder(View itemView) {
-            super(itemView);
-            tvRVHomeContentUsername = (TextView) itemView.findViewById(R.id.tvRVHomeContentUsername);
-            tvRVHomeContentKeterangan = (HtmlTextView) itemView.findViewById(R.id.tvRVHomeContentKeterangan);
-            tvRVHomeContentComment = (TextView) itemView.findViewById(R.id.tvRVHomeContentComment);
-            tvRVHomeContentLike = (TextView) itemView.findViewById(R.id.tvRVHomeContentLike);
-            tvRVHomeContentTime = (TextView) itemView.findViewById(R.id.tvRVHomeContentTime);
-            ivRVHomeContentImage = (ImageView) itemView.findViewById(R.id.ivRVHomeContentImage);
-            ivRVHomeContentLike = (ImageView) itemView.findViewById(R.id.ivRVHomeContentLike);
-            ivRVRVHomeContentIcon = (ImageView) itemView.findViewById(R.id.ivRVRVHomeContentIcon);
-            llRVHomeContentLike = (LinearLayout) itemView.findViewById(R.id.llRVHomeContentLike);
-            llRVHomeContentStatus = (LinearLayout) itemView.findViewById(R.id.llRVHomeContentStatus);
-        }
+        this.models = items;
     }
 
     @Override
@@ -127,6 +98,34 @@ public class PostRecViewAdapter extends RecyclerView.Adapter<PostRecViewAdapter.
     @Override
     public int getItemCount() {
         return models.size();
+    }
+
+    class ViewHolder extends RecyclerView.ViewHolder {
+
+        private final TextView tvRVHomeContentUsername;
+        private final HtmlTextView tvRVHomeContentKeterangan;
+        private final TextView tvRVHomeContentComment;
+        private final TextView tvRVHomeContentLike;
+        private final TextView tvRVHomeContentTime;
+        private final ImageView ivRVHomeContentImage;
+        private final ImageView ivRVHomeContentLike;
+        private final ImageView ivRVRVHomeContentIcon;
+        private final LinearLayout llRVHomeContentLike;
+        private final LinearLayout llRVHomeContentStatus;
+
+        public ViewHolder(View itemView) {
+            super(itemView);
+            tvRVHomeContentUsername = (TextView) itemView.findViewById(R.id.tvRVHomeContentUsername);
+            tvRVHomeContentKeterangan = (HtmlTextView) itemView.findViewById(R.id.tvRVHomeContentKeterangan);
+            tvRVHomeContentComment = (TextView) itemView.findViewById(R.id.tvRVHomeContentComment);
+            tvRVHomeContentLike = (TextView) itemView.findViewById(R.id.tvRVHomeContentLike);
+            tvRVHomeContentTime = (TextView) itemView.findViewById(R.id.tvRVHomeContentTime);
+            ivRVHomeContentImage = (ImageView) itemView.findViewById(R.id.ivRVHomeContentImage);
+            ivRVHomeContentLike = (ImageView) itemView.findViewById(R.id.ivRVHomeContentLike);
+            ivRVRVHomeContentIcon = (ImageView) itemView.findViewById(R.id.ivRVRVHomeContentIcon);
+            llRVHomeContentLike = (LinearLayout) itemView.findViewById(R.id.llRVHomeContentLike);
+            llRVHomeContentStatus = (LinearLayout) itemView.findViewById(R.id.llRVHomeContentStatus);
+        }
     }
 
     public void setData(List<HomeContentResponseModel> datas) {

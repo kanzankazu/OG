@@ -160,15 +160,8 @@ public class aHomeFragment extends Fragment {
                     if (!last_data) {
                         callHomeContentAPILoadMore();
                     } else {
-                        Snackbar.make(getActivity().findViewById(android.R.id.content), "Sudah tidak ada data", Snackbar.LENGTH_LONG).show();
+                        Snackbar.make(getActivity().findViewById(android.R.id.content), "Sudah tidak ada models", Snackbar.LENGTH_LONG).show();
                     }
-                }
-
-                int measuredHeight = homeIVEventBackgroundfvbi.getMeasuredHeight();
-                int measuredHeight1 = homeLLWriteSomethingfvbi.getMeasuredHeight();
-                int measuredHeight2 = 0;
-                for (int i = 0; i < 4; i++) {
-                    measuredHeight2 = measuredHeight2 + recyclerView.getChildAt(i).getMeasuredHeight();
                 }
 
                 /*if (scrollY > measuredHeight + measuredHeight1 + measuredHeight2) {
@@ -215,10 +208,10 @@ public class aHomeFragment extends Fragment {
                 if (response.isSuccessful()) {
                     List<HomeContentResponseModel> models = response.body();
                     adapter.setData(models);
-                    if (models.size() >= 10) {
+                    if (models.size() == 10) {
                         last_data = false;
-                        last_id = models.get(9).getId();
-                        last_date = models.get(9).getDate_created();
+                        last_id = models.get(models.size() - 1).getId();
+                        last_date = models.get(models.size() - 1).getDate_created();
                         first_id = models.get(0).getId();
                     } else {
                         last_data = true;
@@ -279,8 +272,8 @@ public class aHomeFragment extends Fragment {
                             adapter.addDatas(models);
                             if (models.size() >= 10) {
                                 last_data = false;
-                                last_id = models.get(9).getId();
-                                last_date = models.get(9).getDate_created();
+                                last_id = models.get(models.size() - 1).getId();
+                                last_date = models.get(models.size() - 1).getDate_created();
                                 first_id = models.get(0).getId();
                             } else {
                                 last_data = true;
@@ -346,7 +339,7 @@ public class aHomeFragment extends Fragment {
                     .error(R.drawable.template_account_og)
                     .into(homeIVEventBackgroundfvbi);
         } else {
-            Snackbar.make(getActivity().findViewById(android.R.id.content), "data kosong", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+            Snackbar.make(getActivity().findViewById(android.R.id.content), "models kosong", Snackbar.LENGTH_LONG).setAction("Action", null).show();
         }
     }
 }

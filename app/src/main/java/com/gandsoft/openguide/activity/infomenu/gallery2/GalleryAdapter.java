@@ -1,13 +1,12 @@
 package com.gandsoft.openguide.activity.infomenu.gallery2;
 
-import android.content.Context;
-import android.content.Intent;
+import android.app.Activity;
 import android.graphics.Bitmap;
-import android.icu.text.DateFormat;
-import android.icu.text.SimpleDateFormat;
-import android.net.Uri;
+import android.graphics.drawable.Drawable;
 import android.os.Environment;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,31 +14,71 @@ import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.GlideDrawableImageViewTarget;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.gandsoft.openguide.API.APIresponse.Gallery.GalleryResponseModel;
-import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentResponseModel;
 import com.gandsoft.openguide.R;
-import com.google.android.gms.nearby.connection.Payload;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
-import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
-import java.io.File;
 import java.util.Random;
 
-public class GalleryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHolder> {
 
+    private final Activity activity;
     private final String eventId;
-    Context context;
-    List<GalleryResponseModel> models = new ArrayList<>();
-    List<ImageModel> data = new ArrayList<>();
-    public GalleryAdapter(Context context, List<ImageModel> data, String eventId) {
-        this.context = context;
-        this.data = data;
+    private List<GalleryResponseModel> models = new ArrayList<>();
+
+    public GalleryAdapter(Activity activity, List<GalleryResponseModel> models, String eventId) {
+        this.activity = activity;
+        this.models = models;
         this.eventId = eventId;
+    }
+
+    @NonNull
+    @Override
+    public GalleryAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_list_gallery_grid, parent, false);
+        return new ViewHolder(v);
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull GalleryAdapter.ViewHolder holder, int position) {
+        GalleryResponseModel model = models.get(position);
+        Glide.with(activity)
+                .load(model.getImage_posted())
+                .dontAnimate()
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .centerCrop()
+                .into(holder.mImg);
+        Glide.with(activity)
+                .load(model.getImage_posted())
+                .asBitmap()
+                .into(new SimpleTarget<Bitmap>() {
+                    @Override
+                    public void onResourceReady(Bitmap resource, GlideAnimation glideAnimation) {
+                        saveImage(resource, position);
+                    }
+                });
+    }
+
+    @Override
+    public int getItemCount() {
+        return models.size();
+    }
+
+    public class ViewHolder extends RecyclerView.ViewHolder {
+        private final ImageView mImg;
+
+        public ViewHolder(View itemView) {
+            super(itemView);
+            mImg = (ImageView) itemView.findViewById(R.id.item_img);
+        }
     }
 
     public void setData(List<GalleryResponseModel> datas) {
@@ -52,58 +91,18 @@ public class GalleryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         notifyDataSetChanged();
     }
 
-    @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        RecyclerView.ViewHolder viewHolder;
-        View v;
-            v = LayoutInflater.from(parent.getContext()).inflate(
-                    R.layout.list_item, parent, false);
-            viewHolder = new MyItemHolder(v);
-
-        return viewHolder;
+    public void addDatas(List<GalleryResponseModel> datas) {
+        models.addAll(datas);
+        notifyItemRangeInserted(models.size(), datas.size());
     }
 
-    @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-            Glide.with(context).load(data.get(position).getUrl())
-                    .thumbnail(0.5f)
-                    .override(200,200)
-                    .crossFade()
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)
-                    .into(((MyItemHolder) holder).mImg);
-            Glide.with(context)
-                    .load(data.get(position).getUrl())
-                    .asBitmap()
-                    .into(new SimpleTarget<Bitmap>() {
-                        @Override
-                        public void onResourceReady(Bitmap resource, GlideAnimation glideAnimation)  {
-                            saveImage(resource,position);
-                        }
-                    });
-    }
-
-    @Override
-    public int getItemCount() {
-        return data.size();
-    }
-
-    public static class MyItemHolder extends RecyclerView.ViewHolder {
-        ImageView mImg;
-
-        public MyItemHolder(View itemView) {
-            super(itemView);
-
-            mImg = (ImageView) itemView.findViewById(R.id.item_img);
-        }
-    }
-
-    private String saveImage(Bitmap image,int position) {
+    private String saveImage(Bitmap image, int position) {
         String savedImagePath = null;
         Random r = new Random();
-        int i1 = r.nextInt(1000);
-        String imageFileName = "Saved Image"+ position + ".jpg";
+        //int i1 = r.nextInt(1000);
+        String imageFileName = "Saved Image" + position + ".jpg";
         File storageDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
-                + "/.Gandsoft/"+eventId);
+                + "/.Gandsoft/" + eventId);
         boolean success = true;
         if (!storageDir.exists()) {
             success = storageDir.mkdirs();
@@ -119,6 +118,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 e.printStackTrace();
             }
         }
+        Log.d("Lihat", "saveImage GalleryAdapter : " + savedImagePath);
         return savedImagePath;
     }
 }
