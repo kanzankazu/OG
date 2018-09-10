@@ -1,8 +1,10 @@
 package com.gandsoft.openguide.activity.main.adapter;
 
+import android.content.Context;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,7 +14,12 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.gandsoft.openguide.API.API;
+import com.gandsoft.openguide.API.APIrequest.HomeContent.HomeContentPostLikeRequestModel;
+import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentPostLikeResponseModel;
 import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentResponseModel;
+import com.gandsoft.openguide.API.APIresponse.LocalBaseResponseModel;
+import com.gandsoft.openguide.IConfig;
 import com.gandsoft.openguide.R;
 
 import org.sufficientlysecure.htmltextview.HtmlTextView;
@@ -20,19 +27,27 @@ import org.sufficientlysecure.htmltextview.HtmlTextView;
 import java.util.ArrayList;
 import java.util.List;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 public class PostRecViewAdapter extends RecyclerView.Adapter<PostRecViewAdapter.ViewHolder> {
 
+    private Context context;
     private FragmentActivity activity;
     private List<HomeContentResponseModel> models = new ArrayList<>();
+    private List<HomeContentPostLikeResponseModel> modelsnyaLike = new ArrayList<>();
+    private String eventId,accountId;
 
-    public PostRecViewAdapter(FragmentActivity activity, List<HomeContentResponseModel> items) {
+    public PostRecViewAdapter(FragmentActivity activity, List<HomeContentResponseModel> items, Context context, String eventId, String accountId) {
         this.activity = activity;
+        this.context = context;
         models = items;
+        this.eventId =eventId;
+        this.accountId = accountId;
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
-
-
         private final TextView tvRVHomeContentUsername;
         private final HtmlTextView tvRVHomeContentKeterangan;
         private final TextView tvRVHomeContentComment;
@@ -105,6 +120,7 @@ public class PostRecViewAdapter extends RecyclerView.Adapter<PostRecViewAdapter.
             holder.ivRVHomeContentLike.setImageResource(R.drawable.ic_love_empty);
         }
 
+
         holder.llRVHomeContentLike.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -113,17 +129,66 @@ public class PostRecViewAdapter extends RecyclerView.Adapter<PostRecViewAdapter.
                     holder.tvRVHomeContentLike.setText(String.valueOf(like + 1));
                     holder.ivRVHomeContentLike.setImageResource(R.drawable.ic_love_fill);
                     model.setStatus_like(1);
-                    model.setLike(String.valueOf(like + 1));
+                    model.setLike(String.valueOf(like+1));
+                    postLike( model.getLike(), holder, model);
                 } else {
                     holder.tvRVHomeContentLike.setText(String.valueOf(like - 1));
                     holder.ivRVHomeContentLike.setImageResource(R.drawable.ic_love_empty);
                     model.setStatus_like(0);
-                    model.setLike(String.valueOf(like - 1));
+                    model.setLike(String.valueOf(like-1));
+                    postLike( model.getLike(),holder,model);
                 }
             }
         });
+
+        holder.llRVHomeContentStatus.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+            }
+        });
+
     }
 
+    public void postLike( String likes, ViewHolder holder, HomeContentResponseModel model){
+        HomeContentPostLikeRequestModel requestModel = new HomeContentPostLikeRequestModel();
+        requestModel.setAccount_id(accountId);
+        requestModel.setEvent_id(eventId);
+        requestModel.setId_content(model.getId());
+        requestModel.setVal_like(likes);
+        requestModel.setDbver(String.valueOf(IConfig.DB_Version));
+        if(model.getStatus_like()==1) {
+            requestModel.setStatus_like("0");
+        }
+        else if(model.getStatus_like()==0) {
+            requestModel.setStatus_like("1");
+        }
+
+        API.doHomeContentPostLikeRet(requestModel).enqueue(new Callback<List<LocalBaseResponseModel>>() {
+            @Override
+            public void onResponse(Call<List<LocalBaseResponseModel>> call, Response<List<LocalBaseResponseModel>> response) {
+                if (response.isSuccessful()) {
+                    List<LocalBaseResponseModel> s = response.body();
+                    if (s.size() == 1) {
+                        for (int i = 0; i < s.size(); i++) {
+                            LocalBaseResponseModel model = s.get(i);
+                            if (model.getStatus().equalsIgnoreCase("ok")) {
+                                Log.d("Status ok","ok");
+
+                            } else {
+                            }
+                        }
+                    } else {
+                    }
+                } else {
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<LocalBaseResponseModel>> call, Throwable t) {
+                Log.d("tmassage", String.valueOf(t));
+            }
+        });
+    }
     @Override
     public int getItemCount() {
         return models.size();

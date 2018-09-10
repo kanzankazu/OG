@@ -53,6 +53,7 @@ import com.gandsoft.openguide.R;
 import com.gandsoft.openguide.activity.main.adapter.PostRecViewAdapter;
 import com.gandsoft.openguide.database.SQLiteHelper;
 import com.gandsoft.openguide.support.SessionUtil;
+import com.gandsoft.openguide.support.SystemUtil;
 import com.squareup.picasso.Picasso;
 
 import org.sufficientlysecure.htmltextview.HtmlTextView;
@@ -99,8 +100,12 @@ public class aHomeFragment extends Fragment {
     private String first_id = "";
     private String last_date = "";
     private boolean last_data = false;
+
+    //Post
     private int i = 0;
-private TextView homeTVOpenCamerafvbi,homeTVOpenGalleryfvbi;
+    private TextView homeTVOpenCamerafvbi,homeTVOpenGalleryfvbi;
+    private String base64pic = "";
+
     public aHomeFragment() { }
 
     @Override
@@ -144,10 +149,11 @@ private TextView homeTVOpenCamerafvbi,homeTVOpenGalleryfvbi;
     private void initContent(ViewGroup container) {
         updateUi();
 
-        adapter = new PostRecViewAdapter(getActivity(), menuUi);
+        adapter = new PostRecViewAdapter(getActivity(), menuUi, getContext(),eventId,accountId);
         recyclerView.setNestedScrollingEnabled(false);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        homeETWritePostCreatefvbi.setEnabled(true);
 
         callHomeContentAPI();//content
     }
@@ -166,7 +172,6 @@ private TextView homeTVOpenCamerafvbi,homeTVOpenGalleryfvbi;
                 startActivityForResult(intent, 1);
             }
         });
-
         homeTVOpenCamerafvbi.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 ContentValues values = new ContentValues();
@@ -179,7 +184,6 @@ private TextView homeTVOpenCamerafvbi,homeTVOpenGalleryfvbi;
                 startActivityForResult(intent, 1);
             }
         });
-
         homeTVOpenGalleryfvbi.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 Intent intent = new Intent(
@@ -188,7 +192,6 @@ private TextView homeTVOpenCamerafvbi,homeTVOpenGalleryfvbi;
                 startActivityForResult(intent, 2);
             }
         });
-
         homeIVShareSomethingfvbi.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
                 if(i==0){
@@ -254,7 +257,7 @@ private TextView homeTVOpenCamerafvbi,homeTVOpenGalleryfvbi;
         });
     }
 
-    private void callHomeContentAPI() {
+    public void callHomeContentAPI() {
         deleteImage(eventId);
 
         db.deleleDataByKey(SQLiteHelper.TableHomeContent, SQLiteHelper.Key_HomeContent_EventId, eventId);
@@ -371,7 +374,6 @@ private TextView homeTVOpenCamerafvbi,homeTVOpenGalleryfvbi;
                 });
             }
         }, 2000);
-
     }
 
     private void deleteImage(String eventIds) {
@@ -462,10 +464,10 @@ private TextView homeTVOpenCamerafvbi,homeTVOpenGalleryfvbi;
         HomeContentPostCaptionRequestModel requestModel = new HomeContentPostCaptionRequestModel();
         requestModel.setId_event(eventId);
         requestModel.setAccount_id(accountId);
+        requestModel.setCaptions(homeETWritePostCreatefvbi.getText().toString());
         requestModel.setDbver("3");
-        requestModel.setGmt_date("2018/09/06 20:48:47");
-        requestModel.setCaptions("haloo");
-        requestModel.setDate_post("2018/09/06 20:48:47");
+        requestModel.setGmt_date("");
+        requestModel.setDate_post("");
 
         ProgressDialog progressDialog = new ProgressDialog(getContext());
         progressDialog.setCancelable(false);
@@ -485,8 +487,11 @@ private TextView homeTVOpenCamerafvbi,homeTVOpenGalleryfvbi;
                         for (int i = 0; i < s.size(); i++) {
                             LocalBaseResponseModel model = s.get(i);
                             if (model.getStatus().equalsIgnoreCase("ok")) {
-                                Snackbar.make(getActivity().findViewById(android.R.id.content), "Post Tersimpan", Snackbar.LENGTH_LONG).show();
+                                Snackbar.make(getActivity().findViewById(android.R.id.content), "Post Terkirim", Snackbar.LENGTH_LONG).show();
+                                callHomeContentAPI();
                                 updateUi();
+                                homeETWritePostCreatefvbi.setText("");
+                                SystemUtil.hideKeyBoard(getActivity());
                             } else {
                                 Snackbar.make(getActivity().findViewById(android.R.id.content), "Post Bad Response", Snackbar.LENGTH_LONG).show();
                             }
@@ -537,6 +542,7 @@ private TextView homeTVOpenCamerafvbi,homeTVOpenGalleryfvbi;
                             LocalBaseResponseModel model = s.get(i);
                             if (model.getStatus().equalsIgnoreCase("ok")) {
                                 Snackbar.make(getActivity().findViewById(android.R.id.content), "Image Post Tersimpan", Snackbar.LENGTH_LONG).show();
+                                callHomeContentAPI();
                                 updateUi();
                             } else {
                                 Snackbar.make(getActivity().findViewById(android.R.id.content), "Image Post Bad Response", Snackbar.LENGTH_LONG).show();
@@ -557,7 +563,6 @@ private TextView homeTVOpenCamerafvbi,homeTVOpenGalleryfvbi;
         });
     }
 
-    private String base64pic = "";
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -584,6 +589,7 @@ private TextView homeTVOpenCamerafvbi,homeTVOpenGalleryfvbi;
         }
 
     }
+
     private void createDirectoryAndSaveFile(Bitmap imageToSave, String fileName) {
         File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/.Gandsoft/" + eventId+"/"+ fileName);
         if (file.exists()) {
@@ -598,6 +604,7 @@ private TextView homeTVOpenCamerafvbi,homeTVOpenGalleryfvbi;
             e.printStackTrace();
         }
     }
+
     private void onSelectGallery(Intent data){
         Uri selectedImageUri = data.getData();
         String[] projection = {MediaStore.MediaColumns.DATA};

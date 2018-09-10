@@ -6,6 +6,7 @@ import com.gandsoft.openguide.API.APIrequest.HomeContent.HomeContentCheckinReque
 import com.gandsoft.openguide.API.APIrequest.HomeContent.HomeContentPostCaptionRequestModel;
 import com.gandsoft.openguide.API.APIrequest.HomeContent.HomeContentPostCommentRequestModel;
 import com.gandsoft.openguide.API.APIrequest.HomeContent.HomeContentPostImageCaptionRequestModel;
+import com.gandsoft.openguide.API.APIrequest.HomeContent.HomeContentPostLikeRequestModel;
 import com.gandsoft.openguide.API.APIrequest.HomeContent.HomeContentRequestModel;
 import com.gandsoft.openguide.API.APIrequest.Login.LoginRequestModel;
 import com.gandsoft.openguide.API.APIrequest.UserData.UserDataRequestModel;
@@ -72,5 +73,10 @@ public class API {
     public static Call<List<LocalBaseResponseModel>> doHomeContentPostCommentRet(HomeContentPostCommentRequestModel requestModel) {
         return getAPIService().homeContentPostCommentRet(requestModel);
     }
+
+    public static Call<List<LocalBaseResponseModel>> doHomeContentPostLikeRet(HomeContentPostLikeRequestModel requestModel) {
+        return getAPIService().homeContentPostLikeRet(requestModel);
+    }
+
 
 }

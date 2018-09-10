@@ -6,6 +6,7 @@ import com.gandsoft.openguide.API.APIrequest.HomeContent.HomeContentCheckinReque
 import com.gandsoft.openguide.API.APIrequest.HomeContent.HomeContentPostCaptionRequestModel;
 import com.gandsoft.openguide.API.APIrequest.HomeContent.HomeContentPostCommentRequestModel;
 import com.gandsoft.openguide.API.APIrequest.HomeContent.HomeContentPostImageCaptionRequestModel;
+import com.gandsoft.openguide.API.APIrequest.HomeContent.HomeContentPostLikeRequestModel;
 import com.gandsoft.openguide.API.APIrequest.HomeContent.HomeContentRequestModel;
 import com.gandsoft.openguide.API.APIrequest.Login.LoginRequestModel;
 import com.gandsoft.openguide.API.APIrequest.UserData.UserDataRequestModel;
@@ -68,4 +69,7 @@ public interface ApiServices {
 
     @POST("set_post_comment_data")
     Call<List<LocalBaseResponseModel>> homeContentPostCommentRet(@Body HomeContentPostCommentRequestModel model);
+
+    @POST("post_like_contentevent")
+    Call<List<LocalBaseResponseModel>> homeContentPostLikeRet(@Body HomeContentPostLikeRequestModel model);
 }
