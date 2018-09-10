@@ -33,6 +33,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -65,6 +66,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -106,6 +108,7 @@ public class aHomeFragment extends Fragment {
     private TextView homeTVOpenCamerafvbi,homeTVOpenGalleryfvbi;
     private String base64pic = "";
 
+    private ImageView homeIVShareSomethingfvbi2;
     public aHomeFragment() { }
 
     @Override
@@ -133,6 +136,7 @@ public class aHomeFragment extends Fragment {
         homeIVEventfvbi = (ImageView) view.findViewById(R.id.homeIVEvent);
         homeIVEventBackgroundfvbi = (ImageView) view.findViewById(R.id.homeIVEventBackground);
         homeIVShareSomethingfvbi = (ImageView) view.findViewById(R.id.homeIVShareSomething);
+        homeIVShareSomethingfvbi2 = (ImageView) view.findViewById(R.id.homeIVShareSomething2);
         homeIVOpenCamerafvbi = (ImageView) view.findViewById(R.id.homeIVOpenCamera);
         homeTVTitleEventfvbi = (TextView) view.findViewById(R.id.homeTVTitleEvent);
         homeHtmlTVTitleEventfvbi = (HtmlTextView) view.findViewById(R.id.homeHtmlTVTitleEvent);
@@ -200,6 +204,11 @@ public class aHomeFragment extends Fragment {
                 else if (i==1){
                     postImageCaption();
                 }
+            }
+        });
+        homeIVShareSomethingfvbi2.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View v){
+                postImageCaption();
             }
         });
         homeSRLHomefvbi.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -510,16 +519,21 @@ public class aHomeFragment extends Fragment {
             }
         });
     }
+    private String uniqueId = null;
 
     private void postImageCaption(){
+        if(uniqueId == null) {
+            uniqueId = UUID.randomUUID().toString();
+        }
+        Log.d("uuidnya",uniqueId);
         HomeContentPostImageCaptionRequestModel requestModel = new HomeContentPostImageCaptionRequestModel();
         requestModel.setId_event(eventId);
         requestModel.setAccount_id(accountId);
-        requestModel.setId_postedhome("");
-        requestModel.setCaptions("");
+        requestModel.setId_postedhome(uniqueId);
+        requestModel.setCaptions(homeETWritePostCreatefvbi.getText().toString());
         requestModel.setGmt_date("");
         requestModel.setDate_post("");
-        requestModel.setImagedata("");
+        requestModel.setImagedata(base64pic);
         requestModel.setDegree("");
         requestModel.setDbver("3");
 
@@ -575,10 +589,11 @@ public class aHomeFragment extends Fragment {
                 createDirectoryAndSaveFile(thumbnail,"temp.jpg");
 
                 ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-                thumbnail.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
+                thumbnail.compress(Bitmap.CompressFormat.PNG, 10, byteArrayOutputStream);
                 byte[] byteArray = byteArrayOutputStream.toByteArray();
 
                 base64pic = Base64.encodeToString(byteArray, Base64.DEFAULT);
+                homeIVShareSomethingfvbi2.setVisibility(View.VISIBLE);
                 Log.d("bes64 ",base64pic);
             } catch (IOException e) {
                 e.printStackTrace();
@@ -597,7 +612,7 @@ public class aHomeFragment extends Fragment {
         }
         try {
             FileOutputStream out = new FileOutputStream(file);
-            imageToSave.compress(Bitmap.CompressFormat.JPEG, 100, out);
+            imageToSave.compress(Bitmap.CompressFormat.JPEG, 10, out);
             out.flush();
             out.close();
         } catch (Exception e) {
@@ -628,10 +643,10 @@ public class aHomeFragment extends Fragment {
         bm = BitmapFactory.decodeFile(selectedImagePath, options);
 
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        bm.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
+        bm.compress(Bitmap.CompressFormat.PNG, 10, byteArrayOutputStream);
         byte[] byteArray = byteArrayOutputStream.toByteArray();
-
         base64pic = Base64.encodeToString(byteArray, Base64.DEFAULT);
+
         Log.d("bes64 ",base64pic);
     }
 }

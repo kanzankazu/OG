@@ -110,8 +110,10 @@
             android:label="alalalal"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".activity.main.fragments.aHomeActivityInFragment.aHomePostCommentActivity" />
-        <activity android:name=".activity.main.fragments.aHomeActivityInFragment.aHomePostImageCaptionActivity"></activity>
+        <activity android:name=".activity.main.fragments.aHomeActivityInFragment.aHomePostCommentActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".activity.main.fragments.aHomeActivityInFragment.aHomePostImageCaptionActivity"
+            android:theme="@style/AppTheme.NoActionBar" ></activity>
     </application>
 
 </manifest>

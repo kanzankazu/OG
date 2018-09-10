@@ -242,6 +242,17 @@
                             android:visibility="gone"
                             android:background="@drawable/flag_indonesia"
                             android:scaleType="fitXY"/>
+                        <ImageView
+                            android:id="@+id/homeIVShareSomething2"
+                            android:layout_width="35dp"
+                            android:layout_height="35dp"
+                            android:layout_gravity="center_vertical"
+                            android:layout_weight="1"
+                            android:visibility="gone"
+                            android:background="@android:color/transparent"
+                            android:backgroundTint="@color/black"
+                            android:padding="5dp"
+                            android:src="@drawable/ic_action_send" />
                     </LinearLayout>
 
                     <View

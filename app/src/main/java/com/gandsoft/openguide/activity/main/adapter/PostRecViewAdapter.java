@@ -1,6 +1,7 @@
 package com.gandsoft.openguide.activity.main.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -21,6 +22,9 @@ import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentResponseMod
 import com.gandsoft.openguide.API.APIresponse.LocalBaseResponseModel;
 import com.gandsoft.openguide.IConfig;
 import com.gandsoft.openguide.R;
+import com.gandsoft.openguide.activity.infomenu.gallery2.DetailActivity;
+import com.gandsoft.openguide.activity.infomenu.gallery2.GalleryActivity;
+import com.gandsoft.openguide.activity.main.fragments.aHomeActivityInFragment.aHomePostCommentActivity;
 
 import org.sufficientlysecure.htmltextview.HtmlTextView;
 
@@ -111,13 +115,13 @@ public class PostRecViewAdapter extends RecyclerView.Adapter<PostRecViewAdapter.
                 .placeholder(R.drawable.template_account_og)
                 .skipMemoryCache(true)
                 .diskCacheStrategy(DiskCacheStrategy.NONE)
-                .error(R.drawable.template_account_og)
-                .into(holder.ivRVRVHomeContentIcon);
+                    .error(R.drawable.template_account_og)
+                    .into(holder.ivRVRVHomeContentIcon);
 
-        if (model.getStatus_like() != 0) {
-            holder.ivRVHomeContentLike.setImageResource(R.drawable.ic_love_fill);
-        } else {
-            holder.ivRVHomeContentLike.setImageResource(R.drawable.ic_love_empty);
+            if (model.getStatus_like() != 0) {
+                holder.ivRVHomeContentLike.setImageResource(R.drawable.ic_love_fill);
+            } else {
+                holder.ivRVHomeContentLike.setImageResource(R.drawable.ic_love_empty);
         }
 
 
@@ -144,6 +148,9 @@ public class PostRecViewAdapter extends RecyclerView.Adapter<PostRecViewAdapter.
         holder.llRVHomeContentStatus.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Intent intent = new Intent(activity, aHomePostCommentActivity.class);
+                intent.putExtra("pos", position);
+                activity.startActivity(intent);
             }
         });
 

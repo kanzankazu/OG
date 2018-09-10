@@ -30,7 +30,7 @@
         android:orientation="horizontal">
 
         <ImageView
-            android:id="@+id/ivRVRVHomeContentIcon"
+            android:id="@+id/ivCommentPostIcon"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:src="@drawable/ic_action_name" />
@@ -43,14 +43,14 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/tvRVHomeContentUsername"
+                android:id="@+id/tvCommentPostUsername"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Username"
                 android:textColor="@color/colorPrimaryDark" />
 
             <TextView
-                android:id="@+id/tvRVHomeContentTime"
+                android:id="@+id/tvCommentPostTime"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
@@ -60,7 +60,7 @@
     </LinearLayout>
 
     <ImageView
-        android:id="@+id/ivRVHomeContentImage"
+        android:id="@+id/ivCommentPostImage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="20dp"
@@ -69,7 +69,7 @@
         android:src="@drawable/gallery" />
 
     <org.sufficientlysecure.htmltextview.HtmlTextView
-        android:id="@+id/tvRVHomeContentKeterangan"
+        android:id="@+id/tvCommentPostKeterangan"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="20dp"
@@ -87,14 +87,14 @@
         android:orientation="horizontal">
 
         <EditText
-            android:id="@+id/editText"
+            android:id="@+id/etCommentAdd"
             android:layout_width="1dp"
             android:layout_height="40dp"
             android:layout_gravity="center_vertical"
             android:layout_weight="0.8"
             android:hint="Add a comment" />
         <ImageView
-            android:id="@+id/homeIVShareSomething"
+            android:id="@+id/ivCommentSend"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_gravity="center_vertical"
