@@ -21,6 +21,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentCommentModel;
+import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentResponseModel;
 import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
 import com.gandsoft.openguide.support.SessionUtil;
@@ -28,16 +29,9 @@ import com.gandsoft.openguide.support.SessionUtil;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 public class aHomePostCommentActivity extends AppCompatActivity {
-    private Toolbar toolbar;
-    private ActionBar ab;
-    private ImageView mIvCommentPostIcon, mIvCommentPostImage,mIvCommentSend;
-    private TextView mTvCommentPostUsername, mTvCommentPostTime, mTvCommentPostKeterangan;
-    private EditText mEtCommentAdd;
-    private int position;
-    private List<HomeContentResponseModel> models = new ArrayList<>();
-
     private RecyclerView rvCommentfvbi;
     private EditText etCommentPostfvbi;
     private ImageView ivCommentPostfvbi, ivCommentTsIconfvbi, ivCommentTsImagefvbi;

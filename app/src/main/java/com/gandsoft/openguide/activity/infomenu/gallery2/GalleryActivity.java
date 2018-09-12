@@ -3,24 +3,26 @@ package com.gandsoft.openguide.activity.infomenu.gallery2;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.Snackbar;
+import android.support.v4.widget.NestedScrollView;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.TextView;
+import android.widget.LinearLayout;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.gandsoft.openguide.API.API;
 import com.gandsoft.openguide.API.APIrequest.Gallery.GalleryRequestModel;
 import com.gandsoft.openguide.API.APIresponse.Gallery.GalleryResponseModel;
-import com.gandsoft.openguide.API.APIresponse.UserData.UserDataResponseModel;
+import com.gandsoft.openguide.IConfig;
 import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
 import com.gandsoft.openguide.database.SQLiteHelper;
@@ -36,35 +38,33 @@ import retrofit2.Response;
 public class GalleryActivity extends AppCompatActivity {
     SQLiteHelper db = new SQLiteHelper(this);
 
-    GalleryAdapter mAdapter;
-    RecyclerView mRecyclerView;
+    private GalleryAdapter rvGalleryAdapter;
+    private RecyclerView rvGalleryfvbi;
+    private NestedScrollView nsvGalleryfvbi;
+    private SwipeRefreshLayout srlGalleryfvbi;
+    private LinearLayout llLoadModeGalleryfvbi;
 
     private Toolbar toolbar;
     private ActionBar ab;
-    ArrayList<ImageModel> data = new ArrayList<>();
-    ArrayList<String> url = new ArrayList<>();
-
-    private GalleryAdapter adapter;
+    private ArrayList<GalleryImageModel> data = new ArrayList<>();
     private List<GalleryResponseModel> menuUi = new ArrayList<>();
 
     private String accountId, eventId;
-    private String isKondisi = "up";
     private String last_id = "";
     private String first_id = "";
     private String last_date = "";
+    private boolean last_data = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_gallery);
 
-        checkSession();
-        summonToolbar("Gallery");
-        getGalleryData();
-
+        initSession();
         initComponent();
         initContent();
         initListener();
+    }
 
     public void initSession() {
         if (SessionUtil.checkIfExist(ISeasonConfig.KEY_ACCOUNT_ID)) {
@@ -75,12 +75,14 @@ public class GalleryActivity extends AppCompatActivity {
         }
     }
 
-        mRecyclerView = (RecyclerView) findViewById(R.id.list);
-        mRecyclerView.setLayoutManager(new GridLayoutManager(this, 3));
-        mRecyclerView.setHasFixedSize(true);
+    private void initComponent() {
+        rvGalleryfvbi = (RecyclerView) findViewById(R.id.rvGallery);
+        nsvGalleryfvbi = (NestedScrollView) findViewById(R.id.nsvGallery);
+        srlGalleryfvbi = (SwipeRefreshLayout) findViewById(R.id.srlGallery);
+        llLoadModeGalleryfvbi = (LinearLayout) findViewById(R.id.llLoadModeGallery);
+    }
 
-        mAdapter = new GalleryAdapter(GalleryActivity.this, data,eventId);
-        mRecyclerView.setAdapter(mAdapter);
+    private void initContent() {
 
         summonToolbar("Gallery");
 
@@ -143,17 +145,35 @@ public class GalleryActivity extends AppCompatActivity {
                     } else {
                         Snackbar.make(findViewById(android.R.id.content), "Sudah tidak ada data", Snackbar.LENGTH_LONG).show();
                     }
-                }));
-    }
-    private void initComponent(){
+                }
 
+                /*int measuredHeight = homeIVEventBackgroundfvbi.getMeasuredHeight();
+                int measuredHeight1 = homeLLWriteSomethingfvbi.getMeasuredHeight();
+                int measuredHeight2 = 0;
+                for (int i = 0; i < 4; i++) {
+                    measuredHeight2 = measuredHeight2 + recyclerView.getChildAt(i).getMeasuredHeight();
+                }*/
+
+                /*if (scrollY > measuredHeight + measuredHeight1 + measuredHeight2) {
+                    homeFABHomeUpfvbi.setVisibility(View.VISIBLE);
+                } else {
+                    homeFABHomeUpfvbi.setVisibility(View.GONE);
+                }*/
+            }
+        });
     }
-    private void initContent(){}
-    private void initListener(){}
+
     private void getGalleryData() {
+        if (srlGalleryfvbi.isRefreshing()) {
+            srlGalleryfvbi.setRefreshing(false);
+        }
+
         GalleryRequestModel requestModel = new GalleryRequestModel();
 
-        requestModel.setDbver("3");
+        Log.d("Lihat", "getGalleryData GalleryActivity last_id : " + last_id);
+        Log.d("Lihat", "getGalleryData GalleryActivity first_id : " + first_id);
+
+        requestModel.setDbver(String.valueOf(IConfig.DB_Version));
         requestModel.setId_event(eventId);
         requestModel.setPhonenumber(accountId);
         requestModel.setKondisi("up");
@@ -187,8 +207,7 @@ public class GalleryActivity extends AppCompatActivity {
 
                     for (int i = 0; i < models.size(); i++) {
                         GalleryResponseModel model = models.get(i);
-                        if (db.isDataTableValueMultipleNull(SQLiteHelper.TableGallery, SQLiteHelper.Key_Gallery_eventId,
-                                SQLiteHelper.Key_Gallery_galleryId, eventId, model.getId())) {
+                        if (db.isDataTableValueMultipleNull(SQLiteHelper.TableGallery, SQLiteHelper.Key_Gallery_eventId, SQLiteHelper.Key_Gallery_galleryId, eventId, model.getId())) {
                             db.saveGallery(model, eventId);
                         } else {
                             db.updateGallery(model, eventId);
