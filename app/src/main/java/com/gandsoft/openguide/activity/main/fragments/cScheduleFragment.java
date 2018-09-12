@@ -111,7 +111,7 @@ public class cScheduleFragment extends Fragment {
 
                 /*if (v.getChildAt(v.getChildCount() - 1) != null){
                     if ((scrollY >= (v.getChildAt(v.getChildCount() - 1).getMeasuredHeight() - v.getMeasuredHeight())) && scrollY > oldScrollY) {
-                        //code to fetch more data for endless scrolling
+                        //code to fetch more models for endless scrolling
                         Log.d("Lihat", "onScrollChange cScheduleFragment : " + );
                     }
                 }*/
