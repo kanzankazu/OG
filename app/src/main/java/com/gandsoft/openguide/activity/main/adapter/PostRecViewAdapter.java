@@ -101,10 +101,8 @@ public class PostRecViewAdapter extends RecyclerView.Adapter<PostRecViewAdapter.
             holder.ivRVHomeContentImage.setVisibility(View.VISIBLE);
             Glide.with(activity)
                     .load(model.getImage_posted())
-                    .placeholder(R.drawable.template_account_og)
                     .skipMemoryCache(true)
                     .diskCacheStrategy(DiskCacheStrategy.NONE)
-                    .error(R.drawable.template_account_og)
                     .into(holder.ivRVHomeContentImage);
         } else {
             holder.ivRVHomeContentImage.setVisibility(View.GONE);

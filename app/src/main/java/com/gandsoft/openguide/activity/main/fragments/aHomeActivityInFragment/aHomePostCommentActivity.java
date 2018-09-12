@@ -56,16 +56,10 @@ public class aHomePostCommentActivity extends AppCompatActivity {
     }
 
     private void initContent(){
-
         HomeContentResponseModel model = models.get(position);
         mTvCommentPostUsername.setText(model.getUsername());
         mTvCommentPostTime.setText(model.getDate_created());
         mTvCommentPostKeterangan.setText(model.getKeterangan());
-
-
-
-
-
     }
 
     public void summonToolbar(String title){

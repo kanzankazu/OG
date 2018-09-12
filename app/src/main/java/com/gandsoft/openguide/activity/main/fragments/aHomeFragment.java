@@ -52,6 +52,8 @@ import com.gandsoft.openguide.IConfig;
 import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
 import com.gandsoft.openguide.activity.main.adapter.PostRecViewAdapter;
+import com.gandsoft.openguide.activity.main.fragments.aHomeActivityInFragment.aHomePostCommentActivity;
+import com.gandsoft.openguide.activity.main.fragments.aHomeActivityInFragment.aHomePostImageCaptionActivity;
 import com.gandsoft.openguide.database.SQLiteHelper;
 import com.gandsoft.openguide.support.SessionUtil;
 import com.gandsoft.openguide.support.SystemUtil;
@@ -71,6 +73,8 @@ import java.util.UUID;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+
+import static android.app.Activity.RESULT_OK;
 
 public class aHomeFragment extends Fragment {
     private static final String TAG = "Lihat";
@@ -166,26 +170,7 @@ public class aHomeFragment extends Fragment {
     private void initListener(View view) {
         homeIVOpenCamerafvbi.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                ContentValues values = new ContentValues();
-                values.put(MediaStore.Images.Media.TITLE, "New Picture");
-                values.put(MediaStore.Images.Media.DESCRIPTION, "From your Camera");
-                imageUri = getActivity().getContentResolver().insert(
-                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
-                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-                startActivityForResult(intent, 1);
-            }
-        });
-        homeTVOpenCamerafvbi.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                ContentValues values = new ContentValues();
-                values.put(MediaStore.Images.Media.TITLE, "New Picture");
-                values.put(MediaStore.Images.Media.DESCRIPTION, "From your Camera");
-                imageUri = getActivity().getContentResolver().insert(
-                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
-                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-                startActivityForResult(intent, 1);
+                startActivity(new Intent(getActivity(), aHomePostImageCaptionActivity.class));
             }
         });
         homeTVOpenGalleryfvbi.setOnClickListener(new View.OnClickListener() {
@@ -198,19 +183,10 @@ public class aHomeFragment extends Fragment {
         });
         homeIVShareSomethingfvbi.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
-                if(i==0){
                     postCaption();
-                }
-                else if (i==1){
-                    postImageCaption();
-                }
             }
         });
-        homeIVShareSomethingfvbi2.setOnClickListener(new View.OnClickListener(){
-            public void onClick(View v){
-                postImageCaption();
-            }
-        });
+
         homeSRLHomefvbi.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -469,7 +445,7 @@ public class aHomeFragment extends Fragment {
         });
     }
 
-    private void postCaption(){
+    private void postCaption() {
         HomeContentPostCaptionRequestModel requestModel = new HomeContentPostCaptionRequestModel();
         requestModel.setId_event(eventId);
         requestModel.setAccount_id(accountId);
@@ -519,68 +495,11 @@ public class aHomeFragment extends Fragment {
             }
         });
     }
-    private String uniqueId = null;
-
-    private void postImageCaption(){
-        if(uniqueId == null) {
-            uniqueId = UUID.randomUUID().toString();
-        }
-        Log.d("uuidnya",uniqueId);
-        HomeContentPostImageCaptionRequestModel requestModel = new HomeContentPostImageCaptionRequestModel();
-        requestModel.setId_event(eventId);
-        requestModel.setAccount_id(accountId);
-        requestModel.setId_postedhome(uniqueId);
-        requestModel.setCaptions(homeETWritePostCreatefvbi.getText().toString());
-        requestModel.setGmt_date("");
-        requestModel.setDate_post("");
-        requestModel.setImagedata(base64pic);
-        requestModel.setDegree("");
-        requestModel.setDbver("3");
-
-        ProgressDialog progressDialog = new ProgressDialog(getContext());
-        progressDialog.setCancelable(false);
-        progressDialog.setMessage("Please Wait...");
-        progressDialog.setTitle("Upload data baru..");
-        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        // show it
-        progressDialog.show();
-
-        API.doHomeContentPostImageCaptionRet(requestModel).enqueue(new Callback<List<LocalBaseResponseModel>>() {
-            @Override
-            public void onResponse(Call<List<LocalBaseResponseModel>> call, Response<List<LocalBaseResponseModel>> response) {
-                progressDialog.dismiss();
-                if (response.isSuccessful()) {
-                    List<LocalBaseResponseModel> s = response.body();
-                    if (s.size() == 1) {
-                        for (int i = 0; i < s.size(); i++) {
-                            LocalBaseResponseModel model = s.get(i);
-                            if (model.getStatus().equalsIgnoreCase("ok")) {
-                                Snackbar.make(getActivity().findViewById(android.R.id.content), "Image Post Tersimpan", Snackbar.LENGTH_LONG).show();
-                                callHomeContentAPI();
-                                updateUi();
-                            } else {
-                                Snackbar.make(getActivity().findViewById(android.R.id.content), "Image Post Bad Response", Snackbar.LENGTH_LONG).show();
-                            }
-                        }
-                    } else {
-                        Snackbar.make(getActivity().findViewById(android.R.id.content), "Image Post Data Tidak Sesuai", Snackbar.LENGTH_LONG).show();
-                    }
-                } else {
-                    Snackbar.make(getActivity().findViewById(android.R.id.content), response.message(), Snackbar.LENGTH_LONG).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<List<LocalBaseResponseModel>> call, Throwable t) {
-                Snackbar.make(getActivity().findViewById(android.R.id.content), t.getMessage(), Snackbar.LENGTH_LONG).show();
-            }
-        });
-    }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 1 && resultCode == Activity.RESULT_OK) {
+        if (requestCode == 1 && resultCode == RESULT_OK && null !=data) {
             Bitmap thumbnail = null;
             try {
                 thumbnail = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), imageUri);
@@ -593,13 +512,14 @@ public class aHomeFragment extends Fragment {
                 byte[] byteArray = byteArrayOutputStream.toByteArray();
 
                 base64pic = Base64.encodeToString(byteArray, Base64.DEFAULT);
-                homeIVShareSomethingfvbi2.setVisibility(View.VISIBLE);
                 Log.d("bes64 ",base64pic);
+                startActivity(new Intent(getActivity(), aHomePostImageCaptionActivity.class)
+                            .putExtra("base64", base64pic));
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
-        else if (requestCode == 2 && resultCode == Activity.RESULT_OK) {
+        else if (requestCode == 2 && resultCode == RESULT_OK) {
                 onSelectGallery(data);
         }
 
@@ -648,6 +568,7 @@ public class aHomeFragment extends Fragment {
         base64pic = Base64.encodeToString(byteArray, Base64.DEFAULT);
 
         Log.d("bes64 ",base64pic);
+
     }
 }
 
