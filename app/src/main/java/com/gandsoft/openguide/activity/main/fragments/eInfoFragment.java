@@ -140,7 +140,7 @@ public class eInfoFragment extends Fragment implements InfoListViewAdapter.ListA
             }
         });
 
-        /*rvMenufvbi.addOnItemTouchListener(new GalleryRecyclerItemClickListener(getActivity(), rvMenufvbi, new GalleryRecyclerItemClickListener.OnItemClickListener() {
+        /*rvMenufvbi.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(), rvMenufvbi, new RecyclerItemClickListener.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
                 switch (position) {

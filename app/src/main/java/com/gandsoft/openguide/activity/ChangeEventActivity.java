@@ -16,6 +16,7 @@ import android.text.SpannableStringBuilder;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
 import android.text.style.ForegroundColorSpan;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -159,7 +160,7 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
 
 
             /*if (db.isDataTableValueMultipleNull(SQLiteHelper.TableUserData, SQLiteHelper.KEY_UserData_accountId, SQLiteHelper.KEY_UserData_phoneNumber, accountid, accountid)) {
-                Snackbar.make(findViewById(android.R.id.content), "Data Kosong, bersiap mengmbil models", Snackbar.LENGTH_LONG).show();
+                Snackbar.make(findViewById(android.R.id.content), "Data Kosong, bersiap mengmbil data", Snackbar.LENGTH_LONG).show();
                 if (NetworkUtil.isConnected(this)) {
                     getAPIUserDataDo(accountid);
                 }
@@ -184,7 +185,7 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
 
         UserDataRequestModel requestModel = new UserDataRequestModel();
         requestModel.setAccountid(accountid);
-        requestModel.setDbver(IConfig.DB_Version);
+        requestModel.setDbver(3);
         if (db.isDataTableKeyNull(SQLiteHelper.TableUserData, SQLiteHelper.KEY_UserData_versionData)) {
             requestModel.setVersion_data(IConfig.DB_Version);
         } else {
@@ -279,7 +280,7 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
 
     private void getAPIEventDataDo(String eventId, String accountId) {
         EventDataRequestModel requestModel = new EventDataRequestModel();
-        requestModel.setDbver(String.valueOf(IConfig.DB_Version));
+        requestModel.setDbver("3");
         requestModel.setId_event(eventId);
         requestModel.setPass("");
         requestModel.setPhonenumber(accountId);
@@ -301,7 +302,7 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
         API.doEventDataRet(requestModel).enqueue(new Callback<List<EventDataResponseModel>>() {
             @Override
             public void onResponse(Call<List<EventDataResponseModel>> call, Response<List<EventDataResponseModel>> response) {
-                //progressDialog.dismiss();
+                progressDialog.dismiss();
                 if (response.isSuccessful()) {
                     List<EventDataResponseModel> eventDataResponseModels = response.body();
                     for (int i = 0; i < eventDataResponseModels.size(); i++) {

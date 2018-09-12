@@ -132,7 +132,6 @@ public class DetailActivity extends AppCompatActivity {
         private static final String ARG_IMG_CAPTION = "image_caption";
         private static final String ARG_IMG_TOTCOM = "image_totcom";
 
-
         @Override
         public void setArguments(Bundle args) {
             super.setArguments(args);
@@ -146,10 +145,6 @@ public class DetailActivity extends AppCompatActivity {
 
         }
 
-        /**
-         * Returns a new instance of this fragment for the given section
-         * number.
-         */
         public static PlaceholderFragment newInstance(int sectionNumber, String name, String url,String caption,String like, String statlike,String totcom) {
             PlaceholderFragment fragment = new PlaceholderFragment();
             Bundle args = new Bundle();
@@ -197,6 +192,5 @@ public class DetailActivity extends AppCompatActivity {
 
             return rootView;
         }
-
     }
 }

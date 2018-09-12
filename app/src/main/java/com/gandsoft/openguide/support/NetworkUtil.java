@@ -217,7 +217,7 @@ public class NetworkUtil {
         // check for wifi
         final NetworkInfo wifi =
                 connMgr.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-        // check for mobile models
+        // check for mobile data
         final NetworkInfo mobile =
                 connMgr.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
         if (wifi.isAvailable()) {
@@ -239,7 +239,7 @@ public class NetworkUtil {
                 Log.i("Type", "3g");
                 // for 3g HSDPA networktype will be return as
                 // per testing(real) in device with 3g enable
-                // models
+                // data
                 // and speed will also matters to decide 3g network type
                 break;
             case TelephonyManager.NETWORK_TYPE_HSPAP:
@@ -331,7 +331,7 @@ public class NetworkUtil {
         final ConnectivityManager connMgr = (ConnectivityManager) context.getSystemService(CONNECTIVITY_SERVICE);
         // check for wifi
         final NetworkInfo wifi = connMgr.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-        // check for mobile models
+        // check for mobile data
         final NetworkInfo mobile = connMgr.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
 
         if (wifi.isAvailable()) {
@@ -352,7 +352,7 @@ public class NetworkUtil {
         final ConnectivityManager connMgr = (ConnectivityManager) context.getSystemService(CONNECTIVITY_SERVICE);
         // check for wifi
         final NetworkInfo wifi = connMgr.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-        // check for mobile models
+        // check for mobile data
         final NetworkInfo mobile = connMgr.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
 
         if (wifi.isAvailable()) {
@@ -374,7 +374,7 @@ public class NetworkUtil {
             final ConnectivityManager connMgr = (ConnectivityManager) activity.getSystemService(Context.CONNECTIVITY_SERVICE);
             // // check for wifi
             final NetworkInfo wifi = connMgr.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-            // // check for mobile models
+            // // check for mobile data
             final NetworkInfo mobile = connMgr.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
             if (wifi.isAvailable()) {
                 networkStatus = "Wifi";

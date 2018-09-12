@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -15,6 +16,9 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Base64;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ExpandableListView;
@@ -29,6 +33,7 @@ import com.gandsoft.openguide.API.APIresponse.LocalBaseResponseModel;
 import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
 import com.gandsoft.openguide.support.SessionUtil;
+import com.gandsoft.openguide.support.SystemUtil;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -136,7 +141,8 @@ public class aHomePostImageCaptionActivity extends AppCompatActivity {
         if(uniqueId == null) {
             uniqueId = UUID.randomUUID().toString();
         }
-        Log.d("uuidnya",uniqueId);
+
+
         HomeContentPostImageCaptionRequestModel requestModel = new HomeContentPostImageCaptionRequestModel();
         requestModel.setId_event(eventId);
         requestModel.setAccount_id(accountId);
@@ -147,6 +153,8 @@ public class aHomePostImageCaptionActivity extends AppCompatActivity {
         requestModel.setImagedata(base64pic);
         requestModel.setDegree("");
         requestModel.setDbver("3");
+        Log.d("uuidnya",uniqueId);
+
 
         API.doHomeContentPostImageCaptionRet(requestModel).enqueue(new Callback<List<LocalBaseResponseModel>>() {
             @Override
@@ -161,13 +169,20 @@ public class aHomePostImageCaptionActivity extends AppCompatActivity {
                                 finish();
                             } else {
                                 Snackbar.make(findViewById(android.R.id.content), "Image Post Bad Response", Snackbar.LENGTH_LONG).show();
+
+                                finish();
                             }
                         }
                     } else {
                         Snackbar.make(findViewById(android.R.id.content), "Image Post Data Tidak Sesuai", Snackbar.LENGTH_LONG).show();
+
+                        finish();
                     }
                 } else {
                     Snackbar.make(findViewById(android.R.id.content), response.message(), Snackbar.LENGTH_LONG).show();
+
+                    finish();
+
                 }
             }
 
@@ -176,27 +191,35 @@ public class aHomePostImageCaptionActivity extends AppCompatActivity {
                 Snackbar.make(findViewById(android.R.id.content), t.getMessage(), Snackbar.LENGTH_LONG).show();
             }
         });
+
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 1 && resultCode == Activity.RESULT_OK) {
-            Bitmap thumbnail = null;
+            Bitmap bitmap = null;
+            Bitmap rotatedBitmap = null;
+            Bitmap resizedRotatedBitmap = null;
             try {
-                thumbnail = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageUri);
+                bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageUri);
                 String imageurl = String.valueOf(imageUri);
                 Log.d("image uri ",imageurl);
-                createDirectoryAndSaveFile(thumbnail,"temp.jpg");
+                rotatedBitmap = SystemUtil.rotateImage(bitmap, 90);
 
-                mIvImagePostPicture.setImageBitmap(thumbnail);
+                createDirectoryAndSaveFile(rotatedBitmap,"temp.png");
+                mIvImagePostPicture.setImageBitmap(rotatedBitmap);
+
+                resizedRotatedBitmap = SystemUtil.resizeImage(rotatedBitmap,720);
 
                 ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-                thumbnail.compress(Bitmap.CompressFormat.PNG, 0, byteArrayOutputStream);
+                resizedRotatedBitmap.compress(Bitmap.CompressFormat.PNG, 0, byteArrayOutputStream);
                 byte[] byteArray = byteArrayOutputStream.toByteArray();
 
                 base64pic = Base64.encodeToString(byteArray, Base64.DEFAULT);
-                Log.d("bes64 ",base64pic);
+                if(base64pic.isEmpty() || base64pic.equals("a")){
+                    finish();
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -210,7 +233,7 @@ public class aHomePostImageCaptionActivity extends AppCompatActivity {
         }
         try {
             FileOutputStream out = new FileOutputStream(file);
-            imageToSave.compress(Bitmap.CompressFormat.JPEG, 10, out);
+            imageToSave.compress(Bitmap.CompressFormat.PNG, 0, out);
             out.flush();
             out.close();
         } catch (Exception e) {
@@ -222,5 +245,18 @@ public class aHomePostImageCaptionActivity extends AppCompatActivity {
     public void onBackPressed() {
         super.onBackPressed();
         finish();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_activity, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        finish();
+        return super.onOptionsItemSelected(item);
     }
 }

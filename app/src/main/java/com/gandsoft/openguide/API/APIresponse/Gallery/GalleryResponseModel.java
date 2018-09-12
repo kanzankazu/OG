@@ -1,20 +1,9 @@
 package com.gandsoft.openguide.API.APIresponse.Gallery;
 
 public class GalleryResponseModel {
-   private String id;
-   private String like;
-   private String account_id;
-   private String total_comment;
-   private String status_like;
-   private String username;
-   private String caption;
-   private String image_posted;
-   private String image_icon;
-   private String image_postedLocal;
-   private String image_iconLocal;
-
-   private String event_id;
-   private int number;
+    String id, like, account_id,total_comment,status_like,username,caption,image_posted,image_icon,image_postedLocal,image_iconLocal;
+    String event_id;
+    int number;
 
     public GalleryResponseModel(String id, String event_id, String like, String account_id, String total_comment, String status_like, String username, String caption, String image_posted, String image_icon, int number) {
         this.id = id;

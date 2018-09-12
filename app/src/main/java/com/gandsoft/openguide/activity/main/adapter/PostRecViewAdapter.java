@@ -22,6 +22,7 @@ import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentResponseMod
 import com.gandsoft.openguide.API.APIresponse.LocalBaseResponseModel;
 import com.gandsoft.openguide.IConfig;
 import com.gandsoft.openguide.R;
+import com.gandsoft.openguide.activity.infomenu.gallery2.DetailActivity;
 import com.gandsoft.openguide.activity.infomenu.gallery2.GalleryActivity;
 import com.gandsoft.openguide.activity.main.fragments.aHomeActivityInFragment.aHomePostCommentActivity;
 
@@ -100,8 +101,10 @@ public class PostRecViewAdapter extends RecyclerView.Adapter<PostRecViewAdapter.
             holder.ivRVHomeContentImage.setVisibility(View.VISIBLE);
             Glide.with(activity)
                     .load(model.getImage_posted())
+                    .placeholder(R.drawable.template_account_og)
                     .skipMemoryCache(true)
                     .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .error(R.drawable.template_account_og)
                     .into(holder.ivRVHomeContentImage);
         } else {
             holder.ivRVHomeContentImage.setVisibility(View.GONE);
