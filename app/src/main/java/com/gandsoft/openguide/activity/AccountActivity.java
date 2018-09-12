@@ -522,7 +522,7 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) {
             if (requestCode == 1) {
-                // onCaptureImageResult(models);
+                // onCaptureImageResult(data);
                 try {
 
                     File f = new File(Environment.getExternalStorageDirectory()

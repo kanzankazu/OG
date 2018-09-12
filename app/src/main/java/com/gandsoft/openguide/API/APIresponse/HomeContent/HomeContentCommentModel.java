@@ -3,7 +3,7 @@ package com.gandsoft.openguide.API.APIresponse.HomeContent;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class HomeContentResponseModel {
+public class HomeContentCommentModel implements Parcelable {
     public String id;
     public String like;
     public String account_id;
@@ -22,10 +22,10 @@ public class HomeContentResponseModel {
     public int number;
     public String eventId;
 
-    public HomeContentResponseModel() {
+    public HomeContentCommentModel() {
     }
 
-    public HomeContentResponseModel(String id, String like, String account_id, String total_comment, int status_like, String image_icon, String username, String jabatan, String date_created, String image_posted, String keterangan, String event) {
+    public HomeContentCommentModel(String id, String like, String account_id, String total_comment, int status_like, String image_icon, String username, String jabatan, String date_created, String image_posted, String keterangan, String event) {
         this.id = id;
         this.like = like;
         this.account_id = account_id;
@@ -167,4 +167,55 @@ public class HomeContentResponseModel {
     public void setImage_posted_local(String image_posted_local) {
         this.image_posted_local = image_posted_local;
     }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(id);
+        parcel.writeString(like);
+        parcel.writeString(account_id);
+        parcel.writeString(total_comment);
+        parcel.writeInt(status_like);
+        parcel.writeString(username);
+        parcel.writeString(jabatan);
+        parcel.writeString(date_created);
+        parcel.writeString(image_icon);
+        parcel.writeString(image_icon_local);
+        parcel.writeString(image_posted);
+        parcel.writeString(image_posted_local);
+        parcel.writeString(keterangan);
+        parcel.writeString(event);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public HomeContentCommentModel(Parcel in) {
+        id = in.readString();
+        like = in.readString();
+        account_id = in.readString();
+        total_comment = in.readString();
+        status_like = in.readInt();
+        username = in.readString();
+        jabatan = in.readString();
+        date_created = in.readString();
+        image_icon = in.readString();
+        image_icon_local = in.readString();
+        image_posted = in.readString();
+        image_posted_local = in.readString();
+        keterangan = in.readString();
+        event = in.readString();
+    }
+
+    public static final Creator CREATOR = new Creator() {
+        public HomeContentCommentModel createFromParcel(Parcel in) {
+            return new HomeContentCommentModel(in);
+        }
+
+        @Override
+        public HomeContentCommentModel[] newArray(int i) {
+            return new HomeContentCommentModel[i];
+        }
+    };
 }

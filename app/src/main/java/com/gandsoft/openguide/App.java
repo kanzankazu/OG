@@ -3,6 +3,7 @@ package com.gandsoft.openguide;
 import android.content.Context;
 import android.support.multidex.MultiDex;
 
+import com.facebook.drawee.backends.pipeline.Fresco;
 import com.gandsoft.openguide.support.DeviceDetailUtil;
 import com.gandsoft.openguide.support.FontUtil;
 
@@ -45,6 +46,8 @@ public class App extends BaseApp {
         FontUtil.overrideFont(getApplicationContext(), "DEFAULT", "fonts/Nunito-Regular.ttf");
         FontUtil.overrideFont(getApplicationContext(), "SERIF", "fonts/Nunito-SemiBold.ttf");
         FontUtil.overrideFont(getApplicationContext(), "MONOSPACE", "fonts/Nunito-Light.ttf");
+
+        Fresco.initialize(this);
 
         //MobileAds.initialize(this, getString(R.string.ad_unit_app_id));
 

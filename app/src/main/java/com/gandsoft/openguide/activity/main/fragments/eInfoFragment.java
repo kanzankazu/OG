@@ -127,69 +127,15 @@ public class eInfoFragment extends Fragment implements InfoListViewAdapter.ListA
         rvMenufvbi.setAdapter(adapter);
         rvMenufvbi.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-        //>>>>SKIP
-
     }
 
     private void initListener() {
-
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), AccountActivity.class);
                 startActivity(intent);
             }
         });
-
-        /*rvMenufvbi.addOnItemTouchListener(new GalleryRecyclerItemClickListener(getActivity(), rvMenufvbi, new GalleryRecyclerItemClickListener.OnItemClickListener() {
-            @Override
-            public void onItemClick(View view, int position) {
-                switch (position) {
-                    case 0:
-                        Intent intent1 = new Intent(getActivity(), aMapActivity.class);
-                        getActivity().startActivity(intent1);
-                        break;
-                    case 1:
-                        Intent intent2 = new Intent(getActivity(), GalleryActivity.class);
-                        getActivity().startActivity(intent2);
-                        break;
-                    case 2:
-                        Intent intent3 = new Intent(getActivity(), cInboxActivity.class);
-                        getActivity().startActivity(intent3);
-                        break;
-                    case 3:
-                        Intent intent4 = new Intent(getActivity(), dComitteContactActivity.class);
-                        getActivity().startActivity(intent4);
-                        break;
-                    case 4:
-                        Intent intent5 = new Intent(getActivity(), eEmergenciesActivity.class);
-                        getActivity().startActivity(intent5);
-                        break;
-                    case 5:
-                        Intent intent6 = new Intent(getActivity(), fPracticalInfoActivity.class);
-                        getActivity().startActivity(intent6);
-                        break;
-                    case 6:
-                        Intent intent7 = new Intent(getActivity(), gSurroundingAreaActivity.class);
-                        getActivity().startActivity(intent7);
-                        break;
-                    case 7:
-                        Intent intent8 = new Intent(getActivity(), hFeedbackActivity.class);
-                        getActivity().startActivity(intent8);
-                        break;
-                    case 8:
-                        Intent intent9 = new Intent(getActivity(), ChangeEventActivity.class);
-                        getActivity().startActivity(intent9);
-                        break;
-                    default:
-                        break;
-                }
-            }
-
-            @Override
-            public void onItemLongClick(View view, int position) {
-
-            }
-        }));*/
     }
 
     private void updateUi() {
@@ -214,7 +160,6 @@ public class eInfoFragment extends Fragment implements InfoListViewAdapter.ListA
 
     @Override
     public void click(String s) {
-        //"Map","Gallery","Inbox","Comitee Contact","Emergencies","Practical Information","Surrounding Area","Feedback","Change Event";
         if (s.equalsIgnoreCase("Map")) {
             Intent intent1 = new Intent(getActivity(), aMapActivity.class);
             getActivity().startActivity(intent1);

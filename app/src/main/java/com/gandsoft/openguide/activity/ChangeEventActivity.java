@@ -159,7 +159,7 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
 
 
             /*if (db.isDataTableValueMultipleNull(SQLiteHelper.TableUserData, SQLiteHelper.KEY_UserData_accountId, SQLiteHelper.KEY_UserData_phoneNumber, accountid, accountid)) {
-                Snackbar.make(findViewById(android.R.id.content), "Data Kosong, bersiap mengmbil models", Snackbar.LENGTH_LONG).show();
+                Snackbar.make(findViewById(android.R.id.content), "Data Kosong, bersiap mengmbil data", Snackbar.LENGTH_LONG).show();
                 if (NetworkUtil.isConnected(this)) {
                     getAPIUserDataDo(accountid);
                 }

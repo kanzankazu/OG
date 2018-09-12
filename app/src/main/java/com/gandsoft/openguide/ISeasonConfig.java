@@ -18,4 +18,7 @@ public interface ISeasonConfig {
     String KEY_EVENT_VERSION_DATA = "MOO321312";
 
     String ERROR_RETRIEVAL = "235KAMBINGNGREBO5632";
+
+    String INTENT_PARAM = "SIAUL1212";
+    String INTENT_PARAM2 = "SAIUL1313";
 }
