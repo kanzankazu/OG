@@ -23,7 +23,6 @@ import android.widget.TextView;
 import com.gandsoft.openguide.API.API;
 import com.gandsoft.openguide.API.APIrequest.Login.LoginRequestModel;
 import com.gandsoft.openguide.API.APIresponse.Login.LoginResponseModel;
-import com.gandsoft.openguide.IConfig;
 import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
 import com.gandsoft.openguide.database.SQLiteHelper;
@@ -332,7 +331,7 @@ public class LoginActivity extends LocalBaseActivity {
 
     private void sendLoginData() {
         LoginRequestModel request = new LoginRequestModel();
-        request.setDbver(String.valueOf(IConfig.DB_Version));
+        request.setDbver("3");
         request.setDevice_app(DeviceDetailUtil.getAllDataPhone2(this));
         request.setPhonenumber(phoneNumberSavedwoPlus);
         request.setLogin_status("1");

@@ -30,6 +30,13 @@ import java.util.ArrayList;
 import java.util.Calendar;
 
 public class aHomePostCommentActivity extends AppCompatActivity {
+    private Toolbar toolbar;
+    private ActionBar ab;
+    private ImageView mIvCommentPostIcon, mIvCommentPostImage,mIvCommentSend;
+    private TextView mTvCommentPostUsername, mTvCommentPostTime, mTvCommentPostKeterangan;
+    private EditText mEtCommentAdd;
+    private int position;
+    private List<HomeContentResponseModel> models = new ArrayList<>();
 
     private RecyclerView rvCommentfvbi;
     private EditText etCommentPostfvbi;

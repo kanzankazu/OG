@@ -45,7 +45,6 @@ import com.gandsoft.openguide.API.API;
 import com.gandsoft.openguide.API.APIrequest.UserUpdate.UserUpdateRequestModel;
 import com.gandsoft.openguide.API.APIresponse.UserData.UserDataResponseModel;
 import com.gandsoft.openguide.API.APIresponse.UserUpdate.UserUpdateResponseModel;
-import com.gandsoft.openguide.IConfig;
 import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
 import com.gandsoft.openguide.database.SQLiteHelper;
@@ -339,7 +338,7 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
         } else {
             requestModel.setFileImageB641(base64pic);
         }
-        requestModel.setDbver(String.valueOf(IConfig.DB_Version));
+        requestModel.setDbver("3");
         requestModel.setDegree_image("ANDROID");
         requestModel.setPrivacypolicy(true);
         requestModel.setName(etAccNamefvbi.getText().toString());

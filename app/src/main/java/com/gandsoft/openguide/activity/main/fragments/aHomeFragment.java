@@ -31,6 +31,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -46,6 +47,8 @@ import com.gandsoft.openguide.IConfig;
 import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
 import com.gandsoft.openguide.activity.main.adapter.PostRecViewAdapter;
+import com.gandsoft.openguide.activity.main.fragments.aHomeActivityInFragment.aHomePostCommentActivity;
+import com.gandsoft.openguide.activity.main.fragments.aHomeActivityInFragment.aHomePostImageCaptionActivity;
 import com.gandsoft.openguide.database.SQLiteHelper;
 import com.gandsoft.openguide.support.NetworkUtil;
 import com.gandsoft.openguide.support.SessionUtil;
@@ -60,10 +63,13 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+
+import static android.app.Activity.RESULT_OK;
 
 public class aHomeFragment extends Fragment {
     private static final String TAG = "Lihat";
@@ -133,6 +139,7 @@ public class aHomeFragment extends Fragment {
         homeIVEventfvbi = (ImageView) view.findViewById(R.id.homeIVEvent);
         homeIVEventBackgroundfvbi = (ImageView) view.findViewById(R.id.homeIVEventBackground);
         homeIVShareSomethingfvbi = (ImageView) view.findViewById(R.id.homeIVShareSomething);
+        homeIVShareSomethingfvbi2 = (ImageView) view.findViewById(R.id.homeIVShareSomething2);
         homeIVOpenCamerafvbi = (ImageView) view.findViewById(R.id.homeIVOpenCamera);
         homeTVTitleEventfvbi = (TextView) view.findViewById(R.id.homeTVTitleEvent);
         homeHtmlTVTitleEventfvbi = (HtmlTextView) view.findViewById(R.id.homeHtmlTVTitleEvent);
@@ -162,26 +169,7 @@ public class aHomeFragment extends Fragment {
     private void initListener(View view) {
         homeIVOpenCamerafvbi.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                ContentValues values = new ContentValues();
-                values.put(MediaStore.Images.Media.TITLE, "New Picture");
-                values.put(MediaStore.Images.Media.DESCRIPTION, "From your Camera");
-                imageUri = getActivity().getContentResolver().insert(
-                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
-                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-                startActivityForResult(intent, 1);
-            }
-        });
-        homeTVOpenCamerafvbi.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                ContentValues values = new ContentValues();
-                values.put(MediaStore.Images.Media.TITLE, "New Picture");
-                values.put(MediaStore.Images.Media.DESCRIPTION, "From your Camera");
-                imageUri = getActivity().getContentResolver().insert(
-                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
-                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-                startActivityForResult(intent, 1);
+                startActivity(new Intent(getActivity(), aHomePostImageCaptionActivity.class));
             }
         });
         homeTVOpenGalleryfvbi.setOnClickListener(new View.OnClickListener() {
@@ -201,6 +189,7 @@ public class aHomeFragment extends Fragment {
                 }
             }
         });
+
         homeSRLHomefvbi.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -294,10 +283,10 @@ public class aHomeFragment extends Fragment {
                 if (response.isSuccessful()) {
                     List<HomeContentResponseModel> models = response.body();
                     adapter.setData(models);
-                    if (models.size() == 10) {
+                    if (models.size() >= 10) {
                         last_data = false;
-                        last_id = models.get(models.size() - 1).getId();
-                        last_date = models.get(models.size() - 1).getDate_created();
+                        last_id = models.get(9).getId();
+                        last_date = models.get(9).getDate_created();
                         first_id = models.get(0).getId();
                     } else {
                         Snackbar.make(getActivity().findViewById(android.R.id.content), "Data Terakhir", Snackbar.LENGTH_LONG).show();
@@ -414,7 +403,7 @@ public class aHomeFragment extends Fragment {
                     .error(R.drawable.template_account_og)
                     .into(homeIVEventBackgroundfvbi);
         } else {
-            Snackbar.make(getActivity().findViewById(android.R.id.content), "models kosong", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+            Snackbar.make(getActivity().findViewById(android.R.id.content), "data kosong", Snackbar.LENGTH_LONG).setAction("Action", null).show();
         }
     }
 
@@ -570,7 +559,7 @@ public class aHomeFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 1 && resultCode == Activity.RESULT_OK) {
+        if (requestCode == 1 && resultCode == RESULT_OK && null !=data) {
             Bitmap thumbnail = null;
             try {
                 thumbnail = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), imageUri);
@@ -579,7 +568,7 @@ public class aHomeFragment extends Fragment {
                 createDirectoryAndSaveFile(thumbnail, "temp.jpg");
 
                 ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-                thumbnail.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
+                thumbnail.compress(Bitmap.CompressFormat.PNG, 10, byteArrayOutputStream);
                 byte[] byteArray = byteArrayOutputStream.toByteArray();
 
                 base64pic = Base64.encodeToString(byteArray, Base64.DEFAULT);
@@ -600,7 +589,7 @@ public class aHomeFragment extends Fragment {
         }
         try {
             FileOutputStream out = new FileOutputStream(file);
-            imageToSave.compress(Bitmap.CompressFormat.JPEG, 100, out);
+            imageToSave.compress(Bitmap.CompressFormat.JPEG, 10, out);
             out.flush();
             out.close();
         } catch (Exception e) {
@@ -631,9 +620,8 @@ public class aHomeFragment extends Fragment {
         bm = BitmapFactory.decodeFile(selectedImagePath, options);
 
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        bm.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
+        bm.compress(Bitmap.CompressFormat.PNG, 10, byteArrayOutputStream);
         byte[] byteArray = byteArrayOutputStream.toByteArray();
-
         base64pic = Base64.encodeToString(byteArray, Base64.DEFAULT);
         Log.d("bes64 ", base64pic);
     }
