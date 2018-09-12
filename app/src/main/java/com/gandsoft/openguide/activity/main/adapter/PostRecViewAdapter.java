@@ -22,7 +22,6 @@ import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentResponseMod
 import com.gandsoft.openguide.API.APIresponse.LocalBaseResponseModel;
 import com.gandsoft.openguide.IConfig;
 import com.gandsoft.openguide.R;
-import com.gandsoft.openguide.activity.infomenu.gallery2.DetailActivity;
 import com.gandsoft.openguide.activity.infomenu.gallery2.GalleryActivity;
 import com.gandsoft.openguide.activity.main.fragments.aHomeActivityInFragment.aHomePostCommentActivity;
 
