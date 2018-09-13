@@ -42,6 +42,7 @@ import com.gandsoft.openguide.API.APIrequest.HomeContent.HomeContentRequestModel
 import com.gandsoft.openguide.API.APIresponse.Event.EventTheEvent;
 import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentResponseModel;
 import com.gandsoft.openguide.API.APIresponse.LocalBaseResponseModel;
+import com.gandsoft.openguide.API.APIresponse.UserData.UserWalletDataResponseModel;
 import com.gandsoft.openguide.IConfig;
 import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
@@ -103,6 +104,7 @@ public class aHomeFragment extends Fragment {
     private LinearLayout llLoadMode2fvbi;
     private int heightRecycle = 0;
     private Uri imageUri;
+    private UserWalletDataResponseModel walletData;
 
 
     public aHomeFragment() {
@@ -148,7 +150,24 @@ public class aHomeFragment extends Fragment {
     }
 
     private void initContent(ViewGroup container) {
-        updateUi();
+        updateUi();//init content
+
+        /*Log.d("Lihat", "initContent aHomeFragment : " + "\\");// = \
+        Log.d("Lihat", "initContent aHomeFragment : " + "\\\\");// = \\
+        Log.d("Lihat", "initContent aHomeFragment : " + "\"");// = "
+        Log.d("Lihat", "initContent aHomeFragment : " + "\\\"");// = \"*/
+
+        walletData = db.getWalletDataIdCard(eventId);
+        Log.d("Lihat", "initContent aHomeFragment : " + walletData.getBody_wallet());
+        String replace1 = walletData.getBody_wallet().replace("\\", " ");
+        String replace2 = replace1.replace("\"", " ");
+        String replace3 = replace2.replace("status-checkin , ", "status-checkin,");
+        String replace4 = replace3.replace("status-feedback , ", "status-feedback,");
+        Log.d("Lihat", "initContent aHomeFragment replace4.matches : " + (replace4.matches("(?i).*status-checkin,0.*")));
+        Log.d("Lihat", "initContent aHomeFragment replace4.matches : " + (replace4.matches("(?i).*status-checkin,1.*")));
+        if (replace4.matches("(?i).*status-checkin,1.*")) {
+            homeBTapCheckInfvbi.setVisibility(View.GONE);
+        }
 
         adapter = new PostRecViewAdapter(getActivity(), menuUi, getContext(), eventId, accountId);
         recyclerView.setNestedScrollingEnabled(false);
@@ -394,6 +413,9 @@ public class aHomeFragment extends Fragment {
 
     private void updateUi() {
         EventTheEvent model = db.getTheEvent(eventId);
+        Log.d("Lihat", "updateUi aHomeFragment getAddpost_status : " + model.getAddpost_status());
+        Log.d("Lihat", "updateUi aHomeFragment getDeletepost_status : " + model.getDeletepost_status());
+        Log.d("Lihat", "updateUi aHomeFragment getCommentpost_status : " + model.getCommentpost_status());
         if (model != null) {
             homeHtmlTVTitleEventfvbi.setHtml(model.getEvent_name());
             homeTVTitleEventfvbi.setText(Html.fromHtml(model.getEvent_name()));
@@ -493,7 +515,7 @@ public class aHomeFragment extends Fragment {
                             if (model.getStatus().equalsIgnoreCase("ok")) {
                                 Snackbar.make(getActivity().findViewById(android.R.id.content), "Post Terkirim", Snackbar.LENGTH_LONG).show();
                                 callHomeContentAPI();
-                                updateUi();
+                                updateUi();//onresponse postCaption
                                 homeETWritePostCreatefvbi.setText("");
                                 SystemUtil.hideKeyBoard(getActivity());
                             } else {
@@ -547,7 +569,7 @@ public class aHomeFragment extends Fragment {
                             if (model.getStatus().equalsIgnoreCase("ok")) {
                                 Snackbar.make(getActivity().findViewById(android.R.id.content), "Image Post Tersimpan", Snackbar.LENGTH_LONG).show();
                                 callHomeContentAPI();
-                                updateUi();
+                                updateUi();// onresponse postimageCaption
                             } else {
                                 Snackbar.make(getActivity().findViewById(android.R.id.content), "Image Post Bad Response", Snackbar.LENGTH_LONG).show();
                             }

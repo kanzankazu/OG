@@ -292,7 +292,7 @@ public class UserListEventResponseModel  {
         this.roleName = roleName;
     }
 
-    public List<UserWalletDataResponseModel> getWalletData() {
+    public List<UserWalletDataResponseModel> getWalletDataIdCard() {
         return walletData;
     }
 

@@ -99,7 +99,14 @@ public class aHomePostCommentActivity extends AppCompatActivity {
 
         tvCommentTsUsernamefvbi.setText(model.getUsername());
         tvCommentTsTimefvbi.setText(model.getDate_created());
-        tvCommentTsKeteranganfvbi.setText(model.getKeterangan());
+
+        if (!TextUtils.isEmpty(model.getKeterangan()) || !TextUtils.isEmpty(model.getEvent())) {
+            tvCommentTsKeteranganfvbi.setText(model.getKeterangan() + "" + model.getEvent());
+            tvCommentTsKeteranganfvbi.setVisibility(View.VISIBLE);
+        } else {
+            tvCommentTsKeteranganfvbi.setVisibility(View.GONE);
+        }
+
         Glide.with(this)
                 .load(model.getImage_icon())
                 .placeholder(R.drawable.template_account_og)

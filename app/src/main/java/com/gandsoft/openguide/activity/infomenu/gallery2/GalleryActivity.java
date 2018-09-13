@@ -170,9 +170,6 @@ public class GalleryActivity extends AppCompatActivity {
 
         GalleryRequestModel requestModel = new GalleryRequestModel();
 
-        Log.d("Lihat", "getGalleryData GalleryActivity last_id : " + last_id);
-        Log.d("Lihat", "getGalleryData GalleryActivity first_id : " + first_id);
-
         requestModel.setDbver(String.valueOf(IConfig.DB_Version));
         requestModel.setId_event(eventId);
         requestModel.setPhonenumber(accountId);

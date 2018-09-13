@@ -224,10 +224,12 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
                                 UserListEventResponseModel model1 = userListEventResponseModels.get(j);
                                 if (db.isDataTableValueNull(SQLiteHelper.TableListEvent, SQLiteHelper.KEY_ListEvent_eventId, model1.getEvent_id())) {
                                     db.saveListEvent(model1, accountid);
+                                    updateRecycleView(userListEventResponseModels);
                                 } else {
                                     db.updateListEvent(model1);
+                                    updateRecycleView(db.getAllListEvent(accountid));
                                 }
-                                updateRecycleView(userListEventResponseModels);
+
 
                                 List<UserWalletDataResponseModel> userWalletDataResponseModels = model1.getWallet_data();
                                 for (int n = 0; n < userWalletDataResponseModels.size(); n++) {

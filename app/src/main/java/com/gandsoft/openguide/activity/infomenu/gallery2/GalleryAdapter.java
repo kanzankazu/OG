@@ -2,7 +2,6 @@ package com.gandsoft.openguide.activity.infomenu.gallery2;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -14,12 +13,12 @@ import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.animation.GlideAnimation;
-import com.bumptech.glide.request.target.GlideDrawableImageViewTarget;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.gandsoft.openguide.API.APIresponse.Gallery.GalleryResponseModel;
 import com.gandsoft.openguide.R;
+import com.gandsoft.openguide.support.PictureUtil;
+import com.gandsoft.openguide.support.SystemUtil;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -62,7 +61,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
                 .into(new SimpleTarget<Bitmap>() {
                     @Override
                     public void onResourceReady(Bitmap resource, GlideAnimation glideAnimation) {
-                        saveImage(resource, position);
+                        saveImage(resource, position, model.getId());
                     }
                 });
     }
@@ -96,11 +95,11 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
         notifyItemRangeInserted(models.size(), datas.size());
     }
 
-    private String saveImage(Bitmap image, int position) {
+    private String saveImage(Bitmap image, int position, String id) {
+        /*Random r = new Random();
+        int i1 = r.nextInt(1000);*/
         String savedImagePath = null;
-        Random r = new Random();
-        //int i1 = r.nextInt(1000);
-        String imageFileName = "Saved Image" + position + ".jpg";
+        String imageFileName = id + ".jpg";
         File storageDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
                 + "/.Gandsoft/" + eventId);
         boolean success = true;
@@ -112,7 +111,8 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
             savedImagePath = imageFile.getAbsolutePath();
             try {
                 OutputStream fOut = new FileOutputStream(imageFile);
-                image.compress(Bitmap.CompressFormat.JPEG, 100, fOut);
+                Bitmap storedata = PictureUtil.resizeImage(image, 720);
+                storedata.compress(Bitmap.CompressFormat.JPEG, 72, fOut);
                 fOut.close();
             } catch (Exception e) {
                 e.printStackTrace();
