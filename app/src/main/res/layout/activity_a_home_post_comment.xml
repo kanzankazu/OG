@@ -27,35 +27,8 @@
     <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-        android:layout_margin="20dp"
-        android:animateLayoutChanges="true"
-        android:orientation="horizontal">
-
-        <ImageView
-            android:id="@+id/ivCommentPostIcon"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:src="@drawable/ic_action_name" />
-=======
         android:layout_above="@+id/llCommentPost"
         android:layout_below="@id/appbar">
->>>>>>> origin
-=======
-        android:layout_above="@+id/llCommentPost"
-        android:layout_below="@id/appbar">
->>>>>>> origin
-=======
-        android:layout_above="@+id/llCommentPost"
-        android:layout_below="@id/appbar">
->>>>>>> origin
-=======
-        android:layout_above="@+id/llCommentPost"
-        android:layout_below="@id/appbar">
->>>>>>> origin
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -63,45 +36,6 @@
             android:animateLayoutChanges="true"
             android:orientation="vertical">
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-            <TextView
-                android:id="@+id/tvCommentPostUsername"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Username"
-                android:textColor="@color/colorPrimaryDark" />
-
-            <TextView
-                android:id="@+id/tvCommentPostTime"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:text="time"
-                android:textColor="@color/colorPrimary" />
-        </LinearLayout>
-    </LinearLayout>
-
-    <ImageView
-        android:id="@+id/ivCommentPostImage"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="20dp"
-        android:adjustViewBounds="true"
-        android:scaleType="fitCenter"
-        android:src="@drawable/gallery" />
-
-    <org.sufficientlysecure.htmltextview.HtmlTextView
-        android:id="@+id/tvCommentPostKeterangan"
-=======
-=======
->>>>>>> origin
-=======
->>>>>>> origin
-=======
->>>>>>> origin
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -187,16 +121,6 @@
 
     <View
         android:id="@+id/vLineCommentPost"
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
->>>>>>> origin
-=======
->>>>>>> origin
-=======
->>>>>>> origin
-=======
->>>>>>> origin
         android:layout_width="match_parent"
         android:layout_height="2dp"
         android:layout_above="@+id/llCommentPost"
@@ -211,28 +135,8 @@
         android:orientation="horizontal"
         android:weightSum="10">
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-        <EditText
-            android:id="@+id/etCommentAdd"
-=======
         <View
             android:id="@+id/focus_thief"
->>>>>>> origin
-=======
-        <View
-            android:id="@+id/focus_thief"
->>>>>>> origin
-=======
-        <View
-            android:id="@+id/focus_thief"
->>>>>>> origin
-=======
-        <View
-            android:id="@+id/focus_thief"
->>>>>>> origin
             android:layout_width="1dp"
             android:layout_height="1dp"
             android:focusable="true"
@@ -249,36 +153,10 @@
             android:inputType="textMultiLine" />
 
         <ImageView
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-            android:id="@+id/ivCommentSend"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_gravity="center_vertical"
-            android:layout_weight="0.1"
-=======
-=======
->>>>>>> origin
-=======
->>>>>>> origin
-=======
->>>>>>> origin
             android:id="@+id/ivCommentPost"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="8"
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
->>>>>>> origin
-=======
->>>>>>> origin
-=======
->>>>>>> origin
-=======
->>>>>>> origin
             android:background="@android:color/transparent"
             android:backgroundTint="@color/colorPrimary"
             android:padding="5dp"

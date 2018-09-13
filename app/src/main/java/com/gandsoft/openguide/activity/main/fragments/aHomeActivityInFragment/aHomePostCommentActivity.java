@@ -1,21 +1,5 @@
 package com.gandsoft.openguide.activity.main.fragments.aHomeActivityInFragment;
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
-import android.text.TextUtils;
-=======
-=======
->>>>>>> origin
-=======
->>>>>>> origin
-=======
->>>>>>> origin
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -26,63 +10,19 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
->>>>>>> origin
-=======
->>>>>>> origin
-=======
->>>>>>> origin
-=======
->>>>>>> origin
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-import android.widget.Button;
-=======
->>>>>>> origin
-=======
->>>>>>> origin
-=======
->>>>>>> origin
-=======
->>>>>>> origin
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentResponseModel;
-=======
-import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentCommentModel;
-import com.gandsoft.openguide.ISeasonConfig;
->>>>>>> origin
-=======
 import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentCommentModel;
 import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentResponseModel;
 import com.gandsoft.openguide.ISeasonConfig;
->>>>>>> origin
-=======
-import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentCommentModel;
-import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentResponseModel;
-import com.gandsoft.openguide.ISeasonConfig;
->>>>>>> origin
-=======
-import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentCommentModel;
-import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentResponseModel;
-import com.gandsoft.openguide.ISeasonConfig;
->>>>>>> origin
 import com.gandsoft.openguide.R;
 import com.gandsoft.openguide.support.SessionUtil;
 
@@ -108,49 +48,6 @@ public class aHomePostCommentActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_a_home_post_comment);
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-        summonToolbar("Comments");
-        initComponent();
-        initContent();
-    }
-
-    private void initComponent() {
-        position = getIntent().getIntExtra("pos", 0);
-        mIvCommentPostIcon = findViewById(R.id.ivCommentPostIcon);
-        mIvCommentPostImage = findViewById(R.id.ivCommentPostImage);
-        mIvCommentSend = findViewById(R.id.ivCommentSend);
-
-        mTvCommentPostUsername = findViewById(R.id.tvCommentPostUsername);
-        mTvCommentPostTime = findViewById(R.id.tvCommentPostTime);
-        mTvCommentPostKeterangan = findViewById(R.id.tvCommentPostKeterangan);
-
-        mEtCommentAdd = findViewById(R.id.etCommentAdd);
-    }
-
-    private void initContent(){
-        HomeContentResponseModel model = models.get(position);
-        mTvCommentPostUsername.setText(model.getUsername());
-        mTvCommentPostTime.setText(model.getDate_created());
-        mTvCommentPostKeterangan.setText(model.getKeterangan());
-    }
-
-    public void summonToolbar(String title){
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        ab = getSupportActionBar();
-        ab.setTitle(title);
-    }
-=======
-=======
->>>>>>> origin
-=======
->>>>>>> origin
-=======
->>>>>>> origin
         initComponent();
         initParam();
         initSession();
@@ -259,16 +156,6 @@ public class aHomePostCommentActivity extends AppCompatActivity {
         });
     }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
->>>>>>> origin
-=======
->>>>>>> origin
-=======
->>>>>>> origin
-=======
->>>>>>> origin
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -278,19 +165,6 @@ public class aHomePostCommentActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-        finish();
-        return super.onOptionsItemSelected(item);
-=======
-=======
->>>>>>> origin
-=======
->>>>>>> origin
-=======
->>>>>>> origin
         onBackPressed();
         return super.onOptionsItemSelected(item);
     }
@@ -318,15 +192,5 @@ public class aHomePostCommentActivity extends AppCompatActivity {
         // Tampilkan alert dialog
         AlertDialog alertDialog = alertDialogBuilder.create();
         alertDialog.show();
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
->>>>>>> origin
-=======
->>>>>>> origin
-=======
->>>>>>> origin
-=======
->>>>>>> origin
     }
 }

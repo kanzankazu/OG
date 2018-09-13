@@ -104,32 +104,9 @@ public class aHomeFragment extends Fragment {
     private int heightRecycle = 0;
     private Uri imageUri;
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-    private ImageView homeIVShareSomethingfvbi2;
-    public aHomeFragment() { }
-=======
 
     public aHomeFragment() {
     }
->>>>>>> origin
-=======
-
-    public aHomeFragment() {
-    }
->>>>>>> origin
-=======
-
-    public aHomeFragment() {
-    }
->>>>>>> origin
-=======
-
-    public aHomeFragment() {
-    }
->>>>>>> origin
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -215,20 +192,6 @@ public class aHomeFragment extends Fragment {
                 startActivityForResult(intent, 2);
             }
         });
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-        homeIVShareSomethingfvbi.setOnClickListener(new View.OnClickListener(){
-            public void onClick(View v){
-                    postCaption();
-=======
-=======
->>>>>>> origin
-=======
->>>>>>> origin
-=======
->>>>>>> origin
         homeIVShareSomethingfvbi.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 if (i == 0) {
@@ -236,16 +199,6 @@ public class aHomeFragment extends Fragment {
                 } else if (i == 1) {
                     postImageCaption();
                 }
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
->>>>>>> origin
-=======
->>>>>>> origin
-=======
->>>>>>> origin
-=======
->>>>>>> origin
             }
         });
         homeSRLHomefvbi.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -284,27 +237,6 @@ public class aHomeFragment extends Fragment {
                     }
                 }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-                int measuredHeight = homeIVEventBackgroundfvbi.getMeasuredHeight();
-=======
-=======
->>>>>>> origin
-=======
->>>>>>> origin
-                /*int measuredHeight = homeIVEventBackgroundfvbi.getMeasuredHeight();
->>>>>>> origin
-                int measuredHeight1 = homeLLWriteSomethingfvbi.getMeasuredHeight();
-                int measuredHeight2 = 0;
-                for (int i = 0; i < 4; i++) {
-                    measuredHeight2 = measuredHeight2 + recyclerView.getChildAt(i).getMeasuredHeight();
-                }
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
                 /*int measuredHeight = homeIVEventBackgroundfvbi.getMeasuredHeight();
                 int measuredHeight1 = homeLLWriteSomethingfvbi.getMeasuredHeight();
                 int measuredHeight2 = 0;
@@ -312,16 +244,6 @@ public class aHomeFragment extends Fragment {
                     measuredHeight2 = measuredHeight2 + recyclerView.getChildAt(i).getMeasuredHeight();
                 }
                 heightRecycle = measuredHeight + measuredHeight1 + measuredHeight2;*/
->>>>>>> origin
-=======
-                heightRecycle = measuredHeight + measuredHeight1 + measuredHeight2;*/
->>>>>>> origin
-=======
-                heightRecycle = measuredHeight + measuredHeight1 + measuredHeight2;*/
->>>>>>> origin
-=======
-                heightRecycle = measuredHeight + measuredHeight1 + measuredHeight2;*/
->>>>>>> origin
 
                 /*if (scrollY > measuredHeight + measuredHeight1 + measuredHeight2) {
                     homeFABHomeUpfvbi.setVisibility(View.VISIBLE);
@@ -416,62 +338,6 @@ public class aHomeFragment extends Fragment {
         model.setLastid(last_id);
         model.setFirstid(first_id);
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-        new Handler().postDelayed(new Runnable() {
-            public void run() {
-                //code here
-                homeNSVHomefvbi.fullScroll(View.FOCUS_DOWN);
-            }
-        }, 500);
-
-        new Handler().postDelayed(new Runnable() {
-            public void run() {
-                //code here
-                HomeContentRequestModel model = new HomeContentRequestModel();
-                model.setPhonenumber(accountId);
-                model.setId_event(eventId);
-                model.setDbver(String.valueOf(IConfig.DB_Version));
-                model.setKondisi("down");
-                model.setLast_date(last_date);
-                model.setLastid(last_id);
-                model.setFirstid(first_id);
-
-                API.doHomeContentDataRet(model).enqueue(new Callback<List<HomeContentResponseModel>>() {
-                    @Override
-                    public void onResponse(Call<List<HomeContentResponseModel>> call, Response<List<HomeContentResponseModel>> response) {
-                        llLoadModefvbi.setVisibility(View.GONE);
-                        if (response.isSuccessful()) {
-                            List<HomeContentResponseModel> models = response.body();
-                            adapter.addDatas(models);
-                            if (models.size() >= 10) {
-                                last_data = false;
-                                last_id = models.get(9).getId();
-                                last_date = models.get(9).getDate_created();
-                                first_id = models.get(0).getId();
-                            } else {
-                                last_data = true;
-                                last_id = "";
-                                last_date = "";
-                                first_id = "";
-                            }
-                            for (int i1 = 0; i1 < models.size(); i1++) {
-                                HomeContentResponseModel responseModel = models.get(i1);
-                                if (db.isDataTableValueMultipleNull(SQLiteHelper.TableHomeContent, SQLiteHelper.Key_HomeContent_EventId, SQLiteHelper.Key_HomeContent_id, eventId, responseModel.getId())) {
-                                    db.saveHomeContent(responseModel, eventId);
-                                } else {
-                                    db.updateHomeContent(responseModel, eventId);
-                                }
-                            }
-=======
-=======
->>>>>>> origin
-=======
->>>>>>> origin
-=======
->>>>>>> origin
         API.doHomeContentDataRet(model).enqueue(new Callback<List<HomeContentResponseModel>>() {
             @Override
             public void onResponse(Call<List<HomeContentResponseModel>> call, Response<List<HomeContentResponseModel>> response) {
@@ -495,16 +361,6 @@ public class aHomeFragment extends Fragment {
                         HomeContentResponseModel responseModel = models.get(i1);
                         if (db.isDataTableValueMultipleNull(SQLiteHelper.TableHomeContent, SQLiteHelper.Key_HomeContent_EventId, SQLiteHelper.Key_HomeContent_id, eventId, responseModel.getId())) {
                             db.saveHomeContent(responseModel, eventId);
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
->>>>>>> origin
-=======
->>>>>>> origin
-=======
->>>>>>> origin
-=======
->>>>>>> origin
                         } else {
                             db.updateHomeContent(responseModel, eventId);
                         }
@@ -659,17 +515,6 @@ public class aHomeFragment extends Fragment {
         });
     }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-=======
->>>>>>> origin
-=======
->>>>>>> origin
-=======
->>>>>>> origin
     private void postImageCaption() {
         HomeContentPostImageCaptionRequestModel requestModel = new HomeContentPostImageCaptionRequestModel();
         requestModel.setId_event(eventId);
@@ -722,16 +567,6 @@ public class aHomeFragment extends Fragment {
         });
     }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
->>>>>>> origin
-=======
->>>>>>> origin
-=======
->>>>>>> origin
-=======
->>>>>>> origin
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -748,42 +583,12 @@ public class aHomeFragment extends Fragment {
                 byte[] byteArray = byteArrayOutputStream.toByteArray();
 
                 base64pic = Base64.encodeToString(byteArray, Base64.DEFAULT);
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-                Log.d("bes64 ",base64pic);
-                startActivity(new Intent(getActivity(), aHomePostImageCaptionActivity.class)
-                            .putExtra("base64", base64pic));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        else if (requestCode == 2 && resultCode == RESULT_OK) {
-                onSelectGallery(data);
-=======
-=======
->>>>>>> origin
-=======
->>>>>>> origin
-=======
->>>>>>> origin
                 Log.d("bes64 ", base64pic);
             } catch (IOException e) {
                 e.printStackTrace();
             }
         } else if (requestCode == 2 && resultCode == Activity.RESULT_OK) {
             onSelectGallery(data);
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
->>>>>>> origin
-=======
->>>>>>> origin
-=======
->>>>>>> origin
-=======
->>>>>>> origin
         }
 
     }
@@ -830,25 +635,7 @@ public class aHomeFragment extends Fragment {
         byte[] byteArray = byteArrayOutputStream.toByteArray();
 
         base64pic = Base64.encodeToString(byteArray, Base64.DEFAULT);
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-
-        Log.d("bes64 ",base64pic);
-
-=======
         Log.d("bes64 ", base64pic);
->>>>>>> origin
-=======
-        Log.d("bes64 ", base64pic);
->>>>>>> origin
-=======
-        Log.d("bes64 ", base64pic);
->>>>>>> origin
-=======
-        Log.d("bes64 ", base64pic);
->>>>>>> origin
     }
 }
 

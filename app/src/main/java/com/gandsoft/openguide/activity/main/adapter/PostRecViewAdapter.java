@@ -24,20 +24,6 @@ import com.gandsoft.openguide.API.APIresponse.LocalBaseResponseModel;
 import com.gandsoft.openguide.IConfig;
 import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-import com.gandsoft.openguide.activity.infomenu.gallery2.DetailActivity;
-import com.gandsoft.openguide.activity.infomenu.gallery2.GalleryActivity;
-=======
->>>>>>> origin
-=======
->>>>>>> origin
-=======
->>>>>>> origin
-=======
->>>>>>> origin
 import com.gandsoft.openguide.activity.main.fragments.aHomeActivityInFragment.aHomePostCommentActivity;
 
 import org.sufficientlysecure.htmltextview.HtmlTextView;
@@ -66,55 +52,9 @@ public class PostRecViewAdapter extends RecyclerView.Adapter<PostRecViewAdapter.
         this.accountId = accountId;
     }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-    class ViewHolder extends RecyclerView.ViewHolder {
-        private final TextView tvRVHomeContentUsername;
-        private final HtmlTextView tvRVHomeContentKeterangan;
-        private final TextView tvRVHomeContentComment;
-        private final TextView tvRVHomeContentLike;
-        private final TextView tvRVHomeContentTime;
-        private final ImageView ivRVHomeContentImage;
-        private final ImageView ivRVHomeContentLike;
-        private final ImageView ivRVRVHomeContentIcon;
-        private final LinearLayout llRVHomeContentLike;
-        private final LinearLayout llRVHomeContentStatus;
-
-        public ViewHolder(View itemView) {
-            super(itemView);
-            tvRVHomeContentUsername = (TextView) itemView.findViewById(R.id.tvRVHomeContentUsername);
-            tvRVHomeContentKeterangan = (HtmlTextView) itemView.findViewById(R.id.tvRVHomeContentKeterangan);
-            tvRVHomeContentComment = (TextView) itemView.findViewById(R.id.tvRVHomeContentComment);
-            tvRVHomeContentLike = (TextView) itemView.findViewById(R.id.tvRVHomeContentLike);
-            tvRVHomeContentTime = (TextView) itemView.findViewById(R.id.tvRVHomeContentTime);
-            ivRVHomeContentImage = (ImageView) itemView.findViewById(R.id.ivRVHomeContentImage);
-            ivRVHomeContentLike = (ImageView) itemView.findViewById(R.id.ivRVHomeContentLike);
-            ivRVRVHomeContentIcon = (ImageView) itemView.findViewById(R.id.ivRVRVHomeContentIcon);
-            llRVHomeContentLike = (LinearLayout) itemView.findViewById(R.id.llRVHomeContentLike);
-            llRVHomeContentStatus = (LinearLayout) itemView.findViewById(R.id.llRVHomeContentStatus);
-        }
-=======
     @Override
     public int getItemCount() {
         return models.size();
->>>>>>> origin
-=======
-    @Override
-    public int getItemCount() {
-        return models.size();
->>>>>>> origin
-=======
-    @Override
-    public int getItemCount() {
-        return models.size();
->>>>>>> origin
-=======
-    @Override
-    public int getItemCount() {
-        return models.size();
->>>>>>> origin
     }
 
     @Override
@@ -154,13 +94,13 @@ public class PostRecViewAdapter extends RecyclerView.Adapter<PostRecViewAdapter.
                 .placeholder(R.drawable.template_account_og)
                 .skipMemoryCache(true)
                 .diskCacheStrategy(DiskCacheStrategy.NONE)
-                    .error(R.drawable.template_account_og)
-                    .into(holder.ivRVRVHomeContentIcon);
+                .error(R.drawable.template_account_og)
+                .into(holder.ivRVRVHomeContentIcon);
 
-            if (model.getStatus_like() != 0) {
-                holder.ivRVHomeContentLike.setImageResource(R.drawable.ic_love_fill);
-            } else {
-                holder.ivRVHomeContentLike.setImageResource(R.drawable.ic_love_empty);
+        if (model.getStatus_like() != 0) {
+            holder.ivRVHomeContentLike.setImageResource(R.drawable.ic_love_fill);
+        } else {
+            holder.ivRVHomeContentLike.setImageResource(R.drawable.ic_love_empty);
         }
 
 
@@ -187,19 +127,6 @@ public class PostRecViewAdapter extends RecyclerView.Adapter<PostRecViewAdapter.
         holder.llRVHomeContentComment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-                Intent intent = new Intent(activity, aHomePostCommentActivity.class);
-                intent.putExtra("pos", position);
-=======
-=======
->>>>>>> origin
-=======
->>>>>>> origin
-=======
->>>>>>> origin
                 HomeContentCommentModel mode = new HomeContentCommentModel();
                 mode.setId(models.get(position).getId());
                 mode.setLike(models.get(position).getLike());
@@ -223,16 +150,6 @@ public class PostRecViewAdapter extends RecyclerView.Adapter<PostRecViewAdapter.
                 }
                 Intent intent = new Intent(activity, aHomePostCommentActivity.class);
                 intent.putParcelableArrayListExtra(ISeasonConfig.INTENT_PARAM, dataParam);
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
->>>>>>> origin
-=======
->>>>>>> origin
-=======
->>>>>>> origin
-=======
->>>>>>> origin
                 activity.startActivity(intent);
             }
         });
@@ -278,17 +195,6 @@ public class PostRecViewAdapter extends RecyclerView.Adapter<PostRecViewAdapter.
         });
     }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-=======
->>>>>>> origin
-=======
->>>>>>> origin
-=======
->>>>>>> origin
     class ViewHolder extends RecyclerView.ViewHolder {
 
         private final TextView tvRVHomeContentUsername;
@@ -317,16 +223,6 @@ public class PostRecViewAdapter extends RecyclerView.Adapter<PostRecViewAdapter.
         }
     }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
->>>>>>> origin
-=======
->>>>>>> origin
-=======
->>>>>>> origin
-=======
->>>>>>> origin
     public void setData(List<HomeContentResponseModel> datas) {
         if (datas.size() > 0) {
             models.clear();

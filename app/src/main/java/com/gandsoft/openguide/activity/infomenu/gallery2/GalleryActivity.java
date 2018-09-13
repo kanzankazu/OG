@@ -66,18 +66,6 @@ public class GalleryActivity extends AppCompatActivity {
         initListener();
     }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-        addData();
-=======
-=======
->>>>>>> origin
-=======
->>>>>>> origin
-=======
->>>>>>> origin
     public void initSession() {
         if (SessionUtil.checkIfExist(ISeasonConfig.KEY_ACCOUNT_ID)) {
             accountId = SessionUtil.getStringPreferences(ISeasonConfig.KEY_ACCOUNT_ID, null);
@@ -106,16 +94,6 @@ public class GalleryActivity extends AppCompatActivity {
 
         getGalleryData();
     }
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
->>>>>>> origin
-=======
->>>>>>> origin
-=======
->>>>>>> origin
-=======
->>>>>>> origin
 
     private void initListener() {
         rvGalleryfvbi.addOnItemTouchListener(new GalleryRecyclerItemClickListener(this, new GalleryRecyclerItemClickListener.OnItemClickListener() {
@@ -135,25 +113,6 @@ public class GalleryActivity extends AppCompatActivity {
             }
         });
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-        mRecyclerView.addOnItemTouchListener(new RecyclerItemClickListener(this,
-                new RecyclerItemClickListener.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(View view, int position) {
-                        Intent intent = new Intent(GalleryActivity.this, DetailActivity.class);
-                        intent.putParcelableArrayListExtra("data", data);
-                        intent.putExtra("pos", position);
-                        startActivity(intent);
-=======
-=======
->>>>>>> origin
-=======
->>>>>>> origin
-=======
->>>>>>> origin
         nsvGalleryfvbi.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
             @Override
             public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
@@ -185,12 +144,6 @@ public class GalleryActivity extends AppCompatActivity {
                         }, 2000);
                     } else {
                         Snackbar.make(findViewById(android.R.id.content), "Sudah tidak ada data", Snackbar.LENGTH_LONG).show();
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
->>>>>>> origin
-=======
->>>>>>> origin
                     }
                 }
 
@@ -201,30 +154,6 @@ public class GalleryActivity extends AppCompatActivity {
                     measuredHeight2 = measuredHeight2 + recyclerView.getChildAt(i).getMeasuredHeight();
                 }*/
 
-=======
-                    }
-                }
-
-                /*int measuredHeight = homeIVEventBackgroundfvbi.getMeasuredHeight();
-                int measuredHeight1 = homeLLWriteSomethingfvbi.getMeasuredHeight();
-                int measuredHeight2 = 0;
-                for (int i = 0; i < 4; i++) {
-                    measuredHeight2 = measuredHeight2 + recyclerView.getChildAt(i).getMeasuredHeight();
-                }*/
-
->>>>>>> origin
-=======
-                    }
-                }
-
-                /*int measuredHeight = homeIVEventBackgroundfvbi.getMeasuredHeight();
-                int measuredHeight1 = homeLLWriteSomethingfvbi.getMeasuredHeight();
-                int measuredHeight2 = 0;
-                for (int i = 0; i < 4; i++) {
-                    measuredHeight2 = measuredHeight2 + recyclerView.getChildAt(i).getMeasuredHeight();
-                }*/
-
->>>>>>> origin
                 /*if (scrollY > measuredHeight + measuredHeight1 + measuredHeight2) {
                     homeFABHomeUpfvbi.setVisibility(View.VISIBLE);
                 } else {
@@ -264,18 +193,6 @@ public class GalleryActivity extends AppCompatActivity {
                 progressDialog.dismiss();
                 if (response.isSuccessful()) {
                     List<GalleryResponseModel> models = response.body();
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-                    for(int i=0;i<models.size();i++) {
-=======
-=======
->>>>>>> origin
-=======
->>>>>>> origin
-=======
->>>>>>> origin
                     rvGalleryAdapter.setData(models);
                     if (models.size() == 18) {
                         last_data = false;
@@ -289,34 +206,12 @@ public class GalleryActivity extends AppCompatActivity {
                     }
 
                     for (int i = 0; i < models.size(); i++) {
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
->>>>>>> origin
-=======
->>>>>>> origin
-=======
->>>>>>> origin
-=======
->>>>>>> origin
                         GalleryResponseModel model = models.get(i);
                         if (db.isDataTableValueMultipleNull(SQLiteHelper.TableGallery, SQLiteHelper.Key_Gallery_eventId, SQLiteHelper.Key_Gallery_galleryId, eventId, model.getId())) {
                             db.saveGallery(model, eventId);
                         } else {
                             db.updateGallery(model, eventId);
                         }
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-                        addData();
-=======
-=======
->>>>>>> origin
-=======
->>>>>>> origin
-=======
->>>>>>> origin
 
                         GalleryImageModel model1 = new GalleryImageModel();
                         model1.setId(model.getId());
@@ -332,16 +227,6 @@ public class GalleryActivity extends AppCompatActivity {
                         model1.setImage_iconLocal(model.getImage_iconLocal());
                         model1.setEvent_id(eventId);
                         data.add(model1);
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
->>>>>>> origin
-=======
->>>>>>> origin
-=======
->>>>>>> origin
-=======
->>>>>>> origin
                     }
                 } else {
                     Snackbar.make(findViewById(android.R.id.content), response.message(), Snackbar.LENGTH_LONG).show();
@@ -356,28 +241,6 @@ public class GalleryActivity extends AppCompatActivity {
         });
     }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-    public void addData(){
-        for(int i = 0; i<db.getGallery(eventId).size();i++) {
-            ImageModel imageModel = new ImageModel();
-            imageModel.setName(db.getGallery(eventId).get(i).getUsername());
-            imageModel.setCaption(db.getGallery(eventId).get(i).getCaption());
-            imageModel.setStatlike(db.getGallery(eventId).get(i).getStatus_like());
-            imageModel.setLike(db.getGallery(eventId).get(i).getLike());
-            imageModel.setTotcom(db.getGallery(eventId).get(i).getTotal_comment());
-            imageModel.setUrl(db.getGallery(eventId).get(i).getImage_posted());
-            data.add(imageModel);
-        }
-=======
-=======
->>>>>>> origin
-=======
->>>>>>> origin
-=======
->>>>>>> origin
     private void getGalleryDataLoadMode() {
         //code here
         GalleryRequestModel requestModel = new GalleryRequestModel();
@@ -438,16 +301,6 @@ public class GalleryActivity extends AppCompatActivity {
                     Snackbar.make(findViewById(android.R.id.content), response.message(), Snackbar.LENGTH_LONG).show();
                 }
             }
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
->>>>>>> origin
-=======
->>>>>>> origin
-=======
->>>>>>> origin
-=======
->>>>>>> origin
 
             @Override
             public void onFailure(Call<List<GalleryResponseModel>> call, Throwable t) {
@@ -457,25 +310,6 @@ public class GalleryActivity extends AppCompatActivity {
         });
 
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-    public void checkSession(){
-        if (SessionUtil.checkIfExist(ISeasonConfig.KEY_ACCOUNT_ID)) {
-            accountId = SessionUtil.getStringPreferences(ISeasonConfig.KEY_ACCOUNT_ID, null);
-        }
-        if (SessionUtil.checkIfExist(ISeasonConfig.KEY_EVENT_ID)) {
-            eventId = SessionUtil.getStringPreferences(ISeasonConfig.KEY_EVENT_ID, null);
-        }
-=======
->>>>>>> origin
-=======
->>>>>>> origin
-=======
->>>>>>> origin
-=======
->>>>>>> origin
     }
 
     public void summonToolbar(String title) {

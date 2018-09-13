@@ -136,69 +136,6 @@ public class eInfoFragment extends Fragment implements InfoListViewAdapter.ListA
                 startActivity(intent);
             }
         });
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-
-        /*rvMenufvbi.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(), rvMenufvbi, new RecyclerItemClickListener.OnItemClickListener() {
-            @Override
-            public void onItemClick(View view, int position) {
-                switch (position) {
-                    case 0:
-                        Intent intent1 = new Intent(getActivity(), aMapActivity.class);
-                        getActivity().startActivity(intent1);
-                        break;
-                    case 1:
-                        Intent intent2 = new Intent(getActivity(), GalleryActivity.class);
-                        getActivity().startActivity(intent2);
-                        break;
-                    case 2:
-                        Intent intent3 = new Intent(getActivity(), cInboxActivity.class);
-                        getActivity().startActivity(intent3);
-                        break;
-                    case 3:
-                        Intent intent4 = new Intent(getActivity(), dComitteContactActivity.class);
-                        getActivity().startActivity(intent4);
-                        break;
-                    case 4:
-                        Intent intent5 = new Intent(getActivity(), eEmergenciesActivity.class);
-                        getActivity().startActivity(intent5);
-                        break;
-                    case 5:
-                        Intent intent6 = new Intent(getActivity(), fPracticalInfoActivity.class);
-                        getActivity().startActivity(intent6);
-                        break;
-                    case 6:
-                        Intent intent7 = new Intent(getActivity(), gSurroundingAreaActivity.class);
-                        getActivity().startActivity(intent7);
-                        break;
-                    case 7:
-                        Intent intent8 = new Intent(getActivity(), hFeedbackActivity.class);
-                        getActivity().startActivity(intent8);
-                        break;
-                    case 8:
-                        Intent intent9 = new Intent(getActivity(), ChangeEventActivity.class);
-                        getActivity().startActivity(intent9);
-                        break;
-                    default:
-                        break;
-                }
-            }
-
-            @Override
-            public void onItemLongClick(View view, int position) {
-
-            }
-        }));*/
-=======
->>>>>>> origin
-=======
->>>>>>> origin
-=======
->>>>>>> origin
-=======
->>>>>>> origin
     }
 
     private void updateUi() {
