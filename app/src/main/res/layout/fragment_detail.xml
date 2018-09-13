@@ -1,126 +1,149 @@
-<android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_height="match_parent"
     android:layout_width="match_parent"
+    android:layout_height="match_parent"
     android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:background="@color/colorPrimaryDark">
+
+        <com.jsibbold.zoomage.ZoomageView
+            android:id="@+id/zivDetailGallery"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter"
+            android:src="@drawable/gallery"
+            app:zoomage_animateOnReset="true"
+            app:zoomage_autoCenter="true"
+            app:zoomage_autoResetMode="UNDER"
+            app:zoomage_maxScale="8"
+            app:zoomage_minScale="0.6"
+            app:zoomage_restrictBounds="false"
+            app:zoomage_translatable="true"
+            app:zoomage_zoomable="true" />
+    </RelativeLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginTop="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/linearLayout2"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        android:orientation="vertical">
 
-        <com.jsibbold.zoomage.ZoomageView
-            android:id="@+id/detail_image"
-            zoomage_doubleTapToZoomScaleFactor="3"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:adjustViewBounds="true"
-            android:scaleType="fitCenter"
-            app:zoomage_animateOnReset="true"
-            app:zoomage_autoCenter="true"
-            app:zoomage_autoResetMode="ALWAYS"
-            app:zoomage_restrictBounds="true"
-            app:zoomage_translatable="true"
-            app:zoomage_zoomable="true"
-            tools:context="com.gandsoft.openguide.activity.infomenu.gallery2.DetailActivity$PlaceholderFragment" />
+            android:animateLayoutChanges="true"
+            android:gravity="end"
+            android:orientation="horizontal">
+
+            <android.support.v7.widget.CardView
+                android:layout_width="wrap_content"
+                android:layout_height="25dp"
+                android:layout_marginRight="20dp"
+                app:cardBackgroundColor="#e4e4e4"
+                app:cardCornerRadius="10dp"
+                app:cardPreventCornerOverlap="true">
+
+                <LinearLayout
+                    android:id="@+id/llDetailGalleryComment"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:animateLayoutChanges="true"
+                    android:backgroundTint="#e4e4e4"
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp">
+
+                    <TextView
+                        android:id="@+id/tvDetailGalleryComment"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:text="0" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_marginLeft="5dp"
+                        android:gravity="center"
+                        android:text="Comment" />
+
+                </LinearLayout>
+
+            </android.support.v7.widget.CardView>
+
+            <LinearLayout
+                android:id="@+id/llDetailGalleryLike"
+                android:layout_width="wrap_content"
+                android:layout_height="25dp"
+                android:animateLayoutChanges="true"
+                android:background="@drawable/background_radius_left_down"
+                android:backgroundTint="#e4e4e4"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp">
+
+                <TextView
+                    android:id="@+id/tvDetailGalleryLike"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="0" />
+
+                <ImageView
+                    android:id="@+id/ivDetailGalleryLike"
+                    android:layout_width="15dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="5dp"
+                    android:src="@drawable/ic_love_empty" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="20dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginTop="5dp"
+            android:animateLayoutChanges="true"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/ivDetailGalleryIcon"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:src="@drawable/ic_action_name" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="20dp"
+                android:animateLayoutChanges="true"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tvDetailGalleryUsername"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Username"
+                    android:textColor="@color/colorPrimaryDark" />
+
+                <TextView
+                    android:id="@+id/tvDetailGalleryCaption"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:text="caption"
+                    android:textColor="@color/grey" />
+            </LinearLayout>
+        </LinearLayout>
     </LinearLayout>
-
-    <android.support.constraint.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent">
-
-        <ImageView
-            android:id="@+id/imageView"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_marginBottom="8dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:background="@color/colorAccent"
-            android:scaleType="centerInside"
-            android:src="@android:drawable/stat_notify_chat"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-            android:id="@+id/username"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
-            android:layout_marginTop="16dp"
-            android:text="Username"
-            android:textSize="14dp"
-            app:layout_constraintStart_toEndOf="@+id/imageView"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-            android:id="@+id/caption"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:layout_marginStart="12dp"
-            android:layout_marginTop="8dp"
-            android:text="Caption"
-            android:textSize="14dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/imageView"
-            app:layout_constraintTop_toBottomOf="@+id/username"
-            app:layout_constraintVertical_bias="0.2" />
-
-        <TextView
-            android:id="@+id/likee"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginTop="8dp"
-            android:text="0"
-            android:textSize="14dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/statuslikee"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-            android:id="@+id/statuslikee"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginTop="8dp"
-            android:text="0"
-            android:textSize="14dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/totcom"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-            android:id="@+id/totcom"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginTop="8dp"
-            android:text="0"
-            android:textSize="14dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-    </android.support.constraint.ConstraintLayout>
-</android.support.constraint.ConstraintLayout>
+</LinearLayout>

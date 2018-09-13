@@ -1,12 +1,15 @@
 package com.gandsoft.openguide.activity.main.fragments.aHomeActivityInFragment;
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 =======
+=======
+>>>>>>> origin
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -17,13 +20,19 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
+<<<<<<< HEAD
+>>>>>>> origin
+=======
 >>>>>>> origin
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 <<<<<<< HEAD
+<<<<<<< HEAD
 import android.widget.Button;
+=======
+>>>>>>> origin
 =======
 >>>>>>> origin
 import android.widget.EditText;
@@ -33,9 +42,15 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 <<<<<<< HEAD
+<<<<<<< HEAD
 import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentResponseModel;
 =======
 import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentCommentModel;
+import com.gandsoft.openguide.ISeasonConfig;
+>>>>>>> origin
+=======
+import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentCommentModel;
+import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentResponseModel;
 import com.gandsoft.openguide.ISeasonConfig;
 >>>>>>> origin
 import com.gandsoft.openguide.R;
@@ -44,20 +59,9 @@ import com.gandsoft.openguide.support.SessionUtil;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-
-import java.util.ArrayList;
 import java.util.List;
 
 public class aHomePostCommentActivity extends AppCompatActivity {
-    private Toolbar toolbar;
-    private ActionBar ab;
-    private ImageView mIvCommentPostIcon, mIvCommentPostImage,mIvCommentSend;
-    private TextView mTvCommentPostUsername, mTvCommentPostTime, mTvCommentPostKeterangan;
-    private EditText mEtCommentAdd;
-    private int position;
-    private List<HomeContentResponseModel> models = new ArrayList<>();
-
-
     private RecyclerView rvCommentfvbi;
     private EditText etCommentPostfvbi;
     private ImageView ivCommentPostfvbi, ivCommentTsIconfvbi, ivCommentTsImagefvbi;
@@ -74,6 +78,7 @@ public class aHomePostCommentActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_a_home_post_comment);
 
+<<<<<<< HEAD
 <<<<<<< HEAD
         summonToolbar("Comments");
         initComponent();
@@ -108,6 +113,8 @@ public class aHomePostCommentActivity extends AppCompatActivity {
         ab.setTitle(title);
     }
 =======
+=======
+>>>>>>> origin
         initComponent();
         initParam();
         initSession();
@@ -216,6 +223,9 @@ public class aHomePostCommentActivity extends AppCompatActivity {
         });
     }
 
+<<<<<<< HEAD
+>>>>>>> origin
+=======
 >>>>>>> origin
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -227,9 +237,12 @@ public class aHomePostCommentActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 <<<<<<< HEAD
+<<<<<<< HEAD
         finish();
         return super.onOptionsItemSelected(item);
 =======
+=======
+>>>>>>> origin
         onBackPressed();
         return super.onOptionsItemSelected(item);
     }
@@ -257,6 +270,9 @@ public class aHomePostCommentActivity extends AppCompatActivity {
         // Tampilkan alert dialog
         AlertDialog alertDialog = alertDialogBuilder.create();
         alertDialog.show();
+<<<<<<< HEAD
+>>>>>>> origin
+=======
 >>>>>>> origin
     }
 }

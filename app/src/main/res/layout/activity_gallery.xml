@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <<<<<<< HEAD
+<<<<<<< HEAD
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+=======
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+>>>>>>> origin
 =======
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -8,7 +13,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     tools:context=".activity.infomenu.aMapActivity">
 
@@ -26,19 +30,22 @@
             android:background="@color/white"
             app:layout_scrollFlags="scroll|enterAlways"
             app:popupTheme="@style/AppTheme.PopupOverlay"
-            app:titleTextColor="@color/colorPrimary"/>
+            app:titleTextColor="@color/colorPrimary" />
 
     </android.support.design.widget.AppBarLayout>
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/list"
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/srlGallery"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+<<<<<<< HEAD
 <<<<<<< HEAD
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
 </LinearLayout>
 =======
+=======
+>>>>>>> origin
         android:layout_below="@id/appbar">
 
         <android.support.v4.widget.NestedScrollView
@@ -92,4 +99,7 @@
 
 
 </RelativeLayout>
+<<<<<<< HEAD
+>>>>>>> origin
+=======
 >>>>>>> origin

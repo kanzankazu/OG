@@ -25,8 +25,11 @@ import com.gandsoft.openguide.IConfig;
 import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
 <<<<<<< HEAD
+<<<<<<< HEAD
 import com.gandsoft.openguide.activity.infomenu.gallery2.DetailActivity;
 import com.gandsoft.openguide.activity.infomenu.gallery2.GalleryActivity;
+=======
+>>>>>>> origin
 =======
 >>>>>>> origin
 import com.gandsoft.openguide.activity.main.fragments.aHomeActivityInFragment.aHomePostCommentActivity;
@@ -58,6 +61,7 @@ public class PostRecViewAdapter extends RecyclerView.Adapter<PostRecViewAdapter.
     }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
     class ViewHolder extends RecyclerView.ViewHolder {
         private final TextView tvRVHomeContentUsername;
         private final HtmlTextView tvRVHomeContentKeterangan;
@@ -83,6 +87,11 @@ public class PostRecViewAdapter extends RecyclerView.Adapter<PostRecViewAdapter.
             llRVHomeContentLike = (LinearLayout) itemView.findViewById(R.id.llRVHomeContentLike);
             llRVHomeContentStatus = (LinearLayout) itemView.findViewById(R.id.llRVHomeContentStatus);
         }
+=======
+    @Override
+    public int getItemCount() {
+        return models.size();
+>>>>>>> origin
 =======
     @Override
     public int getItemCount() {
@@ -161,9 +170,12 @@ public class PostRecViewAdapter extends RecyclerView.Adapter<PostRecViewAdapter.
             @Override
             public void onClick(View view) {
 <<<<<<< HEAD
+<<<<<<< HEAD
                 Intent intent = new Intent(activity, aHomePostCommentActivity.class);
                 intent.putExtra("pos", position);
 =======
+=======
+>>>>>>> origin
                 HomeContentCommentModel mode = new HomeContentCommentModel();
                 mode.setId(models.get(position).getId());
                 mode.setLike(models.get(position).getLike());
@@ -187,6 +199,9 @@ public class PostRecViewAdapter extends RecyclerView.Adapter<PostRecViewAdapter.
                 }
                 Intent intent = new Intent(activity, aHomePostCommentActivity.class);
                 intent.putParcelableArrayListExtra(ISeasonConfig.INTENT_PARAM, dataParam);
+<<<<<<< HEAD
+>>>>>>> origin
+=======
 >>>>>>> origin
                 activity.startActivity(intent);
             }
@@ -234,7 +249,10 @@ public class PostRecViewAdapter extends RecyclerView.Adapter<PostRecViewAdapter.
     }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> origin
     class ViewHolder extends RecyclerView.ViewHolder {
 
         private final TextView tvRVHomeContentUsername;
@@ -263,6 +281,9 @@ public class PostRecViewAdapter extends RecyclerView.Adapter<PostRecViewAdapter.
         }
     }
 
+<<<<<<< HEAD
+>>>>>>> origin
+=======
 >>>>>>> origin
     public void setData(List<HomeContentResponseModel> datas) {
         if (datas.size() > 0) {

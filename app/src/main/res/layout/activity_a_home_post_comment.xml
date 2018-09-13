@@ -28,6 +28,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
 <<<<<<< HEAD
+<<<<<<< HEAD
         android:layout_margin="20dp"
         android:animateLayoutChanges="true"
         android:orientation="horizontal">
@@ -41,6 +42,10 @@
         android:layout_above="@+id/llCommentPost"
         android:layout_below="@id/appbar">
 >>>>>>> origin
+=======
+        android:layout_above="@+id/llCommentPost"
+        android:layout_below="@id/appbar">
+>>>>>>> origin
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -48,6 +53,7 @@
             android:animateLayoutChanges="true"
             android:orientation="vertical">
 
+<<<<<<< HEAD
 <<<<<<< HEAD
             <TextView
                 android:id="@+id/tvCommentPostUsername"
@@ -78,6 +84,8 @@
     <org.sufficientlysecure.htmltextview.HtmlTextView
         android:id="@+id/tvCommentPostKeterangan"
 =======
+=======
+>>>>>>> origin
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -163,6 +171,9 @@
 
     <View
         android:id="@+id/vLineCommentPost"
+<<<<<<< HEAD
+>>>>>>> origin
+=======
 >>>>>>> origin
         android:layout_width="match_parent"
         android:layout_height="2dp"
@@ -179,8 +190,13 @@
         android:weightSum="10">
 
 <<<<<<< HEAD
+<<<<<<< HEAD
         <EditText
             android:id="@+id/etCommentAdd"
+=======
+        <View
+            android:id="@+id/focus_thief"
+>>>>>>> origin
 =======
         <View
             android:id="@+id/focus_thief"
@@ -202,16 +218,22 @@
 
         <ImageView
 <<<<<<< HEAD
+<<<<<<< HEAD
             android:id="@+id/ivCommentSend"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_gravity="center_vertical"
             android:layout_weight="0.1"
 =======
+=======
+>>>>>>> origin
             android:id="@+id/ivCommentPost"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="8"
+<<<<<<< HEAD
+>>>>>>> origin
+=======
 >>>>>>> origin
             android:background="@android:color/transparent"
             android:backgroundTint="@color/colorPrimary"
