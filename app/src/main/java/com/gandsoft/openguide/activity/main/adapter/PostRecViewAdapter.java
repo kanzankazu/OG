@@ -94,13 +94,13 @@ public class PostRecViewAdapter extends RecyclerView.Adapter<PostRecViewAdapter.
                 .placeholder(R.drawable.template_account_og)
                 .skipMemoryCache(true)
                 .diskCacheStrategy(DiskCacheStrategy.NONE)
-                    .error(R.drawable.template_account_og)
-                    .into(holder.ivRVRVHomeContentIcon);
+                .error(R.drawable.template_account_og)
+                .into(holder.ivRVRVHomeContentIcon);
 
-            if (model.getStatus_like() != 0) {
-                holder.ivRVHomeContentLike.setImageResource(R.drawable.ic_love_fill);
-            } else {
-                holder.ivRVHomeContentLike.setImageResource(R.drawable.ic_love_empty);
+        if (model.getStatus_like() != 0) {
+            holder.ivRVHomeContentLike.setImageResource(R.drawable.ic_love_fill);
+        } else {
+            holder.ivRVHomeContentLike.setImageResource(R.drawable.ic_love_empty);
         }
 
 

@@ -3,14 +3,19 @@ package com.gandsoft.openguide.activity.main.fragments.aHomeActivityInFragment;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.hardware.Camera;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.design.widget.Snackbar;
+import android.support.v4.content.CursorLoader;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -27,16 +32,22 @@ import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.SimpleTarget;
 import com.gandsoft.openguide.API.API;
 import com.gandsoft.openguide.API.APIrequest.HomeContent.HomeContentPostImageCaptionRequestModel;
 import com.gandsoft.openguide.API.APIresponse.LocalBaseResponseModel;
 import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
+import com.gandsoft.openguide.support.PictureUtil;
 import com.gandsoft.openguide.support.SessionUtil;
 import com.gandsoft.openguide.support.SystemUtil;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
@@ -56,6 +67,9 @@ public class aHomePostImageCaptionActivity extends AppCompatActivity {
     private String accountId,eventId;
     private String uniqueId = null;
     private String base64pic= "a";
+    Bitmap bitmap = null;
+    Bitmap rotatedBitmap = null;
+    Bitmap resizedRotatedBitmap = null;
 
     private Uri imageUri;
     @Override
@@ -64,7 +78,7 @@ public class aHomePostImageCaptionActivity extends AppCompatActivity {
         setContentView(R.layout.activity_a_home_post_image_caption);
 
         summonToolbar("Post Image");
-        if(base64pic.equals("a")){
+        if(bitmap==null){
             ContentValues values = new ContentValues();
             values.put(MediaStore.Images.Media.TITLE, "New Picture");
             values.put(MediaStore.Images.Media.DESCRIPTION, "From your Camera");
@@ -102,12 +116,10 @@ public class aHomePostImageCaptionActivity extends AppCompatActivity {
         mIvImagePostPicture = findViewById(R.id.ivImagePostPicture);
         mIvImagePostOpenCamera = findViewById(R.id.ivImagePostOpenCamera);
         mIvImagePostSend = findViewById(R.id.ivImagePostSend);
-
         mEtImagePostWrite = findViewById(R.id.etImagePostWrite);
     }
 
     private void initContent() {
-
     }
 
     private void initListener() {
@@ -125,23 +137,32 @@ public class aHomePostImageCaptionActivity extends AppCompatActivity {
         });
         mIvImagePostSend.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
-                postImageCaption();
-                ContentValues values = new ContentValues();
-                values.put(MediaStore.Images.Media.TITLE, "New Picture");
-                values.put(MediaStore.Images.Media.DESCRIPTION, "From your Camera");
-                imageUri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
-                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-                startActivityForResult(intent, 1);
+                try {
+                    postImageCaption();
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
             }
         });
     }
 
-    private void postImageCaption(){
+
+    private void postImageCaption() throws FileNotFoundException {
         if(uniqueId == null) {
             uniqueId = UUID.randomUUID().toString();
         }
 
+        Log.d("String bes",String.valueOf(bitmap));
+        /*ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        resizedRotatedBitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
+        byte[] byteArray = byteArrayOutputStream.toByteArray();
+
+        base64pic = Base64.encodeToString(byteArray, Base64.DEFAULT);
+*/
+        if(base64pic.isEmpty() || base64pic.equals("a")){
+            Log.d("failed", "get base64");
+            finish();
+        }
 
         HomeContentPostImageCaptionRequestModel requestModel = new HomeContentPostImageCaptionRequestModel();
         requestModel.setId_event(eventId);
@@ -155,7 +176,6 @@ public class aHomePostImageCaptionActivity extends AppCompatActivity {
         requestModel.setDbver("3");
         Log.d("uuidnya",uniqueId);
 
-
         API.doHomeContentPostImageCaptionRet(requestModel).enqueue(new Callback<List<LocalBaseResponseModel>>() {
             @Override
             public void onResponse(Call<List<LocalBaseResponseModel>> call, Response<List<LocalBaseResponseModel>> response) {
@@ -167,22 +187,19 @@ public class aHomePostImageCaptionActivity extends AppCompatActivity {
                             if (model.getStatus().equalsIgnoreCase("ok")) {
                                 Snackbar.make(findViewById(android.R.id.content), "Image Post Tersimpan", Snackbar.LENGTH_LONG).show();
                                 finish();
+
                             } else {
                                 Snackbar.make(findViewById(android.R.id.content), "Image Post Bad Response", Snackbar.LENGTH_LONG).show();
-
                                 finish();
                             }
                         }
                     } else {
                         Snackbar.make(findViewById(android.R.id.content), "Image Post Data Tidak Sesuai", Snackbar.LENGTH_LONG).show();
-
                         finish();
                     }
                 } else {
                     Snackbar.make(findViewById(android.R.id.content), response.message(), Snackbar.LENGTH_LONG).show();
-
                     finish();
-
                 }
             }
 
@@ -191,39 +208,47 @@ public class aHomePostImageCaptionActivity extends AppCompatActivity {
                 Snackbar.make(findViewById(android.R.id.content), t.getMessage(), Snackbar.LENGTH_LONG).show();
             }
         });
-
     }
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 1 && resultCode == Activity.RESULT_OK) {
-            Bitmap bitmap = null;
-            Bitmap rotatedBitmap = null;
-            Bitmap resizedRotatedBitmap = null;
-            try {
-                bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageUri);
-                String imageurl = String.valueOf(imageUri);
-                Log.d("image uri ",imageurl);
-                rotatedBitmap = SystemUtil.rotateImage(bitmap, 90);
+            String imageurl = getPath(imageUri);
 
-                createDirectoryAndSaveFile(rotatedBitmap,"temp.png");
-                mIvImagePostPicture.setImageBitmap(rotatedBitmap);
+            Log.d("image uri ",imageurl);
+            Log.d("string val from file",String.valueOf(new File(imageurl)));
+            Glide.with(getApplicationContext())
+                    .load(new File(imageurl))
+                    .asBitmap()
+                    .fitCenter()
+                    .into(new SimpleTarget<Bitmap>() {
+                        @Override
+                        public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+                            Bitmap resizeImage = PictureUtil.resizeImage(resource, 1080);
+                            mIvImagePostPicture.setImageBitmap(resizeImage);
+                        }
+                    })
+            ;
 
-                resizedRotatedBitmap = SystemUtil.resizeImage(rotatedBitmap,720);
 
-                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-                resizedRotatedBitmap.compress(Bitmap.CompressFormat.PNG, 0, byteArrayOutputStream);
-                byte[] byteArray = byteArrayOutputStream.toByteArray();
-
-                base64pic = Base64.encodeToString(byteArray, Base64.DEFAULT);
-                if(base64pic.isEmpty() || base64pic.equals("a")){
-                    finish();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            Glide.with(getApplicationContext())
+                    .load(new File(imageurl))
+                    .asBitmap()
+                    .into(new SimpleTarget<Bitmap>() {
+                        @Override
+                        public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+                            Bitmap resizeImage = PictureUtil.resizeImage(resource, 1080);
+                            base64pic = PictureUtil.bitmapToBase64(resizeImage, Bitmap.CompressFormat.JPEG,100);
+                        }
+                    });
         }
+        else{
+            finish();
+        }
+
+/*          rotatedBitmap = SystemUtil.rotateImage(bitmap, 90);
+            resizedRotatedBitmap = SystemUtil.resizeImage(rotatedBitmap,720);
+            mIvImagePostPicture.setImageBitmap(resizedRotatedBitmap);*/
     }
 
     private void createDirectoryAndSaveFile(Bitmap imageToSave, String fileName) {
@@ -233,12 +258,22 @@ public class aHomePostImageCaptionActivity extends AppCompatActivity {
         }
         try {
             FileOutputStream out = new FileOutputStream(file);
-            imageToSave.compress(Bitmap.CompressFormat.PNG, 0, out);
+            imageToSave.compress(Bitmap.CompressFormat.PNG, 100, out);
             out.flush();
             out.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public String getPath(Uri uri) {
+        String[] projection = { MediaStore.Images.Media.DATA };
+
+        Cursor cursor = managedQuery(uri, projection, null, null, null);
+        startManagingCursor(cursor);
+        int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+        cursor.moveToFirst();
+        return cursor.getString(column_index);
     }
 
     @Override
