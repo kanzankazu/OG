@@ -106,8 +106,14 @@ public class aHomeFragment extends Fragment {
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     private ImageView homeIVShareSomethingfvbi2;
     public aHomeFragment() { }
+=======
+
+    public aHomeFragment() {
+    }
+>>>>>>> origin
 =======
 
     public aHomeFragment() {
@@ -205,10 +211,13 @@ public class aHomeFragment extends Fragment {
         });
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
         homeIVShareSomethingfvbi.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
                     postCaption();
 =======
+=======
+>>>>>>> origin
 =======
 >>>>>>> origin
         homeIVShareSomethingfvbi.setOnClickListener(new View.OnClickListener() {
@@ -219,6 +228,9 @@ public class aHomeFragment extends Fragment {
                     postImageCaption();
                 }
 <<<<<<< HEAD
+<<<<<<< HEAD
+>>>>>>> origin
+=======
 >>>>>>> origin
 =======
 >>>>>>> origin
@@ -262,8 +274,11 @@ public class aHomeFragment extends Fragment {
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
                 int measuredHeight = homeIVEventBackgroundfvbi.getMeasuredHeight();
 =======
+=======
+>>>>>>> origin
                 /*int measuredHeight = homeIVEventBackgroundfvbi.getMeasuredHeight();
 >>>>>>> origin
                 int measuredHeight1 = homeLLWriteSomethingfvbi.getMeasuredHeight();
@@ -272,6 +287,7 @@ public class aHomeFragment extends Fragment {
                     measuredHeight2 = measuredHeight2 + recyclerView.getChildAt(i).getMeasuredHeight();
                 }
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
                 /*int measuredHeight = homeIVEventBackgroundfvbi.getMeasuredHeight();
                 int measuredHeight1 = homeLLWriteSomethingfvbi.getMeasuredHeight();
@@ -279,6 +295,9 @@ public class aHomeFragment extends Fragment {
                 for (int i = 0; i < recyclerView.getChildCount(); i++) {
                     measuredHeight2 = measuredHeight2 + recyclerView.getChildAt(i).getMeasuredHeight();
                 }
+                heightRecycle = measuredHeight + measuredHeight1 + measuredHeight2;*/
+>>>>>>> origin
+=======
                 heightRecycle = measuredHeight + measuredHeight1 + measuredHeight2;*/
 >>>>>>> origin
 =======
@@ -380,6 +399,7 @@ public class aHomeFragment extends Fragment {
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
         new Handler().postDelayed(new Runnable() {
             public void run() {
                 //code here
@@ -428,6 +448,8 @@ public class aHomeFragment extends Fragment {
 =======
 =======
 >>>>>>> origin
+=======
+>>>>>>> origin
         API.doHomeContentDataRet(model).enqueue(new Callback<List<HomeContentResponseModel>>() {
             @Override
             public void onResponse(Call<List<HomeContentResponseModel>> call, Response<List<HomeContentResponseModel>> response) {
@@ -452,6 +474,9 @@ public class aHomeFragment extends Fragment {
                         if (db.isDataTableValueMultipleNull(SQLiteHelper.TableHomeContent, SQLiteHelper.Key_HomeContent_EventId, SQLiteHelper.Key_HomeContent_id, eventId, responseModel.getId())) {
                             db.saveHomeContent(responseModel, eventId);
 <<<<<<< HEAD
+<<<<<<< HEAD
+>>>>>>> origin
+=======
 >>>>>>> origin
 =======
 >>>>>>> origin
@@ -611,7 +636,10 @@ public class aHomeFragment extends Fragment {
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> origin
 =======
 >>>>>>> origin
     private void postImageCaption() {
@@ -667,6 +695,9 @@ public class aHomeFragment extends Fragment {
     }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+>>>>>>> origin
+=======
 >>>>>>> origin
 =======
 >>>>>>> origin
@@ -688,6 +719,7 @@ public class aHomeFragment extends Fragment {
                 base64pic = Base64.encodeToString(byteArray, Base64.DEFAULT);
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
                 Log.d("bes64 ",base64pic);
                 startActivity(new Intent(getActivity(), aHomePostImageCaptionActivity.class)
                             .putExtra("base64", base64pic));
@@ -700,6 +732,8 @@ public class aHomeFragment extends Fragment {
 =======
 =======
 >>>>>>> origin
+=======
+>>>>>>> origin
                 Log.d("bes64 ", base64pic);
             } catch (IOException e) {
                 e.printStackTrace();
@@ -707,6 +741,9 @@ public class aHomeFragment extends Fragment {
         } else if (requestCode == 2 && resultCode == Activity.RESULT_OK) {
             onSelectGallery(data);
 <<<<<<< HEAD
+<<<<<<< HEAD
+>>>>>>> origin
+=======
 >>>>>>> origin
 =======
 >>>>>>> origin
@@ -758,9 +795,13 @@ public class aHomeFragment extends Fragment {
         base64pic = Base64.encodeToString(byteArray, Base64.DEFAULT);
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 
         Log.d("bes64 ",base64pic);
 
+=======
+        Log.d("bes64 ", base64pic);
+>>>>>>> origin
 =======
         Log.d("bes64 ", base64pic);
 >>>>>>> origin

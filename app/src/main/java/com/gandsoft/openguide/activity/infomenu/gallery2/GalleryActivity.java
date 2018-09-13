@@ -68,8 +68,11 @@ public class GalleryActivity extends AppCompatActivity {
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
         addData();
 =======
+=======
+>>>>>>> origin
 =======
 >>>>>>> origin
     public void initSession() {
@@ -101,6 +104,9 @@ public class GalleryActivity extends AppCompatActivity {
         getGalleryData();
     }
 <<<<<<< HEAD
+<<<<<<< HEAD
+>>>>>>> origin
+=======
 >>>>>>> origin
 =======
 >>>>>>> origin
@@ -125,6 +131,7 @@ public class GalleryActivity extends AppCompatActivity {
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
         mRecyclerView.addOnItemTouchListener(new RecyclerItemClickListener(this,
                 new RecyclerItemClickListener.OnItemClickListener() {
                     @Override
@@ -134,6 +141,8 @@ public class GalleryActivity extends AppCompatActivity {
                         intent.putExtra("pos", position);
                         startActivity(intent);
 =======
+=======
+>>>>>>> origin
 =======
 >>>>>>> origin
         nsvGalleryfvbi.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
@@ -168,6 +177,7 @@ public class GalleryActivity extends AppCompatActivity {
                     } else {
                         Snackbar.make(findViewById(android.R.id.content), "Sudah tidak ada data", Snackbar.LENGTH_LONG).show();
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> origin
 =======
 >>>>>>> origin
@@ -181,6 +191,18 @@ public class GalleryActivity extends AppCompatActivity {
                     measuredHeight2 = measuredHeight2 + recyclerView.getChildAt(i).getMeasuredHeight();
                 }*/
 
+=======
+                    }
+                }
+
+                /*int measuredHeight = homeIVEventBackgroundfvbi.getMeasuredHeight();
+                int measuredHeight1 = homeLLWriteSomethingfvbi.getMeasuredHeight();
+                int measuredHeight2 = 0;
+                for (int i = 0; i < 4; i++) {
+                    measuredHeight2 = measuredHeight2 + recyclerView.getChildAt(i).getMeasuredHeight();
+                }*/
+
+>>>>>>> origin
                 /*if (scrollY > measuredHeight + measuredHeight1 + measuredHeight2) {
                     homeFABHomeUpfvbi.setVisibility(View.VISIBLE);
                 } else {
@@ -222,8 +244,11 @@ public class GalleryActivity extends AppCompatActivity {
                     List<GalleryResponseModel> models = response.body();
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
                     for(int i=0;i<models.size();i++) {
 =======
+=======
+>>>>>>> origin
 =======
 >>>>>>> origin
                     rvGalleryAdapter.setData(models);
@@ -240,6 +265,9 @@ public class GalleryActivity extends AppCompatActivity {
 
                     for (int i = 0; i < models.size(); i++) {
 <<<<<<< HEAD
+<<<<<<< HEAD
+>>>>>>> origin
+=======
 >>>>>>> origin
 =======
 >>>>>>> origin
@@ -251,8 +279,11 @@ public class GalleryActivity extends AppCompatActivity {
                         }
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
                         addData();
 =======
+=======
+>>>>>>> origin
 =======
 >>>>>>> origin
 
@@ -271,6 +302,9 @@ public class GalleryActivity extends AppCompatActivity {
                         model1.setEvent_id(eventId);
                         data.add(model1);
 <<<<<<< HEAD
+<<<<<<< HEAD
+>>>>>>> origin
+=======
 >>>>>>> origin
 =======
 >>>>>>> origin
@@ -290,6 +324,7 @@ public class GalleryActivity extends AppCompatActivity {
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     public void addData(){
         for(int i = 0; i<db.getGallery(eventId).size();i++) {
             ImageModel imageModel = new ImageModel();
@@ -302,6 +337,8 @@ public class GalleryActivity extends AppCompatActivity {
             data.add(imageModel);
         }
 =======
+=======
+>>>>>>> origin
 =======
 >>>>>>> origin
     private void getGalleryDataLoadMode() {
@@ -365,6 +402,9 @@ public class GalleryActivity extends AppCompatActivity {
                 }
             }
 <<<<<<< HEAD
+<<<<<<< HEAD
+>>>>>>> origin
+=======
 >>>>>>> origin
 =======
 >>>>>>> origin
@@ -379,6 +419,7 @@ public class GalleryActivity extends AppCompatActivity {
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     public void checkSession(){
         if (SessionUtil.checkIfExist(ISeasonConfig.KEY_ACCOUNT_ID)) {
             accountId = SessionUtil.getStringPreferences(ISeasonConfig.KEY_ACCOUNT_ID, null);
@@ -386,6 +427,8 @@ public class GalleryActivity extends AppCompatActivity {
         if (SessionUtil.checkIfExist(ISeasonConfig.KEY_EVENT_ID)) {
             eventId = SessionUtil.getStringPreferences(ISeasonConfig.KEY_EVENT_ID, null);
         }
+=======
+>>>>>>> origin
 =======
 >>>>>>> origin
 =======

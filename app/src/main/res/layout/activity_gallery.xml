@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+=======
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+>>>>>>> origin
 =======
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -40,10 +45,13 @@
         android:layout_height="match_parent"
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
 </LinearLayout>
 =======
+=======
+>>>>>>> origin
 =======
 >>>>>>> origin
         android:layout_below="@id/appbar">
@@ -100,6 +108,9 @@
 
 </RelativeLayout>
 <<<<<<< HEAD
+<<<<<<< HEAD
+>>>>>>> origin
+=======
 >>>>>>> origin
 =======
 >>>>>>> origin

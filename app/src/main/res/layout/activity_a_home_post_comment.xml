@@ -29,6 +29,7 @@
         android:layout_height="match_parent"
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
         android:layout_margin="20dp"
         android:animateLayoutChanges="true"
         android:orientation="horizontal">
@@ -46,6 +47,10 @@
         android:layout_above="@+id/llCommentPost"
         android:layout_below="@id/appbar">
 >>>>>>> origin
+=======
+        android:layout_above="@+id/llCommentPost"
+        android:layout_below="@id/appbar">
+>>>>>>> origin
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -53,6 +58,7 @@
             android:animateLayoutChanges="true"
             android:orientation="vertical">
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
             <TextView
@@ -84,6 +90,8 @@
     <org.sufficientlysecure.htmltextview.HtmlTextView
         android:id="@+id/tvCommentPostKeterangan"
 =======
+=======
+>>>>>>> origin
 =======
 >>>>>>> origin
             <LinearLayout
@@ -172,6 +180,9 @@
     <View
         android:id="@+id/vLineCommentPost"
 <<<<<<< HEAD
+<<<<<<< HEAD
+>>>>>>> origin
+=======
 >>>>>>> origin
 =======
 >>>>>>> origin
@@ -191,8 +202,13 @@
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
         <EditText
             android:id="@+id/etCommentAdd"
+=======
+        <View
+            android:id="@+id/focus_thief"
+>>>>>>> origin
 =======
         <View
             android:id="@+id/focus_thief"
@@ -219,6 +235,7 @@
         <ImageView
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
             android:id="@+id/ivCommentSend"
             android:layout_width="40dp"
             android:layout_height="40dp"
@@ -227,11 +244,16 @@
 =======
 =======
 >>>>>>> origin
+=======
+>>>>>>> origin
             android:id="@+id/ivCommentPost"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="8"
 <<<<<<< HEAD
+<<<<<<< HEAD
+>>>>>>> origin
+=======
 >>>>>>> origin
 =======
 >>>>>>> origin

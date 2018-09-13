@@ -2,12 +2,15 @@ package com.gandsoft.openguide.activity.main.fragments.aHomeActivityInFragment;
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 =======
+=======
+>>>>>>> origin
 =======
 >>>>>>> origin
 import android.content.DialogInterface;
@@ -21,6 +24,9 @@ import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
 <<<<<<< HEAD
+<<<<<<< HEAD
+>>>>>>> origin
+=======
 >>>>>>> origin
 =======
 >>>>>>> origin
@@ -30,7 +36,10 @@ import android.view.MenuItem;
 import android.view.View;
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 import android.widget.Button;
+=======
+>>>>>>> origin
 =======
 >>>>>>> origin
 =======
@@ -43,9 +52,15 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentResponseModel;
 =======
 import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentCommentModel;
+import com.gandsoft.openguide.ISeasonConfig;
+>>>>>>> origin
+=======
+import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentCommentModel;
+import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentResponseModel;
 import com.gandsoft.openguide.ISeasonConfig;
 >>>>>>> origin
 =======
@@ -78,6 +93,7 @@ public class aHomePostCommentActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_a_home_post_comment);
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
         summonToolbar("Comments");
@@ -113,6 +129,8 @@ public class aHomePostCommentActivity extends AppCompatActivity {
         ab.setTitle(title);
     }
 =======
+=======
+>>>>>>> origin
 =======
 >>>>>>> origin
         initComponent();
@@ -224,6 +242,9 @@ public class aHomePostCommentActivity extends AppCompatActivity {
     }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+>>>>>>> origin
+=======
 >>>>>>> origin
 =======
 >>>>>>> origin
@@ -238,9 +259,12 @@ public class aHomePostCommentActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
         finish();
         return super.onOptionsItemSelected(item);
 =======
+=======
+>>>>>>> origin
 =======
 >>>>>>> origin
         onBackPressed();
@@ -271,6 +295,9 @@ public class aHomePostCommentActivity extends AppCompatActivity {
         AlertDialog alertDialog = alertDialogBuilder.create();
         alertDialog.show();
 <<<<<<< HEAD
+<<<<<<< HEAD
+>>>>>>> origin
+=======
 >>>>>>> origin
 =======
 >>>>>>> origin
