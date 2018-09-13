@@ -139,6 +139,7 @@ public class eInfoFragment extends Fragment implements InfoListViewAdapter.ListA
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 
         /*rvMenufvbi.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(), rvMenufvbi, new RecyclerItemClickListener.OnItemClickListener() {
             @Override
@@ -190,6 +191,8 @@ public class eInfoFragment extends Fragment implements InfoListViewAdapter.ListA
 
             }
         }));*/
+=======
+>>>>>>> origin
 =======
 >>>>>>> origin
 =======

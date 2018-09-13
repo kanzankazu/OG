@@ -3,12 +3,15 @@ package com.gandsoft.openguide.activity.main.fragments.aHomeActivityInFragment;
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 =======
+=======
+>>>>>>> origin
 =======
 >>>>>>> origin
 =======
@@ -25,6 +28,9 @@ import android.text.TextUtils;
 import android.util.Log;
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+>>>>>>> origin
+=======
 >>>>>>> origin
 =======
 >>>>>>> origin
@@ -37,7 +43,10 @@ import android.view.View;
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 import android.widget.Button;
+=======
+>>>>>>> origin
 =======
 >>>>>>> origin
 =======
@@ -53,9 +62,15 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentResponseModel;
 =======
 import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentCommentModel;
+import com.gandsoft.openguide.ISeasonConfig;
+>>>>>>> origin
+=======
+import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentCommentModel;
+import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentResponseModel;
 import com.gandsoft.openguide.ISeasonConfig;
 >>>>>>> origin
 =======
@@ -96,6 +111,7 @@ public class aHomePostCommentActivity extends AppCompatActivity {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
         summonToolbar("Comments");
         initComponent();
         initContent();
@@ -129,6 +145,8 @@ public class aHomePostCommentActivity extends AppCompatActivity {
         ab.setTitle(title);
     }
 =======
+=======
+>>>>>>> origin
 =======
 >>>>>>> origin
 =======
@@ -243,6 +261,9 @@ public class aHomePostCommentActivity extends AppCompatActivity {
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+>>>>>>> origin
+=======
 >>>>>>> origin
 =======
 >>>>>>> origin
@@ -260,9 +281,12 @@ public class aHomePostCommentActivity extends AppCompatActivity {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
         finish();
         return super.onOptionsItemSelected(item);
 =======
+=======
+>>>>>>> origin
 =======
 >>>>>>> origin
 =======
@@ -296,6 +320,9 @@ public class aHomePostCommentActivity extends AppCompatActivity {
         alertDialog.show();
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+>>>>>>> origin
+=======
 >>>>>>> origin
 =======
 >>>>>>> origin

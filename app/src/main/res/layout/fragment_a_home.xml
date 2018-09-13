@@ -240,6 +240,7 @@
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
                         <ImageView
                             android:id="@+id/homeIVWrapPic"
                             android:layout_width="match_parent"
@@ -262,6 +263,8 @@
 =======
                             android:scaleType="fitXY"
                             android:visibility="gone" />
+>>>>>>> origin
+=======
 >>>>>>> origin
 =======
 >>>>>>> origin

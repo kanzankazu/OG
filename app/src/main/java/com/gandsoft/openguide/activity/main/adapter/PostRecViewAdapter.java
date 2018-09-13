@@ -27,8 +27,11 @@ import com.gandsoft.openguide.R;
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 import com.gandsoft.openguide.activity.infomenu.gallery2.DetailActivity;
 import com.gandsoft.openguide.activity.infomenu.gallery2.GalleryActivity;
+=======
+>>>>>>> origin
 =======
 >>>>>>> origin
 =======
@@ -66,6 +69,7 @@ public class PostRecViewAdapter extends RecyclerView.Adapter<PostRecViewAdapter.
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     class ViewHolder extends RecyclerView.ViewHolder {
         private final TextView tvRVHomeContentUsername;
         private final HtmlTextView tvRVHomeContentKeterangan;
@@ -91,6 +95,11 @@ public class PostRecViewAdapter extends RecyclerView.Adapter<PostRecViewAdapter.
             llRVHomeContentLike = (LinearLayout) itemView.findViewById(R.id.llRVHomeContentLike);
             llRVHomeContentStatus = (LinearLayout) itemView.findViewById(R.id.llRVHomeContentStatus);
         }
+=======
+    @Override
+    public int getItemCount() {
+        return models.size();
+>>>>>>> origin
 =======
     @Override
     public int getItemCount() {
@@ -181,9 +190,12 @@ public class PostRecViewAdapter extends RecyclerView.Adapter<PostRecViewAdapter.
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
                 Intent intent = new Intent(activity, aHomePostCommentActivity.class);
                 intent.putExtra("pos", position);
 =======
+=======
+>>>>>>> origin
 =======
 >>>>>>> origin
 =======
@@ -213,6 +225,9 @@ public class PostRecViewAdapter extends RecyclerView.Adapter<PostRecViewAdapter.
                 intent.putParcelableArrayListExtra(ISeasonConfig.INTENT_PARAM, dataParam);
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+>>>>>>> origin
+=======
 >>>>>>> origin
 =======
 >>>>>>> origin
@@ -266,7 +281,10 @@ public class PostRecViewAdapter extends RecyclerView.Adapter<PostRecViewAdapter.
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> origin
 =======
 >>>>>>> origin
 =======
@@ -301,6 +319,9 @@ public class PostRecViewAdapter extends RecyclerView.Adapter<PostRecViewAdapter.
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+>>>>>>> origin
+=======
 >>>>>>> origin
 =======
 >>>>>>> origin
