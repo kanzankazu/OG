@@ -186,7 +186,6 @@ public class aHomeFragment extends Fragment {
         callHomeContentAPI();//content
     }
 
-    private Uri imageUri;
     private void initListener(View view) {
         homeIVOpenCamerafvbi.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {

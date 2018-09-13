@@ -43,6 +43,7 @@ import com.gandsoft.openguide.R;
 import com.gandsoft.openguide.support.PictureUtil;
 import com.gandsoft.openguide.support.SessionUtil;
 import com.gandsoft.openguide.support.SystemUtil;
+import com.google.android.gms.fido.fido2.api.common.RequestOptions;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -67,11 +68,9 @@ public class aHomePostImageCaptionActivity extends AppCompatActivity {
     private String accountId,eventId;
     private String uniqueId = null;
     private String base64pic= "a";
-    Bitmap bitmap = null;
-    Bitmap rotatedBitmap = null;
-    Bitmap resizedRotatedBitmap = null;
-
+    private Bitmap bitmap = null;
     private Uri imageUri;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -120,6 +119,13 @@ public class aHomePostImageCaptionActivity extends AppCompatActivity {
     }
 
     private void initContent() {
+        mIvImagePostPicture.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+        Glide.with(this)
+                .load(R.drawable.loading)
+                .asGif()
+                .crossFade()
+                .into(mIvImagePostPicture);
+        mIvImagePostPicture.setScaleType(ImageView.ScaleType.FIT_CENTER);
     }
 
     private void initListener() {
@@ -146,19 +152,13 @@ public class aHomePostImageCaptionActivity extends AppCompatActivity {
         });
     }
 
-
     private void postImageCaption() throws FileNotFoundException {
         if(uniqueId == null) {
             uniqueId = UUID.randomUUID().toString();
         }
 
         Log.d("String bes",String.valueOf(bitmap));
-        /*ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        resizedRotatedBitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
-        byte[] byteArray = byteArrayOutputStream.toByteArray();
 
-        base64pic = Base64.encodeToString(byteArray, Base64.DEFAULT);
-*/
         if(base64pic.isEmpty() || base64pic.equals("a")){
             Log.d("failed", "get base64");
             finish();
@@ -209,18 +209,20 @@ public class aHomePostImageCaptionActivity extends AppCompatActivity {
             }
         });
     }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 1 && resultCode == Activity.RESULT_OK) {
-            String imageurl = getPath(imageUri);
+            String imageurl = PictureUtil.getPath(imageUri,this);
 
             Log.d("image uri ",imageurl);
             Log.d("string val from file",String.valueOf(new File(imageurl)));
+            mIvImagePostPicture.setScaleType(ImageView.ScaleType.FIT_CENTER);
             Glide.with(getApplicationContext())
                     .load(new File(imageurl))
                     .asBitmap()
-                    .fitCenter()
+                    .centerCrop()
                     .into(new SimpleTarget<Bitmap>() {
                         @Override
                         public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
@@ -245,35 +247,6 @@ public class aHomePostImageCaptionActivity extends AppCompatActivity {
         else{
             finish();
         }
-
-/*          rotatedBitmap = SystemUtil.rotateImage(bitmap, 90);
-            resizedRotatedBitmap = SystemUtil.resizeImage(rotatedBitmap,720);
-            mIvImagePostPicture.setImageBitmap(resizedRotatedBitmap);*/
-    }
-
-    private void createDirectoryAndSaveFile(Bitmap imageToSave, String fileName) {
-        File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/.Gandsoft/" + eventId+"/"+ fileName);
-        if (file.exists()) {
-            file.delete();
-        }
-        try {
-            FileOutputStream out = new FileOutputStream(file);
-            imageToSave.compress(Bitmap.CompressFormat.PNG, 100, out);
-            out.flush();
-            out.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public String getPath(Uri uri) {
-        String[] projection = { MediaStore.Images.Media.DATA };
-
-        Cursor cursor = managedQuery(uri, projection, null, null, null);
-        startManagingCursor(cursor);
-        int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-        cursor.moveToFirst();
-        return cursor.getString(column_index);
     }
 
     @Override
