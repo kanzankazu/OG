@@ -107,13 +107,25 @@
         <activity
             android:name=".activity.infomenu.gallery.PicViewActivity"
             android:configChanges="orientation|screenSize"
-            android:label="alalalal"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
+<<<<<<< HEAD
         <activity android:name=".activity.main.fragments.aHomeActivityInFragment.aHomePostCommentActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".activity.main.fragments.aHomeActivityInFragment.aHomePostImageCaptionActivity"
             android:theme="@style/AppTheme.NoActionBar" ></activity>
+=======
+        <activity
+            android:name=".activity.main.fragments.aHomeActivityInFragment.aHomePostCommentActivity"
+            android:configChanges="orientation|screenSize"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".activity.main.fragments.aHomeActivityInFragment.aHomePostImageCaptionActivity"
+            android:configChanges="orientation|screenSize"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
+>>>>>>> origin
     </application>
 
 </manifest>

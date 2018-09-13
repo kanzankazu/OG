@@ -66,7 +66,38 @@ public class GalleryActivity extends AppCompatActivity {
         initContent();
         initListener();
 
+<<<<<<< HEAD
         addData();
+=======
+    public void initSession() {
+        if (SessionUtil.checkIfExist(ISeasonConfig.KEY_ACCOUNT_ID)) {
+            accountId = SessionUtil.getStringPreferences(ISeasonConfig.KEY_ACCOUNT_ID, null);
+        }
+        if (SessionUtil.checkIfExist(ISeasonConfig.KEY_EVENT_ID)) {
+            eventId = SessionUtil.getStringPreferences(ISeasonConfig.KEY_EVENT_ID, null);
+        }
+    }
+
+    private void initComponent() {
+        rvGalleryfvbi = (RecyclerView) findViewById(R.id.rvGallery);
+        nsvGalleryfvbi = (NestedScrollView) findViewById(R.id.nsvGallery);
+        srlGalleryfvbi = (SwipeRefreshLayout) findViewById(R.id.srlGallery);
+        llLoadModeGalleryfvbi = (LinearLayout) findViewById(R.id.llLoadModeGallery);
+    }
+
+    private void initContent() {
+
+        summonToolbar("Gallery");
+
+        rvGalleryAdapter = new GalleryAdapter(GalleryActivity.this, menuUi, eventId);
+        rvGalleryfvbi.setNestedScrollingEnabled(false);
+        rvGalleryfvbi.setAdapter(rvGalleryAdapter);
+        //rvGalleryfvbi.setHasFixedSize(true);
+        rvGalleryfvbi.setLayoutManager(new GridLayoutManager(this, 3));
+
+        getGalleryData();
+    }
+>>>>>>> origin
 
         mRecyclerView = (RecyclerView) findViewById(R.id.list);
         mRecyclerView.setLayoutManager(new GridLayoutManager(this, 3));
@@ -75,6 +106,7 @@ public class GalleryActivity extends AppCompatActivity {
         mAdapter = new GalleryAdapter(GalleryActivity.this, data,eventId);
         mRecyclerView.setAdapter(mAdapter);
 
+<<<<<<< HEAD
         mRecyclerView.addOnItemTouchListener(new RecyclerItemClickListener(this,
                 new RecyclerItemClickListener.OnItemClickListener() {
                     @Override
@@ -83,6 +115,39 @@ public class GalleryActivity extends AppCompatActivity {
                         intent.putParcelableArrayListExtra("data", data);
                         intent.putExtra("pos", position);
                         startActivity(intent);
+=======
+        nsvGalleryfvbi.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
+            @Override
+            public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+                if (scrollY > oldScrollY) {
+                    //Log.i(TAG, "Scroll DOWN");
+                }
+                if (scrollY < oldScrollY) {
+                    //Log.i(TAG, "Scroll UP");
+                }
+                if (scrollY == 0) {
+                    //Log.i(TAG, "TOP SCROLL");
+                }
+                if (scrollY == (v.getChildAt(0).getMeasuredHeight() - v.getMeasuredHeight())) {
+                    if (!last_data) {
+                        llLoadModeGalleryfvbi.setVisibility(View.VISIBLE);
+
+                        new Handler().postDelayed(new Runnable() {
+                            public void run() {
+                                //code here
+                                nsvGalleryfvbi.fullScroll(View.FOCUS_DOWN);
+                            }
+                        }, 500);
+
+                        new Handler().postDelayed(new Runnable() {
+                            public void run() {
+                                //code here
+                                getGalleryDataLoadMode();
+                            }
+                        }, 2000);
+                    } else {
+                        Snackbar.make(findViewById(android.R.id.content), "Sudah tidak ada data", Snackbar.LENGTH_LONG).show();
+>>>>>>> origin
                     }
                 }));
     }
@@ -114,7 +179,23 @@ public class GalleryActivity extends AppCompatActivity {
                 progressDialog.dismiss();
                 if (response.isSuccessful()) {
                     List<GalleryResponseModel> models = response.body();
+<<<<<<< HEAD
                     for(int i=0;i<models.size();i++) {
+=======
+                    rvGalleryAdapter.setData(models);
+                    if (models.size() == 18) {
+                        last_data = false;
+                        last_id = models.get(models.size() - 1).getId();
+                        first_id = models.get(0).getId();
+                    } else {
+                        Snackbar.make(findViewById(android.R.id.content), "Data Terakhir", Snackbar.LENGTH_SHORT).show();
+                        last_data = true;
+                        last_id = "";
+                        first_id = "";
+                    }
+
+                    for (int i = 0; i < models.size(); i++) {
+>>>>>>> origin
                         GalleryResponseModel model = models.get(i);
                         if (db.isDataTableValueMultipleNull(SQLiteHelper.TableGallery, SQLiteHelper.Key_Gallery_eventId,
                                 SQLiteHelper.Key_Gallery_galleryId, eventId, model.getId())) {
@@ -122,7 +203,25 @@ public class GalleryActivity extends AppCompatActivity {
                         } else {
                             db.updateGallery(model, eventId);
                         }
+<<<<<<< HEAD
                         addData();
+=======
+
+                        GalleryImageModel model1 = new GalleryImageModel();
+                        model1.setId(model.getId());
+                        model1.setLike(model.getLike());
+                        model1.setAccount_id(model.getAccount_id());
+                        model1.setTotal_comment(model.getTotal_comment());
+                        model1.setStatus_like(model.getStatus_like());
+                        model1.setUsername(model.getUsername());
+                        model1.setCaption(model.getCaption());
+                        model1.setImage_posted(model.getImage_posted());
+                        model1.setImage_icon(model.getImage_icon());
+                        model1.setImage_postedLocal(model.getImage_postedLocal());
+                        model1.setImage_iconLocal(model.getImage_iconLocal());
+                        model1.setEvent_id(eventId);
+                        data.add(model1);
+>>>>>>> origin
                     }
                 } else {
                     Snackbar.make(findViewById(android.R.id.content), response.message(), Snackbar.LENGTH_LONG).show();
@@ -137,6 +236,7 @@ public class GalleryActivity extends AppCompatActivity {
         });
     }
 
+<<<<<<< HEAD
     public void addData(){
         for(int i = 0; i<db.getGallery(eventId).size();i++) {
             ImageModel imageModel = new ImageModel();
@@ -148,9 +248,78 @@ public class GalleryActivity extends AppCompatActivity {
             imageModel.setUrl(db.getGallery(eventId).get(i).getImage_posted());
             data.add(imageModel);
         }
+=======
+    private void getGalleryDataLoadMode() {
+        //code here
+        GalleryRequestModel requestModel = new GalleryRequestModel();
 
-    }
+        Log.d("Lihat", "run GalleryActivity last_id : " + last_id);
+        Log.d("Lihat", "run GalleryActivity first_id : " + first_id);
 
+        requestModel.setDbver(String.valueOf(IConfig.DB_Version));
+        requestModel.setId_event(eventId);
+        requestModel.setPhonenumber(accountId);
+        requestModel.setKondisi("down");
+        requestModel.setLastid(last_id);
+        requestModel.setFirstid(first_id);
+
+        API.doGalleryRet(requestModel).enqueue(new Callback<List<GalleryResponseModel>>() {
+            @Override
+            public void onResponse(Call<List<GalleryResponseModel>> call, Response<List<GalleryResponseModel>> response) {
+                llLoadModeGalleryfvbi.setVisibility(View.GONE);
+                if (response.isSuccessful()) {
+                    List<GalleryResponseModel> models = response.body();
+                    rvGalleryAdapter.addDatas(models);
+                    Log.d("Lihat", "onResponse GalleryActivity : " + models.size());
+                    if (models.size() == 18) {
+                        last_data = false;
+                        last_id = models.get(models.size() - 1).getId();
+                        first_id = models.get(0).getId();
+                    } else {
+                        Snackbar.make(findViewById(android.R.id.content), "Data Terakhir", Snackbar.LENGTH_SHORT).show();
+                        last_data = true;
+                        last_id = "";
+                        first_id = "";
+                    }
+
+                    for (int i = 0; i < models.size(); i++) {
+                        GalleryResponseModel model = models.get(i);
+                        if (db.isDataTableValueMultipleNull(SQLiteHelper.TableGallery, SQLiteHelper.Key_Gallery_eventId, SQLiteHelper.Key_Gallery_galleryId, eventId, model.getId())) {
+                            db.saveGallery(model, eventId);
+                        } else {
+                            db.updateGallery(model, eventId);
+                        }
+
+                        GalleryImageModel model1 = new GalleryImageModel();
+                        model1.setId(model.getId());
+                        model1.setLike(model.getLike());
+                        model1.setAccount_id(model.getAccount_id());
+                        model1.setTotal_comment(model.getTotal_comment());
+                        model1.setStatus_like(model.getStatus_like());
+                        model1.setUsername(model.getUsername());
+                        model1.setCaption(model.getCaption());
+                        model1.setImage_posted(model.getImage_posted());
+                        model1.setImage_icon(model.getImage_icon());
+                        model1.setImage_postedLocal(model.getImage_postedLocal());
+                        model1.setImage_iconLocal(model.getImage_iconLocal());
+                        model1.setEvent_id(eventId);
+                        data.add(model1);
+                    }
+                } else {
+                    Snackbar.make(findViewById(android.R.id.content), response.message(), Snackbar.LENGTH_LONG).show();
+                }
+            }
+>>>>>>> origin
+
+            @Override
+            public void onFailure(Call<List<GalleryResponseModel>> call, Throwable t) {
+                llLoadModeGalleryfvbi.setVisibility(View.GONE);
+                Snackbar.make(findViewById(android.R.id.content), t.getMessage(), Snackbar.LENGTH_LONG).show();
+            }
+        });
+
+
+<<<<<<< HEAD
     public void checkSession(){
         if (SessionUtil.checkIfExist(ISeasonConfig.KEY_ACCOUNT_ID)) {
             accountId = SessionUtil.getStringPreferences(ISeasonConfig.KEY_ACCOUNT_ID, null);
@@ -158,6 +327,8 @@ public class GalleryActivity extends AppCompatActivity {
         if (SessionUtil.checkIfExist(ISeasonConfig.KEY_EVENT_ID)) {
             eventId = SessionUtil.getStringPreferences(ISeasonConfig.KEY_EVENT_ID, null);
         }
+=======
+>>>>>>> origin
     }
 
     public void summonToolbar(String title){

@@ -1,7 +1,13 @@
 package com.gandsoft.openguide.API.APIrequest.HomeContent;
 
 public class HomeContentPostCommentRequestModel {
-    String event_id, post_id, account_id, post_comment, post_time, timezone, dbver;
+    String event_id;
+    String post_id;
+    String account_id;
+    String post_comment;
+    String post_time;
+    String timezone;
+    String dbver;
 
     public String getEvent_id() {
         return event_id;

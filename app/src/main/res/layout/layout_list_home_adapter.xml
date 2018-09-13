@@ -22,7 +22,7 @@
             app:cardPreventCornerOverlap="true">
 
             <LinearLayout
-                android:id="@+id/llRVHomeContentStatus"
+                android:id="@+id/llRVHomeContentComment"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:animateLayoutChanges="true"

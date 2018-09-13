@@ -1,6 +1,6 @@
 package com.gandsoft.openguide.API.APIresponse.UserData;
 
-import java.io.Serializable;
+
 import java.util.ArrayList;
 import java.util.List;
 

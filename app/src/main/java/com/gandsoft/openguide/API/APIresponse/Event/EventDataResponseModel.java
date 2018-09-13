@@ -1,6 +1,6 @@
 package com.gandsoft.openguide.API.APIresponse.Event;
 
-import java.io.Serializable;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;

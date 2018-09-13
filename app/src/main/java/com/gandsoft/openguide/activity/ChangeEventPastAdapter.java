@@ -96,7 +96,7 @@ public class ChangeEventPastAdapter extends RecyclerView.Adapter<ChangeEventPast
     }
 
     public void setData(List<UserListEventResponseModel> datas) {
-        /*models = datas;
+        /*datas = datas;
         notifyDataSetChanged();*/
         List<UserListEventResponseModel> ds = new ArrayList<>();
         for (UserListEventResponseModel d : datas) {

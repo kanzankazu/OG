@@ -17,13 +17,18 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.gandsoft.openguide.API.API;
 import com.gandsoft.openguide.API.APIrequest.HomeContent.HomeContentPostLikeRequestModel;
+import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentCommentModel;
 import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentPostLikeResponseModel;
 import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentResponseModel;
 import com.gandsoft.openguide.API.APIresponse.LocalBaseResponseModel;
 import com.gandsoft.openguide.IConfig;
+import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
+<<<<<<< HEAD
 import com.gandsoft.openguide.activity.infomenu.gallery2.DetailActivity;
 import com.gandsoft.openguide.activity.infomenu.gallery2.GalleryActivity;
+=======
+>>>>>>> origin
 import com.gandsoft.openguide.activity.main.fragments.aHomeActivityInFragment.aHomePostCommentActivity;
 
 import org.sufficientlysecure.htmltextview.HtmlTextView;
@@ -40,17 +45,19 @@ public class PostRecViewAdapter extends RecyclerView.Adapter<PostRecViewAdapter.
     private Context context;
     private FragmentActivity activity;
     private List<HomeContentResponseModel> models = new ArrayList<>();
+    private ArrayList<HomeContentCommentModel> dataParam = new ArrayList<>();
     private List<HomeContentPostLikeResponseModel> modelsnyaLike = new ArrayList<>();
-    private String eventId,accountId;
+    private String eventId, accountId;
 
     public PostRecViewAdapter(FragmentActivity activity, List<HomeContentResponseModel> items, Context context, String eventId, String accountId) {
         this.activity = activity;
         this.context = context;
         models = items;
-        this.eventId =eventId;
+        this.eventId = eventId;
         this.accountId = accountId;
     }
 
+<<<<<<< HEAD
     class ViewHolder extends RecyclerView.ViewHolder {
         private final TextView tvRVHomeContentUsername;
         private final HtmlTextView tvRVHomeContentKeterangan;
@@ -76,6 +83,11 @@ public class PostRecViewAdapter extends RecyclerView.Adapter<PostRecViewAdapter.
             llRVHomeContentLike = (LinearLayout) itemView.findViewById(R.id.llRVHomeContentLike);
             llRVHomeContentStatus = (LinearLayout) itemView.findViewById(R.id.llRVHomeContentStatus);
         }
+=======
+    @Override
+    public int getItemCount() {
+        return models.size();
+>>>>>>> origin
     }
 
     @Override
@@ -91,8 +103,8 @@ public class PostRecViewAdapter extends RecyclerView.Adapter<PostRecViewAdapter.
         holder.tvRVHomeContentLike.setText(model.getLike());
         holder.tvRVHomeContentUsername.setText(model.getUsername());
         holder.tvRVHomeContentTime.setText(model.getDate_created());
-        if (!TextUtils.isEmpty(model.getKeterangan())) {
-            holder.tvRVHomeContentKeterangan.setHtml(model.getKeterangan());
+        if (!TextUtils.isEmpty(model.getKeterangan()) || !TextUtils.isEmpty(model.getEvent())) {
+            holder.tvRVHomeContentKeterangan.setHtml(model.getKeterangan() + "" + model.getEvent());
             holder.tvRVHomeContentKeterangan.setVisibility(View.VISIBLE);
         } else {
             holder.tvRVHomeContentKeterangan.setVisibility(View.GONE);
@@ -133,40 +145,64 @@ public class PostRecViewAdapter extends RecyclerView.Adapter<PostRecViewAdapter.
                     holder.tvRVHomeContentLike.setText(String.valueOf(like + 1));
                     holder.ivRVHomeContentLike.setImageResource(R.drawable.ic_love_fill);
                     model.setStatus_like(1);
-                    model.setLike(String.valueOf(like+1));
-                    postLike( model.getLike(), holder, model);
+                    model.setLike(String.valueOf(like + 1));
+                    postLike(model.getLike(), holder, model);
                 } else {
                     holder.tvRVHomeContentLike.setText(String.valueOf(like - 1));
                     holder.ivRVHomeContentLike.setImageResource(R.drawable.ic_love_empty);
                     model.setStatus_like(0);
-                    model.setLike(String.valueOf(like-1));
-                    postLike( model.getLike(),holder,model);
+                    model.setLike(String.valueOf(like - 1));
+                    postLike(model.getLike(), holder, model);
                 }
             }
         });
 
-        holder.llRVHomeContentStatus.setOnClickListener(new View.OnClickListener() {
+        holder.llRVHomeContentComment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+<<<<<<< HEAD
                 Intent intent = new Intent(activity, aHomePostCommentActivity.class);
                 intent.putExtra("pos", position);
+=======
+                HomeContentCommentModel mode = new HomeContentCommentModel();
+                mode.setId(models.get(position).getId());
+                mode.setLike(models.get(position).getLike());
+                mode.setAccount_id(models.get(position).getAccount_id());
+                mode.setTotal_comment(models.get(position).getTotal_comment());
+                mode.setStatus_like(models.get(position).getStatus_like());
+                mode.setUsername(models.get(position).getUsername());
+                mode.setJabatan(models.get(position).getJabatan());
+                mode.setDate_created(models.get(position).getDate_created());
+                mode.setImage_icon(models.get(position).getImage_icon());
+                mode.setImage_icon_local(models.get(position).getImage_icon_local());
+                mode.setImage_posted(models.get(position).getImage_posted());
+                mode.setImage_posted_local(models.get(position).getImage_posted_local());
+                mode.setKeterangan(models.get(position).getKeterangan());
+                mode.setEvent(models.get(position).getEvent());
+                if (dataParam.size() > 0) {
+                    dataParam.clear();
+                    dataParam.add(mode);
+                } else {
+                    dataParam.add(mode);
+                }
+                Intent intent = new Intent(activity, aHomePostCommentActivity.class);
+                intent.putParcelableArrayListExtra(ISeasonConfig.INTENT_PARAM, dataParam);
+>>>>>>> origin
                 activity.startActivity(intent);
             }
         });
-
     }
 
-    public void postLike( String likes, ViewHolder holder, HomeContentResponseModel model){
+    public void postLike(String likes, ViewHolder holder, HomeContentResponseModel model) {
         HomeContentPostLikeRequestModel requestModel = new HomeContentPostLikeRequestModel();
         requestModel.setAccount_id(accountId);
         requestModel.setEvent_id(eventId);
         requestModel.setId_content(model.getId());
         requestModel.setVal_like(likes);
         requestModel.setDbver(String.valueOf(IConfig.DB_Version));
-        if(model.getStatus_like()==1) {
+        if (model.getStatus_like() == 1) {
             requestModel.setStatus_like("0");
-        }
-        else if(model.getStatus_like()==0) {
+        } else if (model.getStatus_like() == 0) {
             requestModel.setStatus_like("1");
         }
 
@@ -179,7 +215,7 @@ public class PostRecViewAdapter extends RecyclerView.Adapter<PostRecViewAdapter.
                         for (int i = 0; i < s.size(); i++) {
                             LocalBaseResponseModel model = s.get(i);
                             if (model.getStatus().equalsIgnoreCase("ok")) {
-                                Log.d("Status ok","ok");
+                                Log.d("Status ok", "ok");
 
                             } else {
                             }
@@ -196,11 +232,38 @@ public class PostRecViewAdapter extends RecyclerView.Adapter<PostRecViewAdapter.
             }
         });
     }
-    @Override
-    public int getItemCount() {
-        return models.size();
+
+<<<<<<< HEAD
+=======
+    class ViewHolder extends RecyclerView.ViewHolder {
+
+        private final TextView tvRVHomeContentUsername;
+        private final HtmlTextView tvRVHomeContentKeterangan;
+        private final TextView tvRVHomeContentComment;
+        private final TextView tvRVHomeContentLike;
+        private final TextView tvRVHomeContentTime;
+        private final ImageView ivRVHomeContentImage;
+        private final ImageView ivRVHomeContentLike;
+        private final ImageView ivRVRVHomeContentIcon;
+        private final LinearLayout llRVHomeContentLike;
+        private final LinearLayout llRVHomeContentComment;
+
+        public ViewHolder(View itemView) {
+            super(itemView);
+            tvRVHomeContentUsername = (TextView) itemView.findViewById(R.id.tvRVHomeContentUsername);
+            tvRVHomeContentKeterangan = (HtmlTextView) itemView.findViewById(R.id.tvRVHomeContentKeterangan);
+            tvRVHomeContentComment = (TextView) itemView.findViewById(R.id.tvRVHomeContentComment);
+            tvRVHomeContentLike = (TextView) itemView.findViewById(R.id.tvRVHomeContentLike);
+            tvRVHomeContentTime = (TextView) itemView.findViewById(R.id.tvRVHomeContentTime);
+            ivRVHomeContentImage = (ImageView) itemView.findViewById(R.id.ivRVHomeContentImage);
+            ivRVHomeContentLike = (ImageView) itemView.findViewById(R.id.ivRVHomeContentLike);
+            ivRVRVHomeContentIcon = (ImageView) itemView.findViewById(R.id.ivRVRVHomeContentIcon);
+            llRVHomeContentLike = (LinearLayout) itemView.findViewById(R.id.llRVHomeContentLike);
+            llRVHomeContentComment = (LinearLayout) itemView.findViewById(R.id.llRVHomeContentComment);
+        }
     }
 
+>>>>>>> origin
     public void setData(List<HomeContentResponseModel> datas) {
         if (datas.size() > 0) {
             models.clear();

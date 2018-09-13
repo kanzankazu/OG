@@ -1,6 +1,6 @@
 package com.gandsoft.openguide.API.APIresponse.UserData;
 
-import java.io.Serializable;
+
 
 public class UserWalletDataResponseModel  {
 

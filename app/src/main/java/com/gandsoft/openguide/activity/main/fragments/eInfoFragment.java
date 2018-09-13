@@ -127,18 +127,16 @@ public class eInfoFragment extends Fragment implements InfoListViewAdapter.ListA
         rvMenufvbi.setAdapter(adapter);
         rvMenufvbi.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-        //>>>>SKIP
-
     }
 
     private void initListener() {
-
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), AccountActivity.class);
                 startActivity(intent);
             }
         });
+<<<<<<< HEAD
 
         /*rvMenufvbi.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(), rvMenufvbi, new RecyclerItemClickListener.OnItemClickListener() {
             @Override
@@ -190,6 +188,8 @@ public class eInfoFragment extends Fragment implements InfoListViewAdapter.ListA
 
             }
         }));*/
+=======
+>>>>>>> origin
     }
 
     private void updateUi() {
@@ -214,7 +214,6 @@ public class eInfoFragment extends Fragment implements InfoListViewAdapter.ListA
 
     @Override
     public void click(String s) {
-        //"Map","Gallery","Inbox","Comitee Contact","Emergencies","Practical Information","Surrounding Area","Feedback","Change Event";
         if (s.equalsIgnoreCase("Map")) {
             Intent intent1 = new Intent(getActivity(), aMapActivity.class);
             getActivity().startActivity(intent1);

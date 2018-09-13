@@ -1,17 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_marginBottom="20dp"
-    android:background="@color/white"
+    android:layout_height="match_parent"
+    android:background="@color/gray_very_light"
     android:orientation="vertical">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
         android:theme="@style/AppTheme.AppBarOverlay">
+
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
@@ -19,12 +21,13 @@
             android:background="@color/white"
             app:layout_scrollFlags="scroll|enterAlways"
             app:popupTheme="@style/AppTheme.PopupOverlay"
-            app:titleTextColor="@color/colorPrimary"/>
+            app:titleTextColor="@color/colorPrimary" />
     </android.support.design.widget.AppBarLayout>
 
-    <LinearLayout
+    <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+<<<<<<< HEAD
         android:layout_margin="20dp"
         android:animateLayoutChanges="true"
         android:orientation="horizontal">
@@ -34,14 +37,18 @@
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:src="@drawable/ic_action_name" />
+=======
+        android:layout_above="@+id/llCommentPost"
+        android:layout_below="@id/appbar">
+>>>>>>> origin
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginLeft="20dp"
             android:animateLayoutChanges="true"
             android:orientation="vertical">
 
+<<<<<<< HEAD
             <TextView
                 android:id="@+id/tvCommentPostUsername"
                 android:layout_width="wrap_content"
@@ -70,39 +77,146 @@
 
     <org.sufficientlysecure.htmltextview.HtmlTextView
         android:id="@+id/tvCommentPostKeterangan"
+=======
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="10dp"
+                android:background="@color/white"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_margin="10dp"
+                    android:animateLayoutChanges="true"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:id="@+id/ivCommentTsIcon"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:src="@drawable/ic_action_name" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginLeft="20dp"
+                        android:animateLayoutChanges="true"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/tvCommentTsUsername"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Username"
+                            android:textColor="@color/colorPrimaryDark" />
+
+                        <TextView
+                            android:id="@+id/tvCommentTsTime"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="5dp"
+                            android:text="time"
+                            android:textColor="@color/colorPrimary" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <ImageView
+                    android:id="@+id/ivCommentTsImage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="20dp"
+                    android:adjustViewBounds="true"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/gallery" />
+
+                <org.sufficientlysecure.htmltextview.HtmlTextView
+                    android:id="@+id/tvCommentTsKeterangan"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="20dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:text="Content"
+                    android:visibility="visible" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:layout_marginBottom="10dp"
+                android:layout_marginTop="10dp"
+                android:background="@color/gray_light" />
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/rvComment"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="10dp"
+                tools:listitem="@layout/layout_list_comment">
+
+            </android.support.v7.widget.RecyclerView>
+
+        </LinearLayout>
+    </android.support.v4.widget.NestedScrollView>
+
+    <View
+        android:id="@+id/vLineCommentPost"
+>>>>>>> origin
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="20dp"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
-        android:text="Content"
-        android:visibility="visible" />
+        android:layout_height="2dp"
+        android:layout_above="@+id/llCommentPost"
+        android:background="@color/gray_very_light" />
 
     <LinearLayout
+        android:id="@+id/llCommentPost"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="20dp"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
-        android:orientation="horizontal">
+        android:layout_height="60dp"
+        android:layout_alignParentBottom="true"
+        android:background="@color/white"
+        android:orientation="horizontal"
+        android:weightSum="10">
 
+<<<<<<< HEAD
         <EditText
             android:id="@+id/etCommentAdd"
+=======
+        <View
+            android:id="@+id/focus_thief"
+>>>>>>> origin
             android:layout_width="1dp"
-            android:layout_height="40dp"
-            android:layout_gravity="center_vertical"
-            android:layout_weight="0.8"
-            android:hint="Add a comment" />
+            android:layout_height="1dp"
+            android:focusable="true"
+            android:focusableInTouchMode="true" />
+
+        <EditText
+            android:id="@+id/etCommentPost"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_weight="2"
+            android:hint="Add a comment ..."
+            android:inputType="textMultiLine" />
+
         <ImageView
+<<<<<<< HEAD
             android:id="@+id/ivCommentSend"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_gravity="center_vertical"
             android:layout_weight="0.1"
+=======
+            android:id="@+id/ivCommentPost"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="8"
+>>>>>>> origin
             android:background="@android:color/transparent"
             android:backgroundTint="@color/colorPrimary"
             android:padding="5dp"
             android:src="@drawable/ic_action_send" />
     </LinearLayout>
 
-</LinearLayout>
+</RelativeLayout>
