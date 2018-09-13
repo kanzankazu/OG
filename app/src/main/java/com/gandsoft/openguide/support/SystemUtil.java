@@ -8,6 +8,7 @@ import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.media.ExifInterface;
 import android.support.v4.content.ContextCompat;
 import android.text.InputFilter;
 import android.view.View;
@@ -21,6 +22,7 @@ import com.gandsoft.openguide.App;
 import com.gandsoft.openguide.R;
 import com.google.android.gms.auth.GoogleAuthUtil;
 import com.google.android.gms.common.AccountPicker;
+import com.google.android.gms.nearby.connection.Payload;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -29,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.io.File;
 
 public class SystemUtil {
 
@@ -297,6 +300,5 @@ public class SystemUtil {
         img.recycle();
         return rotatedImg;
     }
-
 
 }
