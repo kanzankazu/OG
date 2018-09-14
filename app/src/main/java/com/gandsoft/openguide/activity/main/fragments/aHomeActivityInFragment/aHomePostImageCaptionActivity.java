@@ -119,13 +119,7 @@ public class aHomePostImageCaptionActivity extends AppCompatActivity {
     }
 
     private void initContent() {
-        mIvImagePostPicture.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-        Glide.with(this)
-                .load(R.drawable.loading)
-                .asGif()
-                .crossFade()
-                .into(mIvImagePostPicture);
-        mIvImagePostPicture.setScaleType(ImageView.ScaleType.FIT_CENTER);
+
     }
 
     private void initListener() {
@@ -218,31 +212,25 @@ public class aHomePostImageCaptionActivity extends AppCompatActivity {
 
             Log.d("image uri ",imageurl);
             Log.d("string val from file",String.valueOf(new File(imageurl)));
+
+            Glide.with(this)
+                    .load(R.drawable.loading)
+                    .asGif()
+                    .crossFade()
+                    .into(mIvImagePostPicture);
             mIvImagePostPicture.setScaleType(ImageView.ScaleType.FIT_CENTER);
             Glide.with(getApplicationContext())
                     .load(new File(imageurl))
                     .asBitmap()
-                    .centerCrop()
                     .into(new SimpleTarget<Bitmap>() {
                         @Override
                         public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
                             Bitmap resizeImage = PictureUtil.resizeImage(resource, 1080);
                             mIvImagePostPicture.setImageBitmap(resizeImage);
+                            base64pic = PictureUtil.bitmapToBase64(resizeImage, Bitmap.CompressFormat.JPEG,100);
                         }
                     })
             ;
-
-
-            Glide.with(getApplicationContext())
-                    .load(new File(imageurl))
-                    .asBitmap()
-                    .into(new SimpleTarget<Bitmap>() {
-                        @Override
-                        public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
-                            Bitmap resizeImage = PictureUtil.resizeImage(resource, 1080);
-                            base64pic = PictureUtil.bitmapToBase64(resizeImage, Bitmap.CompressFormat.JPEG,100);
-                        }
-                    });
         }
         else{
             finish();
