@@ -6,6 +6,7 @@
         android:id="@+id/action_settings"
         android:icon="@drawable/ic_action_notification"
         android:title="Notification"
+        android:iconTint="@color/androidGreen"
         app:showAsAction="always" />
 
 </menu>

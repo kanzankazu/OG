@@ -212,7 +212,6 @@ public class aHomePostImageCaptionActivity extends AppCompatActivity {
 
             Log.d("image uri ",imageurl);
             Log.d("string val from file",String.valueOf(new File(imageurl)));
-
             Glide.with(this)
                     .load(R.drawable.loading)
                     .asGif()
