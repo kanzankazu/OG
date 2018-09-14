@@ -17,10 +17,12 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.gandsoft.openguide.API.API;
 import com.gandsoft.openguide.API.APIrequest.HomeContent.HomeContentPostLikeRequestModel;
+import com.gandsoft.openguide.API.APIresponse.Event.EventTheEvent;
 import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentCommentModel;
 import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentPostLikeResponseModel;
 import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentResponseModel;
 import com.gandsoft.openguide.API.APIresponse.LocalBaseResponseModel;
+import com.gandsoft.openguide.API.APIresponse.UserData.UserListEventResponseModel;
 import com.gandsoft.openguide.IConfig;
 import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
@@ -42,14 +44,19 @@ public class PostRecViewAdapter extends RecyclerView.Adapter<PostRecViewAdapter.
     private List<HomeContentResponseModel> models = new ArrayList<>();
     private ArrayList<HomeContentCommentModel> dataParam = new ArrayList<>();
     private List<HomeContentPostLikeResponseModel> modelsnyaLike = new ArrayList<>();
-    private String eventId, accountId;
+    private String eventId;
+    private String accountId;
+    private EventTheEvent theEventModel;
+    private UserListEventResponseModel oneListEventModel;
 
-    public PostRecViewAdapter(FragmentActivity activity, List<HomeContentResponseModel> items, Context context, String eventId, String accountId) {
+    public PostRecViewAdapter(FragmentActivity activity, List<HomeContentResponseModel> items, Context context, String eventId, String accountId, EventTheEvent theEventModel, UserListEventResponseModel oneListEventModel) {
         this.activity = activity;
         this.context = context;
         models = items;
         this.eventId = eventId;
         this.accountId = accountId;
+        this.theEventModel = theEventModel;
+        this.oneListEventModel = oneListEventModel;
     }
 
     @Override
@@ -101,6 +108,14 @@ public class PostRecViewAdapter extends RecyclerView.Adapter<PostRecViewAdapter.
             holder.ivRVHomeContentLike.setImageResource(R.drawable.ic_love_fill);
         } else {
             holder.ivRVHomeContentLike.setImageResource(R.drawable.ic_love_empty);
+        }
+
+        if (Integer.parseInt(theEventModel.getCommentpost_status()) == 0) {
+            holder.llRVHomeContentComment.setVisibility(View.GONE);
+        }
+
+        if (Integer.parseInt(theEventModel.getDeletepost_status()) == 1 || model.getAccount_id().equalsIgnoreCase(accountId) || oneListEventModel.getRole_name().equalsIgnoreCase("ADMIN")) {
+            holder.llRVHomeContentRemove.setVisibility(View.VISIBLE);
         }
 
 
@@ -207,6 +222,7 @@ public class PostRecViewAdapter extends RecyclerView.Adapter<PostRecViewAdapter.
         private final ImageView ivRVRVHomeContentIcon;
         private final LinearLayout llRVHomeContentLike;
         private final LinearLayout llRVHomeContentComment;
+        private final LinearLayout llRVHomeContentRemove;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -220,6 +236,7 @@ public class PostRecViewAdapter extends RecyclerView.Adapter<PostRecViewAdapter.
             ivRVRVHomeContentIcon = (ImageView) itemView.findViewById(R.id.ivRVRVHomeContentIcon);
             llRVHomeContentLike = (LinearLayout) itemView.findViewById(R.id.llRVHomeContentLike);
             llRVHomeContentComment = (LinearLayout) itemView.findViewById(R.id.llRVHomeContentComment);
+            llRVHomeContentRemove = (LinearLayout) itemView.findViewById(R.id.llRVHomeContentRemove);
         }
     }
 

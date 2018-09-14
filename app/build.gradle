@@ -79,6 +79,8 @@ dependencies {
     /*implementation 'com.crashlytics.sdk.android:crashlytics:2.9.4'*/
     /**/
     implementation 'com.github.tajchert:nammu:1.2.0'
+    implementation 'com.karumi:dexter:4.2.0'
+    /**/
     implementation 'com.hbb20:ccp:2.1.2'
     implementation 'com.github.siyamed:android-shape-imageview:0.9.3@aar'
     implementation 'rongi.rotate-layout:rotate-layout:3.0.0'
