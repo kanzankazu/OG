@@ -1,18 +1,14 @@
 package com.gandsoft.openguide.activity.main.fragments;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
-
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
-import android.provider.ContactsContract;
 import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -33,7 +29,6 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -42,25 +37,23 @@ import com.gandsoft.openguide.API.APIrequest.HomeContent.HomeContentCheckinReque
 import com.gandsoft.openguide.API.APIrequest.HomeContent.HomeContentPostCaptionRequestModel;
 import com.gandsoft.openguide.API.APIrequest.HomeContent.HomeContentPostImageCaptionRequestModel;
 import com.gandsoft.openguide.API.APIrequest.HomeContent.HomeContentRequestModel;
-import com.gandsoft.openguide.API.APIrequest.UserUpdate.UserUpdateRequestModel;
 import com.gandsoft.openguide.API.APIresponse.Event.EventTheEvent;
-import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentCheckinResponseModel;
 import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentResponseModel;
 import com.gandsoft.openguide.API.APIresponse.LocalBaseResponseModel;
+import com.gandsoft.openguide.API.APIresponse.UserData.UserListEventResponseModel;
 import com.gandsoft.openguide.API.APIresponse.UserData.UserWalletDataResponseModel;
 import com.gandsoft.openguide.IConfig;
 import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
 import com.gandsoft.openguide.activity.main.adapter.PostRecViewAdapter;
-import com.gandsoft.openguide.activity.main.fragments.aHomeActivityInFragment.aHomePostCommentActivity;
 import com.gandsoft.openguide.activity.main.fragments.aHomeActivityInFragment.aHomePostImageCaptionActivity;
 import com.gandsoft.openguide.database.SQLiteHelper;
+import com.gandsoft.openguide.support.NetworkUtil;
 import com.gandsoft.openguide.support.SessionUtil;
 import com.gandsoft.openguide.support.SystemUtil;
 import com.squareup.picasso.Picasso;
 
 import org.sufficientlysecure.htmltextview.HtmlTextView;
-import org.w3c.dom.Text;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -68,7 +61,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -109,7 +101,7 @@ public class aHomeFragment extends Fragment {
 
     //Post
     private int i = 0;
-    private TextView homeTVOpenCamerafvbi,homeTVOpenGalleryfvbi;
+    private TextView homeTVOpenCamerafvbi, homeTVOpenGalleryfvbi;
     private String base64pic = "";
     private LinearLayout llLoadMode2fvbi;
     private int heightRecycle = 0;
@@ -117,7 +109,11 @@ public class aHomeFragment extends Fragment {
     private UserWalletDataResponseModel walletData;
 
     private ImageView homeIVShareSomethingfvbi2;
-    public aHomeFragment() { }
+    private EventTheEvent theEventModel = null;
+    private UserListEventResponseModel oneListEventModel = null;
+
+    public aHomeFragment() {
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -154,10 +150,14 @@ public class aHomeFragment extends Fragment {
         homeBTapCheckInfvbi = (Button) view.findViewById(R.id.homeBTapCheckIn);
         recyclerView = (RecyclerView) view.findViewById(R.id.homeRVEvent);
         llLoadModefvbi = (LinearLayout) view.findViewById(R.id.llLoadMode);
+        llLoadMode2fvbi = (LinearLayout) view.findViewById(R.id.llLoadMode2);
         homeLLWriteSomethingfvbi = (LinearLayout) view.findViewById(R.id.homeLLWriteSomething);
     }
 
     private void initContent(ViewGroup container) {
+        theEventModel = db.getTheEvent(eventId);
+        oneListEventModel = db.getOneListEvent(eventId);
+
         updateUi();//init content
 
         /*Log.d("Lihat", "initContent aHomeFragment : " + "\\");// = \
@@ -177,7 +177,7 @@ public class aHomeFragment extends Fragment {
             homeBTapCheckInfvbi.setVisibility(View.GONE);
         }
 
-        adapter = new PostRecViewAdapter(getActivity(), menuUi, getContext(), eventId, accountId);
+        adapter = new PostRecViewAdapter(getActivity(), menuUi, getContext(), eventId, accountId, theEventModel,oneListEventModel);
         recyclerView.setNestedScrollingEnabled(false);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -200,9 +200,9 @@ public class aHomeFragment extends Fragment {
                 startActivityForResult(intent, 2);
             }
         });
-        homeIVShareSomethingfvbi.setOnClickListener(new View.OnClickListener(){
-            public void onClick(View v){
-                    postCaption();
+        homeIVShareSomethingfvbi.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                postCaption();
             }
         });
 
@@ -227,18 +227,28 @@ public class aHomeFragment extends Fragment {
                 }
                 if (scrollY == (v.getChildAt(0).getMeasuredHeight() - v.getMeasuredHeight())) {
                     if (!last_data) {
-                        callHomeContentAPILoadMore();
+
+                        llLoadMode2fvbi.setVisibility(View.VISIBLE);
+
+                        new Handler().postDelayed(new Runnable() {
+                            public void run() {
+                                //code here
+                                callHomeContentAPILoadMore();
+                            }
+                        }, 1000);
+
                     } else {
                         Snackbar.make(getActivity().findViewById(android.R.id.content), "Sudah tidak ada data", Snackbar.LENGTH_LONG).show();
                     }
                 }
 
-                int measuredHeight = homeIVEventBackgroundfvbi.getMeasuredHeight();
+                /*int measuredHeight = homeIVEventBackgroundfvbi.getMeasuredHeight();
                 int measuredHeight1 = homeLLWriteSomethingfvbi.getMeasuredHeight();
                 int measuredHeight2 = 0;
-                for (int i = 0; i < 4; i++) {
+                for (int i = 0; i < recyclerView.getChildCount(); i++) {
                     measuredHeight2 = measuredHeight2 + recyclerView.getChildAt(i).getMeasuredHeight();
                 }
+                heightRecycle = measuredHeight + measuredHeight1 + measuredHeight2;*/
 
                 /*if (scrollY > measuredHeight + measuredHeight1 + measuredHeight2) {
                     homeFABHomeUpfvbi.setVisibility(View.VISIBLE);
@@ -250,7 +260,12 @@ public class aHomeFragment extends Fragment {
         homeBTapCheckInfvbi.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                postCheckIn();
+                if (NetworkUtil.isConnected(getActivity())) {
+                    postCheckIn();
+                } else {
+                    Snackbar.make(getActivity().findViewById(android.R.id.content), "Check Your Connection", Snackbar.LENGTH_LONG).show();
+                }
+
             }
         });
         homeFABHomeUpfvbi.setOnClickListener(new View.OnClickListener() {
@@ -284,12 +299,13 @@ public class aHomeFragment extends Fragment {
                 if (response.isSuccessful()) {
                     List<HomeContentResponseModel> models = response.body();
                     adapter.setData(models);
-                    if (models.size() >= 10) {
+                    if (models.size() == 10) {
                         last_data = false;
-                        last_id = models.get(9).getId();
-                        last_date = models.get(9).getDate_created();
+                        last_id = models.get(models.size() - 1).getId();
+                        last_date = models.get(models.size() - 1).getDate_created();
                         first_id = models.get(0).getId();
                     } else {
+                        Snackbar.make(getActivity().findViewById(android.R.id.content), "Data Terakhir", Snackbar.LENGTH_LONG).show();
                         last_data = true;
                         last_id = "";
                         last_date = "";
@@ -318,66 +334,55 @@ public class aHomeFragment extends Fragment {
 
     private void callHomeContentAPILoadMore() {
 
-        llLoadModefvbi.setVisibility(View.VISIBLE);
+        HomeContentRequestModel model = new HomeContentRequestModel();
+        model.setPhonenumber(accountId);
+        model.setId_event(eventId);
+        model.setDbver(String.valueOf(IConfig.DB_Version));
+        model.setKondisi("down");
+        model.setLast_date(last_date);
+        model.setLastid(last_id);
+        model.setFirstid(first_id);
 
-        new Handler().postDelayed(new Runnable() {
-            public void run() {
-                //code here
-                homeNSVHomefvbi.fullScroll(View.FOCUS_DOWN);
-            }
-        }, 500);
-
-        new Handler().postDelayed(new Runnable() {
-            public void run() {
-                //code here
-                HomeContentRequestModel model = new HomeContentRequestModel();
-                model.setPhonenumber(accountId);
-                model.setId_event(eventId);
-                model.setDbver(String.valueOf(IConfig.DB_Version));
-                model.setKondisi("down");
-                model.setLast_date(last_date);
-                model.setLastid(last_id);
-                model.setFirstid(first_id);
-
-                API.doHomeContentDataRet(model).enqueue(new Callback<List<HomeContentResponseModel>>() {
-                    @Override
-                    public void onResponse(Call<List<HomeContentResponseModel>> call, Response<List<HomeContentResponseModel>> response) {
-                        llLoadModefvbi.setVisibility(View.GONE);
-                        if (response.isSuccessful()) {
-                            List<HomeContentResponseModel> models = response.body();
-                            adapter.addDatas(models);
-                            if (models.size() >= 10) {
-                                last_data = false;
-                                last_id = models.get(9).getId();
-                                last_date = models.get(9).getDate_created();
-                                first_id = models.get(0).getId();
-                            } else {
-                                last_data = true;
-                                last_id = "";
-                                last_date = "";
-                                first_id = "";
-                            }
-                            for (int i1 = 0; i1 < models.size(); i1++) {
-                                HomeContentResponseModel responseModel = models.get(i1);
-                                if (db.isDataTableValueMultipleNull(SQLiteHelper.TableHomeContent, SQLiteHelper.Key_HomeContent_EventId, SQLiteHelper.Key_HomeContent_id, eventId, responseModel.getId())) {
-                                    db.saveHomeContent(responseModel, eventId);
-                                } else {
-                                    db.updateHomeContent(responseModel, eventId);
-                                }
-                            }
+        API.doHomeContentDataRet(model).enqueue(new Callback<List<HomeContentResponseModel>>() {
+            @Override
+            public void onResponse(Call<List<HomeContentResponseModel>> call, Response<List<HomeContentResponseModel>> response) {
+                llLoadMode2fvbi.setVisibility(View.GONE);
+                if (response.isSuccessful()) {
+                    List<HomeContentResponseModel> models = response.body();
+                    adapter.addDatas(models);
+                    if (models.size() == 10) {
+                        last_data = false;
+                        last_id = models.get(models.size() - 1).getId();
+                        last_date = models.get(models.size() - 1).getDate_created();
+                        first_id = models.get(0).getId();
+                    } else {
+                        Snackbar.make(getActivity().findViewById(android.R.id.content), "Data Terakhir", Snackbar.LENGTH_SHORT).show();
+                        last_data = true;
+                        last_id = "";
+                        last_date = "";
+                        first_id = "";
+                    }
+                    for (int i1 = 0; i1 < models.size(); i1++) {
+                        HomeContentResponseModel responseModel = models.get(i1);
+                        if (db.isDataTableValueMultipleNull(SQLiteHelper.TableHomeContent, SQLiteHelper.Key_HomeContent_EventId, SQLiteHelper.Key_HomeContent_id, eventId, responseModel.getId())) {
+                            db.saveHomeContent(responseModel, eventId);
                         } else {
-                            Snackbar.make(getActivity().findViewById(android.R.id.content), response.message(), Snackbar.LENGTH_LONG).show();
+                            db.updateHomeContent(responseModel, eventId);
                         }
                     }
-
-                    @Override
-                    public void onFailure(Call<List<HomeContentResponseModel>> call, Throwable t) {
-                        llLoadModefvbi.setVisibility(View.GONE);
-                        Snackbar.make(getActivity().findViewById(android.R.id.content), t.getMessage(), Snackbar.LENGTH_LONG).show();
-                    }
-                });
+                } else {
+                    Snackbar.make(getActivity().findViewById(android.R.id.content), response.message(), Snackbar.LENGTH_LONG).show();
+                }
             }
-        }, 2000);
+
+            @Override
+            public void onFailure(Call<List<HomeContentResponseModel>> call, Throwable t) {
+                llLoadMode2fvbi.setVisibility(View.GONE);
+                Snackbar.make(getActivity().findViewById(android.R.id.content), t.getMessage(), Snackbar.LENGTH_LONG).show();
+            }
+        });
+
+
     }
 
     private void deleteImage(String eventIds) {
@@ -393,29 +398,32 @@ public class aHomeFragment extends Fragment {
     }
 
     private void updateUi() {
-        EventTheEvent model = db.getTheEvent(eventId);
-        Log.d("Lihat", "updateUi aHomeFragment getAddpost_status : " + model.getAddpost_status());
-        Log.d("Lihat", "updateUi aHomeFragment getDeletepost_status : " + model.getDeletepost_status());
-        Log.d("Lihat", "updateUi aHomeFragment getCommentpost_status : " + model.getCommentpost_status());
-        if (model != null) {
-            homeHtmlTVTitleEventfvbi.setHtml(model.getEvent_name());
-            homeTVTitleEventfvbi.setText(Html.fromHtml(model.getEvent_name()));
+        Log.d("Lihat", "updateUi aHomeFragment getAddpost_status : " + theEventModel.getAddpost_status());
+        Log.d("Lihat", "updateUi aHomeFragment getDeletepost_status : " + theEventModel.getDeletepost_status());
+        Log.d("Lihat", "updateUi aHomeFragment getCommentpost_status : " + theEventModel.getCommentpost_status());
+        if (theEventModel != null) {
+            homeHtmlTVTitleEventfvbi.setHtml(theEventModel.getEvent_name());
+            homeTVTitleEventfvbi.setText(Html.fromHtml(theEventModel.getEvent_name()));
             homeTVDescEventfvbi.setText("" +
-                    "" + Html.fromHtml(model.getEvent_location()) + "\n" +
-                    "" + model.getDate_event() + "\n" +
-                    "" + Html.fromHtml(model.getWeather()) + "");
+                    "" + Html.fromHtml(theEventModel.getEvent_location()) + "\n" +
+                    "" + theEventModel.getDate_event() + "\n" +
+                    "" + Html.fromHtml(theEventModel.getWeather()) + "");
             Picasso.with(getActivity())
-                    .load(model.getLogo())
+                    .load(theEventModel.getLogo())
                     .placeholder(R.drawable.template_account_og)
                     .error(R.drawable.template_account_og)
                     .into(homeIVEventfvbi);
             Glide.with(getActivity())
-                    .load(model.getBackground())
+                    .load(theEventModel.getBackground())
                     .placeholder(R.drawable.template_account_og)
                     .diskCacheStrategy(DiskCacheStrategy.NONE)
                     .skipMemoryCache(true)
                     .error(R.drawable.template_account_og)
                     .into(homeIVEventBackgroundfvbi);
+
+            if (Integer.parseInt(theEventModel.getAddpost_status()) == 0) {
+                homeLLWriteSomethingfvbi.setVisibility(View.GONE);
+            }
         } else {
             Snackbar.make(getActivity().findViewById(android.R.id.content), "data kosong", Snackbar.LENGTH_LONG).setAction("Action", null).show();
         }
@@ -573,34 +581,33 @@ public class aHomeFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 1 && resultCode == RESULT_OK && null !=data) {
+        if (requestCode == 1 && resultCode == RESULT_OK && null != data) {
             Bitmap thumbnail = null;
             try {
                 thumbnail = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), imageUri);
                 String imageurl = String.valueOf(imageUri);
-                Log.d("image uri ",imageurl);
-                createDirectoryAndSaveFile(thumbnail,"temp.jpg");
+                Log.d("image uri ", imageurl);
+                createDirectoryAndSaveFile(thumbnail, "temp.jpg");
 
                 ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
                 thumbnail.compress(Bitmap.CompressFormat.PNG, 10, byteArrayOutputStream);
                 byte[] byteArray = byteArrayOutputStream.toByteArray();
 
                 base64pic = Base64.encodeToString(byteArray, Base64.DEFAULT);
-                Log.d("bes64 ",base64pic);
+                Log.d("bes64 ", base64pic);
                 startActivity(new Intent(getActivity(), aHomePostImageCaptionActivity.class)
-                            .putExtra("base64", base64pic));
+                        .putExtra("base64", base64pic));
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }
-        else if (requestCode == 2 && resultCode == RESULT_OK) {
-                onSelectGallery(data);
+        } else if (requestCode == 2 && resultCode == RESULT_OK) {
+            onSelectGallery(data);
         }
 
     }
 
     private void createDirectoryAndSaveFile(Bitmap imageToSave, String fileName) {
-        File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/.Gandsoft/" + eventId+"/"+ fileName);
+        File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/.Gandsoft/" + eventId + "/" + fileName);
         if (file.exists()) {
             file.delete();
         }
@@ -614,7 +621,7 @@ public class aHomeFragment extends Fragment {
         }
     }
 
-    private void onSelectGallery(Intent data){
+    private void onSelectGallery(Intent data) {
         Uri selectedImageUri = data.getData();
         String[] projection = {MediaStore.MediaColumns.DATA};
         @SuppressWarnings("deprecation")
@@ -641,7 +648,7 @@ public class aHomeFragment extends Fragment {
         byte[] byteArray = byteArrayOutputStream.toByteArray();
         base64pic = Base64.encodeToString(byteArray, Base64.DEFAULT);
 
-        Log.d("bes64 ",base64pic);
+        Log.d("bes64 ", base64pic);
     }
 }
 

@@ -21,4 +21,6 @@ public interface ISeasonConfig {
 
     String INTENT_PARAM = "SIAUL1212";
     String INTENT_PARAM2 = "SAIUL1313";
+
+
 }
