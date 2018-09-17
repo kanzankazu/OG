@@ -1,6 +1,5 @@
 package com.gandsoft.openguide.activity.infomenu;
 
-import android.os.BadParcelableException;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -30,26 +29,17 @@ public class cInboxActivity extends AppCompatActivity {
     private String accountId,eventId;
     private Toolbar toolbar;
     private ActionBar ab;
-    private String title;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_info_c_inbox);
-        try {
-            title = getIntent().getStringExtra("TITLE");
-        }catch (Exception e){
-            title = "Inbox";
-        }finally {
-            title = "Inbox";
-        }
 
         initCheck();
         initComponent();
         initContent();
         initListener();
     }
-
 
     public void initCheck() {
         if (SessionUtil.checkIfExist(ISeasonConfig.KEY_ACCOUNT_ID)) {
@@ -68,7 +58,7 @@ public class cInboxActivity extends AppCompatActivity {
     private void initContent() {
         setSupportActionBar(toolbar);
         ab = getSupportActionBar();
-        ab.setTitle(title);
+        ab.setTitle("Inbox");
 
         ArrayList<EventCommitteeNote> models = db.getCommiteNote(eventId);
         adapter = new InboxRecViewAdapter(this, models);

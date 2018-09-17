@@ -1,5 +1,6 @@
 package com.gandsoft.openguide.activity.infomenu.gallery2;
 
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -10,7 +11,10 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.SimpleTarget;
 import com.gandsoft.openguide.R;
+import com.gandsoft.openguide.support.PictureUtil;
 import com.jsibbold.zoomage.ZoomageView;
 
 public class GalleryDetailPagerFragment extends Fragment {
@@ -101,14 +105,20 @@ public class GalleryDetailPagerFragment extends Fragment {
         tvDetailGalleryCaptionfvbi.setText(caption);
 
         Glide.with(getActivity())
-                .load(image_posted)
-                .thumbnail(0.1f)
-                .into(zivDetailGalleryfvbi);
-
-        Glide.with(getActivity())
                 .load(image_icon)
                 .thumbnail(0.1f)
                 .into(ivDetailGalleryIconfvbi);
+
+        Glide.with(getActivity())
+                .load(image_posted)
+                .asBitmap()
+                .into(new SimpleTarget<Bitmap>() {
+                    @Override
+                    public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+                        Bitmap resizeImage = PictureUtil.resizeImage(resource, 720);
+                        zivDetailGalleryfvbi.setImageBitmap(resizeImage);
+                    }
+                });
 
         if (Integer.parseInt(status_like) != 0) {
             ivDetailGalleryLikefvbi.setImageResource(R.drawable.ic_love_fill);

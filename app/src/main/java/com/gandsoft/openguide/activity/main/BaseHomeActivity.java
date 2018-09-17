@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.os.Handler;
-import android.provider.MediaStore;
 import android.support.design.widget.TabLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
@@ -19,16 +18,11 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import com.gandsoft.openguide.API.APIresponse.Event.EventCommitteeNote;
-import com.gandsoft.openguide.API.APIresponse.Event.EventTheEvent;
 import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
 import com.gandsoft.openguide.activity.ChangeEventActivity;
-import com.gandsoft.openguide.activity.infomenu.cInboxActivity;
 import com.gandsoft.openguide.database.SQLiteHelper;
 import com.gandsoft.openguide.support.SessionUtil;
-
-import java.util.ArrayList;
 
 public class BaseHomeActivity extends AppCompatActivity {
     SQLiteHelper db = new SQLiteHelper(this);
@@ -150,35 +144,16 @@ public class BaseHomeActivity extends AppCompatActivity {
         mPager.setOffscreenPageLimit(4);
         mPager.setCurrentItem(0);
     }
-    private int checkNotif(){
-        int a=0;
-        ArrayList<EventCommitteeNote> model = db.getCommiteNote(eventId);
-        for(int i=0;i<model.size();i++){
-            if(model.get(i).getHas_been_opened().equals("1")){
-                a=1;
-            };
-        }
-        return a;
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        if(checkNotif()==1) {
-            inflater.inflate(R.menu.menu_main2, menu);
-        }
-        else{
-            inflater.inflate(R.menu.menu_main, menu);
-        }
+        inflater.inflate(R.menu.menu_main, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        String title = "Notification";
-        Intent intent = new Intent(this, cInboxActivity.class);
-        intent.putExtra("TITLE",title);
-        startActivity(intent);
         return super.onOptionsItemSelected(item);
     }
 
