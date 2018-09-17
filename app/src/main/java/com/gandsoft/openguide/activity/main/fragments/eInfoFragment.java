@@ -115,6 +115,7 @@ public class eInfoFragment extends Fragment implements InfoListViewAdapter.ListA
             int surrounding_area = ListArrayUtil.getPosStringInList(list, "Surrounding Area");
             s.add(surrounding_area);
         }
+
         int[] ints = ListArrayUtil.convertListIntegertToIntArray(s);
 
         for (int i = 0; i < infoMenu.length; i++) {
@@ -122,9 +123,11 @@ public class eInfoFragment extends Fragment implements InfoListViewAdapter.ListA
                 listviewModels.add(new InfoListviewModel(infoMenu[i], infoPic[i]));
             }
         }
+
         adapter = new InfoListViewAdapter(getActivity(), listviewModels, this);
         rvMenufvbi.setNestedScrollingEnabled(false);
         rvMenufvbi.setAdapter(adapter);
+
         rvMenufvbi.setLayoutManager(new LinearLayoutManager(getActivity()));
 
     }
@@ -153,6 +156,7 @@ public class eInfoFragment extends Fragment implements InfoListViewAdapter.ListA
                         .diskCacheStrategy(DiskCacheStrategy.NONE)
                         .skipMemoryCache(true)
                         .into(ivInfoUserImagefvbi);
+
 
             }
         }

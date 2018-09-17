@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/llListInfo"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/background_middle"
     android:orientation="horizontal"
+    android:weightSum="10"
     android:paddingBottom="15dp"
     android:paddingLeft="20dp"
     android:paddingRight="20dp"
@@ -13,17 +15,32 @@
     <ImageView
         android:id="@+id/ivListInfo"
         android:layout_width="wrap_content"
-        android:layout_height="30dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="2"
+        android:paddingRight="20dp"
+        android:layout_gravity="center_vertical"
         android:backgroundTint="@color/colorPrimary"
-        android:paddingEnd="20dp"
-        android:src="@drawable/ic_arrow_back" />
+        android:src="@drawable/ic_arrow_back"
+        android:contentDescription="TODO" />
 
     <TextView
         android:id="@+id/tvListInfo"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="30dp"
         android:gravity="center|left"
+        android:layout_gravity="center_vertical"
+        android:layout_weight="7"
         android:text="kanzan"
         android:textColor="@color/colorPrimary" />
+
+    <ImageView
+        android:id="@+id/ivListInfoAlert"
+        android:layout_width="10dp"
+        android:layout_height="10dp"
+        android:layout_weight="1"
+        android:visibility="gone"
+        android:layout_gravity="center_vertical"
+        android:background="@android:color/holo_red_dark"
+/>
 
 </LinearLayout>

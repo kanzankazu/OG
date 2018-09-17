@@ -62,6 +62,7 @@ public class BaseHomeActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_base_home);
+        db = new SQLiteHelper(this);
 
         if (SessionUtil.checkIfExist(ISeasonConfig.KEY_ACCOUNT_ID)) {
             accountId = SessionUtil.getStringPreferences(ISeasonConfig.KEY_ACCOUNT_ID, null);
@@ -69,9 +70,9 @@ public class BaseHomeActivity extends AppCompatActivity {
         if (SessionUtil.checkIfExist(ISeasonConfig.KEY_EVENT_ID)) {
             eventId = SessionUtil.getStringPreferences(ISeasonConfig.KEY_EVENT_ID, null);
         }
-//        if (!db.isFirstIn(eventId)) {
+        if (!db.isFirstIn(eventId)) {
             showFirstDialogEvent();
- //       }
+        }
 
         initComponent();
         initContent();
@@ -138,6 +139,7 @@ public class BaseHomeActivity extends AppCompatActivity {
         declineButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                db.updateOneKey(SQLiteHelper.TableListEvent, SQLiteHelper.KEY_ListEvent_eventId, eventId, SQLiteHelper.KEY_ListEvent_IsFirstIn, "true");
                 dialog.dismiss();
             }
         });
@@ -192,10 +194,10 @@ public class BaseHomeActivity extends AppCompatActivity {
     }
     int a=0;
     private int checkNotif(){
-        ArrayList<EventCommitteeNote> model = db.getCommiteNote(eventId);
-        for(int i=0;i<model.size();i++){
-            if(model.get(i).getHas_been_opened().equals("1")){
-                a=1;
+        ArrayList<EventCommitteeNote> wew = db.getCommiteNote(eventId);
+        for(int i=0;i<wew.size();i++){
+            if(wew.get(i).getHas_been_opened().equals("0")){
+                a++;
             };
         }
         return a;
@@ -204,7 +206,7 @@ public class BaseHomeActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        if(checkNotif()==1) {
+        if(checkNotif()>0) {
             inflater.inflate(R.menu.menu_main2, menu);
         }
         else{
