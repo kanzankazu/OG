@@ -1118,31 +1118,6 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         return modelList;
     }
 
-    public UserListEventResponseModel getOneListEvent(String eventId) {
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.query(TableListEvent, null, KEY_ListEvent_eventId + " = ? ", new String[]{eventId}, null, null, KEY_ListEvent_startDate + " DESC");
-        if (cursor != null)
-            cursor.moveToFirst();
-
-        UserListEventResponseModel model = new UserListEventResponseModel();
-        model.setNumber(cursor.getInt(cursor.getColumnIndex(KEY_ListEvent_No)));
-        model.setEvent_id(cursor.getString(cursor.getColumnIndex(KEY_ListEvent_eventId)));
-        model.setAccountId(cursor.getString(cursor.getColumnIndex(KEY_ListEvent_accountId)));
-        model.setStart_date(cursor.getString(cursor.getColumnIndex(KEY_ListEvent_startDate)));
-        model.setLogo(cursor.getString(cursor.getColumnIndex(KEY_ListEvent_logo)));
-        model.setLogo_local(cursor.getString(cursor.getColumnIndex(KEY_ListEvent_logo_local)));
-        model.setTitle(cursor.getString(cursor.getColumnIndex(KEY_ListEvent_title)));
-        model.setGroup_company(cursor.getString(cursor.getColumnIndex(KEY_ListEvent_groupCompany)));
-        model.setStatus(cursor.getString(cursor.getColumnIndex(KEY_ListEvent_status)));
-        model.setBackground(cursor.getString(cursor.getColumnIndex(KEY_ListEvent_background)));
-        model.setBackground_local(cursor.getString(cursor.getColumnIndex(KEY_ListEvent_background_local)));
-        model.setGroup_code(cursor.getString(cursor.getColumnIndex(KEY_ListEvent_groupCode)));
-        model.setRole_name(cursor.getString(cursor.getColumnIndex(KEY_ListEvent_roleName)));
-        model.setDate(cursor.getString(cursor.getColumnIndex(KEY_ListEvent_date)));
-        // return model
-        return model;
-    }
-
     public ArrayList<UserWalletDataResponseModel> getListWalletData(String eventId) {
         ArrayList<UserWalletDataResponseModel> modelList = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();

@@ -1,6 +1,5 @@
 package com.gandsoft.openguide.activity;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -8,10 +7,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -65,7 +61,6 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class ChangeEventActivity extends AppCompatActivity implements ChangeEventPastHook {
-    private static final int RP_ACCESS = 123;
     SQLiteHelper db = new SQLiteHelper(this);
 
     private ImageView ceIVUserPicfvbi;
@@ -93,77 +88,9 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
             accountid = SessionUtil.getStringPreferences(ISeasonConfig.KEY_ACCOUNT_ID, null);
         }
 
-        initPermission();
-
-    }
-
-    private void initPermission() {
-        // cek apakah sudah memiliki permission untuk access fine location
-        if (
-                ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
-                        ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ||
-                        ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED
-                ) {
-            // cek apakah perlu menampilkan info kenapa membutuhkan access fine location
-            if (
-                    ActivityCompat.shouldShowRequestPermissionRationale(ChangeEventActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) ||
-                            ActivityCompat.shouldShowRequestPermissionRationale(ChangeEventActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) ||
-                            ActivityCompat.shouldShowRequestPermissionRationale(ChangeEventActivity.this, Manifest.permission.READ_PHONE_STATE)
-                    ) {
-                String[] perm = {
-                        Manifest.permission.ACCESS_FINE_LOCATION,
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                        Manifest.permission.READ_PHONE_STATE
-                };
-                ActivityCompat.requestPermissions(ChangeEventActivity.this, perm, RP_ACCESS);
-            } else {
-                // request permission untuk access fine location
-                String[] perm = {
-                        Manifest.permission.ACCESS_FINE_LOCATION,
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                        Manifest.permission.READ_PHONE_STATE
-                };
-                ActivityCompat.requestPermissions(ChangeEventActivity.this, perm, RP_ACCESS);
-            }
-        } else {
-            // permission access fine location didapat
-            // Toast.makeText(ChangeEventActivity.this, "Yay, has permission", Toast.LENGTH_SHORT).show();
-            initComponent();
-            initContent();
-            initListener();
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        switch (requestCode) {
-            case RP_ACCESS: //private final int = 1
-                boolean isPerpermissionForAllGranted = false;
-                if (grantResults.length > 0 && permissions.length == grantResults.length) {
-                    for (int i = 0; i < permissions.length; i++) {
-                        if (grantResults[i] == PackageManager.PERMISSION_GRANTED) {
-                            isPerpermissionForAllGranted = true;
-                        } else {
-                            isPerpermissionForAllGranted = false;
-                        }
-                    }
-                    Log.e("value", "Permission Granted, Now you can use local drive .");
-                } else {
-                    isPerpermissionForAllGranted = true;
-                    Log.e("value", "Permission Denied, You cannot use local drive .");
-                }
-
-                if (!isPerpermissionForAllGranted) {
-                    finish();
-                    Snackbar.make(findViewById(android.R.id.content), "Izin tidak di berikan", Snackbar.LENGTH_LONG).show();
-                } else {
-                    initComponent();
-                    initContent();
-                    initListener();
-                }
-                break;
-        }
+        initComponent();
+        initContent();
+        initListener();
     }
 
     private void initComponent() {

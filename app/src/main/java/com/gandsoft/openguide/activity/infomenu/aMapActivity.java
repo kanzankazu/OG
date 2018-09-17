@@ -1,26 +1,21 @@
 package com.gandsoft.openguide.activity.infomenu;
 
 import android.Manifest;
-import android.annotation.TargetApi;
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
-import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -56,11 +51,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 
-import pl.tajchert.nammu.Nammu;
-import pl.tajchert.nammu.PermissionCallback;
-
 public class aMapActivity extends LocalBaseActivity implements OnMapReadyCallback {
-    private static final int ACTION_MANAGE_OVERLAY_PERMISSION_REQUEST_CODE = 5469;
     SQLiteHelper db = new SQLiteHelper(this);
 
     private static final int ALL_PERMISSION = 1;
@@ -88,9 +79,6 @@ public class aMapActivity extends LocalBaseActivity implements OnMapReadyCallbac
         accountId = SessionUtil.getStringPreferences(ISeasonConfig.KEY_ACCOUNT_ID, null);
         eventId = SessionUtil.getStringPreferences(ISeasonConfig.KEY_EVENT_ID, null);
 
-        Nammu.init(this);
-
-        initPermission();
         initMaps();
         initComponent();
         initContent();
@@ -320,23 +308,5 @@ public class aMapActivity extends LocalBaseActivity implements OnMapReadyCallbac
                 marker.icon(icon);
             }
         });
-    }
-
-    private void initPermission() {
-        if (!Nammu.checkPermission(Manifest.permission.ACCESS_FINE_LOCATION)) {
-            Nammu.askForPermission(this, Manifest.permission.ACCESS_FINE_LOCATION, new PermissionCallback() {
-                @Override
-                public void permissionGranted() {
-                    Snackbar.make(findViewById(android.R.id.content), "Diberikan Ada akses", Snackbar.LENGTH_LONG).show();
-                }
-
-                @Override
-                public void permissionRefused() {
-                    Snackbar.make(findViewById(android.R.id.content), "Tidak Diberikan Ada akses", Snackbar.LENGTH_LONG).show();
-                }
-            });
-        } else {
-            Snackbar.make(findViewById(android.R.id.content), "Sudah Ada akses", Snackbar.LENGTH_LONG).show();
-        }
     }
 }

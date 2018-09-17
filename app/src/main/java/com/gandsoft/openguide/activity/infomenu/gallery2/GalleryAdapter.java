@@ -2,7 +2,6 @@ package com.gandsoft.openguide.activity.infomenu.gallery2;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -14,7 +13,6 @@ import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.request.Request;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.gandsoft.openguide.API.APIresponse.Gallery.GalleryResponseModel;
@@ -53,17 +51,10 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
         GalleryResponseModel model = models.get(position);
         Glide.with(activity)
                 .load(model.getImage_posted())
-                .asBitmap()
-                .skipMemoryCache(true)
-                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .dontAnimate()
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .centerCrop()
-                .into(new SimpleTarget<Bitmap>() {
-                    @Override
-                    public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
-                        Bitmap resizeImage = PictureUtil.resizeImage(resource, 500);
-                        holder.mImg.setImageBitmap(resizeImage);
-                    }
-                });
+                .into(holder.mImg);
         Glide.with(activity)
                 .load(model.getImage_posted())
                 .asBitmap()
@@ -120,8 +111,8 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
             savedImagePath = imageFile.getAbsolutePath();
             try {
                 OutputStream fOut = new FileOutputStream(imageFile);
-                Bitmap storedata = PictureUtil.resizeImage(image, 500);
-                storedata.compress(Bitmap.CompressFormat.JPEG, 50, fOut);
+                Bitmap storedata = PictureUtil.resizeImage(image, 720);
+                storedata.compress(Bitmap.CompressFormat.JPEG, 72, fOut);
                 fOut.close();
             } catch (Exception e) {
                 e.printStackTrace();
