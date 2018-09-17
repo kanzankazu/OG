@@ -55,6 +55,7 @@
             android:layout_height="wrap_content"
             android:animateLayoutChanges="true"
             android:gravity="center"
+            android:weightSum="100"
             android:orientation="vertical">
 
             <LinearLayout
@@ -114,31 +115,31 @@
                     <ImageView
                         android:id="@+id/ivWrapPic"
                         android:layout_width="match_parent"
-                        android:layout_height="500dp"
-                        android:visibility="gone"
-                        android:scaleType="centerCrop"/>
+                        android:layout_height="wrap_content"
+                        android:scaleType="fitCenter"/>
 
                     <LinearLayout
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:animateLayoutChanges="true"
-                        android:gravity="center"
+                        android:gravity="start"
                         android:layout_marginTop="10dp"
                         android:orientation="horizontal">
 
                         <ImageButton
                             android:id="@+id/ibAccCamera"
-                            android:layout_width="14dp"
-                            android:layout_height="match_parent"
-                            android:scaleType="centerInside"
-                            android:src="@drawable/ic_profile_camera_small"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/ic_action_camera"
+                            android:background="@drawable/flag_transparent"
                             android:clickable="true"/>
 
                         <TextView
                             android:id="@+id/tvAccSelPic"
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
+                            android:layout_height="match_parent"
                             android:text="Select Picture"
+                            android:gravity="center"
                             android:layout_marginStart="10dp"
                             android:layout_marginEnd="10dp"
                             android:selectAllOnFocus="true"
@@ -186,8 +187,6 @@
                         android:selectAllOnFocus="true"
                         android:textColor="@color/colorPrimary"
                         android:textSize="12dp" />
-
-
                 </LinearLayout>
 
                 <!--Borderspace-->
@@ -306,10 +305,10 @@
 
                         <ImageButton
                             android:id="@+id/ibAccCalendar"
-                            android:layout_width="14dp"
-                            android:layout_height="match_parent"
-                            android:scaleType="centerInside"
-                            android:src="@drawable/ic_profile_calendar_small"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/ic_account_calendar"
+                            android:background="@drawable/flag_transparent"
                             android:clickable="true"/>
 
                         <TextView
