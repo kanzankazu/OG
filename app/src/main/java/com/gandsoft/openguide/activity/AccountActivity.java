@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
+import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -41,6 +42,9 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.SimpleTarget;
 import com.gandsoft.openguide.API.API;
 import com.gandsoft.openguide.API.APIrequest.UserUpdate.UserUpdateRequestModel;
 import com.gandsoft.openguide.API.APIresponse.UserData.UserDataResponseModel;
@@ -48,6 +52,7 @@ import com.gandsoft.openguide.API.APIresponse.UserUpdate.UserUpdateResponseModel
 import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
 import com.gandsoft.openguide.database.SQLiteHelper;
+import com.gandsoft.openguide.support.PictureUtil;
 import com.gandsoft.openguide.support.SessionUtil;
 import com.google.firebase.auth.FirebaseAuth;
 
@@ -82,26 +87,50 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
     private ImageView ivWrapPicfvbi;
 
     private boolean isNewUser = false;
-    private String accountId;
+    private String accountId,eventId;
     private String base64pic = "";
 
     private Spinner mySpinner;
     private Calendar myCalendar;
 
-
+    private Uri imageUri;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_account);
 
-        if (SessionUtil.checkIfExist(ISeasonConfig.KEY_ACCOUNT_ID)) {
-            accountId = SessionUtil.getStringPreferences(ISeasonConfig.KEY_ACCOUNT_ID, null);
-        }
+        initCheck();
+        initPermission();
 
-        getpermission();
         initComponent();
         initContent();
         initListener();
+    }
+
+    private void initPermission() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(AccountActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                Toast.makeText(AccountActivity.this, "Access dibutuhkan untuk menentukan lokasi anda", Toast.LENGTH_LONG).show();
+                String[] perm = {
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                        Manifest.permission.READ_EXTERNAL_STORAGE};
+                ActivityCompat.requestPermissions(AccountActivity.this, perm, RP_ACCESS);
+            } else {
+                String[] perm = {
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                        Manifest.permission.READ_EXTERNAL_STORAGE};
+                ActivityCompat.requestPermissions(AccountActivity.this, perm, RP_ACCESS);
+            }
+        }
+    }
+
+    private void initCheck() {
+        if (SessionUtil.checkIfExist(ISeasonConfig.KEY_ACCOUNT_ID)) {
+            accountId = SessionUtil.getStringPreferences(ISeasonConfig.KEY_ACCOUNT_ID, null);
+        }
+        if (SessionUtil.checkIfExist(ISeasonConfig.KEY_EVENT_ID)) {
+            eventId = SessionUtil.getStringPreferences(ISeasonConfig.KEY_EVENT_ID, null);
+        }
     }
 
     private void initComponent() {
@@ -111,7 +140,6 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
         ibAccCamerafvbi = (ImageButton) findViewById(R.id.ibAccCamera);
         tvAccSelPicfvbi = (TextView) findViewById(R.id.tvAccSelPic);
 
-//        tvAccGenderfvbi = (TextView) findViewById(R.id.tvAccGender);
         tvAccTglfvbi = (TextView) findViewById(R.id.tvAccTgl);
         tvAccBulanfvbi = (TextView) findViewById(R.id.tvAccBulan);
         tvAccTahunfvbi = (TextView) findViewById(R.id.tvAccTahun);
@@ -162,28 +190,19 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
     }
 
     private void initListener() {
-        llAccPicfvbi.setOnClickListener(this);
-        llAccGenderfvbi.setOnClickListener(this);
-        llAccSavefvbi.setOnClickListener(this);
-        tvSignOutSkipfvbi.setOnClickListener(this);
-        ibAccClosefvbi.setOnClickListener(this);
-        ibAccCamerafvbi.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                File f = new File(android.os.Environment
-                        .getExternalStorageDirectory(), "temp.jpg");
-                intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(f));
-                startActivityForResult(intent, 1);
-            }
+        llAccPicfvbi.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v){
+                    ContentValues values = new ContentValues();
+                    values.put(MediaStore.Images.Media.TITLE, "New Picture");
+                    values.put(MediaStore.Images.Media.DESCRIPTION, "From your Camera");
+                    imageUri = getContentResolver().insert(
+                            MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+                    Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+                    startActivityForResult(intent, 5);
+                }
         });
-        tvAccSelPicfvbi.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                Intent intent = new Intent(
-                        Intent.ACTION_PICK,
-                        android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                startActivityForResult(intent, 2);
-            }
-        });
+
         DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
@@ -194,8 +213,7 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
             }
 
         };
-
-        ibCalendarfvbi.setOnClickListener(new View.OnClickListener() {
+        llAccBirthdatefvbi.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 new DatePickerDialog(AccountActivity.this, date, myCalendar
@@ -204,7 +222,10 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
             }
 
         });
-
+        llAccGenderfvbi.setOnClickListener(this);
+        llAccSavefvbi.setOnClickListener(this);
+        tvSignOutSkipfvbi.setOnClickListener(this);
+        ibAccClosefvbi.setOnClickListener(this);
     }
 
     private void updateData(ArrayList<UserDataResponseModel> models) {
@@ -213,7 +234,6 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
             UserDataResponseModel model = models.get(i);
             etAccNamefvbi.setText(model.getFull_name());
             etAccEmailfvbi.setText(model.getEmail());
-//            tvAccGenderfvbi.setText(model.getGender());
 
             ArrayAdapter<String> myAdapter = new ArrayAdapter<String>(AccountActivity.this, R.layout.spinner_item, getResources().getStringArray(R.array.names));
             myAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -401,29 +421,6 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
 //        etAccBirthdayfvbi.setText(sdf.format(myCalendar.getTime()));
     }
 
-    private void getpermission() {
-        // cek apakah sudah memiliki permission untuk access fine location
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            // cek apakah perlu menampilkan info kenapa membutuhkan access fine location
-            if (ActivityCompat.shouldShowRequestPermissionRationale(AccountActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                Toast.makeText(AccountActivity.this, "Access dibutuhkan untuk menentukan lokasi anda", Toast.LENGTH_LONG).show();
-                String[] perm = {
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                        Manifest.permission.READ_EXTERNAL_STORAGE};
-                ActivityCompat.requestPermissions(AccountActivity.this, perm, RP_ACCESS);
-            } else {
-                // request permission untuk access fine location
-                String[] perm = {
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                        Manifest.permission.READ_EXTERNAL_STORAGE};
-                ActivityCompat.requestPermissions(AccountActivity.this, perm, RP_ACCESS);
-            }
-        } else {
-            // permission access fine location didapat
-//        Toast.makeText(AccountActivity.this, "Yay, has permission", Toast.LENGTH_SHORT).show();
-        }
-    }
-
     private void customText(TextView view) {
         SpannableStringBuilder spanTxt = new SpannableStringBuilder("I agree to the ");
         spanTxt.append("PRIVACY POLICY");
@@ -438,63 +435,10 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
                 0);
         view.setMovementMethod(LinkMovementMethod.getInstance());
         view.setText(spanTxt, TextView.BufferType.SPANNABLE);
-
-        /*SpannableStringBuilder spanTxt = new SpannableStringBuilder("I agree to the ");
-        spanTxt.append("Term of services");
-        spanTxt.setSpan(new ClickableSpan() {
-            @Override
-            public void onClick(View widget) {
-                Toast.makeText(getApplicationContext(), "Terms of services Clicked", Toast.LENGTH_SHORT).show();
-            }
-        }, spanTxt.length() - "Term of services".length(), spanTxt.length(), 0);
-        spanTxt.append(" and");
-        spanTxt.setSpan(new ForegroundColorSpan(Color.BLACK), 32, spanTxt.length(), 0);
-        spanTxt.append(" Privacy Policy");
-        spanTxt.setSpan(new ClickableSpan() {
-            @Override
-            public void onClick(View widget) {
-                Toast.makeText(getApplicationContext(), "Privacy Policy Clicked", Toast.LENGTH_SHORT).show();
-            }
-        }, spanTxt.length() - " Privacy Policy".length(), spanTxt.length(), 0);
-        view.setMovementMethod(LinkMovementMethod.getInstance());
-        view.setText(spanTxt, TextView.BufferType.SPANNABLE);*/
     }
 
     public static Intent getActIntent(Activity activity) {
         return new Intent(activity, AccountActivity.class);
-    }
-
-    private void onSelectFromGalleryResult(Intent data) {
-        Uri selectedImageUri = data.getData();
-        String[] projection = {MediaStore.MediaColumns.DATA};
-        @SuppressWarnings("deprecation")
-        Cursor cursor = managedQuery(selectedImageUri, projection, null, null, null);
-        int column_index = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
-        cursor.moveToFirst();
-
-        String selectedImagePath = cursor.getString(column_index);
-
-        Bitmap bm;
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inJustDecodeBounds = true;
-        BitmapFactory.decodeFile(selectedImagePath, options);
-        final int REQUIRED_SIZE = 200;
-        int scale = 1;
-        while (options.outWidth / scale / 2 >= REQUIRED_SIZE && options.outHeight / scale / 2 >= REQUIRED_SIZE)
-            scale *= 2;
-        options.inSampleSize = scale;
-        options.inJustDecodeBounds = false;
-        bm = BitmapFactory.decodeFile(selectedImagePath, options);
-
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        bm.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
-        byte[] byteArray = byteArrayOutputStream.toByteArray();
-
-        base64pic = Base64.encodeToString(byteArray, Base64.DEFAULT);
-
-        ivWrapPicfvbi.setImageBitmap(bm);
-        ivWrapPicfvbi.setVisibility(View.VISIBLE);
-        tvAccSelPicfvbi.setText("Image selected");
     }
 
     @Override
@@ -515,58 +459,37 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
         }
     }
 
+
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK) {
-            if (requestCode == 1) {
-                // onCaptureImageResult(data);
-                try {
+        if (requestCode == 5 && resultCode == Activity.RESULT_OK) {
+            String imageurl = PictureUtil.getPath(imageUri,this);
 
-                    File f = new File(Environment.getExternalStorageDirectory()
-                            .toString());
-                    for (File temp : f.listFiles()) {
-                        if (temp.getName().equals("temp.jpg")) {
-                            f = temp;
-                            break;
+            Log.d("image uri ",imageurl);
+            Log.d("string val from file",String.valueOf(new File(imageurl)));
+
+            Glide.with(this)
+                    .load(R.drawable.loading)
+                    .asGif()
+                    .crossFade()
+                    .into(ivWrapPicfvbi);
+            ivWrapPicfvbi.setScaleType(ImageView.ScaleType.FIT_CENTER);
+            Glide.with(getApplicationContext())
+                    .load(new File(imageurl))
+                    .asBitmap()
+                    .into(new SimpleTarget<Bitmap>() {
+                        @Override
+                        public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+                            Bitmap resizeImage = PictureUtil.resizeImage(resource, 1080);
+                            ivWrapPicfvbi.setImageBitmap(resizeImage);
+                            base64pic = PictureUtil.bitmapToBase64(resizeImage, Bitmap.CompressFormat.JPEG,100);
                         }
-                    }
-                    Bitmap bitmap;
-                    BitmapFactory.Options bitmapOptions = new BitmapFactory.Options();
-
-                    bitmap = BitmapFactory.decodeFile(f.getAbsolutePath(),
-                            bitmapOptions);
-                    ivWrapPicfvbi.setImageBitmap(bitmap);
-                    ivWrapPicfvbi.setVisibility(View.VISIBLE);
-
-                    String path = android.os.Environment
-                            .getExternalStorageDirectory()
-                            + File.separator
-                            + ".Gandsoft" + File.separator + "images";
-                    f.delete();
-                    OutputStream outFile = null;
-                    File file = new File(path, String.valueOf(System
-                            .currentTimeMillis()) + ".jpg");
-                    try {
-                        outFile = new FileOutputStream(file);
-                        bitmap.compress(Bitmap.CompressFormat.JPEG, 85, outFile);
-                        outFile.flush();
-                        outFile.close();
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            } else if (requestCode == 2) {
-                onSelectFromGalleryResult(data);
-            }
+                    })
+            ;
+        }
+        else{
+            finish();
         }
     }
 

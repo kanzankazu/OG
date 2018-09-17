@@ -1,38 +1,25 @@
 package com.gandsoft.openguide.activity.main.fragments.aHomeActivityInFragment;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.hardware.Camera;
-import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.design.widget.Snackbar;
-import android.support.v4.content.CursorLoader;
-import android.support.v7.widget.Toolbar;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Base64;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.ExpandableListView;
 import android.widget.ImageView;
 
-
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.gandsoft.openguide.API.API;
@@ -42,14 +29,9 @@ import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
 import com.gandsoft.openguide.support.PictureUtil;
 import com.gandsoft.openguide.support.SessionUtil;
-import com.gandsoft.openguide.support.SystemUtil;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
@@ -64,21 +46,19 @@ public class aHomePostImageCaptionActivity extends AppCompatActivity {
     private ImageView mIvImagePostPicture, mIvImagePostOpenCamera, mIvImagePostSend;
     private EditText mEtImagePostWrite;
 
-    private String accountId,eventId;
+    private String accountId, eventId;
     private String uniqueId = null;
-    private String base64pic= "a";
-    Bitmap bitmap = null;
-    Bitmap rotatedBitmap = null;
-    Bitmap resizedRotatedBitmap = null;
-
+    private String base64pic = "a";
+    private Bitmap bitmap = null;
     private Uri imageUri;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_a_home_post_image_caption);
 
         summonToolbar("Post Image");
-        if(bitmap==null){
+        if (bitmap == null) {
             ContentValues values = new ContentValues();
             values.put(MediaStore.Images.Media.TITLE, "New Picture");
             values.put(MediaStore.Images.Media.DESCRIPTION, "From your Camera");
@@ -95,8 +75,8 @@ public class aHomePostImageCaptionActivity extends AppCompatActivity {
         initListener();
     }
 
-    private void summonToolbar(String title){
-        toolbar  = findViewById(R.id.toolbar);
+    private void summonToolbar(String title) {
+        toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         actionbar = getSupportActionBar();
@@ -120,11 +100,12 @@ public class aHomePostImageCaptionActivity extends AppCompatActivity {
     }
 
     private void initContent() {
+
     }
 
     private void initListener() {
-        mIvImagePostOpenCamera.setOnClickListener(new View.OnClickListener(){
-            public void onClick(View v){
+        mIvImagePostOpenCamera.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
                 ContentValues values = new ContentValues();
                 values.put(MediaStore.Images.Media.TITLE, "New Picture");
                 values.put(MediaStore.Images.Media.DESCRIPTION, "From your Camera");
@@ -135,8 +116,8 @@ public class aHomePostImageCaptionActivity extends AppCompatActivity {
                 startActivityForResult(intent, 1);
             }
         });
-        mIvImagePostSend.setOnClickListener(new View.OnClickListener(){
-            public void onClick(View v){
+        mIvImagePostSend.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
                 try {
                     postImageCaption();
                 } catch (FileNotFoundException e) {
@@ -146,20 +127,14 @@ public class aHomePostImageCaptionActivity extends AppCompatActivity {
         });
     }
 
-
     private void postImageCaption() throws FileNotFoundException {
-        if(uniqueId == null) {
+        if (uniqueId == null) {
             uniqueId = UUID.randomUUID().toString();
         }
 
-        Log.d("String bes",String.valueOf(bitmap));
-        /*ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        resizedRotatedBitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
-        byte[] byteArray = byteArrayOutputStream.toByteArray();
+        Log.d("String bes", String.valueOf(bitmap));
 
-        base64pic = Base64.encodeToString(byteArray, Base64.DEFAULT);
-*/
-        if(base64pic.isEmpty() || base64pic.equals("a")){
+        if (base64pic.isEmpty() || base64pic.equals("a")) {
             Log.d("failed", "get base64");
             finish();
         }
@@ -174,7 +149,7 @@ public class aHomePostImageCaptionActivity extends AppCompatActivity {
         requestModel.setImagedata(base64pic);
         requestModel.setDegree("");
         requestModel.setDbver("3");
-        Log.d("uuidnya",uniqueId);
+        Log.d("uuidnya", uniqueId);
 
         API.doHomeContentPostImageCaptionRet(requestModel).enqueue(new Callback<List<LocalBaseResponseModel>>() {
             @Override
@@ -209,71 +184,36 @@ public class aHomePostImageCaptionActivity extends AppCompatActivity {
             }
         });
     }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 1 && resultCode == Activity.RESULT_OK) {
-            String imageurl = getPath(imageUri);
+            String imageurl = PictureUtil.getPath(imageUri, this);
 
-            Log.d("image uri ",imageurl);
-            Log.d("string val from file",String.valueOf(new File(imageurl)));
+            Log.d("image uri ", imageurl);
+            Log.d("string val from file", String.valueOf(new File(imageurl)));
+            Glide.with(this)
+                    .load(R.drawable.loading)
+                    .asGif()
+                    .crossFade()
+                    .into(mIvImagePostPicture);
+            mIvImagePostPicture.setScaleType(ImageView.ScaleType.FIT_CENTER);
             Glide.with(getApplicationContext())
                     .load(new File(imageurl))
                     .asBitmap()
-                    .fitCenter()
                     .into(new SimpleTarget<Bitmap>() {
                         @Override
                         public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
                             Bitmap resizeImage = PictureUtil.resizeImage(resource, 1080);
                             mIvImagePostPicture.setImageBitmap(resizeImage);
+                            base64pic = PictureUtil.bitmapToBase64(resizeImage, Bitmap.CompressFormat.JPEG, 100);
                         }
                     })
             ;
-
-
-            Glide.with(getApplicationContext())
-                    .load(new File(imageurl))
-                    .asBitmap()
-                    .into(new SimpleTarget<Bitmap>() {
-                        @Override
-                        public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
-                            Bitmap resizeImage = PictureUtil.resizeImage(resource, 1080);
-                            base64pic = PictureUtil.bitmapToBase64(resizeImage, Bitmap.CompressFormat.JPEG,100);
-                        }
-                    });
-        }
-        else{
+        } else {
             finish();
         }
-
-/*          rotatedBitmap = SystemUtil.rotateImage(bitmap, 90);
-            resizedRotatedBitmap = SystemUtil.resizeImage(rotatedBitmap,720);
-            mIvImagePostPicture.setImageBitmap(resizedRotatedBitmap);*/
-    }
-
-    private void createDirectoryAndSaveFile(Bitmap imageToSave, String fileName) {
-        File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/.Gandsoft/" + eventId+"/"+ fileName);
-        if (file.exists()) {
-            file.delete();
-        }
-        try {
-            FileOutputStream out = new FileOutputStream(file);
-            imageToSave.compress(Bitmap.CompressFormat.PNG, 100, out);
-            out.flush();
-            out.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public String getPath(Uri uri) {
-        String[] projection = { MediaStore.Images.Media.DATA };
-
-        Cursor cursor = managedQuery(uri, projection, null, null, null);
-        startManagingCursor(cursor);
-        int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-        cursor.moveToFirst();
-        return cursor.getString(column_index);
     }
 
     @Override
