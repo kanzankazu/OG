@@ -89,7 +89,7 @@ public class GalleryDetailPagerFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
-        final ZoomageView zivDetailGalleryfvbi = (ZoomageView) rootView.findViewById(R.id.zivDetailGallery);
+        final ScaleImageView zivDetailGalleryfvbi = (ScaleImageView) rootView.findViewById(R.id.zivDetailGallery);
         final LinearLayout llDetailGalleryCommentfvbi = (LinearLayout) rootView.findViewById(R.id.llDetailGalleryComment);
         final LinearLayout llDetailGalleryLikefvbi = (LinearLayout) rootView.findViewById(R.id.llDetailGalleryLike);
         final TextView tvDetailGalleryCommentfvbi = (TextView) rootView.findViewById(R.id.tvDetailGalleryComment);

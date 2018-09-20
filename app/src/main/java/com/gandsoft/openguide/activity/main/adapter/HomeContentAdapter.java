@@ -18,7 +18,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.gandsoft.openguide.API.API;
 import com.gandsoft.openguide.API.APIrequest.HomeContent.HomeContentPostLikeRequestModel;
 import com.gandsoft.openguide.API.APIresponse.Event.EventTheEvent;
-import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentCommentModel;
+import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentCommentModelParcelable;
 import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentPostLikeResponseModel;
 import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentResponseModel;
 import com.gandsoft.openguide.API.APIresponse.LocalBaseResponseModel;
@@ -27,6 +27,7 @@ import com.gandsoft.openguide.IConfig;
 import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
 import com.gandsoft.openguide.activity.main.fragments.aHomeActivityInFragment.aHomePostCommentActivity;
+import com.gandsoft.openguide.support.PictureUtil;
 
 import org.sufficientlysecure.htmltextview.HtmlTextView;
 
@@ -42,7 +43,7 @@ public class PostRecViewAdapter extends RecyclerView.Adapter<PostRecViewAdapter.
     private Context context;
     private FragmentActivity activity;
     private List<HomeContentResponseModel> models = new ArrayList<>();
-    private ArrayList<HomeContentCommentModel> dataParam = new ArrayList<>();
+    private ArrayList<HomeContentCommentModelParcelable> dataParam = new ArrayList<>();
     private List<HomeContentPostLikeResponseModel> modelsnyaLike = new ArrayList<>();
     private String eventId;
     private String accountId;
@@ -85,13 +86,18 @@ public class PostRecViewAdapter extends RecyclerView.Adapter<PostRecViewAdapter.
         }
         if (!TextUtils.isEmpty(model.getImage_posted())) {
             holder.ivRVHomeContentImage.setVisibility(View.VISIBLE);
-            Glide.with(activity)
-                    .load(model.getImage_posted())
-                    .placeholder(R.drawable.template_account_og)
-                    .skipMemoryCache(true)
-                    .diskCacheStrategy(DiskCacheStrategy.NONE)
-                    .error(R.drawable.template_account_og)
-                    .into(holder.ivRVHomeContentImage);
+            if (model.getImage_posted().matches("(?i).*http://.*")) {
+                Glide.with(activity)
+                        .load(model.getImage_posted())
+                        .skipMemoryCache(true)
+                        .diskCacheStrategy(DiskCacheStrategy.NONE)
+                        .thumbnail(0.1f)
+                        .error(R.drawable.template_account_og)
+                        .into(holder.ivRVHomeContentImage);
+            } else {
+                holder.ivRVHomeContentImage.setImageBitmap(PictureUtil.Base64ToBitmap(model.getImage_posted()));
+            }
+
         } else {
             holder.ivRVHomeContentImage.setVisibility(View.GONE);
         }
@@ -142,7 +148,7 @@ public class PostRecViewAdapter extends RecyclerView.Adapter<PostRecViewAdapter.
         holder.llRVHomeContentComment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                HomeContentCommentModel mode = new HomeContentCommentModel();
+                HomeContentCommentModelParcelable mode = new HomeContentCommentModelParcelable();
                 mode.setId(models.get(position).getId());
                 mode.setLike(models.get(position).getLike());
                 mode.setAccount_id(models.get(position).getAccount_id());
@@ -259,6 +265,18 @@ public class PostRecViewAdapter extends RecyclerView.Adapter<PostRecViewAdapter.
     public void addDatas(List<HomeContentResponseModel> datas) {
         models.addAll(datas);
         notifyItemRangeInserted(models.size(), datas.size());
+    }
+
+    public void addDataFirst(HomeContentResponseModel data) {
+        int insertIndex = 0;
+        models.add(insertIndex, data);
+        notifyItemInserted(insertIndex);
+    }
+
+    public void removeDataFirst() {
+        int removeIndex = 0;
+        models.remove(removeIndex);
+        notifyItemRemoved(removeIndex);
     }
 
 }

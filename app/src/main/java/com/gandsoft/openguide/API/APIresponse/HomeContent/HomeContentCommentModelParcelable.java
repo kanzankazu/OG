@@ -3,7 +3,7 @@ package com.gandsoft.openguide.API.APIresponse.HomeContent;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class HomeContentCommentModel implements Parcelable {
+public class HomeContentCommentModelParcelable implements Parcelable {
     public String id;
     public String like;
     public String account_id;
@@ -22,10 +22,10 @@ public class HomeContentCommentModel implements Parcelable {
     public int number;
     public String eventId;
 
-    public HomeContentCommentModel() {
+    public HomeContentCommentModelParcelable() {
     }
 
-    public HomeContentCommentModel(String id, String like, String account_id, String total_comment, int status_like, String image_icon, String username, String jabatan, String date_created, String image_posted, String keterangan, String event) {
+    public HomeContentCommentModelParcelable(String id, String like, String account_id, String total_comment, int status_like, String image_icon, String username, String jabatan, String date_created, String image_posted, String keterangan, String event) {
         this.id = id;
         this.like = like;
         this.account_id = account_id;
@@ -191,7 +191,7 @@ public class HomeContentCommentModel implements Parcelable {
         return 0;
     }
 
-    public HomeContentCommentModel(Parcel in) {
+    public HomeContentCommentModelParcelable(Parcel in) {
         id = in.readString();
         like = in.readString();
         account_id = in.readString();
@@ -209,13 +209,13 @@ public class HomeContentCommentModel implements Parcelable {
     }
 
     public static final Creator CREATOR = new Creator() {
-        public HomeContentCommentModel createFromParcel(Parcel in) {
-            return new HomeContentCommentModel(in);
+        public HomeContentCommentModelParcelable createFromParcel(Parcel in) {
+            return new HomeContentCommentModelParcelable(in);
         }
 
         @Override
-        public HomeContentCommentModel[] newArray(int i) {
-            return new HomeContentCommentModel[i];
+        public HomeContentCommentModelParcelable[] newArray(int i) {
+            return new HomeContentCommentModelParcelable[i];
         }
     };
 }

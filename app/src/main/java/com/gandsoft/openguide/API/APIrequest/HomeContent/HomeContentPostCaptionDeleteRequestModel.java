@@ -1,6 +1,6 @@
 package com.gandsoft.openguide.API.APIrequest.HomeContent;
 
-public class HomeContentPostCaptionRequestModel {
+public class HomeContentPostCaptionDeleteRequestModel {
     String id_event, account_id, captions, date_post, gmt_date, dbver;
 
     public String getId_event() {

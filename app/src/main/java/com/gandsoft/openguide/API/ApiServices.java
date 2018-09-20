@@ -3,8 +3,11 @@ package com.gandsoft.openguide.API;
 import com.gandsoft.openguide.API.APIrequest.Event.EventDataRequestModel;
 import com.gandsoft.openguide.API.APIrequest.Gallery.GalleryRequestModel;
 import com.gandsoft.openguide.API.APIrequest.HomeContent.HomeContentCheckinRequestModel;
-import com.gandsoft.openguide.API.APIrequest.HomeContent.HomeContentPostCaptionRequestModel;
-import com.gandsoft.openguide.API.APIrequest.HomeContent.HomeContentPostCommentRequestModel;
+import com.gandsoft.openguide.API.APIrequest.HomeContent.HomeContentPostCaptionDeleteRequestModel;
+import com.gandsoft.openguide.API.APIrequest.HomeContent.HomeContentPostCaptionSetRequestModel;
+import com.gandsoft.openguide.API.APIrequest.HomeContent.HomeContentPostCommentDeleteRequestModel;
+import com.gandsoft.openguide.API.APIrequest.HomeContent.HomeContentPostCommentGetRequestModel;
+import com.gandsoft.openguide.API.APIrequest.HomeContent.HomeContentPostCommentSetRequestModel;
 import com.gandsoft.openguide.API.APIrequest.HomeContent.HomeContentPostImageCaptionRequestModel;
 import com.gandsoft.openguide.API.APIrequest.HomeContent.HomeContentPostLikeRequestModel;
 import com.gandsoft.openguide.API.APIrequest.HomeContent.HomeContentRequestModel;
@@ -13,6 +16,10 @@ import com.gandsoft.openguide.API.APIrequest.UserData.UserDataRequestModel;
 import com.gandsoft.openguide.API.APIrequest.UserUpdate.UserUpdateRequestModel;
 import com.gandsoft.openguide.API.APIresponse.Event.EventDataResponseModel;
 import com.gandsoft.openguide.API.APIresponse.Gallery.GalleryResponseModel;
+import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentPostCaptionDeleteResponseModel;
+import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentPostCommentDeleteResponseModel;
+import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentPostCommentGetResponseModel;
+import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentPostCommentSetResponseModel;
 import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentResponseModel;
 import com.gandsoft.openguide.API.APIresponse.LocalBaseResponseModel;
 import com.gandsoft.openguide.API.APIresponse.Login.LoginResponseModel;
@@ -62,14 +69,19 @@ public interface ApiServices {
     Call<List<LocalBaseResponseModel>> homeContentCheckinRet(@Body HomeContentCheckinRequestModel model);
 
     @POST("post_caption_home_content")
-    Call<List<LocalBaseResponseModel>> homeContentPostCaptionRet(@Body HomeContentPostCaptionRequestModel model);
+    Call<List<LocalBaseResponseModel>> homeContentPostCaptionRet(@Body HomeContentPostCaptionSetRequestModel model);
 
     @POST("post_imagecaption_home_content")
     Call<List<LocalBaseResponseModel>> homeContentPostImageCaptionRet(@Body HomeContentPostImageCaptionRequestModel model);
 
     @POST("set_post_comment_data")
-    Call<List<LocalBaseResponseModel>> homeContentPostCommentRet(@Body HomeContentPostCommentRequestModel model);
+    Call<List<HomeContentPostCommentSetResponseModel>> homeContentPostCommentRet(@Body HomeContentPostCommentSetRequestModel model);
 
     @POST("post_like_contentevent")
     Call<List<LocalBaseResponseModel>> homeContentPostLikeRet(@Body HomeContentPostLikeRequestModel model);
+
+    @POST("delete_posted_data") Call<List<HomeContentPostCaptionDeleteResponseModel>> homeContentPostDeleteRet(@Body HomeContentPostCaptionDeleteRequestModel model);
+    @POST("delete_commented_post") Call<List<HomeContentPostCommentDeleteResponseModel>> homeContentPostCommentDeleteRet(@Body HomeContentPostCommentDeleteRequestModel model);
+    @POST("get_posted_comment_list") Call<List<HomeContentPostCommentGetResponseModel>> homeContentPostCommentGetRet(@Body HomeContentPostCommentGetRequestModel model);
+
 }

@@ -21,7 +21,6 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentCommentModel;
-import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentResponseModel;
 import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
 import com.gandsoft.openguide.support.SessionUtil;
@@ -29,7 +28,6 @@ import com.gandsoft.openguide.support.SessionUtil;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.List;
 
 public class aHomePostCommentActivity extends AppCompatActivity {
     private RecyclerView rvCommentfvbi;
@@ -136,7 +134,11 @@ public class aHomePostCommentActivity extends AppCompatActivity {
                 Calendar c = Calendar.getInstance();
                 SimpleDateFormat df = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
                 String formattedDate = df.format(c.getTime());
+                SimpleDateFormat dfGMT = new SimpleDateFormat("z");
+                String formattedDateGMT = dfGMT.format(c.getTime());
                 Log.d("Lihat", "onClick aHomePostCommentActivity : " + formattedDate);
+                Log.d("Lihat", "onClick aHomePostCommentActivity : " + formattedDateGMT);
+                Log.d("Lihat", "onClick aHomePostCommentActivity : " + formattedDateGMT.substring(3, 6));
 
                 /*ProgressDialog progressDialog = ProgressDialog.show(aHomePostCommentActivity.this, "Loading...", "Please Wait..", false, false);
 

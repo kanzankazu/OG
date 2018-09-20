@@ -1089,6 +1089,32 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         return modelList;
     }
 
+    public UserDataResponseModel getOneUserData(String accountid) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(TableUserData, null, KEY_UserData_accountId + " = ? ", new String[]{accountid}, null, null, null);
+        if (cursor != null)
+            cursor.moveToFirst();
+
+        UserDataResponseModel model = new UserDataResponseModel();
+        model.setNumber(cursor.getInt(cursor.getColumnIndex(KEY_UserData_No)));
+        model.setAccount_id(cursor.getString(cursor.getColumnIndex(KEY_UserData_accountId)));
+        model.setImage_url(cursor.getString(cursor.getColumnIndex(KEY_UserData_imageUrl)));
+        model.setFull_name(cursor.getString(cursor.getColumnIndex(KEY_UserData_fullName)));
+        model.setPosition(cursor.getString(cursor.getColumnIndex(KEY_UserData_position)));
+        model.setPhone_number(cursor.getString(cursor.getColumnIndex(KEY_UserData_phoneNumber)));
+        model.setEmail(cursor.getString(cursor.getColumnIndex(KEY_UserData_email)));
+        model.setGender(cursor.getString(cursor.getColumnIndex(KEY_UserData_gender)));
+        model.setBirthday(cursor.getString(cursor.getColumnIndex(KEY_UserData_birthday)));
+        model.setCheckin(cursor.getString(cursor.getColumnIndex(KEY_UserData_checkin)));
+        model.setPrivacy_policy(cursor.getString(cursor.getColumnIndex(KEY_UserData_privacyPolicy)));
+        model.setVersion_data(cursor.getString(cursor.getColumnIndex(KEY_UserData_versionData)));
+        model.setGroup_code(cursor.getString(cursor.getColumnIndex(KEY_UserData_groupCode)));
+        model.setRole_name(cursor.getString(cursor.getColumnIndex(KEY_UserData_roleName)));
+        model.setImage_url_local(cursor.getString(cursor.getColumnIndex(KEY_UserData_imageUrl_local)));
+        // return model
+        return model;
+    }
+
     public ArrayList<UserListEventResponseModel> getAllListEvent(String accountid) {
         ArrayList<UserListEventResponseModel> modelList = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();

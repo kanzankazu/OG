@@ -1,6 +1,8 @@
 package com.gandsoft.openguide.activity.main.fragments;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -18,6 +20,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
+import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -32,6 +35,8 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.SimpleTarget;
 import com.gandsoft.openguide.API.API;
 import com.gandsoft.openguide.API.APIrequest.HomeContent.HomeContentCheckinRequestModel;
 import com.gandsoft.openguide.API.APIrequest.HomeContent.HomeContentPostCaptionRequestModel;
@@ -40,6 +45,7 @@ import com.gandsoft.openguide.API.APIrequest.HomeContent.HomeContentRequestModel
 import com.gandsoft.openguide.API.APIresponse.Event.EventTheEvent;
 import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentResponseModel;
 import com.gandsoft.openguide.API.APIresponse.LocalBaseResponseModel;
+import com.gandsoft.openguide.API.APIresponse.UserData.UserDataResponseModel;
 import com.gandsoft.openguide.API.APIresponse.UserData.UserListEventResponseModel;
 import com.gandsoft.openguide.API.APIresponse.UserData.UserWalletDataResponseModel;
 import com.gandsoft.openguide.IConfig;
@@ -49,6 +55,7 @@ import com.gandsoft.openguide.activity.main.adapter.PostRecViewAdapter;
 import com.gandsoft.openguide.activity.main.fragments.aHomeActivityInFragment.aHomePostImageCaptionActivity;
 import com.gandsoft.openguide.database.SQLiteHelper;
 import com.gandsoft.openguide.support.NetworkUtil;
+import com.gandsoft.openguide.support.PictureUtil;
 import com.gandsoft.openguide.support.SessionUtil;
 import com.gandsoft.openguide.support.SystemUtil;
 import com.squareup.picasso.Picasso;
@@ -58,9 +65,11 @@ import org.sufficientlysecure.htmltextview.HtmlTextView;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
+import java.util.UUID;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -69,48 +78,51 @@ import retrofit2.Response;
 import static android.app.Activity.RESULT_OK;
 
 public class aHomeFragment extends Fragment {
-    private static final String TAG = "Lihat";
+    SQLiteHelper db;
+
+    private static final int REQ_CODE_TAKE_PHOTO_INTENT_ID_STANDART = 1;
+    private static final int REQ_CODE_POST_IMAGE = 12;
+
     private View view;
-    private LinearLayout llLoadModefvbi, homeLLWriteSomethingfvbi;
-    private RecyclerView recyclerView;
     private SwipeRefreshLayout homeSRLHomefvbi;
-    private ImageView homeIVOpenCamerafvbi;
     private NestedScrollView homeNSVHomefvbi;
-    private ImageView homeIVEventfvbi, homeIVEventBackgroundfvbi;
+    private RecyclerView recyclerView;
+    private LinearLayout llLoadModefvbi;
+    private LinearLayout homeLLWriteSomethingfvbi;
+    private LinearLayout llLoadMode2fvbi;
+    private ImageView homeIVOpenCamerafvbi;
+    private ImageView homeIVEventfvbi;
+    private ImageView homeIVEventBackgroundfvbi;
     private ImageView homeIVShareSomethingfvbi;
     private TextView homeTVTitleEventfvbi;
     private TextView homeTVDescEventfvbi;
-    private Button homeBTapCheckInfvbi;
-    private EditText homeETWritePostCreatefvbi;
-    private WebView homeWVTitleEventfvbi;
-    private FloatingActionButton homeFABHomeUpfvbi;
-    /**/
-    private PostRecViewAdapter adapter;
-    private List<HomeContentResponseModel> menuUi = new ArrayList<>();
-    private int page = 0;
-    private String accountId, eventId;
-    private int version_data_event;
-    SQLiteHelper db;
+    private TextView homeTVOpenCamerafvbi;
+    private TextView homeTVOpenGalleryfvbi;
     private HtmlTextView homeHtmlTVTitleEventfvbi;
     private HtmlTextView homeHtmlTVDescEventfvbi;
+    private EditText homeETWritePostCreatefvbi;
+    private Button homeBTapCheckInfvbi;
+    private WebView homeWVTitleEventfvbi;
+    private FloatingActionButton homeFABHomeUpfvbi;
+
+    private UserWalletDataResponseModel walletData;
+    private EventTheEvent theEventModel = null;
+    private UserListEventResponseModel oneListEventModel = null;
+    private UserDataResponseModel userData = null;
+    private PostRecViewAdapter adapter;
+
+    private List<HomeContentResponseModel> menuUi = new ArrayList<>();
+    private String accountId, eventId;
     private String isKondisi = "up";
     private String last_id = "";
     private String first_id = "";
     private String last_date = "";
+    private int version_data_event;
     private boolean last_data = false;
-
-    //Post
-    private int i = 0;
-    private TextView homeTVOpenCamerafvbi, homeTVOpenGalleryfvbi;
-    private String base64pic = "";
-    private LinearLayout llLoadMode2fvbi;
-    private int heightRecycle = 0;
+    private String formattedDate;
+    private String formattedDateGMT;
     private Uri imageUri;
-    private UserWalletDataResponseModel walletData;
-
-    private ImageView homeIVShareSomethingfvbi2;
-    private EventTheEvent theEventModel = null;
-    private UserListEventResponseModel oneListEventModel = null;
+    private String base64;
 
     public aHomeFragment() {
     }
@@ -156,6 +168,7 @@ public class aHomeFragment extends Fragment {
 
     private void initContent(ViewGroup container) {
         theEventModel = db.getTheEvent(eventId);
+        userData = db.getOneUserData(accountId);
         oneListEventModel = db.getOneListEvent(eventId);
 
         updateUi();//init content
@@ -177,26 +190,31 @@ public class aHomeFragment extends Fragment {
             homeBTapCheckInfvbi.setVisibility(View.GONE);
         }
 
-        adapter = new PostRecViewAdapter(getActivity(), menuUi, getContext(), eventId, accountId, theEventModel,oneListEventModel);
+        adapter = new PostRecViewAdapter(getActivity(), menuUi, getContext(), eventId, accountId, theEventModel, oneListEventModel);
         recyclerView.setNestedScrollingEnabled(false);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         homeETWritePostCreatefvbi.setEnabled(true);
 
         callHomeContentAPI();//content
+
+        Calendar c = Calendar.getInstance();
+        SimpleDateFormat df = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+        formattedDate = df.format(c.getTime());
+        SimpleDateFormat dfGMT = new SimpleDateFormat("z");
+        formattedDateGMT = dfGMT.format(c.getTime()).substring(3, 6);
+
     }
 
     private void initListener(View view) {
         homeIVOpenCamerafvbi.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                startActivity(new Intent(getActivity(), aHomePostImageCaptionActivity.class));
+                openCamera();
             }
         });
         homeTVOpenGalleryfvbi.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                Intent intent = new Intent(
-                        Intent.ACTION_PICK,
-                        android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                 startActivityForResult(intent, 2);
             }
         });
@@ -205,7 +223,6 @@ public class aHomeFragment extends Fragment {
                 postCaption();
             }
         });
-
         homeSRLHomefvbi.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -274,6 +291,30 @@ public class aHomeFragment extends Fragment {
                 homeNSVHomefvbi.smoothScrollTo(0, 0);
             }
         });
+    }
+
+    private void openCamera() {
+        /*if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
+            imageFilePath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/picture.jpg";
+            Log.d("Lihat", "openCamera aHomePostImageCaptionActivity : " + imageFilePath);
+            File imageFile = new File(imageFilePath);
+            Uri imageFileUri = Uri.fromFile(imageFile); // convert path to Uri
+            Log.d("Lihat", "openCamera aHomePostImageCaptionActivity : " + imageFileUri);
+            Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+            cameraIntent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, imageFileUri);
+            startActivityForResult(cameraIntent, REQ_CODE_TAKE_PHOTO_INTENT_ID_KITKAT);
+        } else {
+            Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+            startActivityForResult(cameraIntent, REQ_CODE_TAKE_PHOTO_INTENT_ID);
+        }*/
+
+        ContentValues values = new ContentValues();
+        values.put(MediaStore.Images.Media.TITLE, "New Picture");
+        values.put(MediaStore.Images.Media.DESCRIPTION, "From your Camera");
+        imageUri = getActivity().getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+        startActivityForResult(intent, REQ_CODE_TAKE_PHOTO_INTENT_ID_STANDART);
     }
 
     public void callHomeContentAPI() {
@@ -434,8 +475,8 @@ public class aHomeFragment extends Fragment {
         requestModel.setId_event(eventId);
         requestModel.setPhonenumber(accountId);
         requestModel.setDbver("3");
-        requestModel.setDate_gmt("");
-        requestModel.setDate_post("");
+        requestModel.setDate_gmt(formattedDateGMT);
+        requestModel.setDate_post(formattedDate);
 
         ProgressDialog progressDialog = new ProgressDialog(getContext());
         progressDialog.setCancelable(false);
@@ -481,8 +522,8 @@ public class aHomeFragment extends Fragment {
         requestModel.setAccount_id(accountId);
         requestModel.setCaptions(homeETWritePostCreatefvbi.getText().toString());
         requestModel.setDbver("3");
-        requestModel.setGmt_date("");
-        requestModel.setDate_post("");
+        requestModel.setGmt_date(formattedDateGMT);
+        requestModel.setDate_post(formattedDate);
 
         ProgressDialog progressDialog = new ProgressDialog(getContext());
         progressDialog.setCancelable(false);
@@ -526,62 +567,83 @@ public class aHomeFragment extends Fragment {
         });
     }
 
-    private void postImageCaption() {
+    private void postImageCaption(String base64Pic, String contentPic) {
+
+        String uniqueId = UUID.randomUUID().toString();
         HomeContentPostImageCaptionRequestModel requestModel = new HomeContentPostImageCaptionRequestModel();
         requestModel.setId_event(eventId);
         requestModel.setAccount_id(accountId);
-        requestModel.setId_postedhome("");
-        requestModel.setCaptions("");
-        requestModel.setGmt_date("");
-        requestModel.setDate_post("");
-        requestModel.setImagedata("");
-        requestModel.setDegree("");
+        requestModel.setId_postedhome(uniqueId);
+        if (!TextUtils.isEmpty(contentPic)) {
+            requestModel.setCaptions(contentPic);
+        } else {
+            requestModel.setCaptions("");
+        }
+        requestModel.setGmt_date(formattedDateGMT);
+        requestModel.setDate_post(formattedDate);
+        requestModel.setImagedata(base64Pic);
+        requestModel.setDegree("ANDROID");
         requestModel.setDbver("3");
 
-        ProgressDialog progressDialog = new ProgressDialog(getContext());
-        progressDialog.setCancelable(false);
-        progressDialog.setMessage("Please Wait...");
-        progressDialog.setTitle("Upload data baru..");
-        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        // show it
-        progressDialog.show();
+        addSingleTop(base64Pic, contentPic, uniqueId, eventId, accountId);
 
         API.doHomeContentPostImageCaptionRet(requestModel).enqueue(new Callback<List<LocalBaseResponseModel>>() {
             @Override
             public void onResponse(Call<List<LocalBaseResponseModel>> call, Response<List<LocalBaseResponseModel>> response) {
-                progressDialog.dismiss();
                 if (response.isSuccessful()) {
-                    List<LocalBaseResponseModel> s = response.body();
-                    if (s.size() == 1) {
-                        for (int i = 0; i < s.size(); i++) {
-                            LocalBaseResponseModel model = s.get(i);
-                            if (model.getStatus().equalsIgnoreCase("ok")) {
-                                Snackbar.make(getActivity().findViewById(android.R.id.content), "Image Post Tersimpan", Snackbar.LENGTH_LONG).show();
-                                callHomeContentAPI();
-                                updateUi();// onresponse postimageCaption
-                            } else {
-                                Snackbar.make(getActivity().findViewById(android.R.id.content), "Image Post Bad Response", Snackbar.LENGTH_LONG).show();
-                            }
+                    List<LocalBaseResponseModel> models = response.body();
+                    for (LocalBaseResponseModel model : models) {
+                        if (model.getStatus().equalsIgnoreCase(ISeasonConfig.OK)) {
+                            //
+
+                        } else {
+                            Snackbar.make(getActivity().findViewById(android.R.id.content), model.getMessage(), Snackbar.LENGTH_LONG).show();
                         }
-                    } else {
-                        Snackbar.make(getActivity().findViewById(android.R.id.content), "Image Post Data Tidak Sesuai", Snackbar.LENGTH_LONG).show();
                     }
                 } else {
-                    Snackbar.make(getActivity().findViewById(android.R.id.content), response.message(), Snackbar.LENGTH_LONG).show();
+                    Log.d("Lihat", "onFailure aHomeFragment : " + response.message());
+                    Snackbar.make(getActivity().findViewById(android.R.id.content), "Failed Connection To Server", Snackbar.LENGTH_LONG).show();
                 }
             }
 
             @Override
             public void onFailure(Call<List<LocalBaseResponseModel>> call, Throwable t) {
-                Snackbar.make(getActivity().findViewById(android.R.id.content), t.getMessage(), Snackbar.LENGTH_LONG).show();
+                Log.d("Lihat", "onFailure aHomeFragment : " + t.getMessage());
+                Snackbar.make(getActivity().findViewById(android.R.id.content), "Failed Connection To Server", Snackbar.LENGTH_SHORT).show();
+                adapter.removeDataFirst();
             }
         });
+    }
+
+    private void addSingleTop(String base64Pic, String contentPic, String uniqueId, String eventId, String accountId) {
+
+        HomeContentResponseModel model = new HomeContentResponseModel();
+        model.setId(uniqueId);
+        model.setLike("0");
+        model.setAccount_id(accountId);
+        model.setTotal_comment("0");
+        model.setStatus_like(0);
+        model.setUsername(userData.getFull_name());
+        model.setJabatan("");
+        model.setDate_created(formattedDate);
+        model.setImage_icon(userData.getImage_url());
+        model.setImage_icon_local("");
+        model.setImage_posted(base64Pic);
+        model.setImage_posted_local("");
+        if (!TextUtils.isEmpty(contentPic)) {
+            model.setKeterangan(contentPic);
+        } else {
+            model.setKeterangan("");
+        }
+        model.setEvent("");
+
+        adapter.addDataFirst(model);
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 1 && resultCode == RESULT_OK && null != data) {
+        /*if (requestCode == 1 && resultCode == RESULT_OK && null != data) {
             Bitmap thumbnail = null;
             try {
                 thumbnail = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), imageUri);
@@ -595,15 +657,45 @@ public class aHomeFragment extends Fragment {
 
                 base64pic = Base64.encodeToString(byteArray, Base64.DEFAULT);
                 Log.d("bes64 ", base64pic);
-                startActivity(new Intent(getActivity(), aHomePostImageCaptionActivity.class)
-                        .putExtra("base64", base64pic));
+                startActivity(new Intent(getActivity(), aHomePostImageCaptionActivity.class).putExtra("base64", base64pic));
             } catch (IOException e) {
                 e.printStackTrace();
             }
         } else if (requestCode == 2 && resultCode == RESULT_OK) {
             onSelectGallery(data);
-        }
+        } else */
+        if (requestCode == REQ_CODE_POST_IMAGE) {
+            if (resultCode == RESULT_OK) {
+                String imgUrl;
+                String contentPic;
+                if (data.hasExtra(ISeasonConfig.INTENT_PARAM) && data.hasExtra(ISeasonConfig.INTENT_PARAM2)) {
+                    imgUrl = data.getStringExtra(ISeasonConfig.INTENT_PARAM);
+                    contentPic = data.getStringExtra(ISeasonConfig.INTENT_PARAM2);
 
+                    Glide.with(getActivity())
+                            .load(new File(imgUrl))
+                            .asBitmap()
+                            .into(new SimpleTarget<Bitmap>() {
+                                @Override
+                                public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+                                    Bitmap resizeImage = PictureUtil.resizeImage(resource, 1080);
+                                    base64 = PictureUtil.bitmapToBase64(resizeImage, Bitmap.CompressFormat.JPEG, 100);
+                                    postImageCaption(base64, contentPic);
+                                }
+                            });
+                }
+            }
+        } else if (requestCode == REQ_CODE_TAKE_PHOTO_INTENT_ID_STANDART && resultCode == Activity.RESULT_OK) {
+            String imageurl = PictureUtil.getPath(imageUri, getActivity());
+            moveToAHomePostImage(imageurl);
+
+        }
+    }
+
+    private void moveToAHomePostImage(String imageurl) {
+        Intent intent = new Intent(getActivity(), aHomePostImageCaptionActivity.class);
+        intent.putExtra(ISeasonConfig.INTENT_PARAM, imageurl);
+        startActivityForResult(intent, REQ_CODE_POST_IMAGE);
     }
 
     private void createDirectoryAndSaveFile(Bitmap imageToSave, String fileName) {
@@ -622,7 +714,7 @@ public class aHomeFragment extends Fragment {
     }
 
     private void onSelectGallery(Intent data) {
-        Uri selectedImageUri = data.getData();
+        /*Uri selectedImageUri = data.getData();
         String[] projection = {MediaStore.MediaColumns.DATA};
         @SuppressWarnings("deprecation")
         Cursor cursor = getActivity().managedQuery(selectedImageUri, projection, null, null, null);
@@ -648,7 +740,7 @@ public class aHomeFragment extends Fragment {
         byte[] byteArray = byteArrayOutputStream.toByteArray();
         base64pic = Base64.encodeToString(byteArray, Base64.DEFAULT);
 
-        Log.d("bes64 ", base64pic);
+        Log.d("bes64 ", base64pic);*/
     }
 }
 

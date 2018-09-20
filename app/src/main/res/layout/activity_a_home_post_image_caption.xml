@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:weightSum="10"
-
     android:orientation="vertical"
     tools:context=".activity.main.fragments.aHomeActivityInFragment.aHomePostImageCaptionActivity">
+
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appbar"
         android:layout_width="match_parent"
@@ -22,54 +21,62 @@
             android:background="@color/white"
             app:layout_scrollFlags="scroll|enterAlways"
             app:popupTheme="@style/AppTheme.PopupOverlay"
-            app:titleTextColor="@color/colorPrimary"></android.support.v7.widget.Toolbar>
+            app:titleTextColor="@color/colorPrimary" />
     </android.support.design.widget.AppBarLayout>
+
+    <ImageView
+        android:id="@+id/ivImagePostPicture"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/llbottom"
+        android:layout_below="@id/appbar"
+        android:layout_gravity="center"
+        android:padding="10dp"
+        android:scaleType="centerInside"
+        app:srcCompat="@drawable/gallery_potrait" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_above="@id/llbottom"
+        android:background="@color/gray_very_light" />
+
+    <LinearLayout
+        android:id="@+id/llbottom"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal"
+        android:padding="10dp">
+
         <ImageView
-            android:id="@+id/ivImagePostPicture"
-            android:layout_width="wrap_content"
-            android:layout_gravity="center"
-            android:layout_margin="20dp"
-            android:layout_height="0dp"
-            android:scaleType="centerInside"
-            android:layout_weight="9"
-            app:srcCompat="@drawable/gallery_potrait" />
+            android:id="@+id/ivImagePostOpenCamera"
+            android:layout_width="35dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
+            android:background="@android:color/transparent"
+            android:padding="5dp"
+            android:src="@drawable/ic_action_camera"
+            android:visibility="gone" />
 
-        <LinearLayout
+        <EditText
+            android:id="@+id/etImagePostWrite"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
             android:layout_weight="1"
-            android:orientation="horizontal">
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:hint="Write Something..."
+            android:textSize="14dp" />
 
-            <ImageView
-                android:id="@+id/ivImagePostOpenCamera"
-                android:layout_width="35dp"
-                android:layout_height="35dp"
-                android:layout_gravity="center_vertical"
-                android:background="@android:color/transparent"
-                android:padding="5dp"
-                android:src="@drawable/ic_action_camera" />
-
-            <EditText
-                android:id="@+id/etImagePostWrite"
-                android:layout_width="match_parent"
-                android:layout_height="35dp"
-                android:layout_marginLeft="10dp"
-                android:layout_gravity="center_vertical"
-                android:focusableInTouchMode="true"
-                android:focusable="true"
-                android:layout_marginRight="10dp"
-                android:layout_weight="1"
-                android:hint="Write Something..."
-                android:textSize="14dp" />
-
-            <ImageView
-                android:id="@+id/ivImagePostSend"
-                android:layout_width="35dp"
-                android:layout_height="35dp"
-                android:layout_gravity="center_vertical"
-                android:background="@android:color/transparent"
-                android:backgroundTint="@color/colorPrimary"
-                android:padding="5dp"
-                android:src="@drawable/ic_action_send" />
-        </LinearLayout>
+        <ImageView
+            android:id="@+id/ivImagePostSend"
+            android:layout_width="35dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
+            android:background="@android:color/transparent"
+            android:backgroundTint="@color/colorPrimary"
+            android:src="@drawable/ic_action_send" />
     </LinearLayout>
+</RelativeLayout>

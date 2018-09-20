@@ -1,6 +1,6 @@
 package com.gandsoft.openguide.API.APIresponse.HomeContent;
 
-public class HomeContentPostCaptionResponseModel {
+public class HomeContentPostCaptionDeleteResponseModel {
     private String status;
 
     public String getStatus() {

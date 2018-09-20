@@ -6,6 +6,7 @@ import java.util.List;
 
 public class UserDataResponseModel  {
 
+    public int number;
     public String account_id;
     public String image_url;
     public String full_name;
@@ -19,10 +20,9 @@ public class UserDataResponseModel  {
     public String version_data;
     public String group_code;
     public String role_name;
+    public String image_url_local;
     public List<UserListEventResponseModel> list_event = new ArrayList<>();
 
-    public int number;
-    public String image_url_local;
 
 
     public int getNumber() {

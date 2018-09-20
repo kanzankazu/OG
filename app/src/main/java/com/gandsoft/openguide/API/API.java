@@ -3,8 +3,11 @@ package com.gandsoft.openguide.API;
 import com.gandsoft.openguide.API.APIrequest.Event.EventDataRequestModel;
 import com.gandsoft.openguide.API.APIrequest.Gallery.GalleryRequestModel;
 import com.gandsoft.openguide.API.APIrequest.HomeContent.HomeContentCheckinRequestModel;
-import com.gandsoft.openguide.API.APIrequest.HomeContent.HomeContentPostCaptionRequestModel;
-import com.gandsoft.openguide.API.APIrequest.HomeContent.HomeContentPostCommentRequestModel;
+import com.gandsoft.openguide.API.APIrequest.HomeContent.HomeContentPostCaptionDeleteRequestModel;
+import com.gandsoft.openguide.API.APIrequest.HomeContent.HomeContentPostCaptionSetRequestModel;
+import com.gandsoft.openguide.API.APIrequest.HomeContent.HomeContentPostCommentDeleteRequestModel;
+import com.gandsoft.openguide.API.APIrequest.HomeContent.HomeContentPostCommentGetRequestModel;
+import com.gandsoft.openguide.API.APIrequest.HomeContent.HomeContentPostCommentSetRequestModel;
 import com.gandsoft.openguide.API.APIrequest.HomeContent.HomeContentPostImageCaptionRequestModel;
 import com.gandsoft.openguide.API.APIrequest.HomeContent.HomeContentPostLikeRequestModel;
 import com.gandsoft.openguide.API.APIrequest.HomeContent.HomeContentRequestModel;
@@ -13,9 +16,10 @@ import com.gandsoft.openguide.API.APIrequest.UserData.UserDataRequestModel;
 import com.gandsoft.openguide.API.APIrequest.UserUpdate.UserUpdateRequestModel;
 import com.gandsoft.openguide.API.APIresponse.Event.EventDataResponseModel;
 import com.gandsoft.openguide.API.APIresponse.Gallery.GalleryResponseModel;
-import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentPostCaptionResponseModel;
-import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentPostCommentResponseModel;
-import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentPostImageCaptionResponseModel;
+import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentPostCaptionDeleteResponseModel;
+import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentPostCommentDeleteResponseModel;
+import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentPostCommentGetResponseModel;
+import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentPostCommentSetResponseModel;
 import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentResponseModel;
 import com.gandsoft.openguide.API.APIresponse.LocalBaseResponseModel;
 import com.gandsoft.openguide.API.APIresponse.Login.LoginResponseModel;
@@ -50,11 +54,11 @@ public class API {
         return getAPIService().eventDataRet(requestModel);
     }
 
-    public static Call<List<GalleryResponseModel>> doGalleryRet(GalleryRequestModel requestModel){
+    public static Call<List<GalleryResponseModel>> doGalleryRet(GalleryRequestModel requestModel) {
         return getAPIService().galleryDataRet(requestModel);
     }
 
-    public static Call<List<HomeContentResponseModel>> doHomeContentDataRet(HomeContentRequestModel requestModel){
+    public static Call<List<HomeContentResponseModel>> doHomeContentDataRet(HomeContentRequestModel requestModel) {
         return getAPIService().homeContentDataRet(requestModel);
     }
 
@@ -62,7 +66,7 @@ public class API {
         return getAPIService().homeContentCheckinRet(requestModel);
     }
 
-    public static Call<List<LocalBaseResponseModel>> doHomeContentPostCaptionRet(HomeContentPostCaptionRequestModel requestModel) {
+    public static Call<List<LocalBaseResponseModel>> doHomeContentPostCaptionRet(HomeContentPostCaptionSetRequestModel requestModel) {
         return getAPIService().homeContentPostCaptionRet(requestModel);
     }
 
@@ -70,12 +74,24 @@ public class API {
         return getAPIService().homeContentPostImageCaptionRet(requestModel);
     }
 
-    public static Call<List<LocalBaseResponseModel>> doHomeContentPostCommentRet(HomeContentPostCommentRequestModel requestModel) {
+    public static Call<List<HomeContentPostCommentSetResponseModel>> doHomeContentPostCommentRet(HomeContentPostCommentSetRequestModel requestModel) {
         return getAPIService().homeContentPostCommentRet(requestModel);
     }
 
     public static Call<List<LocalBaseResponseModel>> doHomeContentPostLikeRet(HomeContentPostLikeRequestModel requestModel) {
         return getAPIService().homeContentPostLikeRet(requestModel);
+    }
+
+    public static Call<List<HomeContentPostCaptionDeleteResponseModel>> dohomeContentPostDeleteRet(HomeContentPostCaptionDeleteRequestModel requestModel) {
+        return getAPIService().homeContentPostDeleteRet(requestModel);
+    }
+
+    public static Call<List<HomeContentPostCommentDeleteResponseModel>> dohomeContentPostCommentDeleteRet(HomeContentPostCommentDeleteRequestModel requestModel) {
+        return getAPIService().homeContentPostCommentDeleteRet(requestModel);
+    }
+
+    public static Call<List<HomeContentPostCommentGetResponseModel>> dohomeContentPostCommentGetRet(HomeContentPostCommentGetRequestModel requestModel) {
+        return getAPIService().homeContentPostCommentGetRet(requestModel);
     }
 
 

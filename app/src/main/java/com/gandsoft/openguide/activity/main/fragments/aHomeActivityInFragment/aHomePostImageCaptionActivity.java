@@ -2,13 +2,14 @@ package com.gandsoft.openguide.activity.main.fragments.aHomeActivityInFragment;
 
 import android.app.Activity;
 import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -22,60 +23,52 @@ import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
-import com.gandsoft.openguide.API.API;
-import com.gandsoft.openguide.API.APIrequest.HomeContent.HomeContentPostImageCaptionRequestModel;
-import com.gandsoft.openguide.API.APIresponse.LocalBaseResponseModel;
 import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
 import com.gandsoft.openguide.support.PictureUtil;
 import com.gandsoft.openguide.support.SessionUtil;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.List;
-import java.util.UUID;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class aHomePostImageCaptionActivity extends AppCompatActivity {
     private Toolbar toolbar;
     private ActionBar actionbar;
 
-    private ImageView mIvImagePostPicture, mIvImagePostOpenCamera, mIvImagePostSend;
+    private ImageView mIvImagePostPicture;
+    private ImageView mIvImagePostOpenCamera;
+    private ImageView mIvImagePostSend;
     private EditText mEtImagePostWrite;
 
     private String accountId, eventId;
-    private String uniqueId = null;
-    private String base64pic = "a";
-    private Bitmap bitmap = null;
-    private Uri imageUri;
+    private String base64;
+    private String imageurl;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_a_home_post_image_caption);
 
-        summonToolbar("Post Image");
-        if (bitmap == null) {
+        initToolbar("Post Image");
+
+        openCamera();
+        /*if (bitmap == null) {
             ContentValues values = new ContentValues();
             values.put(MediaStore.Images.Media.TITLE, "New Picture");
             values.put(MediaStore.Images.Media.DESCRIPTION, "From your Camera");
-            imageUri = getContentResolver().insert(
-                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+            imageUri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
             Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
             intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
             startActivityForResult(intent, 1);
-        }
+        }*/
 
         initCheck();
+        initParam();
         initComponent();
         initContent();
         initListener();
     }
 
-    private void summonToolbar(String title) {
+    private void initToolbar(String title) {
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -93,10 +86,18 @@ public class aHomePostImageCaptionActivity extends AppCompatActivity {
     }
 
     private void initComponent() {
-        mIvImagePostPicture = findViewById(R.id.ivImagePostPicture);
-        mIvImagePostOpenCamera = findViewById(R.id.ivImagePostOpenCamera);
-        mIvImagePostSend = findViewById(R.id.ivImagePostSend);
-        mEtImagePostWrite = findViewById(R.id.etImagePostWrite);
+        mIvImagePostPicture = (ImageView) findViewById(R.id.ivImagePostPicture);
+        mIvImagePostOpenCamera = (ImageView) findViewById(R.id.ivImagePostOpenCamera);
+        mIvImagePostSend = (ImageView) findViewById(R.id.ivImagePostSend);
+        mEtImagePostWrite = (EditText) findViewById(R.id.etImagePostWrite);
+    }
+
+    private void initParam() {
+        Intent bundle = getIntent();
+        if (bundle.hasExtra(ISeasonConfig.INTENT_PARAM)) {
+            imageurl = bundle.getStringExtra(ISeasonConfig.INTENT_PARAM);
+            loadPic(imageurl);
+        }
     }
 
     private void initContent() {
@@ -106,98 +107,73 @@ public class aHomePostImageCaptionActivity extends AppCompatActivity {
     private void initListener() {
         mIvImagePostOpenCamera.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                ContentValues values = new ContentValues();
+
+                openCamera();
+                /*ContentValues values = new ContentValues();
                 values.put(MediaStore.Images.Media.TITLE, "New Picture");
                 values.put(MediaStore.Images.Media.DESCRIPTION, "From your Camera");
-                imageUri = getContentResolver().insert(
-                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+                imageUri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
                 Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-                startActivityForResult(intent, 1);
+                startActivityForResult(intent, 1);*/
             }
         });
         mIvImagePostSend.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                try {
-                    postImageCaption();
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                }
+                Intent intent = new Intent();
+                intent.putExtra(ISeasonConfig.INTENT_PARAM, imageurl);
+                intent.putExtra(ISeasonConfig.INTENT_PARAM2, mEtImagePostWrite.getText().toString().trim());
+                setResult(Activity.RESULT_OK, intent);
+                finish();
             }
         });
     }
 
-    private void postImageCaption() throws FileNotFoundException {
-        if (uniqueId == null) {
-            uniqueId = UUID.randomUUID().toString();
-        }
+    private void openCamera() {
+        /*if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
+            imageFilePath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/picture.jpg";
+            Log.d("Lihat", "openCamera aHomePostImageCaptionActivity : " + imageFilePath);
+            File imageFile = new File(imageFilePath);
+            Uri imageFileUri = Uri.fromFile(imageFile); // convert path to Uri
+            Log.d("Lihat", "openCamera aHomePostImageCaptionActivity : " + imageFileUri);
+            Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+            cameraIntent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, imageFileUri);
+            startActivityForResult(cameraIntent, REQ_CODE_TAKE_PHOTO_INTENT_ID_KITKAT);
+        } else {
+            Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+            startActivityForResult(cameraIntent, REQ_CODE_TAKE_PHOTO_INTENT_ID);
+        }*/
 
-        Log.d("String bes", String.valueOf(bitmap));
+        /*ContentValues values = new ContentValues();
+        values.put(MediaStore.Images.Media.TITLE, "New Picture");
+        values.put(MediaStore.Images.Media.DESCRIPTION, "From your Camera");
+        imageUri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+        startActivityForResult(intent, REQ_CODE_TAKE_PHOTO_INTENT_ID_STANDART);*/
+    }
 
-        if (base64pic.isEmpty() || base64pic.equals("a")) {
-            Log.d("failed", "get base64");
-            finish();
-        }
-
-        HomeContentPostImageCaptionRequestModel requestModel = new HomeContentPostImageCaptionRequestModel();
-        requestModel.setId_event(eventId);
-        requestModel.setAccount_id(accountId);
-        requestModel.setId_postedhome(uniqueId);
-        requestModel.setCaptions(mEtImagePostWrite.getText().toString());
-        requestModel.setGmt_date("");
-        requestModel.setDate_post("");
-        requestModel.setImagedata(base64pic);
-        requestModel.setDegree("");
-        requestModel.setDbver("3");
-        Log.d("uuidnya", uniqueId);
-
-        API.doHomeContentPostImageCaptionRet(requestModel).enqueue(new Callback<List<LocalBaseResponseModel>>() {
-            @Override
-            public void onResponse(Call<List<LocalBaseResponseModel>> call, Response<List<LocalBaseResponseModel>> response) {
-                if (response.isSuccessful()) {
-                    List<LocalBaseResponseModel> s = response.body();
-                    if (s.size() == 1) {
-                        for (int i = 0; i < s.size(); i++) {
-                            LocalBaseResponseModel model = s.get(i);
-                            if (model.getStatus().equalsIgnoreCase("ok")) {
-                                Snackbar.make(findViewById(android.R.id.content), "Image Post Tersimpan", Snackbar.LENGTH_LONG).show();
-                                finish();
-
-                            } else {
-                                Snackbar.make(findViewById(android.R.id.content), "Image Post Bad Response", Snackbar.LENGTH_LONG).show();
-                                finish();
-                            }
-                        }
-                    } else {
-                        Snackbar.make(findViewById(android.R.id.content), "Image Post Data Tidak Sesuai", Snackbar.LENGTH_LONG).show();
-                        finish();
+    private void loadPic(String imageurl) {
+        Log.d("Lihat", "onActivityResult aHomePostImageCaptionActivity : " + imageurl);
+        Glide.with(getApplicationContext())
+                .load(new File(imageurl))
+                .asBitmap()
+                .into(new SimpleTarget<Bitmap>() {
+                    @Override
+                    public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+                        Bitmap resizeImage = PictureUtil.resizeImage(resource, 1080);
+                        mIvImagePostPicture.setImageBitmap(resizeImage);
+                        base64 = PictureUtil.bitmapToBase64(resizeImage, Bitmap.CompressFormat.JPEG, 100);
                     }
-                } else {
-                    Snackbar.make(findViewById(android.R.id.content), response.message(), Snackbar.LENGTH_LONG).show();
-                    finish();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<List<LocalBaseResponseModel>> call, Throwable t) {
-                Snackbar.make(findViewById(android.R.id.content), t.getMessage(), Snackbar.LENGTH_LONG).show();
-            }
-        });
+                });
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 1 && resultCode == Activity.RESULT_OK) {
+        /*if (requestCode == REQ_CODE_TAKE_PHOTO_INTENT_ID_STANDART && resultCode == Activity.RESULT_OK) {
             String imageurl = PictureUtil.getPath(imageUri, this);
-
-            Log.d("image uri ", imageurl);
-            Log.d("string val from file", String.valueOf(new File(imageurl)));
-            Glide.with(this)
-                    .load(R.drawable.loading)
-                    .asGif()
-                    .crossFade()
-                    .into(mIvImagePostPicture);
+            Log.d("Lihat", "onActivityResult aHomePostImageCaptionActivity : " + imageurl);
             mIvImagePostPicture.setScaleType(ImageView.ScaleType.FIT_CENTER);
             Glide.with(getApplicationContext())
                     .load(new File(imageurl))
@@ -207,19 +183,49 @@ public class aHomePostImageCaptionActivity extends AppCompatActivity {
                         public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
                             Bitmap resizeImage = PictureUtil.resizeImage(resource, 1080);
                             mIvImagePostPicture.setImageBitmap(resizeImage);
-                            base64pic = PictureUtil.bitmapToBase64(resizeImage, Bitmap.CompressFormat.JPEG, 100);
+                            base64 = PictureUtil.bitmapToBase64(resizeImage, Bitmap.CompressFormat.JPEG, 100);
                         }
-                    })
-            ;
-        } else {
-            finish();
-        }
-    }
+                    });
+        }*/
 
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        finish();
+        /*if (requestCode == REQ_CODE_TAKE_PHOTO_INTENT_ID) {
+            if (resultCode == RESULT_OK) {
+                Uri selectedImage = PictureUtil.getUriFromResult(this, resultCode, data.getData());
+                Log.d("Lihat", "onActivityResult aHomePostImageCaptionActivity : " + selectedImage);
+
+                try {
+                    //save Base64
+                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), selectedImage);
+                    Bitmap storedata = SystemUtil.resizeImage(bitmap, sizePic);
+                    base64 = PictureUtil.bitmapToBase64(storedata, Bitmap.CompressFormat.JPEG, compressPic);
+                    Log.d("Lihat", "onActivityResult aHomePostImageCaptionActivity : " + base64);
+
+                    //showImage
+                    showPic(base64);
+                } catch (Exception e) {
+                    Log.d("Lihat", "onActivityResult aHomePostImageCaptionActivity : " + e.getMessage());
+                }
+            }
+        } else if (requestCode == REQ_CODE_TAKE_PHOTO_INTENT_ID_KITKAT) {
+            if (resultCode == RESULT_OK) {
+                try {
+                    BitmapFactory.Options bmpFactoryOptions = new BitmapFactory.Options();
+                    bmpFactoryOptions.inJustDecodeBounds = false;
+
+                    //save Base64
+                    Bitmap bitmap = BitmapFactory.decodeFile(imageFilePath, bmpFactoryOptions);
+                    Bitmap storedata = SystemUtil.resizeImage(bitmap, sizePic);
+                    base64 = PictureUtil.bitmapToBase64(storedata, Bitmap.CompressFormat.JPEG, compressPic);
+                    Log.d("Lihat", "onActivityResult aHomePostImageCaptionActivity : " + base64);
+
+                    //showImage
+                    showPic(base64);
+                } catch (Exception e) {
+                    Log.d("Lihat", "onActivityResult aHomePostImageCaptionActivity : " + e.getMessage());
+                }
+
+            }
+        }*/
     }
 
     @Override
@@ -230,8 +236,36 @@ public class aHomePostImageCaptionActivity extends AppCompatActivity {
     }
 
     @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        // Munculkan alert dialog apabila user ingin keluar aplikasi
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+        alertDialogBuilder.setMessage("Apakah Kamu Tidak Ingin Meneruskan Post Image?");
+        alertDialogBuilder.setPositiveButton("Ya",
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface arg0, int arg1) {
+                        Intent intent = new Intent();
+                        setResult(Activity.RESULT_CANCELED, intent);
+                        finish();
+                    }
+                });
+        // Pilihan jika NO
+        alertDialogBuilder.setNegativeButton("Tidak",
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface arg0, int arg1) {
+
+                    }
+                });
+        // Tampilkan alert dialog
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        finish();
+        onBackPressed();
         return super.onOptionsItemSelected(item);
     }
 }

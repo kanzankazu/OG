@@ -1,12 +1,10 @@
 package com.gandsoft.openguide.API.APIrequest.HomeContent;
 
-public class HomeContentPostCommentRequestModel {
+public class HomeContentPostCommentDeleteRequestModel {
     String event_id;
     String post_id;
     String account_id;
-    String post_comment;
-    String post_time;
-    String timezone;
+    String id_comment;
     String dbver;
 
     public String getEvent_id() {
@@ -33,28 +31,12 @@ public class HomeContentPostCommentRequestModel {
         this.account_id = account_id;
     }
 
-    public String getPost_comment() {
-        return post_comment;
+    public String getId_comment() {
+        return id_comment;
     }
 
-    public void setPost_comment(String post_comment) {
-        this.post_comment = post_comment;
-    }
-
-    public String getPost_time() {
-        return post_time;
-    }
-
-    public void setPost_time(String post_time) {
-        this.post_time = post_time;
-    }
-
-    public String getTimezone() {
-        return timezone;
-    }
-
-    public void setTimezone(String timezone) {
-        this.timezone = timezone;
+    public void setId_comment(String id_comment) {
+        this.id_comment = id_comment;
     }
 
     public String getDbver() {
