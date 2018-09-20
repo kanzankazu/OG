@@ -1,7 +1,6 @@
 package com.gandsoft.openguide.activity.main.adapter;
 
 import android.content.Context;
-import android.content.Intent;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -18,15 +17,12 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.gandsoft.openguide.API.API;
 import com.gandsoft.openguide.API.APIrequest.HomeContent.HomeContentPostLikeRequestModel;
 import com.gandsoft.openguide.API.APIresponse.Event.EventTheEvent;
-import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentCommentModelParcelable;
 import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentPostLikeResponseModel;
 import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentResponseModel;
 import com.gandsoft.openguide.API.APIresponse.LocalBaseResponseModel;
 import com.gandsoft.openguide.API.APIresponse.UserData.UserListEventResponseModel;
 import com.gandsoft.openguide.IConfig;
-import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
-import com.gandsoft.openguide.activity.main.fragments.aHomeActivityInFragment.aHomePostCommentActivity;
 import com.gandsoft.openguide.support.PictureUtil;
 
 import org.sufficientlysecure.htmltextview.HtmlTextView;
@@ -43,14 +39,15 @@ public class HomeContentAdapter extends RecyclerView.Adapter<HomeContentAdapter.
     private Context context;
     private FragmentActivity activity;
     private List<HomeContentResponseModel> models = new ArrayList<>();
-    private ArrayList<HomeContentCommentModelParcelable> dataParam = new ArrayList<>();
+
     private List<HomeContentPostLikeResponseModel> modelsnyaLike = new ArrayList<>();
     private String eventId;
     private String accountId;
     private EventTheEvent theEventModel;
     private UserListEventResponseModel oneListEventModel;
+    private HomeContentListener mListener;
 
-    public HomeContentAdapter(FragmentActivity activity, List<HomeContentResponseModel> items, Context context, String eventId, String accountId, EventTheEvent theEventModel, UserListEventResponseModel oneListEventModel) {
+    public HomeContentAdapter(FragmentActivity activity, List<HomeContentResponseModel> items, Context context, String eventId, String accountId, EventTheEvent theEventModel, UserListEventResponseModel oneListEventModel, HomeContentListener mListener) {
         this.activity = activity;
         this.context = context;
         models = items;
@@ -58,6 +55,7 @@ public class HomeContentAdapter extends RecyclerView.Adapter<HomeContentAdapter.
         this.accountId = accountId;
         this.theEventModel = theEventModel;
         this.oneListEventModel = oneListEventModel;
+        this.mListener = mListener;
     }
 
     @Override
@@ -148,30 +146,7 @@ public class HomeContentAdapter extends RecyclerView.Adapter<HomeContentAdapter.
         holder.llRVHomeContentComment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                HomeContentCommentModelParcelable mode = new HomeContentCommentModelParcelable();
-                mode.setId(models.get(position).getId());
-                mode.setLike(models.get(position).getLike());
-                mode.setAccount_id(models.get(position).getAccount_id());
-                mode.setTotal_comment(models.get(position).getTotal_comment());
-                mode.setStatus_like(models.get(position).getStatus_like());
-                mode.setUsername(models.get(position).getUsername());
-                mode.setJabatan(models.get(position).getJabatan());
-                mode.setDate_created(models.get(position).getDate_created());
-                mode.setImage_icon(models.get(position).getImage_icon());
-                mode.setImage_icon_local(models.get(position).getImage_icon_local());
-                mode.setImage_posted(models.get(position).getImage_posted());
-                mode.setImage_posted_local(models.get(position).getImage_posted_local());
-                mode.setKeterangan(models.get(position).getKeterangan());
-                mode.setEvent(models.get(position).getEvent());
-                if (dataParam.size() > 0) {
-                    dataParam.clear();
-                    dataParam.add(mode);
-                } else {
-                    dataParam.add(mode);
-                }
-                Intent intent = new Intent(activity, aHomePostCommentActivity.class);
-                intent.putParcelableArrayListExtra(ISeasonConfig.INTENT_PARAM, dataParam);
-                activity.startActivity(intent);
+                mListener.onCommentClick(models.get(position), position);
             }
         });
     }
@@ -219,7 +194,9 @@ public class HomeContentAdapter extends RecyclerView.Adapter<HomeContentAdapter.
     class ViewHolder extends RecyclerView.ViewHolder {
 
         private final TextView tvRVHomeContentUsername;
+
         private final HtmlTextView tvRVHomeContentKeterangan;
+
         private final TextView tvRVHomeContentComment;
         private final TextView tvRVHomeContentLike;
         private final TextView tvRVHomeContentTime;
@@ -244,6 +221,12 @@ public class HomeContentAdapter extends RecyclerView.Adapter<HomeContentAdapter.
             llRVHomeContentComment = (LinearLayout) itemView.findViewById(R.id.llRVHomeContentComment);
             llRVHomeContentRemove = (LinearLayout) itemView.findViewById(R.id.llRVHomeContentRemove);
         }
+
+    }
+
+    public interface HomeContentListener {
+        void onCommentClick(HomeContentResponseModel homeContentResponseModel, int position);
+
     }
 
     public void setData(List<HomeContentResponseModel> datas) {
@@ -277,6 +260,15 @@ public class HomeContentAdapter extends RecyclerView.Adapter<HomeContentAdapter.
         int removeIndex = 0;
         models.remove(removeIndex);
         notifyItemRemoved(removeIndex);
+    }
+
+    public void changeTotalComment(int position, String totalComment) {
+        if (totalComment.equalsIgnoreCase("0")) {
+            models.get(position).setTotal_comment("0");
+        } else {
+            models.get(position).setTotal_comment(totalComment);
+        }
+        notifyItemChanged(position);
     }
 
 }

@@ -1,5 +1,6 @@
 package com.gandsoft.openguide.activity.main.fragments.aHomeActivityInFragment;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -64,6 +65,8 @@ public class aHomePostCommentActivity extends AppCompatActivity {
     private String formattedDateGMT;
     private List<HomeContentPostCommentGetResponseModel> menuUi = new ArrayList<>();
     private HomeContentCommentAdapter adapter;
+    private int position;
+    private String total_comment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,6 +102,10 @@ public class aHomePostCommentActivity extends AppCompatActivity {
                 models = bundle.getParcelableArrayListExtra(ISeasonConfig.INTENT_PARAM);
             }*/
             models = bundle.getParcelableArrayListExtra(ISeasonConfig.INTENT_PARAM);
+            Log.d("Lihat", "initParam aHomePostCommentActivity : " + models.size());
+        }
+        if (bundle.hasExtra(ISeasonConfig.INTENT_PARAM2)) {
+            position = bundle.getIntExtra(ISeasonConfig.INTENT_PARAM2, 0);
             Log.d("Lihat", "initParam aHomePostCommentActivity : " + models.size());
         }
     }
@@ -195,8 +202,14 @@ public class aHomePostCommentActivity extends AppCompatActivity {
                 progressDialog.dismiss();
                 if (response.isSuccessful()) {
                     List<HomeContentPostCommentGetResponseModel> q = response.body();
-
                     adapter.setData(q);
+                    if (q.size() > 0) {
+                        for (int i = 0; i < q.size(); i++) {
+                            HomeContentPostCommentGetResponseModel w = q.get(i);
+                            total_comment = w.getTotal_comment();
+                            Log.d("Lihat", "onResponse aHomePostCommentActivity : " + total_comment);
+                        }
+                    }
                 } else {
                     Log.d("Lihat", "onFailure aHomePostCommentActivity : " + response.message());
                     Snackbar.make(findViewById(android.R.id.content), "Failed Connection To Server", Snackbar.LENGTH_LONG).show();
@@ -325,6 +338,10 @@ public class aHomePostCommentActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         //dialogBack();
+        Intent intent = new Intent();
+        intent.putExtra(ISeasonConfig.INTENT_PARAM, position);
+        intent.putExtra(ISeasonConfig.INTENT_PARAM2, total_comment);
+        setResult(Activity.RESULT_OK, intent);
         finish();
     }
 

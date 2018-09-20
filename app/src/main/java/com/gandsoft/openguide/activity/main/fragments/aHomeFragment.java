@@ -21,6 +21,7 @@ import android.text.Html;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
@@ -40,6 +41,7 @@ import com.gandsoft.openguide.API.APIrequest.HomeContent.HomeContentPostCaptionS
 import com.gandsoft.openguide.API.APIrequest.HomeContent.HomeContentPostImageCaptionRequestModel;
 import com.gandsoft.openguide.API.APIrequest.HomeContent.HomeContentRequestModel;
 import com.gandsoft.openguide.API.APIresponse.Event.EventTheEvent;
+import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentCommentModelParcelable;
 import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentResponseModel;
 import com.gandsoft.openguide.API.APIresponse.LocalBaseResponseModel;
 import com.gandsoft.openguide.API.APIresponse.UserData.UserDataResponseModel;
@@ -49,6 +51,7 @@ import com.gandsoft.openguide.IConfig;
 import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
 import com.gandsoft.openguide.activity.main.adapter.HomeContentAdapter;
+import com.gandsoft.openguide.activity.main.fragments.aHomeActivityInFragment.aHomePostCommentActivity;
 import com.gandsoft.openguide.activity.main.fragments.aHomeActivityInFragment.aHomePostImageCaptionActivity;
 import com.gandsoft.openguide.database.SQLiteHelper;
 import com.gandsoft.openguide.support.NetworkUtil;
@@ -74,10 +77,11 @@ import retrofit2.Response;
 import static android.app.Activity.RESULT_OK;
 
 public class aHomeFragment extends Fragment {
-    SQLiteHelper db;
-
+    private static final int REQ_CODE_COMMENT = 13;
     private static final int REQ_CODE_TAKE_PHOTO_INTENT_ID_STANDART = 1;
     private static final int REQ_CODE_POST_IMAGE = 12;
+    SQLiteHelper db;
+
 
     private View view;
     private SwipeRefreshLayout homeSRLHomefvbi;
@@ -186,7 +190,37 @@ public class aHomeFragment extends Fragment {
             homeBTapCheckInfvbi.setVisibility(View.GONE);
         }
 
-        adapter = new HomeContentAdapter(getActivity(), menuUi, getContext(), eventId, accountId, theEventModel, oneListEventModel);
+        adapter = new HomeContentAdapter(getActivity(), menuUi, getContext(), eventId, accountId, theEventModel, oneListEventModel, new HomeContentAdapter.HomeContentListener() {
+            @Override
+            public void onCommentClick(HomeContentResponseModel model, int position) {
+                ArrayList<HomeContentCommentModelParcelable> dataParam = new ArrayList<>();
+                HomeContentCommentModelParcelable mode = new HomeContentCommentModelParcelable();
+                mode.setId(model.getId());
+                mode.setLike(model.getLike());
+                mode.setAccount_id(model.getAccount_id());
+                mode.setTotal_comment(model.getTotal_comment());
+                mode.setStatus_like(model.getStatus_like());
+                mode.setUsername(model.getUsername());
+                mode.setJabatan(model.getJabatan());
+                mode.setDate_created(model.getDate_created());
+                mode.setImage_icon(model.getImage_icon());
+                mode.setImage_icon_local(model.getImage_icon_local());
+                mode.setImage_posted(model.getImage_posted());
+                mode.setImage_posted_local(model.getImage_posted_local());
+                mode.setKeterangan(model.getKeterangan());
+                mode.setEvent(model.getEvent());
+                if (dataParam.size() > 0) {
+                    dataParam.clear();
+                    dataParam.add(mode);
+                } else {
+                    dataParam.add(mode);
+                }
+                Intent intent = new Intent(getActivity(), aHomePostCommentActivity.class);
+                intent.putParcelableArrayListExtra(ISeasonConfig.INTENT_PARAM, dataParam);
+                intent.putExtra(ISeasonConfig.INTENT_PARAM2,position);
+                startActivityForResult(intent, REQ_CODE_COMMENT);
+            }
+        });
         recyclerView.setNestedScrollingEnabled(false);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -246,6 +280,7 @@ public class aHomeFragment extends Fragment {
                         new Handler().postDelayed(new Runnable() {
                             public void run() {
                                 //code here
+                                homeNSVHomefvbi.setNestedScrollingEnabled(false);
                                 callHomeContentAPILoadMore();
                             }
                         }, 1000);
@@ -371,6 +406,7 @@ public class aHomeFragment extends Fragment {
             @Override
             public void onResponse(Call<List<HomeContentResponseModel>> call, Response<List<HomeContentResponseModel>> response) {
                 llLoadMode2fvbi.setVisibility(View.GONE);
+                homeNSVHomefvbi.setNestedScrollingEnabled(true);
                 if (response.isSuccessful()) {
                     List<HomeContentResponseModel> models = response.body();
                     adapter.addDatas(models);
@@ -395,6 +431,7 @@ public class aHomeFragment extends Fragment {
                         }
                     }
                 } else {
+                    homeNSVHomefvbi.setNestedScrollingEnabled(true);
                     Snackbar.make(getActivity().findViewById(android.R.id.content), response.message(), Snackbar.LENGTH_LONG).show();
                 }
             }
@@ -671,7 +708,10 @@ public class aHomeFragment extends Fragment {
         } else if (requestCode == REQ_CODE_TAKE_PHOTO_INTENT_ID_STANDART && resultCode == Activity.RESULT_OK) {
             String imageurl = PictureUtil.getPath(imageUri, getActivity());
             moveToAHomePostImage(imageurl);
-
+        } else if (requestCode == REQ_CODE_COMMENT && resultCode == Activity.RESULT_OK) {
+            int position = data.getIntExtra(ISeasonConfig.INTENT_PARAM,0);
+            String totalComment = data.getStringExtra(ISeasonConfig.INTENT_PARAM2);
+            adapter.changeTotalComment(position,totalComment);
         }
     }
 
