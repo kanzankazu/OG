@@ -1,18 +1,25 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/layout_root"
-    android:orientation="horizontal"
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="10dp"
-    >
-    <ImageView android:id="@+id/image"
-        android:layout_width="wrap_content"
-        android:layout_height="fill_parent"
-        android:layout_marginRight="10dp"
+    android:weightSum="10">
+
+    <ImageView android:id="@+id/ivDialWelcom"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:padding="0dp"
+        android:layout_weight="9"
+        android:scaleType="fitXY"
+        android:src="@drawable/gallery_potrait"
         />
-    <TextView android:id="@+id/text"
-        android:layout_width="wrap_content"
-        android:layout_height="fill_parent"
-        android:textColor="#FFF"
-        />
+
+    <Button
+        android:id="@+id/btn_cancel"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:text="CLOSE"
+        android:textColor="@color/white"
+        android:background="@color/colorPrimaryDark"/>
 </LinearLayout>

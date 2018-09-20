@@ -115,6 +115,7 @@ public class eInfoFragment extends Fragment implements InfoListViewAdapter.ListA
             int surrounding_area = ListArrayUtil.getPosStringInList(list, "Surrounding Area");
             s.add(surrounding_area);
         }
+
         int[] ints = ListArrayUtil.convertListIntegertToIntArray(s);
 
         for (int i = 0; i < infoMenu.length; i++) {
@@ -122,9 +123,11 @@ public class eInfoFragment extends Fragment implements InfoListViewAdapter.ListA
                 listviewModels.add(new InfoListviewModel(infoMenu[i], infoPic[i]));
             }
         }
+
         adapter = new InfoListViewAdapter(getActivity(), listviewModels, this);
         rvMenufvbi.setNestedScrollingEnabled(false);
         rvMenufvbi.setAdapter(adapter);
+
         rvMenufvbi.setLayoutManager(new LinearLayoutManager(getActivity()));
 
     }
@@ -154,6 +157,7 @@ public class eInfoFragment extends Fragment implements InfoListViewAdapter.ListA
                         .skipMemoryCache(true)
                         .into(ivInfoUserImagefvbi);
 
+
             }
         }
     }
@@ -167,7 +171,9 @@ public class eInfoFragment extends Fragment implements InfoListViewAdapter.ListA
             Intent intent2 = new Intent(getActivity(), GalleryActivity.class);
             getActivity().startActivity(intent2);
         } else if (s.equalsIgnoreCase("Inbox")) {
+            String title = "Inbox";
             Intent intent3 = new Intent(getActivity(), cInboxActivity.class);
+            intent3.putExtra("TITLE",title);
             getActivity().startActivity(intent3);
         } else if (s.equalsIgnoreCase("Comitee Contact")) {
             Intent intent4 = new Intent(getActivity(), dComitteContactActivity.class);

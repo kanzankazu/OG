@@ -1,6 +1,7 @@
 package com.gandsoft.openguide.activity.main;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.PorterDuff;
@@ -14,11 +15,17 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.gandsoft.openguide.API.APIresponse.Event.EventCommitteeNote;
 import com.gandsoft.openguide.API.APIresponse.Event.EventTheEvent;
 import com.gandsoft.openguide.ISeasonConfig;
@@ -27,6 +34,10 @@ import com.gandsoft.openguide.activity.ChangeEventActivity;
 import com.gandsoft.openguide.activity.infomenu.cInboxActivity;
 import com.gandsoft.openguide.database.SQLiteHelper;
 import com.gandsoft.openguide.support.SessionUtil;
+
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
 
 import java.util.ArrayList;
 
@@ -37,6 +48,7 @@ public class BaseHomeActivity extends AppCompatActivity {
 
     ViewPager mPager;
     SlidePagerAdapter mPagerAdapter;
+    private Activity activity;
     private TabLayout tabLayout;
     private ActionBar ab;
     private String[] titleTab = new String[]{"Home", "Wallet", "Schedule", "About the Event", "Important Information"};
@@ -50,6 +62,7 @@ public class BaseHomeActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_base_home);
+        db = new SQLiteHelper(this);
 
         if (SessionUtil.checkIfExist(ISeasonConfig.KEY_ACCOUNT_ID)) {
             accountId = SessionUtil.getStringPreferences(ISeasonConfig.KEY_ACCOUNT_ID, null);
@@ -101,8 +114,36 @@ public class BaseHomeActivity extends AppCompatActivity {
             }
         });
     }
-
+    ImageView imviewdial;
     private void showFirstDialogEvent() {
+        Dialog dialog = new Dialog(this);
+        dialog.setContentView(R.layout.custom_dialog);
+        dialog.show();
+        imviewdial = dialog.findViewById(R.id.ivDialWelcom);
+        Log.d("wew",String.valueOf(R.id.ivDialWelcom));
+
+        String wew = db.getTheEvent(eventId).welcome_note;
+        Document doc = Jsoup.parse(wew);
+        Elements img = doc.select("img");
+        String urlsd = img.attr("abs:src");
+        Log.d("wew",urlsd);
+        try {
+            Glide.with(this)
+                    .load(urlsd)
+                    .into(imviewdial);
+        }catch (Exception e){
+            Log.d("errornya di ", String.valueOf(e));
+        }
+
+        Button declineButton = (Button) dialog.findViewById(R.id.btn_cancel);
+        declineButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                db.updateOneKey(SQLiteHelper.TableListEvent, SQLiteHelper.KEY_ListEvent_eventId, eventId, SQLiteHelper.KEY_ListEvent_IsFirstIn, "true");
+                dialog.dismiss();
+            }
+        });
+        /*
         new AlertDialog.Builder(BaseHomeActivity.this)
                 .setTitle("INFO")
                 .setMessage("Test")
@@ -110,10 +151,11 @@ public class BaseHomeActivity extends AppCompatActivity {
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        db.updateOneKey(SQLiteHelper.TableListEvent, SQLiteHelper.KEY_ListEvent_eventId, eventId, SQLiteHelper.KEY_ListEvent_IsFirstIn, "true");
+                        db.updateOneKey(SQLiteHelper.TableListEvent, SQLiteHelper.KEY_ListEvent_eventId, eventId, SQLiteHelper.KEY_ListEvent_IsFirstIn, "false");
                     }
-                })
-                .show();
+                })*/
+        /*.show();
+                */
     }
 
     private void initActionBar() {
@@ -150,12 +192,12 @@ public class BaseHomeActivity extends AppCompatActivity {
         mPager.setOffscreenPageLimit(4);
         mPager.setCurrentItem(0);
     }
+    int a=0;
     private int checkNotif(){
-        int a=0;
-        ArrayList<EventCommitteeNote> model = db.getCommiteNote(eventId);
-        for(int i=0;i<model.size();i++){
-            if(model.get(i).getHas_been_opened().equals("1")){
-                a=1;
+        ArrayList<EventCommitteeNote> wew = db.getCommiteNote(eventId);
+        for(int i=0;i<wew.size();i++){
+            if(wew.get(i).getHas_been_opened().equals("0")){
+                a++;
             };
         }
         return a;
@@ -164,7 +206,7 @@ public class BaseHomeActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        if(checkNotif()==1) {
+        if(checkNotif()>0) {
             inflater.inflate(R.menu.menu_main2, menu);
         }
         else{

@@ -36,13 +36,7 @@ public class cInboxActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_info_c_inbox);
-        try {
-            title = getIntent().getStringExtra("TITLE");
-        }catch (Exception e){
-            title = "Inbox";
-        }finally {
-            title = "Inbox";
-        }
+        title = getIntent().getStringExtra("TITLE");
 
         initCheck();
         initComponent();
