@@ -38,7 +38,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class PostRecViewAdapter extends RecyclerView.Adapter<PostRecViewAdapter.ViewHolder> {
+public class HomeContentAdapter extends RecyclerView.Adapter<HomeContentAdapter.ViewHolder> {
 
     private Context context;
     private FragmentActivity activity;
@@ -50,7 +50,7 @@ public class PostRecViewAdapter extends RecyclerView.Adapter<PostRecViewAdapter.
     private EventTheEvent theEventModel;
     private UserListEventResponseModel oneListEventModel;
 
-    public PostRecViewAdapter(FragmentActivity activity, List<HomeContentResponseModel> items, Context context, String eventId, String accountId, EventTheEvent theEventModel, UserListEventResponseModel oneListEventModel) {
+    public HomeContentAdapter(FragmentActivity activity, List<HomeContentResponseModel> items, Context context, String eventId, String accountId, EventTheEvent theEventModel, UserListEventResponseModel oneListEventModel) {
         this.activity = activity;
         this.context = context;
         models = items;

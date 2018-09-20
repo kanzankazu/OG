@@ -223,7 +223,6 @@ public class aHomePostImageCaptionActivity extends AppCompatActivity {
                 } catch (Exception e) {
                     Log.d("Lihat", "onActivityResult aHomePostImageCaptionActivity : " + e.getMessage());
                 }
-
             }
         }*/
     }

@@ -4,9 +4,7 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Intent;
-import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -21,7 +19,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.TextUtils;
-import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -39,7 +36,7 @@ import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.gandsoft.openguide.API.API;
 import com.gandsoft.openguide.API.APIrequest.HomeContent.HomeContentCheckinRequestModel;
-import com.gandsoft.openguide.API.APIrequest.HomeContent.HomeContentPostCaptionRequestModel;
+import com.gandsoft.openguide.API.APIrequest.HomeContent.HomeContentPostCaptionSetRequestModel;
 import com.gandsoft.openguide.API.APIrequest.HomeContent.HomeContentPostImageCaptionRequestModel;
 import com.gandsoft.openguide.API.APIrequest.HomeContent.HomeContentRequestModel;
 import com.gandsoft.openguide.API.APIresponse.Event.EventTheEvent;
@@ -51,7 +48,7 @@ import com.gandsoft.openguide.API.APIresponse.UserData.UserWalletDataResponseMod
 import com.gandsoft.openguide.IConfig;
 import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
-import com.gandsoft.openguide.activity.main.adapter.PostRecViewAdapter;
+import com.gandsoft.openguide.activity.main.adapter.HomeContentAdapter;
 import com.gandsoft.openguide.activity.main.fragments.aHomeActivityInFragment.aHomePostImageCaptionActivity;
 import com.gandsoft.openguide.database.SQLiteHelper;
 import com.gandsoft.openguide.support.NetworkUtil;
@@ -62,7 +59,6 @@ import com.squareup.picasso.Picasso;
 
 import org.sufficientlysecure.htmltextview.HtmlTextView;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.text.SimpleDateFormat;
@@ -109,7 +105,7 @@ public class aHomeFragment extends Fragment {
     private EventTheEvent theEventModel = null;
     private UserListEventResponseModel oneListEventModel = null;
     private UserDataResponseModel userData = null;
-    private PostRecViewAdapter adapter;
+    private HomeContentAdapter adapter;
 
     private List<HomeContentResponseModel> menuUi = new ArrayList<>();
     private String accountId, eventId;
@@ -190,7 +186,7 @@ public class aHomeFragment extends Fragment {
             homeBTapCheckInfvbi.setVisibility(View.GONE);
         }
 
-        adapter = new PostRecViewAdapter(getActivity(), menuUi, getContext(), eventId, accountId, theEventModel, oneListEventModel);
+        adapter = new HomeContentAdapter(getActivity(), menuUi, getContext(), eventId, accountId, theEventModel, oneListEventModel);
         recyclerView.setNestedScrollingEnabled(false);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -294,24 +290,11 @@ public class aHomeFragment extends Fragment {
     }
 
     private void openCamera() {
-        /*if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
-            imageFilePath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/picture.jpg";
-            Log.d("Lihat", "openCamera aHomePostImageCaptionActivity : " + imageFilePath);
-            File imageFile = new File(imageFilePath);
-            Uri imageFileUri = Uri.fromFile(imageFile); // convert path to Uri
-            Log.d("Lihat", "openCamera aHomePostImageCaptionActivity : " + imageFileUri);
-            Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-            cameraIntent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, imageFileUri);
-            startActivityForResult(cameraIntent, REQ_CODE_TAKE_PHOTO_INTENT_ID_KITKAT);
-        } else {
-            Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-            startActivityForResult(cameraIntent, REQ_CODE_TAKE_PHOTO_INTENT_ID);
-        }*/
-
         ContentValues values = new ContentValues();
         values.put(MediaStore.Images.Media.TITLE, "New Picture");
         values.put(MediaStore.Images.Media.DESCRIPTION, "From your Camera");
         imageUri = getActivity().getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+        Log.d("Lihat", "openCamera aHomeFragment : " + imageUri);
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
         startActivityForResult(intent, REQ_CODE_TAKE_PHOTO_INTENT_ID_STANDART);
@@ -517,7 +500,7 @@ public class aHomeFragment extends Fragment {
     }
 
     private void postCaption() {
-        HomeContentPostCaptionRequestModel requestModel = new HomeContentPostCaptionRequestModel();
+        HomeContentPostCaptionSetRequestModel requestModel = new HomeContentPostCaptionSetRequestModel();
         requestModel.setId_event(eventId);
         requestModel.setAccount_id(accountId);
         requestModel.setCaptions(homeETWritePostCreatefvbi.getText().toString());
