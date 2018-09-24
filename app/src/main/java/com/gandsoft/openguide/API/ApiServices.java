@@ -80,8 +80,13 @@ public interface ApiServices {
     @POST("post_like_contentevent")
     Call<List<LocalBaseResponseModel>> homeContentPostLikeRet(@Body HomeContentPostLikeRequestModel model);
 
-    @POST("delete_posted_data") Call<List<HomeContentPostCaptionDeleteResponseModel>> homeContentPostDeleteRet(@Body HomeContentPostCaptionDeleteRequestModel model);
-    @POST("delete_commented_post") Call<List<HomeContentPostCommentDeleteResponseModel>> homeContentPostCommentDeleteRet(@Body HomeContentPostCommentDeleteRequestModel model);
-    @POST("get_posted_comment_list") Call<List<HomeContentPostCommentGetResponseModel>> homeContentPostCommentGetRet(@Body HomeContentPostCommentGetRequestModel model);
+    @POST("delete_posted_data")
+    Call<List<HomeContentPostCaptionDeleteResponseModel>> homeContentPostDeleteRet(@Body HomeContentPostCaptionDeleteRequestModel model);
+
+    @POST("delete_commented_post")
+    Call<List<HomeContentPostCommentDeleteResponseModel>> homeContentPostCommentDeleteRet(@Body HomeContentPostCommentDeleteRequestModel model);
+
+    @POST("get_posted_comment_list")
+    Call<List<HomeContentPostCommentGetResponseModel>> homeContentPostCommentGetRet(@Body HomeContentPostCommentGetRequestModel model);
 
 }

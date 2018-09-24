@@ -1,14 +1,25 @@
 package com.gandsoft.openguide.API.APIrequest.HomeContent;
 
 public class HomeContentPostCaptionDeleteRequestModel {
-    String id_event, account_id, captions, date_post, gmt_date, dbver;
+    String event_id;
+    String post_id;
+    String account_id;
+    String dbver;
 
-    public String getId_event() {
-        return id_event;
+    public String getEvent_id() {
+        return event_id;
     }
 
-    public void setId_event(String id_event) {
-        this.id_event = id_event;
+    public void setEvent_id(String event_id) {
+        this.event_id = event_id;
+    }
+
+    public String getPost_id() {
+        return post_id;
+    }
+
+    public void setPost_id(String post_id) {
+        this.post_id = post_id;
     }
 
     public String getAccount_id() {
@@ -17,30 +28,6 @@ public class HomeContentPostCaptionDeleteRequestModel {
 
     public void setAccount_id(String account_id) {
         this.account_id = account_id;
-    }
-
-    public String getCaptions() {
-        return captions;
-    }
-
-    public void setCaptions(String captions) {
-        this.captions = captions;
-    }
-
-    public String getDate_post() {
-        return date_post;
-    }
-
-    public void setDate_post(String date_post) {
-        this.date_post = date_post;
-    }
-
-    public String getGmt_date() {
-        return gmt_date;
-    }
-
-    public void setGmt_date(String gmt_date) {
-        this.gmt_date = gmt_date;
     }
 
     public String getDbver() {

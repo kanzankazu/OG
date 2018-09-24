@@ -127,12 +127,14 @@ class HomeContentCommentAdapter extends RecyclerView.Adapter<HomeContentCommentA
         int removeIndex = 0;
         models.remove(removeIndex);
         notifyItemRemoved(removeIndex);
+        notifyItemRangeChanged(removeIndex, models.size());
     }
 
     public void removeAt(int position) {
         int removeIndex = position;
         models.remove(removeIndex);
         notifyItemRemoved(removeIndex);
+        notifyItemRangeChanged(position, models.size());
     }
 
     interface HomeContentCommentListener {

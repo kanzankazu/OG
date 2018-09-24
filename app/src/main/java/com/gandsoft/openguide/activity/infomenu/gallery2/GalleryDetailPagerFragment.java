@@ -15,7 +15,6 @@ import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.gandsoft.openguide.R;
 import com.gandsoft.openguide.support.PictureUtil;
-import com.jsibbold.zoomage.ZoomageView;
 
 public class GalleryDetailPagerFragment extends Fragment {
 
@@ -115,7 +114,7 @@ public class GalleryDetailPagerFragment extends Fragment {
                 .into(new SimpleTarget<Bitmap>() {
                     @Override
                     public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
-                        Bitmap resizeImage = PictureUtil.resizeImage(resource, 720);
+                        Bitmap resizeImage = PictureUtil.resizeImageBitmap(resource, 720);
                         zivDetailGalleryfvbi.setImageBitmap(resizeImage);
                     }
                 });

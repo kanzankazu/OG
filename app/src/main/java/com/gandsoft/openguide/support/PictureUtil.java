@@ -1,6 +1,5 @@
 package com.gandsoft.openguide.support;
 
-import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
@@ -9,6 +8,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
 import android.net.Uri;
@@ -58,7 +58,7 @@ public class PictureUtil {
         }
     }
 
-    public static Bitmap resizeImage(Bitmap bitmap, int newSize) {
+    public static Bitmap resizeImageBitmap(Bitmap bitmap, int newSize) {
         int width = bitmap.getWidth();
         int height = bitmap.getHeight();
 
@@ -156,7 +156,7 @@ public class PictureUtil {
         }
     }
 
-    public static Bitmap Base64ToBitmap(String base64) {
+    public static Bitmap base64ToBitmap(String base64) {
         byte[] decodedString = Base64.decode(base64.replace("data:image/jpeg;base64,", ""), Base64.DEFAULT);
         Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
         return decodedByte;
@@ -187,7 +187,7 @@ public class PictureUtil {
     }
 
     private static void createDirectoryAndSaveFile(Bitmap imageToSave, String fileName) {
-        File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/.Gandsoft/" +"/"+ fileName);
+        File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/.Gandsoft/" + "/" + fileName);
         if (file.exists()) {
             file.delete();
         }
@@ -201,13 +201,74 @@ public class PictureUtil {
         }
     }
 
-    public static String getPath(Uri uri, Activity activity) {
-        String[] projection = { MediaStore.Images.Media.DATA };
+    public static String getPathFromUri(Uri uri, Activity activity) {
+        String[] projection = {MediaStore.Images.Media.DATA};
 
         Cursor cursor = activity.managedQuery(uri, projection, null, null, null);
         activity.startManagingCursor(cursor);
         int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
         cursor.moveToFirst();
         return cursor.getString(column_index);
+    }
+
+    public static Bitmap getBitmapFromPathFile(String imagePath) {
+        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+        Bitmap bitmap = BitmapFactory.decodeFile(imagePath, bmOptions);
+        return bitmap;
+    }
+
+    public static boolean removeImageFromPathFile(String source_) {
+        File fdelete = new File(source_);
+        if (fdelete.exists()) {
+            if (fdelete.delete()) {
+                System.out.println("file Deleted :" + source_);
+                return true;
+            } else {
+                System.out.println("file not Deleted :" + source_);
+                return false;
+            }
+        }
+        return false;
+    }
+
+    public static Bitmap flipImage(Bitmap src) {
+        // create new matrix for transformation
+        Matrix matrix = new Matrix();
+
+        matrix.preScale(-1.0f, 1.0f);
+
+        // return transformed image
+        return Bitmap.createBitmap(src, 0, 0, src.getWidth(), src.getHeight(), matrix, true);
+    }
+
+    public static Bitmap flipHorizontally(Bitmap originalImage) {
+        // The gap we want between the flipped image and the original image
+        final int flipGap = 4;
+
+        int width = originalImage.getWidth();
+        int height = originalImage.getHeight();
+
+        // This will not scale but will flip on the Y axis
+        Matrix matrix = new Matrix();
+        matrix.preScale(-1, 1);
+
+        // Create a Bitmap with the flip matrix applied to it.
+        // We only want the bottom half of the image
+        Bitmap flipImage = Bitmap.createBitmap(originalImage, 0,0 , width, height, matrix, true);
+
+        // Create a new bitmap with same width but taller to fit reflection
+        Bitmap bitmapWithFlip = Bitmap.createBitmap((width + width + flipGap), height, Bitmap.Config.ARGB_8888);
+
+        // Create a new Canvas with the bitmap that's big enough for
+        Canvas canvas = new Canvas(bitmapWithFlip);
+
+        //Draw original image
+        canvas.drawBitmap(originalImage, 0, 0, null);
+
+        //Draw the Flipped Image
+        canvas.drawBitmap(flipImage, width+flipGap, 0, null);
+
+
+        return bitmapWithFlip;
     }
 }

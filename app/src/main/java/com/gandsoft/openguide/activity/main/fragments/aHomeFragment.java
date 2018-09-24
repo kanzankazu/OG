@@ -6,6 +6,7 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -21,7 +22,6 @@ import android.text.Html;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
@@ -37,11 +37,13 @@ import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.gandsoft.openguide.API.API;
 import com.gandsoft.openguide.API.APIrequest.HomeContent.HomeContentCheckinRequestModel;
+import com.gandsoft.openguide.API.APIrequest.HomeContent.HomeContentPostCaptionDeleteRequestModel;
 import com.gandsoft.openguide.API.APIrequest.HomeContent.HomeContentPostCaptionSetRequestModel;
 import com.gandsoft.openguide.API.APIrequest.HomeContent.HomeContentPostImageCaptionRequestModel;
 import com.gandsoft.openguide.API.APIrequest.HomeContent.HomeContentRequestModel;
 import com.gandsoft.openguide.API.APIresponse.Event.EventTheEvent;
 import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentCommentModelParcelable;
+import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentPostCaptionDeleteResponseModel;
 import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentResponseModel;
 import com.gandsoft.openguide.API.APIresponse.LocalBaseResponseModel;
 import com.gandsoft.openguide.API.APIresponse.UserData.UserDataResponseModel;
@@ -122,7 +124,9 @@ public class aHomeFragment extends Fragment {
     private String formattedDate;
     private String formattedDateGMT;
     private Uri imageUri;
-    private String base64;
+    private boolean isNew;
+    private String imgPath;
+    private boolean imgExists;
 
     public aHomeFragment() {
     }
@@ -193,32 +197,16 @@ public class aHomeFragment extends Fragment {
         adapter = new HomeContentAdapter(getActivity(), menuUi, getContext(), eventId, accountId, theEventModel, oneListEventModel, new HomeContentAdapter.HomeContentListener() {
             @Override
             public void onCommentClick(HomeContentResponseModel model, int position) {
-                ArrayList<HomeContentCommentModelParcelable> dataParam = new ArrayList<>();
-                HomeContentCommentModelParcelable mode = new HomeContentCommentModelParcelable();
-                mode.setId(model.getId());
-                mode.setLike(model.getLike());
-                mode.setAccount_id(model.getAccount_id());
-                mode.setTotal_comment(model.getTotal_comment());
-                mode.setStatus_like(model.getStatus_like());
-                mode.setUsername(model.getUsername());
-                mode.setJabatan(model.getJabatan());
-                mode.setDate_created(model.getDate_created());
-                mode.setImage_icon(model.getImage_icon());
-                mode.setImage_icon_local(model.getImage_icon_local());
-                mode.setImage_posted(model.getImage_posted());
-                mode.setImage_posted_local(model.getImage_posted_local());
-                mode.setKeterangan(model.getKeterangan());
-                mode.setEvent(model.getEvent());
-                if (dataParam.size() > 0) {
-                    dataParam.clear();
-                    dataParam.add(mode);
-                } else {
-                    dataParam.add(mode);
-                }
-                Intent intent = new Intent(getActivity(), aHomePostCommentActivity.class);
-                intent.putParcelableArrayListExtra(ISeasonConfig.INTENT_PARAM, dataParam);
-                intent.putExtra(ISeasonConfig.INTENT_PARAM2,position);
-                startActivityForResult(intent, REQ_CODE_COMMENT);
+
+                moveToAHomeComment(model, position);
+
+            }
+
+            @Override
+            public void onDeletePostClick(String id, int position) {
+
+                callPostCaptionDelete(id, position);
+
             }
         });
         recyclerView.setNestedScrollingEnabled(false);
@@ -233,7 +221,6 @@ public class aHomeFragment extends Fragment {
         formattedDate = df.format(c.getTime());
         SimpleDateFormat dfGMT = new SimpleDateFormat("z");
         formattedDateGMT = dfGMT.format(c.getTime()).substring(3, 6);
-
     }
 
     private void initListener(View view) {
@@ -250,7 +237,7 @@ public class aHomeFragment extends Fragment {
         });
         homeIVShareSomethingfvbi.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                postCaption();
+                callPostCaption();
             }
         });
         homeSRLHomefvbi.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -309,7 +296,7 @@ public class aHomeFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 if (NetworkUtil.isConnected(getActivity())) {
-                    postCheckIn();
+                    callCheckIn();
                 } else {
                     Snackbar.make(getActivity().findViewById(android.R.id.content), "Check Your Connection", Snackbar.LENGTH_LONG).show();
                 }
@@ -332,12 +319,54 @@ public class aHomeFragment extends Fragment {
         Log.d("Lihat", "openCamera aHomeFragment : " + imageUri);
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+            intent.putExtra("android.intent.extras.LENS_FACING_FRONT", 1);
+        } else {
+            intent.putExtra("android.intent.extras.CAMERA_FACING", 1);
+        }
         startActivityForResult(intent, REQ_CODE_TAKE_PHOTO_INTENT_ID_STANDART);
     }
 
-    public void callHomeContentAPI() {
-        deleteImage(eventId);
+    private void updateUi() {
+        Log.d("Lihat", "updateUi aHomeFragment getAddpost_status : " + theEventModel.getAddpost_status());
+        Log.d("Lihat", "updateUi aHomeFragment getDeletepost_status : " + theEventModel.getDeletepost_status());
+        Log.d("Lihat", "updateUi aHomeFragment getCommentpost_status : " + theEventModel.getCommentpost_status());
+        if (theEventModel != null) {
+            homeHtmlTVTitleEventfvbi.setHtml(theEventModel.getEvent_name());
+            homeTVTitleEventfvbi.setText(Html.fromHtml(theEventModel.getEvent_name()));
+            homeTVDescEventfvbi.setText("" +
+                    "" + Html.fromHtml(theEventModel.getEvent_location()) + "\n" +
+                    "" + theEventModel.getDate_event() + "\n" +
+                    "" + Html.fromHtml(theEventModel.getWeather()) + "");
+            Picasso.with(getActivity())
+                    .load(theEventModel.getLogo())
+                    .placeholder(R.drawable.template_account_og)
+                    .error(R.drawable.template_account_og)
+                    .into(homeIVEventfvbi);
+            Glide.with(getActivity())
+                    .load(theEventModel.getBackground())
+                    .placeholder(R.drawable.template_account_og)
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .skipMemoryCache(true)
+                    .error(R.drawable.template_account_og)
+                    .into(homeIVEventBackgroundfvbi);
 
+            if (Integer.parseInt(theEventModel.getAddpost_status()) == 0) {
+                homeLLWriteSomethingfvbi.setVisibility(View.GONE);
+            }
+        } else {
+            Snackbar.make(getActivity().findViewById(android.R.id.content), "data kosong", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+        }
+    }
+
+    private void callHomeContentAPI() {
+
+        if (imgExists) {
+            PictureUtil.removeImageFromPathFile(imgPath);
+            imgExists = false;
+        }
+
+        deleteImageFile(eventId);
         db.deleleDataByKey(SQLiteHelper.TableHomeContent, SQLiteHelper.Key_HomeContent_EventId, eventId);
 
         ProgressDialog progressDialog = ProgressDialog.show(getActivity(), "Loading...", "Please Wait..", false, false);
@@ -364,7 +393,6 @@ public class aHomeFragment extends Fragment {
                         last_date = models.get(models.size() - 1).getDate_created();
                         first_id = models.get(0).getId();
                     } else {
-                        Snackbar.make(getActivity().findViewById(android.R.id.content), "Data Terakhir", Snackbar.LENGTH_LONG).show();
                         last_data = true;
                         last_id = "";
                         last_date = "";
@@ -416,7 +444,6 @@ public class aHomeFragment extends Fragment {
                         last_date = models.get(models.size() - 1).getDate_created();
                         first_id = models.get(0).getId();
                     } else {
-                        Snackbar.make(getActivity().findViewById(android.R.id.content), "Data Terakhir", Snackbar.LENGTH_SHORT).show();
                         last_data = true;
                         last_id = "";
                         last_date = "";
@@ -446,56 +473,151 @@ public class aHomeFragment extends Fragment {
 
     }
 
-    private void deleteImage(String eventIds) {
-        db.deleleDataByKey(SQLiteHelper.TableGallery, SQLiteHelper.Key_Gallery_eventId, eventIds);
+    private void callPostCaption() {
+        HomeContentPostCaptionSetRequestModel requestModel = new HomeContentPostCaptionSetRequestModel();
+        requestModel.setId_event(eventId);
+        requestModel.setAccount_id(accountId);
+        requestModel.setCaptions(homeETWritePostCreatefvbi.getText().toString());
+        requestModel.setDbver("3");
+        requestModel.setGmt_date(formattedDateGMT);
+        requestModel.setDate_post(formattedDate);
 
-        File dir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/.Gandsoft/" + eventIds);
-        if (dir.isDirectory()) {
-            String[] children = dir.list();
-            for (int i = 0; i < children.length; i++) {
-                new File(dir, children[i]).delete();
+        ProgressDialog progressDialog = new ProgressDialog(getContext());
+        progressDialog.setCancelable(false);
+        progressDialog.setMessage("Please Wait...");
+        progressDialog.setTitle("Upload data baru..");
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        // show it
+        progressDialog.show();
+
+        API.doHomeContentPostCaptionRet(requestModel).enqueue(new Callback<List<LocalBaseResponseModel>>() {
+            @Override
+            public void onResponse(Call<List<LocalBaseResponseModel>> call, Response<List<LocalBaseResponseModel>> response) {
+                progressDialog.dismiss();
+                if (response.isSuccessful()) {
+                    List<LocalBaseResponseModel> s = response.body();
+                    if (s.size() == 1) {
+                        for (int i = 0; i < s.size(); i++) {
+                            LocalBaseResponseModel model = s.get(i);
+                            if (model.getStatus().equalsIgnoreCase("ok")) {
+                                Snackbar.make(getActivity().findViewById(android.R.id.content), "Post Terkirim", Snackbar.LENGTH_LONG).show();
+                                callHomeContentAPI();
+                                updateUi();//onresponse callPostCaption
+                                homeETWritePostCreatefvbi.setText("");
+                                SystemUtil.hideKeyBoard(getActivity());
+                            } else {
+                                Snackbar.make(getActivity().findViewById(android.R.id.content), "Post Bad Response", Snackbar.LENGTH_LONG).show();
+                            }
+                        }
+                    } else {
+                        Snackbar.make(getActivity().findViewById(android.R.id.content), "Post Data Tidak Sesuai", Snackbar.LENGTH_LONG).show();
+                    }
+                } else {
+                    Snackbar.make(getActivity().findViewById(android.R.id.content), response.message(), Snackbar.LENGTH_LONG).show();
+                }
             }
-        }
+
+            @Override
+            public void onFailure(Call<List<LocalBaseResponseModel>> call, Throwable t) {
+                Snackbar.make(getActivity().findViewById(android.R.id.content), t.getMessage(), Snackbar.LENGTH_LONG).show();
+            }
+        });
     }
 
-    private void updateUi() {
-        Log.d("Lihat", "updateUi aHomeFragment getAddpost_status : " + theEventModel.getAddpost_status());
-        Log.d("Lihat", "updateUi aHomeFragment getDeletepost_status : " + theEventModel.getDeletepost_status());
-        Log.d("Lihat", "updateUi aHomeFragment getCommentpost_status : " + theEventModel.getCommentpost_status());
-        if (theEventModel != null) {
-            homeHtmlTVTitleEventfvbi.setHtml(theEventModel.getEvent_name());
-            homeTVTitleEventfvbi.setText(Html.fromHtml(theEventModel.getEvent_name()));
-            homeTVDescEventfvbi.setText("" +
-                    "" + Html.fromHtml(theEventModel.getEvent_location()) + "\n" +
-                    "" + theEventModel.getDate_event() + "\n" +
-                    "" + Html.fromHtml(theEventModel.getWeather()) + "");
-            Picasso.with(getActivity())
-                    .load(theEventModel.getLogo())
-                    .placeholder(R.drawable.template_account_og)
-                    .error(R.drawable.template_account_og)
-                    .into(homeIVEventfvbi);
-            Glide.with(getActivity())
-                    .load(theEventModel.getBackground())
-                    .placeholder(R.drawable.template_account_og)
-                    .diskCacheStrategy(DiskCacheStrategy.NONE)
-                    .skipMemoryCache(true)
-                    .error(R.drawable.template_account_og)
-                    .into(homeIVEventBackgroundfvbi);
+    private void callPostCaptionDelete(String id, int position) {
+        ProgressDialog progressDialog = ProgressDialog.show(getActivity(), "Loading...", "Please Wait..", false, false);
 
-            if (Integer.parseInt(theEventModel.getAddpost_status()) == 0) {
-                homeLLWriteSomethingfvbi.setVisibility(View.GONE);
+        HomeContentPostCaptionDeleteRequestModel rm = new HomeContentPostCaptionDeleteRequestModel();
+        rm.setEvent_id(eventId);
+        rm.setPost_id(id);
+        rm.setAccount_id(accountId);
+        rm.setDbver(String.valueOf(IConfig.DB_Version));
+
+        API.dohomeContentPostDeleteRet(rm).enqueue(new Callback<List<HomeContentPostCaptionDeleteResponseModel>>() {
+            @Override
+            public void onResponse(Call<List<HomeContentPostCaptionDeleteResponseModel>> call, Response<List<HomeContentPostCaptionDeleteResponseModel>> response) {
+                progressDialog.dismiss();
+                if (response.isSuccessful()) {
+                    List<HomeContentPostCaptionDeleteResponseModel> q = response.body();
+                    if (q.size() == 1) {
+                        if (q.get(0).getStatus().equalsIgnoreCase(ISeasonConfig.SUCCESS)) {
+                            //
+                            adapter.removeAt(position);
+                        } else {
+                            Snackbar.make(getActivity().findViewById(android.R.id.content), response.message(), Snackbar.LENGTH_LONG).show();
+                        }
+                    }
+                } else {
+                    Log.d("Lihat", "onFailure aHomeFragment : " + response.message());
+                    Snackbar.make(getActivity().findViewById(android.R.id.content), "Failed Connection To Server", Snackbar.LENGTH_LONG).show();
+                }
             }
+
+            @Override
+            public void onFailure(Call<List<HomeContentPostCaptionDeleteResponseModel>> call, Throwable t) {
+                progressDialog.dismiss();
+                Log.d("Lihat", "onFailure aHomeFragment : " + t.getMessage());
+                Snackbar.make(getActivity().findViewById(android.R.id.content), "Failed Connection To Server", Snackbar.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void callPostImageCaption(String imgUrl, String contentPic, String base64) {
+
+        String uniqueId = UUID.randomUUID().toString();
+        HomeContentPostImageCaptionRequestModel requestModel = new HomeContentPostImageCaptionRequestModel();
+        requestModel.setId_event(eventId);
+        requestModel.setAccount_id(accountId);
+        requestModel.setId_postedhome(uniqueId);
+        if (!TextUtils.isEmpty(contentPic)) {
+            requestModel.setCaptions(contentPic);
         } else {
-            Snackbar.make(getActivity().findViewById(android.R.id.content), "data kosong", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+            requestModel.setCaptions("");
         }
+        //requestModel.setGmt_date(formattedDateGMT);
+        requestModel.setGmt_date("+07");
+        requestModel.setDate_post(formattedDate);
+        requestModel.setImagedata(base64);
+        requestModel.setDegree("ANDROID");
+        requestModel.setDbver("3");
+
+        addSingleTopAdapter(imgUrl, contentPic, uniqueId, eventId, accountId, isNew);
+
+        API.doHomeContentPostImageCaptionRet(requestModel).enqueue(new Callback<List<LocalBaseResponseModel>>() {
+            @Override
+            public void onResponse(Call<List<LocalBaseResponseModel>> call, Response<List<LocalBaseResponseModel>> response) {
+                if (response.isSuccessful()) {
+                    List<LocalBaseResponseModel> models = response.body();
+                    for (LocalBaseResponseModel model : models) {
+                        if (model.getStatus().equalsIgnoreCase(ISeasonConfig.OK)) {
+                            //
+                            adapter.changeDataFirstHasUploaded();
+                        } else {
+                            Snackbar.make(getActivity().findViewById(android.R.id.content), model.getMessage(), Snackbar.LENGTH_LONG).show();
+                        }
+                    }
+                } else {
+                    Log.d("Lihat", "onFailure aHomeFragment : " + response.message());
+                    Snackbar.make(getActivity().findViewById(android.R.id.content), "Failed Connection To Server", Snackbar.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<LocalBaseResponseModel>> call, Throwable t) {
+                Log.d("Lihat", "onFailure aHomeFragment : " + t.getMessage());
+                Snackbar.make(getActivity().findViewById(android.R.id.content), "Failed Connection To Server", Snackbar.LENGTH_SHORT).show();
+                adapter.removeDataFirst();
+            }
+        });
     }
 
-    private void postCheckIn() {
+    private void callCheckIn() {
         HomeContentCheckinRequestModel requestModel = new HomeContentCheckinRequestModel();
         requestModel.setId_event(eventId);
         requestModel.setPhonenumber(accountId);
         requestModel.setDbver("3");
-        requestModel.setDate_gmt(formattedDateGMT);
+        //requestModel.setDate_gmt(formattedDateGMT);
+        requestModel.setDate_gmt("+07");
         requestModel.setDate_post(formattedDate);
 
         ProgressDialog progressDialog = new ProgressDialog(getContext());
@@ -536,106 +658,42 @@ public class aHomeFragment extends Fragment {
         });
     }
 
-    private void postCaption() {
-        HomeContentPostCaptionSetRequestModel requestModel = new HomeContentPostCaptionSetRequestModel();
-        requestModel.setId_event(eventId);
-        requestModel.setAccount_id(accountId);
-        requestModel.setCaptions(homeETWritePostCreatefvbi.getText().toString());
-        requestModel.setDbver("3");
-        requestModel.setGmt_date(formattedDateGMT);
-        requestModel.setDate_post(formattedDate);
-
-        ProgressDialog progressDialog = new ProgressDialog(getContext());
-        progressDialog.setCancelable(false);
-        progressDialog.setMessage("Please Wait...");
-        progressDialog.setTitle("Upload data baru..");
-        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        // show it
-        progressDialog.show();
-
-        API.doHomeContentPostCaptionRet(requestModel).enqueue(new Callback<List<LocalBaseResponseModel>>() {
-            @Override
-            public void onResponse(Call<List<LocalBaseResponseModel>> call, Response<List<LocalBaseResponseModel>> response) {
-                progressDialog.dismiss();
-                if (response.isSuccessful()) {
-                    List<LocalBaseResponseModel> s = response.body();
-                    if (s.size() == 1) {
-                        for (int i = 0; i < s.size(); i++) {
-                            LocalBaseResponseModel model = s.get(i);
-                            if (model.getStatus().equalsIgnoreCase("ok")) {
-                                Snackbar.make(getActivity().findViewById(android.R.id.content), "Post Terkirim", Snackbar.LENGTH_LONG).show();
-                                callHomeContentAPI();
-                                updateUi();//onresponse postCaption
-                                homeETWritePostCreatefvbi.setText("");
-                                SystemUtil.hideKeyBoard(getActivity());
-                            } else {
-                                Snackbar.make(getActivity().findViewById(android.R.id.content), "Post Bad Response", Snackbar.LENGTH_LONG).show();
-                            }
-                        }
-                    } else {
-                        Snackbar.make(getActivity().findViewById(android.R.id.content), "Post Data Tidak Sesuai", Snackbar.LENGTH_LONG).show();
-                    }
-                } else {
-                    Snackbar.make(getActivity().findViewById(android.R.id.content), response.message(), Snackbar.LENGTH_LONG).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<List<LocalBaseResponseModel>> call, Throwable t) {
-                Snackbar.make(getActivity().findViewById(android.R.id.content), t.getMessage(), Snackbar.LENGTH_LONG).show();
-            }
-        });
+    private void moveToAHomePostImage(String imageurl) {
+        Intent intent = new Intent(getActivity(), aHomePostImageCaptionActivity.class);
+        intent.putExtra(ISeasonConfig.INTENT_PARAM, imageurl);
+        startActivityForResult(intent, REQ_CODE_POST_IMAGE);
     }
 
-    private void postImageCaption(String base64Pic, String contentPic) {
-
-        String uniqueId = UUID.randomUUID().toString();
-        HomeContentPostImageCaptionRequestModel requestModel = new HomeContentPostImageCaptionRequestModel();
-        requestModel.setId_event(eventId);
-        requestModel.setAccount_id(accountId);
-        requestModel.setId_postedhome(uniqueId);
-        if (!TextUtils.isEmpty(contentPic)) {
-            requestModel.setCaptions(contentPic);
+    private void moveToAHomeComment(HomeContentResponseModel model, int position) {
+        ArrayList<HomeContentCommentModelParcelable> dataParam = new ArrayList<>();
+        HomeContentCommentModelParcelable mode = new HomeContentCommentModelParcelable();
+        mode.setId(model.getId());
+        mode.setLike(model.getLike());
+        mode.setAccount_id(model.getAccount_id());
+        mode.setTotal_comment(model.getTotal_comment());
+        mode.setStatus_like(model.getStatus_like());
+        mode.setUsername(model.getUsername());
+        mode.setJabatan(model.getJabatan());
+        mode.setDate_created(model.getDate_created());
+        mode.setImage_icon(model.getImage_icon());
+        mode.setImage_icon_local(model.getImage_icon_local());
+        mode.setImage_posted(model.getImage_posted());
+        mode.setImage_posted_local(model.getImage_posted_local());
+        mode.setKeterangan(model.getKeterangan());
+        mode.setEvent(model.getEvent());
+        if (dataParam.size() > 0) {
+            dataParam.clear();
+            dataParam.add(mode);
         } else {
-            requestModel.setCaptions("");
+            dataParam.add(mode);
         }
-        requestModel.setGmt_date(formattedDateGMT);
-        requestModel.setDate_post(formattedDate);
-        requestModel.setImagedata(base64Pic);
-        requestModel.setDegree("ANDROID");
-        requestModel.setDbver("3");
-
-        addSingleTop(base64Pic, contentPic, uniqueId, eventId, accountId);
-
-        API.doHomeContentPostImageCaptionRet(requestModel).enqueue(new Callback<List<LocalBaseResponseModel>>() {
-            @Override
-            public void onResponse(Call<List<LocalBaseResponseModel>> call, Response<List<LocalBaseResponseModel>> response) {
-                if (response.isSuccessful()) {
-                    List<LocalBaseResponseModel> models = response.body();
-                    for (LocalBaseResponseModel model : models) {
-                        if (model.getStatus().equalsIgnoreCase(ISeasonConfig.OK)) {
-                            //
-
-                        } else {
-                            Snackbar.make(getActivity().findViewById(android.R.id.content), model.getMessage(), Snackbar.LENGTH_LONG).show();
-                        }
-                    }
-                } else {
-                    Log.d("Lihat", "onFailure aHomeFragment : " + response.message());
-                    Snackbar.make(getActivity().findViewById(android.R.id.content), "Failed Connection To Server", Snackbar.LENGTH_LONG).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<List<LocalBaseResponseModel>> call, Throwable t) {
-                Log.d("Lihat", "onFailure aHomeFragment : " + t.getMessage());
-                Snackbar.make(getActivity().findViewById(android.R.id.content), "Failed Connection To Server", Snackbar.LENGTH_SHORT).show();
-                adapter.removeDataFirst();
-            }
-        });
+        Intent intent = new Intent(getActivity(), aHomePostCommentActivity.class);
+        intent.putParcelableArrayListExtra(ISeasonConfig.INTENT_PARAM, dataParam);
+        intent.putExtra(ISeasonConfig.INTENT_PARAM2, position);
+        startActivityForResult(intent, REQ_CODE_COMMENT);
     }
 
-    private void addSingleTop(String base64Pic, String contentPic, String uniqueId, String eventId, String accountId) {
+    private void addSingleTopAdapter(String imgUrl, String contentPic, String uniqueId, String eventId, String accountId, boolean isNew) {
 
         HomeContentResponseModel model = new HomeContentResponseModel();
         model.setId(uniqueId);
@@ -648,7 +706,7 @@ public class aHomeFragment extends Fragment {
         model.setDate_created(formattedDate);
         model.setImage_icon(userData.getImage_url());
         model.setImage_icon_local("");
-        model.setImage_posted(base64Pic);
+        model.setImage_posted(imgUrl);
         model.setImage_posted_local("");
         if (!TextUtils.isEmpty(contentPic)) {
             model.setKeterangan(contentPic);
@@ -656,6 +714,7 @@ public class aHomeFragment extends Fragment {
             model.setKeterangan("");
         }
         model.setEvent("");
+        model.setIs_new(true);
 
         adapter.addDataFirst(model);
     }
@@ -686,39 +745,34 @@ public class aHomeFragment extends Fragment {
         } else */
         if (requestCode == REQ_CODE_POST_IMAGE) {
             if (resultCode == RESULT_OK) {
-                String imgUrl;
                 String contentPic;
                 if (data.hasExtra(ISeasonConfig.INTENT_PARAM) && data.hasExtra(ISeasonConfig.INTENT_PARAM2)) {
-                    imgUrl = data.getStringExtra(ISeasonConfig.INTENT_PARAM);
+                    imgPath = data.getStringExtra(ISeasonConfig.INTENT_PARAM);
+                    imgExists = true;
+                    Log.d("Lihat", "onActivityResult aHomeFragment : " + imgPath);
                     contentPic = data.getStringExtra(ISeasonConfig.INTENT_PARAM2);
 
                     Glide.with(getActivity())
-                            .load(new File(imgUrl))
+                            .load(new File(imgPath))
                             .asBitmap()
                             .into(new SimpleTarget<Bitmap>() {
                                 @Override
                                 public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
-                                    Bitmap resizeImage = PictureUtil.resizeImage(resource, 1080);
-                                    base64 = PictureUtil.bitmapToBase64(resizeImage, Bitmap.CompressFormat.JPEG, 100);
-                                    postImageCaption(base64, contentPic);
+                                    Bitmap resizeImage = PictureUtil.resizeImageBitmap(resource, 1080);
+                                    String base64 = PictureUtil.bitmapToBase64(resizeImage, Bitmap.CompressFormat.JPEG, 100);
+                                    callPostImageCaption(imgPath, contentPic, base64);
                                 }
                             });
                 }
             }
         } else if (requestCode == REQ_CODE_TAKE_PHOTO_INTENT_ID_STANDART && resultCode == Activity.RESULT_OK) {
-            String imageurl = PictureUtil.getPath(imageUri, getActivity());
+            String imageurl = PictureUtil.getPathFromUri(imageUri, getActivity());
             moveToAHomePostImage(imageurl);
         } else if (requestCode == REQ_CODE_COMMENT && resultCode == Activity.RESULT_OK) {
-            int position = data.getIntExtra(ISeasonConfig.INTENT_PARAM,0);
+            int position = data.getIntExtra(ISeasonConfig.INTENT_PARAM, 0);
             String totalComment = data.getStringExtra(ISeasonConfig.INTENT_PARAM2);
-            adapter.changeTotalComment(position,totalComment);
+            adapter.changeTotalComment(position, totalComment);
         }
-    }
-
-    private void moveToAHomePostImage(String imageurl) {
-        Intent intent = new Intent(getActivity(), aHomePostImageCaptionActivity.class);
-        intent.putExtra(ISeasonConfig.INTENT_PARAM, imageurl);
-        startActivityForResult(intent, REQ_CODE_POST_IMAGE);
     }
 
     private void createDirectoryAndSaveFile(Bitmap imageToSave, String fileName) {
@@ -733,6 +787,18 @@ public class aHomeFragment extends Fragment {
             out.close();
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    private void deleteImageFile(String eventIds) {
+        db.deleleDataByKey(SQLiteHelper.TableGallery, SQLiteHelper.Key_Gallery_eventId, eventIds);
+
+        File dir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/.Gandsoft/" + eventIds);
+        if (dir.isDirectory()) {
+            String[] children = dir.list();
+            for (int i = 0; i < children.length; i++) {
+                new File(dir, children[i]).delete();
+            }
         }
     }
 

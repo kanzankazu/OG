@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -23,10 +24,10 @@ import com.gandsoft.openguide.API.APIresponse.LocalBaseResponseModel;
 import com.gandsoft.openguide.API.APIresponse.UserData.UserListEventResponseModel;
 import com.gandsoft.openguide.IConfig;
 import com.gandsoft.openguide.R;
-import com.gandsoft.openguide.support.PictureUtil;
 
 import org.sufficientlysecure.htmltextview.HtmlTextView;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -93,7 +94,12 @@ public class HomeContentAdapter extends RecyclerView.Adapter<HomeContentAdapter.
                         .error(R.drawable.template_account_og)
                         .into(holder.ivRVHomeContentImage);
             } else {
-                holder.ivRVHomeContentImage.setImageBitmap(PictureUtil.Base64ToBitmap(model.getImage_posted()));
+                Glide.with(context)
+                        .load(new File(model.getImage_posted()))
+                        .placeholder(R.drawable.template_account_og)
+                        .skipMemoryCache(true)
+                        .error(R.drawable.template_account_og)
+                        .into(holder.ivRVHomeContentImage);
             }
 
         } else {
@@ -149,6 +155,19 @@ public class HomeContentAdapter extends RecyclerView.Adapter<HomeContentAdapter.
                 mListener.onCommentClick(models.get(position), position);
             }
         });
+
+        holder.llRVHomeContentRemove.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mListener.onDeletePostClick(model.getId(), position);
+            }
+        });
+
+        if (model.getIs_new()) {
+            holder.rlRVHomeContent.setVisibility(View.INVISIBLE);
+        } else {
+            holder.rlRVHomeContent.setVisibility(View.VISIBLE);
+        }
     }
 
     public void postLike(String likes, ViewHolder holder, HomeContentResponseModel model) {
@@ -206,6 +225,7 @@ public class HomeContentAdapter extends RecyclerView.Adapter<HomeContentAdapter.
         private final LinearLayout llRVHomeContentLike;
         private final LinearLayout llRVHomeContentComment;
         private final LinearLayout llRVHomeContentRemove;
+        private final RelativeLayout rlRVHomeContent;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -220,6 +240,7 @@ public class HomeContentAdapter extends RecyclerView.Adapter<HomeContentAdapter.
             llRVHomeContentLike = (LinearLayout) itemView.findViewById(R.id.llRVHomeContentLike);
             llRVHomeContentComment = (LinearLayout) itemView.findViewById(R.id.llRVHomeContentComment);
             llRVHomeContentRemove = (LinearLayout) itemView.findViewById(R.id.llRVHomeContentRemove);
+            rlRVHomeContent = (RelativeLayout) itemView.findViewById(R.id.rlRVHomeContent);
         }
 
     }
@@ -227,6 +248,7 @@ public class HomeContentAdapter extends RecyclerView.Adapter<HomeContentAdapter.
     public interface HomeContentListener {
         void onCommentClick(HomeContentResponseModel homeContentResponseModel, int position);
 
+        void onDeletePostClick(String id, int position);
     }
 
     public void setData(List<HomeContentResponseModel> datas) {
@@ -251,18 +273,32 @@ public class HomeContentAdapter extends RecyclerView.Adapter<HomeContentAdapter.
     }
 
     public void addDataFirst(HomeContentResponseModel data) {
-        int insertIndex = 0;
-        models.add(insertIndex, data);
-        notifyItemInserted(insertIndex);
+        int position = 0;
+        models.add(position, data);
+        notifyItemInserted(position);
     }
 
     public void removeDataFirst() {
-        int removeIndex = 0;
-        models.remove(removeIndex);
-        notifyItemRemoved(removeIndex);
+        int position = 0;
+        models.remove(position);
+        notifyItemRemoved(position);
+        notifyItemRangeChanged(position, models.size());
+    }
+
+    public void changeDataFirstHasUploaded() {
+        int position = 0;
+        models.get(position).setIs_new(false);
+        notifyItemChanged(position);
+    }
+
+    public void removeAt(int position) {
+        models.remove(position);
+        notifyItemRemoved(position);
+        notifyItemRangeChanged(position, models.size());
     }
 
     public void changeTotalComment(int position, String totalComment) {
+        Log.d("Lihat", "changeTotalComment HomeContentAdapter : " + totalComment);
         if (totalComment.equalsIgnoreCase("0")) {
             models.get(position).setTotal_comment("0");
         } else {

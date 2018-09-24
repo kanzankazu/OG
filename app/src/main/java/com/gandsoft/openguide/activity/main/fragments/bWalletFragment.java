@@ -50,7 +50,7 @@ public class bWalletFragment extends Fragment {
         List<UserWalletDataResponseModel> listWalletData;
         if (db.isDataTableValueNull(SQLiteHelper.TableWallet, SQLiteHelper.KEY_Wallet_eventId, eventId)) {
             listWalletData = new ArrayList<>();
-            Snackbar.make(getActivity().findViewById(android.R.id.content), "Empty Data", Snackbar.LENGTH_LONG).show();
+            Snackbar.make(getActivity().findViewById(android.R.id.content), "Empty Data", Snackbar.LENGTH_SHORT).show();
         } else {
             listWalletData = db.getListWalletData(eventId);
         }

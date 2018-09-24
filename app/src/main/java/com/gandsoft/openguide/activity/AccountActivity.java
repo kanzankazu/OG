@@ -8,16 +8,13 @@ import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Paint;
 import android.icu.text.SimpleDateFormat;
 import android.icu.util.ULocale;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
@@ -28,7 +25,6 @@ import android.support.v7.app.AlertDialog;
 import android.text.SpannableStringBuilder;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
-import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -56,12 +52,7 @@ import com.gandsoft.openguide.support.PictureUtil;
 import com.gandsoft.openguide.support.SessionUtil;
 import com.google.firebase.auth.FirebaseAuth;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -176,7 +167,7 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
         }
 
         if (db.isDataTableValueNull(SQLiteHelper.TableUserData, SQLiteHelper.KEY_UserData_accountId, accountId)) {
-            Snackbar.make(findViewById(android.R.id.content), "data kosong", Snackbar.LENGTH_LONG).show();
+            Snackbar.make(findViewById(android.R.id.content), "data kosong", Snackbar.LENGTH_SHORT).show();
         } else {
             updateData(db.getUserData(accountId));
         }
@@ -199,6 +190,11 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
                             MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
                     Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                     intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+                        intent.putExtra("android.intent.extras.LENS_FACING_FRONT", 1);
+                    } else {
+                        intent.putExtra("android.intent.extras.CAMERA_FACING", 1);
+                    }
                     startActivityForResult(intent, 5);
                 }
         });
@@ -342,7 +338,7 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
             if (cbAccAggrementfvbi.isChecked()) {
                 updateData();
             } else {
-                Snackbar.make(findViewById(android.R.id.content), "Checked Egreement First!!", Snackbar.LENGTH_LONG).show();
+                Snackbar.make(findViewById(android.R.id.content), "Checked Egreement First!!", Snackbar.LENGTH_SHORT).show();
                 cbAccAggrementfvbi.requestFocus();
             }
         } else {
@@ -388,24 +384,24 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
                             UserUpdateResponseModel model = s.get(i);
                             db.updateOneKey(SQLiteHelper.TableUserData, SQLiteHelper.KEY_UserData_accountId, accountId, SQLiteHelper.KEY_UserData_imageUrl, model.getImage_url());
                             if (model.getStatus().equalsIgnoreCase("ok")) {
-                                Snackbar.make(findViewById(android.R.id.content), "Tersimpan", Snackbar.LENGTH_LONG).show();
+                                Snackbar.make(findViewById(android.R.id.content), "Tersimpan", Snackbar.LENGTH_SHORT).show();
                                 moveToChangeEvent();
                             } else {
-                                Snackbar.make(findViewById(android.R.id.content), "Bad Response", Snackbar.LENGTH_LONG).show();
+                                Snackbar.make(findViewById(android.R.id.content), "Bad Response", Snackbar.LENGTH_SHORT).show();
                             }
                         }
                     } else {
-                        Snackbar.make(findViewById(android.R.id.content), "Data Tidak Sesuai", Snackbar.LENGTH_LONG).show();
+                        Snackbar.make(findViewById(android.R.id.content), "Data Tidak Sesuai", Snackbar.LENGTH_SHORT).show();
                     }
                     moveToChangeEvent();
                 } else {
-                    Snackbar.make(findViewById(android.R.id.content), response.message(), Snackbar.LENGTH_LONG).show();
+                    Snackbar.make(findViewById(android.R.id.content), response.message(), Snackbar.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<List<UserUpdateResponseModel>> call, Throwable t) {
-                Snackbar.make(findViewById(android.R.id.content), t.getMessage(), Snackbar.LENGTH_LONG).show();
+                Snackbar.make(findViewById(android.R.id.content), t.getMessage(), Snackbar.LENGTH_SHORT).show();
             }
         });
     }
@@ -464,7 +460,7 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 5 && resultCode == Activity.RESULT_OK) {
-            String imageurl = PictureUtil.getPath(imageUri,this);
+            String imageurl = PictureUtil.getPathFromUri(imageUri,this);
 
             Log.d("image uri ",imageurl);
             Log.d("string val from file",String.valueOf(new File(imageurl)));
@@ -481,7 +477,7 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
                     .into(new SimpleTarget<Bitmap>() {
                         @Override
                         public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
-                            Bitmap resizeImage = PictureUtil.resizeImage(resource, 1080);
+                            Bitmap resizeImage = PictureUtil.resizeImageBitmap(resource, 1080);
                             ivWrapPicfvbi.setImageBitmap(resizeImage);
                             base64pic = PictureUtil.bitmapToBase64(resizeImage, Bitmap.CompressFormat.JPEG,100);
                         }

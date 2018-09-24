@@ -5,7 +5,10 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.Snackbar;
+import android.support.v4.widget.NestedScrollView;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -20,6 +23,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -42,6 +46,7 @@ import com.gandsoft.openguide.support.SystemUtil;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import retrofit2.Call;
@@ -51,22 +56,26 @@ import retrofit2.Response;
 public class aHomePostCommentActivity extends AppCompatActivity {
     SQLiteHelper db = new SQLiteHelper(this);
 
+    private SwipeRefreshLayout srlCommentfvbi;
+    private NestedScrollView nsvCommentfvbi;
     private RecyclerView rvCommentfvbi;
     private EditText etCommentPostfvbi;
     private ImageView ivCommentPostfvbi, ivCommentTsIconfvbi, ivCommentTsImagefvbi;
     private TextView tvCommentTsKeteranganfvbi, tvCommentTsTimefvbi, tvCommentTsUsernamefvbi;
     private Toolbar toolbar;
-    private ActionBar ab;
+    private LinearLayout llLoadModecommentfvbi;
 
     private String accountId, eventId;
     private ArrayList<HomeContentCommentModelParcelable> models = new ArrayList<>();
     private HomeContentCommentModelParcelable model;
-    private String formattedDate;
-    private String formattedDateGMT;
     private List<HomeContentPostCommentGetResponseModel> menuUi = new ArrayList<>();
     private HomeContentCommentAdapter adapter;
     private int position;
     private String total_comment;
+    private boolean last_data;
+    private String last_id;
+    private String last_date;
+    private String first_id;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,6 +99,9 @@ public class aHomePostCommentActivity extends AppCompatActivity {
         tvCommentTsKeteranganfvbi = (TextView) findViewById(R.id.tvCommentTsKeterangan);
         tvCommentTsTimefvbi = (TextView) findViewById(R.id.tvCommentTsTime);
         tvCommentTsUsernamefvbi = (TextView) findViewById(R.id.tvCommentTsUsername);
+        srlCommentfvbi = (SwipeRefreshLayout) findViewById(R.id.srlComment);
+        nsvCommentfvbi = (NestedScrollView) findViewById(R.id.nsvComment);
+        llLoadModecommentfvbi = (LinearLayout) findViewById(R.id.llLoadModecomment);
     }
 
     private void initParam() {
@@ -121,7 +133,7 @@ public class aHomePostCommentActivity extends AppCompatActivity {
 
     private void initContent() {
         setSupportActionBar(toolbar);
-        ab = getSupportActionBar();
+        ActionBar ab = getSupportActionBar();
         ab.setTitle("Comment");
 
         model = models.get(0);
@@ -156,23 +168,17 @@ public class aHomePostCommentActivity extends AppCompatActivity {
             ivCommentTsImagefvbi.setVisibility(View.GONE);
         }
 
-        Calendar c = Calendar.getInstance();
-        SimpleDateFormat df = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-        formattedDate = df.format(c.getTime());
-        SimpleDateFormat dfGMT = new SimpleDateFormat("z");
-        formattedDateGMT = dfGMT.format(c.getTime()).substring(3, 6);
-
         adapter = new HomeContentCommentAdapter(this, menuUi, db.getTheEvent(eventId), db.getOneListEvent(eventId), accountId, eventId, new HomeContentCommentAdapter.HomeContentCommentListener() {
             @Override
             public void onDelete(String commentId, int position) {
-                deleteComment(commentId, position);
+                callDeleteComment(commentId, position);
             }
         });
         rvCommentfvbi.setNestedScrollingEnabled(false);
         rvCommentfvbi.setAdapter(adapter);
         rvCommentfvbi.setLayoutManager(new LinearLayoutManager(this));
 
-        getCommentList();
+        callGetCommentList();
     }
 
     private void initListener() {
@@ -180,20 +186,78 @@ public class aHomePostCommentActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                setComment();
+                callSetComment();
 
 
             }
         });
+        srlCommentfvbi.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                srlCommentfvbi.setRefreshing(false);
+                callGetCommentList();//swipe refresh
+            }
+        });
+        nsvCommentfvbi.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
+            @Override
+            public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+                if (scrollY > oldScrollY) {
+                    //Log.i(TAG, "Scroll DOWN");
+                }
+                if (scrollY < oldScrollY) {
+                    //Log.i(TAG, "Scroll UP");
+                }
+                if (scrollY == 0) {
+                    //Log.i(TAG, "TOP SCROLL");
+                }
+                if (scrollY == (v.getChildAt(0).getMeasuredHeight() - v.getMeasuredHeight())) {
+                    if (!last_data) {
+
+                        llLoadModecommentfvbi.setVisibility(View.VISIBLE);
+
+                        new Handler().postDelayed(new Runnable() {
+                            public void run() {
+                                //code here
+                                nsvCommentfvbi.setNestedScrollingEnabled(false);
+                                callGetCommentListMore();
+                            }
+                        }, 1000);
+
+                    } else {
+                        Snackbar.make(findViewById(android.R.id.content), "Sudah tidak ada data", Snackbar.LENGTH_SHORT).show();
+                    }
+                }
+
+                /*int measuredHeight = homeIVEventBackgroundfvbi.getMeasuredHeight();
+                int measuredHeight1 = homeLLWriteSomethingfvbi.getMeasuredHeight();
+                int measuredHeight2 = 0;
+                for (int i = 0; i < recyclerView.getChildCount(); i++) {
+                    measuredHeight2 = measuredHeight2 + recyclerView.getChildAt(i).getMeasuredHeight();
+                }
+                heightRecycle = measuredHeight + measuredHeight1 + measuredHeight2;*/
+
+                /*if (scrollY > measuredHeight + measuredHeight1 + measuredHeight2) {
+                    homeFABHomeUpfvbi.setVisibility(View.VISIBLE);
+                } else {
+                    homeFABHomeUpfvbi.setVisibility(View.GONE);
+                }*/
+            }
+        });
+
     }
 
-    private void getCommentList() {
+    private void callGetCommentList() {
+        if (srlCommentfvbi.isRefreshing()) {
+            srlCommentfvbi.setRefreshing(false);
+        }
+
         ProgressDialog progressDialog = ProgressDialog.show(aHomePostCommentActivity.this, "Loading...", "Please Wait..", false, false);
 
         HomeContentPostCommentGetRequestModel rm = new HomeContentPostCommentGetRequestModel();
         rm.setEvent_id(eventId);
         rm.setPost_id(model.getId());
         rm.setAccount_id(accountId);
+        rm.setId_comment("");
         rm.setDbver(String.valueOf(IConfig.DB_Version));
 
         API.dohomeContentPostCommentGetRet(rm).enqueue(new Callback<List<HomeContentPostCommentGetResponseModel>>() {
@@ -203,12 +267,25 @@ public class aHomePostCommentActivity extends AppCompatActivity {
                 if (response.isSuccessful()) {
                     List<HomeContentPostCommentGetResponseModel> q = response.body();
                     adapter.setData(q);
-                    if (q.size() > 0) {
+                    if (q.size() == 10) {
+                        last_data = false;
+                        last_id = q.get(q.size() - 1).getId();
+                        Log.d("Lihat", "onResponse aHomePostCommentActivity : " + last_id);
+                        first_id = q.get(0).getId();
+                        Log.d("Lihat", "onResponse aHomePostCommentActivity : " + first_id);
+                    } else {
+                        last_data = true;
+                        last_id = "";
+                        last_date = "";
+                        first_id = "";
+                    }
+                    if (q.size() != 0) {
                         for (int i = 0; i < q.size(); i++) {
                             HomeContentPostCommentGetResponseModel w = q.get(i);
                             total_comment = w.getTotal_comment();
-                            Log.d("Lihat", "onResponse aHomePostCommentActivity : " + total_comment);
                         }
+                    } else {
+                        total_comment = "0";
                     }
                 } else {
                     Log.d("Lihat", "onFailure aHomePostCommentActivity : " + response.message());
@@ -226,9 +303,70 @@ public class aHomePostCommentActivity extends AppCompatActivity {
         });
     }
 
-    private void setComment() {
+    private void callGetCommentListMore() {
+        HomeContentPostCommentGetRequestModel rm = new HomeContentPostCommentGetRequestModel();
+        rm.setEvent_id(eventId);
+        rm.setPost_id(model.getId());
+        rm.setAccount_id(accountId);
+        rm.setId_comment(last_id);
+        rm.setDbver(String.valueOf(IConfig.DB_Version));
+
+        API.dohomeContentPostCommentGetRet(rm).enqueue(new Callback<List<HomeContentPostCommentGetResponseModel>>() {
+            @Override
+            public void onResponse(Call<List<HomeContentPostCommentGetResponseModel>> call, Response<List<HomeContentPostCommentGetResponseModel>> response) {
+                llLoadModecommentfvbi.setVisibility(View.GONE);
+                if (response.isSuccessful()) {
+                    List<HomeContentPostCommentGetResponseModel> q = response.body();
+                    adapter.addDatas(q);
+                    if (q.size() == 10) {
+                        last_data = false;
+                        last_id = q.get(q.size() - 1).getId();
+                        first_id = q.get(0).getId();
+                    } else {
+                        last_data = true;
+                        last_id = "";
+                        last_date = "";
+                        first_id = "";
+                    }
+                    if (q.size() != 0) {
+                        for (int i = 0; i < q.size(); i++) {
+                            HomeContentPostCommentGetResponseModel w = q.get(i);
+                            total_comment = w.getTotal_comment();
+                        }
+                    } else {
+                        total_comment = "0";
+                    }
+                } else {
+                    Log.d("Lihat", "onFailure aHomePostCommentActivity : " + response.message());
+                    Snackbar.make(findViewById(android.R.id.content), "Failed Connection To Server", Snackbar.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<HomeContentPostCommentGetResponseModel>> call, Throwable t) {
+                llLoadModecommentfvbi.setVisibility(View.GONE);
+                //Crashlytics.logException(new Exception(t.getMessage()));
+                Log.d("Lihat", "onFailure aHomePostCommentActivity : " + t.getMessage());
+                Snackbar.make(findViewById(android.R.id.content), "Failed Connection To Server", Snackbar.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void callSetComment() {
 
         SystemUtil.hideKeyBoard(this);
+
+        /*Calendar c = Calendar.getInstance();
+        SimpleDateFormat df = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+        String formattedDate = df.format(c.getTime());
+        SimpleDateFormat dfGMT = new SimpleDateFormat("z");
+        String formattedDateGMT = dfGMT.format(c.getTime()).substring(3, 6);*/
+
+        Date date = new Date();
+        SimpleDateFormat df = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+        String formattedDate = df.format(date.getTime());
+        SimpleDateFormat dfGMT = new SimpleDateFormat("z");
+        String formattedDateGMT = dfGMT.format(date.getTime()).substring(3, 6);
 
         ProgressDialog progressDialog = ProgressDialog.show(aHomePostCommentActivity.this, "Loading...", "Please Wait..", false, false);
 
@@ -238,9 +376,9 @@ public class aHomePostCommentActivity extends AppCompatActivity {
         requestModel.setAccount_id(accountId);
         requestModel.setPost_comment(etCommentPostfvbi.getText().toString().trim());
         requestModel.setPost_time(formattedDate);
-        requestModel.setTimezone(formattedDateGMT);
-        Log.d("Lihat", "setComment aHomePostCommentActivity : " + formattedDate);
-        Log.d("Lihat", "setComment aHomePostCommentActivity : " + formattedDateGMT);
+        //requestModel.setTimezone(formattedDateGMT);
+        requestModel.setTimezone("+07");
+
         requestModel.setDbver(String.valueOf(IConfig.DB_Version));
         API.doHomeContentPostCommentRet(requestModel).enqueue(new Callback<List<HomeContentPostCommentSetResponseModel>>() {
             @Override
@@ -251,7 +389,7 @@ public class aHomePostCommentActivity extends AppCompatActivity {
 
                     etCommentPostfvbi.setText("");
 
-                    getCommentList();
+                    callGetCommentList();
 
                     for (int i1 = 0; i1 < models.size(); i1++) {
                         HomeContentPostCommentSetResponseModel q = models.get(i1);
@@ -278,9 +416,9 @@ public class aHomePostCommentActivity extends AppCompatActivity {
         });
     }
 
-    private void deleteComment(String commentId, int position) {
-        Log.d("Lihat", "deleteComment aHomePostCommentActivity : " + commentId);
-        Log.d("Lihat", "deleteComment aHomePostCommentActivity : " + position);
+    private void callDeleteComment(String commentId, int position) {
+        Log.d("Lihat", "callDeleteComment aHomePostCommentActivity : " + commentId);
+        Log.d("Lihat", "callDeleteComment aHomePostCommentActivity : " + position);
 
         ProgressDialog progressDialog = ProgressDialog.show(aHomePostCommentActivity.this, "Loading...", "Please Wait..", false, false);
 
@@ -301,7 +439,7 @@ public class aHomePostCommentActivity extends AppCompatActivity {
                         HomeContentPostCommentDeleteResponseModel q = modeld.get(i);
                         if (q.getStatus().equalsIgnoreCase(ISeasonConfig.SUCCESS)) {
                             //adapter.removeAt(position);
-                            getCommentList();
+                            callGetCommentList();
                             Snackbar.make(findViewById(android.R.id.content), q.getStatus(), Snackbar.LENGTH_LONG).show();
                         } else {
                             Snackbar.make(findViewById(android.R.id.content), q.getStatus(), Snackbar.LENGTH_LONG).show();

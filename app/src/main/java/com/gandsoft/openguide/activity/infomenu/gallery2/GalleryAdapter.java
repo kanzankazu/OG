@@ -2,7 +2,6 @@ package com.gandsoft.openguide.activity.infomenu.gallery2;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -14,20 +13,17 @@ import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.request.Request;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.gandsoft.openguide.API.APIresponse.Gallery.GalleryResponseModel;
 import com.gandsoft.openguide.R;
 import com.gandsoft.openguide.support.PictureUtil;
-import com.gandsoft.openguide.support.SystemUtil;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHolder> {
 
@@ -60,7 +56,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
                 .into(new SimpleTarget<Bitmap>() {
                     @Override
                     public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
-                        Bitmap resizeImage = PictureUtil.resizeImage(resource, 500);
+                        Bitmap resizeImage = PictureUtil.resizeImageBitmap(resource, 500);
                         holder.mImg.setImageBitmap(resizeImage);
                     }
                 });
@@ -120,7 +116,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
             savedImagePath = imageFile.getAbsolutePath();
             try {
                 OutputStream fOut = new FileOutputStream(imageFile);
-                Bitmap storedata = PictureUtil.resizeImage(image, 500);
+                Bitmap storedata = PictureUtil.resizeImageBitmap(image, 500);
                 storedata.compress(Bitmap.CompressFormat.JPEG, 50, fOut);
                 fOut.close();
             } catch (Exception e) {

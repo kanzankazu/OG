@@ -4,7 +4,16 @@ public class HomeContentPostCommentGetRequestModel {
     String event_id;
     String post_id;
     String account_id;
+    String id_comment;
     String dbver;
+
+    public String getId_comment() {
+        return id_comment;
+    }
+
+    public void setId_comment(String id_comment) {
+        this.id_comment = id_comment;
+    }
 
     public String getEvent_id() {
         return event_id;

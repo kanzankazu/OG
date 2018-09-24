@@ -196,7 +196,6 @@ public class GalleryActivity extends AppCompatActivity {
                         last_id = models.get(models.size() - 1).getId();
                         first_id = models.get(0).getId();
                     } else {
-                        Snackbar.make(findViewById(android.R.id.content), "Data Terakhir", Snackbar.LENGTH_SHORT).show();
                         last_data = true;
                         last_id = "";
                         first_id = "";
@@ -265,7 +264,6 @@ public class GalleryActivity extends AppCompatActivity {
                         last_id = models.get(models.size() - 1).getId();
                         first_id = models.get(0).getId();
                     } else {
-                        Snackbar.make(findViewById(android.R.id.content), "Data Terakhir", Snackbar.LENGTH_SHORT).show();
                         last_data = true;
                         last_id = "";
                         first_id = "";

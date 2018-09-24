@@ -1,8 +1,5 @@
 package com.gandsoft.openguide.API.APIresponse.HomeContent;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
 public class HomeContentResponseModel {
     public String id;
     public String like;
@@ -18,6 +15,7 @@ public class HomeContentResponseModel {
     public String image_posted_local;
     public String keterangan;
     public String event;
+    public boolean is_new;
 
     public int number;
     public String eventId;
@@ -166,5 +164,13 @@ public class HomeContentResponseModel {
 
     public void setImage_posted_local(String image_posted_local) {
         this.image_posted_local = image_posted_local;
+    }
+
+    public boolean getIs_new() {
+        return is_new;
+    }
+
+    public void setIs_new(boolean is_new) {
+        this.is_new = is_new;
     }
 }
