@@ -1,11 +1,15 @@
 package com.gandsoft.openguide.activity.infomenu.gallery2;
 
+import android.graphics.Bitmap;
 import android.support.v4.view.PagerAdapter;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.SimpleTarget;
+import com.gandsoft.openguide.support.PictureUtil;
 
 import java.util.ArrayList;
 
@@ -13,9 +17,11 @@ import static com.gandsoft.openguide.App.getContext;
 
 public class GalleryDetailPagerAdapter extends PagerAdapter {
     ArrayList<String> imageList;
+    private ImageViewTouchViewPager mViewPager;
 
-    GalleryDetailPagerAdapter(ArrayList<String> imageList) {
+    GalleryDetailPagerAdapter(ArrayList<String> imageList, ImageViewTouchViewPager mViewPager) {
         this.imageList = imageList;
+        this.mViewPager = mViewPager;
     }
 
     @Override
@@ -31,24 +37,49 @@ public class GalleryDetailPagerAdapter extends PagerAdapter {
     @Override
     public View instantiateItem(ViewGroup container, int position) {
 
-        TouchImageView img = new TouchImageView(container.getContext());
+        /*TouchImageView img = new TouchImageView(container.getContext());
         Glide.with(getContext())
                 .load(imageList.get(position))
                 .asBitmap()
                 .fitCenter()
-                .into(img);
-        /*img.setImageResource(imageList.get(position));*/
+                .into(new SimpleTarget<Bitmap>() {
+                    @Override
+                    public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+                        img.setImageBitmap(PictureUtil.resizeImageBitmap(resource, 720));
+                    }
+                });
         container.addView(img, LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
-        return img;
+        return img;*/
 
-        /*ScaleImageView photoView = new ScaleImageView(container.getContext());
+        /*ImageViewTouch img = new ImageViewTouch(getContext(), null);
+        img.setDisplayType(ImageViewTouchBase.DisplayType.FIT_TO_SCREEN);
+        Glide.with(getContext())
+                .load(imageList.get(position))
+                .asBitmap()
+                .thumbnail(0.1f)
+                .fitCenter()
+                .into(new SimpleTarget<Bitmap>() {
+                    @Override
+                    public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+                        img.setImageBitmap(PictureUtil.resizeImageBitmap(resource,720));
+                    }
+                });
+        container.addView(img, LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+        return img;*/
+
+        ScaleImageView photoView = new ScaleImageView(container.getContext());
         Glide.with(getContext())
                 .load(imageList.get(position))
                 .asBitmap()
                 .fitCenter()
-                .into(photoView);
+                .into(new SimpleTarget<Bitmap>() {
+                    @Override
+                    public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+                        photoView.setImageBitmap(PictureUtil.resizeImageBitmap(resource,720));
+                    }
+                });
         container.addView(photoView, LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
-        return photoView;*/
+        return photoView;
     }
 
     @Override

@@ -90,6 +90,7 @@ dependencies {
     implementation files('libs/universal-image-loader-1.9.5.jar')
     testImplementation 'junit:junit:4.12'
     implementation 'io.supercharge:shimmerlayout:2.1.0'
+    implementation 'it.sephiroth.android.library.imagezoom:imagezoom:2.3.0'
 
     // your app's other dependencies
     implementation 'com.facebook.fresco:fresco:1.10.0'

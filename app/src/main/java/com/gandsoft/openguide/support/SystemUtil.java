@@ -8,7 +8,6 @@ import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.graphics.Paint;
-import android.media.ExifInterface;
 import android.support.v4.content.ContextCompat;
 import android.text.InputFilter;
 import android.view.View;
@@ -22,7 +21,6 @@ import com.gandsoft.openguide.App;
 import com.gandsoft.openguide.R;
 import com.google.android.gms.auth.GoogleAuthUtil;
 import com.google.android.gms.common.AccountPicker;
-import com.google.android.gms.nearby.connection.Payload;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -31,7 +29,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.io.File;
 
 public class SystemUtil {
 
@@ -49,24 +46,6 @@ public class SystemUtil {
             list.add(targetedIntent);
         }
         return list;
-    }
-
-    public static String getAge(int year, int month, int day) {
-        Calendar dob = Calendar.getInstance();
-        Calendar today = Calendar.getInstance();
-
-        dob.set(year, month, day);
-
-        int age = today.get(Calendar.YEAR) - dob.get(Calendar.YEAR);
-
-        if (today.get(Calendar.DAY_OF_YEAR) < dob.get(Calendar.DAY_OF_YEAR)) {
-            age--;
-        }
-
-        Integer ageInt = new Integer(age);
-        String ageS = ageInt.toString();
-
-        return ageS;
     }
 
     public static void textCaps(EditText editText) {
@@ -182,84 +161,6 @@ public class SystemUtil {
             return App.getContext().getPackageCodePath();
         }
         return null;
-    }
-
-    public static String getDayFromDateString(String stringDate, String dateTimeFormat) {
-        //[] daysArray = new String[]{"saturday", "sunday", "monday", "tuesday", "wednesday", "thursday", "friday"};
-        String[] daysArray = new String[]{"Sabtu", "Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat"};
-        String day = "";
-
-        int dayOfWeek = 0;
-        //dateTimeFormat = yyyy-MM-dd HH:mm:ss
-        SimpleDateFormat formatter = new SimpleDateFormat(dateTimeFormat);
-        Date date;
-        try {
-            date = formatter.parse(stringDate);
-            Calendar c = Calendar.getInstance();
-            c.setTime(date);
-            dayOfWeek = c.get(Calendar.DAY_OF_WEEK) - 1;
-            if (dayOfWeek < 0) {
-                dayOfWeek += 7;
-            }
-            day = daysArray[dayOfWeek];
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return day;
-    }
-
-    public static String convertStringDateToNewFormat(String timeDefault, String dateFormatDefault, String dateFormatNew) {
-        String mytime = timeDefault;
-        SimpleDateFormat dateFormat = new SimpleDateFormat(
-                dateFormatDefault);
-        Date myDate = null;
-        try {
-            myDate = dateFormat.parse(mytime);
-
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-
-        SimpleDateFormat timeFormat = new SimpleDateFormat(dateFormatNew);
-        String finalDate = timeFormat.format(myDate);
-
-        return finalDate;
-    }
-
-    /**
-     * "yyyy-MM-dd" format
-     *
-     * @param dateString1
-     * @param dateString2
-     * @return
-     */
-    public static List<Date> getDates(String dateString1, String dateString2) {
-        ArrayList<Date> dates = new ArrayList<Date>();
-        DateFormat df1 = new SimpleDateFormat("yyyy-MM-dd");
-
-        Date date1 = null;
-        Date date2 = null;
-
-        try {
-            date1 = df1.parse(dateString1);
-            date2 = df1.parse(dateString2);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-
-        Calendar cal1 = Calendar.getInstance();
-        cal1.setTime(date1);
-
-
-        Calendar cal2 = Calendar.getInstance();
-        cal2.setTime(date2);
-
-        while (!cal1.after(cal2)) {
-            dates.add(cal1.getTime());
-            cal1.add(Calendar.DATE, 1);
-        }
-        return dates;
     }
 
     public static void setUnderlineTextView(TextView textview) {

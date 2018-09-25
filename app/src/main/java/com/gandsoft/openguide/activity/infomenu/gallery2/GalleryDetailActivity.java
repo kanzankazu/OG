@@ -30,7 +30,7 @@ public class GalleryDetailActivity extends AppCompatActivity {
 
     Toolbar toolbar;
 
-    private ViewPager mViewPager;
+    private ImageViewTouchViewPager mViewPager;
     private ScaleImageView zivDetailGalleryfvbi;
     private LinearLayout llDetailGalleryCommentfvbi, llDetailGalleryLikefvbi;
     private TextView tvDetailGalleryCommentfvbi, tvDetailGalleryLikefvbi, tvDetailGalleryUsernamefvbi, tvDetailGalleryCaptionfvbi;
@@ -51,7 +51,7 @@ public class GalleryDetailActivity extends AppCompatActivity {
 
     private void initComponent() {
         toolbar = (Toolbar) findViewById(R.id.tb_gallery_detail);
-        mViewPager = (ViewPager) findViewById(R.id.vp_gallery_detail);
+        mViewPager = (ImageViewTouchViewPager) findViewById(R.id.vp_gallery_detail);
 
         llDetailGalleryCommentfvbi = (LinearLayout) findViewById(R.id.llDetailGalleryComment);
         llDetailGalleryLikefvbi = (LinearLayout) findViewById(R.id.llDetailGalleryLike);
@@ -65,7 +65,9 @@ public class GalleryDetailActivity extends AppCompatActivity {
 
     private void initParam() {
         models = getIntent().getParcelableArrayListExtra("models");
+        Log.d("Lihat", "initParam GalleryDetailActivity : " + models.get(0).getImage_posted());
         posData = getIntent().getIntExtra("posData", 0);
+        Log.d("Lihat", "initParam GalleryDetailActivity : " + posData);
     }
 
     private void initSession() {
@@ -74,7 +76,6 @@ public class GalleryDetailActivity extends AppCompatActivity {
 
     private void initContent() {
         setSupportActionBar(toolbar);
-        setTitle(models.get(posData).getUsername());
 
         ArrayList<String> imageList = new ArrayList<>();
         for (int i = 0; i < models.size(); i++) {
@@ -82,66 +83,70 @@ public class GalleryDetailActivity extends AppCompatActivity {
             imageList.add(q.getImage_posted());
         }
 
-        mGalleryDetailPagerAdapter = new GalleryDetailPagerAdapter(imageList);
+        mGalleryDetailPagerAdapter = new GalleryDetailPagerAdapter(imageList, mViewPager);
         mViewPager.setPageTransformer(true, new DepthPageTransformer());
         mViewPager.setAdapter(mGalleryDetailPagerAdapter);
-        mViewPager.setOffscreenPageLimit(3);
+        mViewPager.setOffscreenPageLimit(0);
         mViewPager.setCurrentItem(posData);
+
+        updateUi(posData);
     }
 
     private void initListener() {
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-                Log.d("Lihat", "onPageScrolled GalleryDetailActivity : " + position);
-                Log.d("Lihat", "onPageScrolled GalleryDetailActivity : " + positionOffset);
-                Log.d("Lihat", "onPageScrolled GalleryDetailActivity : " + positionOffsetPixels);
             }
 
             @Override
             public void onPageSelected(int position) {
-                GalleryImageModel q = models.get(position);
-
-                setTitle(q.getUsername());
-
-                tvDetailGalleryCommentfvbi.setText(q.getTotal_comment());
-                tvDetailGalleryLikefvbi.setText(q.getLike());
-                tvDetailGalleryUsernamefvbi.setText(q.getUsername());
-                tvDetailGalleryCaptionfvbi.setText(q.getCaption());
-
-                Glide.with(GalleryDetailActivity.this)
-                        .load(q.getImage_icon())
-                        .thumbnail(0.1f)
-                        .into(ivDetailGalleryIconfvbi);
-
-                if (Integer.parseInt(q.getStatus_like()) != 0) {
-                    ivDetailGalleryLikefvbi.setImageResource(R.drawable.ic_love_fill);
-                } else {
-                    ivDetailGalleryLikefvbi.setImageResource(R.drawable.ic_love_empty);
-                }
-
-                llDetailGalleryLikefvbi.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        int iLike = Integer.parseInt(q.getLike());
-                        if (Integer.parseInt(q.getStatus_like()) == 0) {
-                            tvDetailGalleryLikefvbi.setText(String.valueOf(iLike + 1));
-                            ivDetailGalleryLikefvbi.setImageResource(R.drawable.ic_love_fill);
-                            q.setStatus_like(String.valueOf(1));
-                            q.setLike(String.valueOf(iLike + 1));
-                        } else {
-                            tvDetailGalleryLikefvbi.setText(String.valueOf(iLike - 1));
-                            ivDetailGalleryLikefvbi.setImageResource(R.drawable.ic_love_empty);
-                            q.setStatus_like(String.valueOf(0));
-                            q.setLike(String.valueOf(iLike - 1));
-                        }
-                    }
-                });
+                updateUi(position);
             }
 
             @Override
             public void onPageScrollStateChanged(int state) {
-                Log.d("Lihat", "onPageScrollStateChanged GalleryDetailActivity : " + state);
+            }
+        });
+    }
+
+    private void updateUi(int position) {
+        GalleryImageModel model = models.get(position);
+        setTitle(model.getUsername());
+        tvDetailGalleryCommentfvbi.setText(model.getTotal_comment());
+        tvDetailGalleryLikefvbi.setText(model.getLike());
+        tvDetailGalleryUsernamefvbi.setText(model.getUsername());
+        tvDetailGalleryCaptionfvbi.setText(model.getCaption());
+        Glide.with(GalleryDetailActivity.this)
+                .load(model.getImage_icon())
+                .asBitmap()
+                .into(new SimpleTarget<Bitmap>() {
+                    @Override
+                    public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+                        Bitmap bitmap = PictureUtil.resizeImageBitmap(resource, 720);
+                        ivDetailGalleryIconfvbi.setImageBitmap(bitmap);
+                    }
+                });
+        if (Integer.parseInt(model.getStatus_like()) != 0) {
+            ivDetailGalleryLikefvbi.setImageResource(R.drawable.ic_love_fill);
+        } else {
+            ivDetailGalleryLikefvbi.setImageResource(R.drawable.ic_love_empty);
+        }
+
+        llDetailGalleryLikefvbi.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int iLike = Integer.parseInt(model.getLike());
+                if (Integer.parseInt(model.getStatus_like()) == 0) {
+                    tvDetailGalleryLikefvbi.setText(String.valueOf(iLike + 1));
+                    ivDetailGalleryLikefvbi.setImageResource(R.drawable.ic_love_fill);
+                    model.setStatus_like(String.valueOf(1));
+                    model.setLike(String.valueOf(iLike + 1));
+                } else {
+                    tvDetailGalleryLikefvbi.setText(String.valueOf(iLike - 1));
+                    ivDetailGalleryLikefvbi.setImageResource(R.drawable.ic_love_empty);
+                    model.setStatus_like(String.valueOf(0));
+                    model.setLike(String.valueOf(iLike - 1));
+                }
             }
         });
     }
@@ -155,7 +160,12 @@ public class GalleryDetailActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        finish();
+        onBackPressed();
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+        finish();
     }
 }

@@ -23,8 +23,7 @@
             <ImageView
                 android:id="@+id/ivRvScheduleIndicator"
                 android:layout_width="15dp"
-                android:layout_height="15dp"
-                android:background="@color/colorAccent" />
+                android:layout_height="15dp"/>
         </LinearLayout>
 
         <View
@@ -39,6 +38,7 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/llRvScheduleContent"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:animateLayoutChanges="true"

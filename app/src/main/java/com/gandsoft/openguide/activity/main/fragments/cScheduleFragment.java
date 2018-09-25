@@ -1,5 +1,7 @@
 package com.gandsoft.openguide.activity.main.fragments;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
@@ -25,13 +27,14 @@ import java.util.ArrayList;
 
 
 public class cScheduleFragment extends Fragment {
+    private static final int REQ_CODE_QNA = 123;
     private SQLiteHelper db;
     private ArrayList<String> scheduleDates;
     private ArrayList<EventScheduleListDateDataList> scheduleListPerDate;
     private ImageView[] ivIndicatorPromo;
 
     private RecyclerView recyclerView;
-    private ScheduleRecycleviewAdapter recycleviewAdapter;
+    private ScheduleRecycleviewAdapter adapter;
     private NestedScrollView scroller;
     private ViewPager pagerBig;
     private ViewPager pagerSmall;
@@ -73,16 +76,24 @@ public class cScheduleFragment extends Fragment {
         scheduleDates = db.getScheduleListDate(eventId);
         pagerAdapterBig = new SchedulePagerAdapter(getActivity(), 0, scheduleDates);
         pagerBig.setAdapter(pagerAdapterBig);
-        pagerBig.setOffscreenPageLimit(3);
+        pagerBig.setOffscreenPageLimit(0);
         pagerAdapterSmall = new SchedulePagerAdapter(getActivity(), 1, scheduleDates);
         pagerSmall.setAdapter(pagerAdapterSmall);
-        pagerSmall.setOffscreenPageLimit(3);
+        pagerSmall.setOffscreenPageLimit(0);
 
         addBottomDots();
 
         scheduleListPerDate = db.getScheduleListPerDate(eventId, scheduleDates.get(pagerBig.getCurrentItem()));
-        recycleviewAdapter = new ScheduleRecycleviewAdapter(getActivity(), scheduleListPerDate);
-        recyclerView.setAdapter(recycleviewAdapter);
+        adapter = new ScheduleRecycleviewAdapter(getActivity(), scheduleListPerDate, new ScheduleRecycleviewAdapter.ScheduleListener() {
+            @Override
+            public void onClickQNA(String link) {
+                Intent intent = new Intent(getActivity(), cScheduleQNAActivity.class);
+                intent.putExtra(ISeasonConfig.INTENT_PARAM, link);
+                startActivityForResult(intent, REQ_CODE_QNA);
+                //finish();
+            }
+        });
+        recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
     }
 
@@ -126,7 +137,7 @@ public class cScheduleFragment extends Fragment {
             @Override
             public void onPageSelected(int position) {
                 pagerSmall.setCurrentItem(position);
-                recycleviewAdapter.replaceData(db.getScheduleListPerDate(eventId, scheduleDates.get(position)));
+                adapter.setData(db.getScheduleListPerDate(eventId, scheduleDates.get(position)));
                 for (int i = 0; i < iPagerCount; i++) {
                     ivIndicatorPromo[i].setImageDrawable(getResources().getDrawable(R.drawable.nonselected_item));
                 }
@@ -147,11 +158,11 @@ public class cScheduleFragment extends Fragment {
             @Override
             public void onPageSelected(int position) {
                 pagerBig.setCurrentItem(position);
-                recycleviewAdapter.replaceData(db.getScheduleListPerDate(eventId, scheduleDates.get(position)));
+                /*adapter.setData(db.getScheduleListPerDate(eventId, scheduleDates.get(position)));
                 for (int i = 0; i < iPagerCount; i++) {
                     ivIndicatorPromo[i].setImageDrawable(getResources().getDrawable(R.drawable.nonselected_item));
                 }
-                ivIndicatorPromo[position].setImageDrawable(getResources().getDrawable(R.drawable.selected_item));
+                ivIndicatorPromo[position].setImageDrawable(getResources().getDrawable(R.drawable.selected_item));*/
             }
 
             @Override
@@ -205,13 +216,17 @@ public class cScheduleFragment extends Fragment {
         }
     }
 
-    /*private void populateRecyclerViewValues() {
-        for (int iter = 0; iter <= 50; iter++) {
-            TaskRecViewPojo pojoObject = new TaskRecViewPojo();
-            pojoObject.setContent("Content, number: " + iter);
-            pojoObject.setTime("Time");
-            listContentArr.add(pojoObject);
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQ_CODE_QNA) {
+            if (resultCode == Activity.RESULT_OK) {
+
+            } else {
+
+            }
+        } else {
+
         }
-        recycleviewAdapter.setListContent(listContentArr);
-    }*/
+    }
 }

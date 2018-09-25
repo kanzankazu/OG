@@ -2,17 +2,14 @@ package com.gandsoft.openguide.activity.main;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.os.Handler;
-import android.provider.MediaStore;
 import android.support.design.widget.TabLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -25,9 +22,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.gandsoft.openguide.API.APIresponse.Event.EventCommitteeNote;
-import com.gandsoft.openguide.API.APIresponse.Event.EventTheEvent;
 import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
 import com.gandsoft.openguide.activity.ChangeEventActivity;
@@ -57,6 +52,8 @@ public class BaseHomeActivity extends AppCompatActivity {
     private String accountId, eventId;
     private int version_data_event;
     private boolean doubleBackToExitPressedOnce;
+    ImageView imviewdial;
+    int a = 0;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -114,24 +111,24 @@ public class BaseHomeActivity extends AppCompatActivity {
             }
         });
     }
-    ImageView imviewdial;
+
     private void showFirstDialogEvent() {
         Dialog dialog = new Dialog(this);
         dialog.setContentView(R.layout.custom_dialog);
         dialog.show();
         imviewdial = dialog.findViewById(R.id.ivDialWelcom);
-        Log.d("wew",String.valueOf(R.id.ivDialWelcom));
+        Log.d("wew", String.valueOf(R.id.ivDialWelcom));
 
         String wew = db.getTheEvent(eventId).welcome_note;
         Document doc = Jsoup.parse(wew);
         Elements img = doc.select("img");
         String urlsd = img.attr("abs:src");
-        Log.d("wew",urlsd);
+        Log.d("wew", urlsd);
         try {
             Glide.with(this)
                     .load(urlsd)
                     .into(imviewdial);
-        }catch (Exception e){
+        } catch (Exception e) {
             Log.d("errornya di ", String.valueOf(e));
         }
 
@@ -155,7 +152,7 @@ public class BaseHomeActivity extends AppCompatActivity {
                     }
                 })*/
         /*.show();
-                */
+         */
     }
 
     private void initActionBar() {
@@ -192,13 +189,14 @@ public class BaseHomeActivity extends AppCompatActivity {
         mPager.setOffscreenPageLimit(4);
         mPager.setCurrentItem(0);
     }
-    int a=0;
-    private int checkNotif(){
+
+    private int checkNotif() {
         ArrayList<EventCommitteeNote> wew = db.getCommiteNote(eventId);
-        for(int i=0;i<wew.size();i++){
-            if(wew.get(i).getHas_been_opened().equals("0")){
+        for (int i = 0; i < wew.size(); i++) {
+            if (wew.get(i).getHas_been_opened().equals("0")) {
                 a++;
-            };
+            }
+            ;
         }
         return a;
     }
@@ -206,10 +204,9 @@ public class BaseHomeActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        if(checkNotif()>0) {
+        if (checkNotif() > 0) {
             inflater.inflate(R.menu.menu_main2, menu);
-        }
-        else{
+        } else {
             inflater.inflate(R.menu.menu_main, menu);
         }
         return true;
@@ -219,7 +216,7 @@ public class BaseHomeActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         String title = "Notification";
         Intent intent = new Intent(this, cInboxActivity.class);
-        intent.putExtra("TITLE",title);
+        intent.putExtra("TITLE", title);
         startActivity(intent);
         return super.onOptionsItemSelected(item);
     }

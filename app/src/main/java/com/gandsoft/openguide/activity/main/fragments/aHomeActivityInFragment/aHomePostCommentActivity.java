@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.Snackbar;
@@ -27,7 +28,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.SimpleTarget;
 import com.gandsoft.openguide.API.API;
 import com.gandsoft.openguide.API.APIrequest.HomeContent.HomeContentPostCommentDeleteRequestModel;
 import com.gandsoft.openguide.API.APIrequest.HomeContent.HomeContentPostCommentGetRequestModel;
@@ -40,12 +42,12 @@ import com.gandsoft.openguide.IConfig;
 import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
 import com.gandsoft.openguide.database.SQLiteHelper;
+import com.gandsoft.openguide.support.PictureUtil;
 import com.gandsoft.openguide.support.SessionUtil;
 import com.gandsoft.openguide.support.SystemUtil;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -150,20 +152,22 @@ public class aHomePostCommentActivity extends AppCompatActivity {
 
         Glide.with(this)
                 .load(model.getImage_icon())
-                .placeholder(R.drawable.template_account_og)
-                .skipMemoryCache(true)
-                .diskCacheStrategy(DiskCacheStrategy.NONE)
-                .error(R.drawable.template_account_og)
+                .asBitmap()
+                .thumbnail(0.1f)
                 .into(ivCommentTsIconfvbi);
 
         if (!TextUtils.isEmpty(model.getImage_posted())) {
             Glide.with(this)
                     .load(model.getImage_posted())
-                    .placeholder(R.drawable.template_account_og)
-                    .diskCacheStrategy(DiskCacheStrategy.NONE)
-                    .skipMemoryCache(true)
-                    .error(R.drawable.template_account_og)
-                    .into(ivCommentTsImagefvbi);
+                    .asBitmap()
+                    .thumbnail(0.1f)
+                    .into(new SimpleTarget<Bitmap>() {
+                        @Override
+                        public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+                            Bitmap resizeImageBitmap = PictureUtil.resizeImageBitmap(resource, 1080);
+                            ivCommentTsImagefvbi.setImageBitmap(resizeImageBitmap);
+                        }
+                    });
         } else {
             ivCommentTsImagefvbi.setVisibility(View.GONE);
         }
@@ -377,7 +381,7 @@ public class aHomePostCommentActivity extends AppCompatActivity {
         requestModel.setPost_comment(etCommentPostfvbi.getText().toString().trim());
         requestModel.setPost_time(formattedDate);
         //requestModel.setTimezone(formattedDateGMT);
-        requestModel.setTimezone("+07");
+        requestModel.setTimezone("");
 
         requestModel.setDbver(String.valueOf(IConfig.DB_Version));
         API.doHomeContentPostCommentRet(requestModel).enqueue(new Callback<List<HomeContentPostCommentSetResponseModel>>() {

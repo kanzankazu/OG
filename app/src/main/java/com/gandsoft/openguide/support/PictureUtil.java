@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
 import android.net.Uri;
@@ -231,11 +230,21 @@ public class PictureUtil {
         return false;
     }
 
-    public static Bitmap flipImage(Bitmap src) {
+    public static Bitmap flipHorizontalImage(Bitmap src) {
         // create new matrix for transformation
         Matrix matrix = new Matrix();
 
         matrix.preScale(-1.0f, 1.0f);
+
+        // return transformed image
+        return Bitmap.createBitmap(src, 0, 0, src.getWidth(), src.getHeight(), matrix, true);
+    }
+
+    public static Bitmap flipVerticalImage(Bitmap src) {
+        // create new matrix for transformation
+        Matrix matrix = new Matrix();
+
+        matrix.preScale(1.0f, -1.0f);
 
         // return transformed image
         return Bitmap.createBitmap(src, 0, 0, src.getWidth(), src.getHeight(), matrix, true);
@@ -254,21 +263,21 @@ public class PictureUtil {
 
         // Create a Bitmap with the flip matrix applied to it.
         // We only want the bottom half of the image
-        Bitmap flipImage = Bitmap.createBitmap(originalImage, 0,0 , width, height, matrix, true);
+        Bitmap flipImage = Bitmap.createBitmap(originalImage, 0, 0, width, height, matrix, true);
 
         // Create a new bitmap with same width but taller to fit reflection
         Bitmap bitmapWithFlip = Bitmap.createBitmap((width + width + flipGap), height, Bitmap.Config.ARGB_8888);
 
-        // Create a new Canvas with the bitmap that's big enough for
+        /*// Create a new Canvas with the bitmap that's big enough for
         Canvas canvas = new Canvas(bitmapWithFlip);
 
         //Draw original image
         canvas.drawBitmap(originalImage, 0, 0, null);
 
         //Draw the Flipped Image
-        canvas.drawBitmap(flipImage, width+flipGap, 0, null);
+        canvas.drawBitmap(flipImage, width + flipGap, 0, null);*/
 
 
-        return bitmapWithFlip;
+        return flipImage;
     }
 }

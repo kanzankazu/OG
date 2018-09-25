@@ -10,6 +10,7 @@ public class EventScheduleListDateDataList  {
     public String detail;
     public String action;
     public String link;
+    public String linkvote;
     public String status;
 
     public int number;
@@ -94,6 +95,14 @@ public class EventScheduleListDateDataList  {
 
     public void setLink(String link) {
         this.link = link;
+    }
+
+    public String getLinkvote() {
+        return linkvote;
+    }
+
+    public void setLinkvote(String linkvote) {
+        this.linkvote = linkvote;
     }
 
     public String getStatus() {

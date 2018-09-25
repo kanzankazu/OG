@@ -2,11 +2,9 @@ package com.gandsoft.openguide.activity.main.adapter;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,12 +21,14 @@ import java.util.List;
 
 public class ScheduleRecycleviewAdapter extends RecyclerView.Adapter<ScheduleRecycleviewAdapter.MyViewHolder> {
     private List<EventScheduleListDateDataList> models = new ArrayList<>();
+    private ScheduleListener mListener;
     private Context context;
 
 
-    public ScheduleRecycleviewAdapter(Context context, ArrayList<EventScheduleListDateDataList> models) {
+    public ScheduleRecycleviewAdapter(Context context, ArrayList<EventScheduleListDateDataList> models, ScheduleListener mListener) {
         this.context = context;
         this.models = models;
+        this.mListener = mListener;
     }
 
     @Override
@@ -57,7 +57,7 @@ public class ScheduleRecycleviewAdapter extends RecyclerView.Adapter<ScheduleRec
             holder.bRvScheduleDetailfvbi.setVisibility(View.GONE);
         }
 
-        if (!TextUtils.isEmpty(model.getLink())) {
+        if (!TextUtils.isEmpty(model.getLink()) || !TextUtils.isEmpty(model.getLinkvote())) {
             holder.bRvScheduleLiveQAfvbi.setVisibility(View.VISIBLE);
         } else {
             holder.bRvScheduleLiveQAfvbi.setVisibility(View.GONE);
@@ -77,17 +77,29 @@ public class ScheduleRecycleviewAdapter extends RecyclerView.Adapter<ScheduleRec
                 holder.tvRvScheduleDetailfvbi.setVisibility(View.GONE);
             }
         });
-
         holder.bRvScheduleLiveQAfvbi.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                if (!TextUtils.isEmpty(model.getLinkvote())) {
+                    mListener.onClickQNA(model.getLinkvote());
+                } else {
+                    mListener.onClickQNA(model.getLink());
+                }
             }
         });
 
         //code here
-        /*if (position == getItemCount() - 1) {
+        if (position == getItemCount() - 1) {
             holder.vRvSchedulelinefvbi.setVisibility(View.GONE);
+            holder.ivRvScheduleIndicatorfvbi.setBackgroundResource(R.color.colorPrimary);
+        } else {
+            holder.vRvSchedulelinefvbi.setVisibility(View.VISIBLE);
+            holder.ivRvScheduleIndicatorfvbi.setBackgroundResource(R.color.colorAccent);
+        }
+
+        /*if (TextUtils.isEmpty(model.getDate())){
+            holder.vRvSchedulelinefvbi.setVisibility(View.GONE);
+            holder.llRvScheduleContentfvbi.setVisibility(View.GONE);
             holder.ivRvScheduleIndicatorfvbi.setBackgroundColor(R.color.colorPrimary);
         }*/
 
@@ -107,6 +119,7 @@ public class ScheduleRecycleviewAdapter extends RecyclerView.Adapter<ScheduleRec
         private final Button bRvScheduleDetailfvbi, bRvScheduleLiveQAfvbi;
         private final ImageView ivRvScheduleIndicatorfvbi;
         private final View vRvSchedulelinefvbi;
+        private final LinearLayout llRvScheduleContentfvbi;
 
         public MyViewHolder(View itemView) {
             super(itemView);
@@ -121,6 +134,7 @@ public class ScheduleRecycleviewAdapter extends RecyclerView.Adapter<ScheduleRec
             bRvScheduleLiveQAfvbi = (Button) itemView.findViewById(R.id.bRvScheduleLiveQA);
             ivRvScheduleIndicatorfvbi = (ImageView) itemView.findViewById(R.id.ivRvScheduleIndicator);
             vRvSchedulelinefvbi = (View) itemView.findViewById(R.id.vRvScheduleline);
+            llRvScheduleContentfvbi = (LinearLayout) itemView.findViewById(R.id.llRvScheduleContent);
 
         }
 
@@ -138,8 +152,14 @@ public class ScheduleRecycleviewAdapter extends RecyclerView.Adapter<ScheduleRec
     }
 
     public void setData(List<EventScheduleListDateDataList> datas) {
-        models = datas;
+        if (datas.size() > 0) {
+            models.clear();
+            models = datas;
+        } else {
+            models = datas;
+        }
         notifyDataSetChanged();
+        notifyItemRangeChanged(0, models.size());
     }
 
     public void replaceData(List<EventScheduleListDateDataList> datas) {
@@ -151,6 +171,10 @@ public class ScheduleRecycleviewAdapter extends RecyclerView.Adapter<ScheduleRec
     public void addDatas(List<EventScheduleListDateDataList> datas) {
         models.addAll(datas);
         notifyItemRangeInserted(models.size(), datas.size());
+    }
+
+    public interface ScheduleListener {
+        void onClickQNA(String link);
     }
 
     /*public void setReplaceData(List<EventScheduleListDateDataList> datas) {

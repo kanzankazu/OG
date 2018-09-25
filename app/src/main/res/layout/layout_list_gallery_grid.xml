@@ -5,6 +5,5 @@
     android:layout_height="128dp"
     android:layout_margin="1dp"
     android:adjustViewBounds="true"
-    android:scaleType="centerCrop"
-    android:src="@drawable/gallery" />
+    android:scaleType="centerCrop"/>
 

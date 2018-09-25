@@ -17,7 +17,7 @@
         app:popupTheme="@style/AppTheme.PopupOverlay"
         app:titleTextColor="@color/colorPrimary" />
 
-    <android.support.v4.view.ViewPager
+    <com.gandsoft.openguide.activity.infomenu.gallery2.ImageViewTouchViewPager
         android:id="@+id/vp_gallery_detail"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

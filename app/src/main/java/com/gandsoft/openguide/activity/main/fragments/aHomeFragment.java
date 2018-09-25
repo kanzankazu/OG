@@ -317,13 +317,13 @@ public class aHomeFragment extends Fragment {
         values.put(MediaStore.Images.Media.DESCRIPTION, "From your Camera");
         imageUri = getActivity().getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
         Log.d("Lihat", "openCamera aHomeFragment : " + imageUri);
-        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE_SECURE);
         intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+        /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
             intent.putExtra("android.intent.extras.LENS_FACING_FRONT", 1);
         } else {
             intent.putExtra("android.intent.extras.CAMERA_FACING", 1);
-        }
+        }*/
         startActivityForResult(intent, REQ_CODE_TAKE_PHOTO_INTENT_ID_STANDART);
     }
 

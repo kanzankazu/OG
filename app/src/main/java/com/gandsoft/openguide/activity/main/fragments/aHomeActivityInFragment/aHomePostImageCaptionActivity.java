@@ -122,13 +122,13 @@ public class aHomePostImageCaptionActivity extends AppCompatActivity {
         values.put(MediaStore.Images.Media.TITLE, "New Picture");
         values.put(MediaStore.Images.Media.DESCRIPTION, "From your Camera");
         imageUri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
-        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE_SECURE);
         intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+        /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
             intent.putExtra("android.intent.extras.LENS_FACING_FRONT", 1);
         } else {
             intent.putExtra("android.intent.extras.CAMERA_FACING", 1);
-        }
+        }*/
         startActivityForResult(intent, REQ_CODE_TAKE_PHOTO_INTENT_ID_STANDART);
     }
 
@@ -141,7 +141,7 @@ public class aHomePostImageCaptionActivity extends AppCompatActivity {
                     @Override
                     public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
                         Bitmap resizeImage = PictureUtil.resizeImageBitmap(resource, 1080);
-                        //Bitmap flipImage = PictureUtil.flipHorizontally(resizeImage);
+                        //Bitmap flipImage = PictureUtil.flipHorizontalImage(resizeImage);
                         mIvImagePostPicture.setImageBitmap(resizeImage);
                     }
                 });

@@ -92,7 +92,7 @@
                         android:layout_marginBottom="20dp"
                         android:adjustViewBounds="true"
                         android:scaleType="fitCenter"
-                        android:visibility="gone"
+                        android:visibility="visible"
                         android:src="@drawable/gallery_potrait"/>
 
                     <org.sufficientlysecure.htmltextview.HtmlTextView

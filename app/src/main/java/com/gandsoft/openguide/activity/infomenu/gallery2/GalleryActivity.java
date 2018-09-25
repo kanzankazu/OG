@@ -84,7 +84,7 @@ public class GalleryActivity extends AppCompatActivity {
 
     private void initContent() {
 
-        summonToolbar("Gallery");
+        initToolbar("Gallery");
 
         rvGalleryAdapter = new GalleryAdapter(GalleryActivity.this, menuUi, eventId);
         rvGalleryfvbi.setNestedScrollingEnabled(false);
@@ -161,6 +161,14 @@ public class GalleryActivity extends AppCompatActivity {
                 }*/
             }
         });
+    }
+
+    public void initToolbar(String title) {
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        ab = getSupportActionBar();
+        ab.setTitle(title);
     }
 
     private void getGalleryData() {
@@ -305,14 +313,6 @@ public class GalleryActivity extends AppCompatActivity {
         });
 
 
-    }
-
-    public void summonToolbar(String title) {
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        ab = getSupportActionBar();
-        ab.setTitle(title);
     }
 
     @Override

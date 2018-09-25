@@ -30,7 +30,7 @@ import java.util.List;
 public class SQLiteHelper extends SQLiteOpenHelper {
     // Databases information
     private static final String DATABASE_NAME = "openguides.db";
-    private static final int DATABASE_VERSION = 4;
+    private static final int DATABASE_VERSION = 5;
 
     public static String TableGlobalData = "tabGlobalData";
     public static String KEY_GlobalData_dbver = "dbver";
@@ -119,6 +119,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     public static String Key_Schedule_List_detail = "detail";
     public static String Key_Schedule_List_action = "action";
     public static String Key_Schedule_List_link = "link";
+    public static String Key_Schedule_List_linkvote = "linkvote";
     public static String Key_Schedule_List_status = "status";
 
     public static String TableTheEvent = "tabTheEvent";
@@ -309,6 +310,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
             + Key_Schedule_List_detail + " TEXT, "
             + Key_Schedule_List_action + " TEXT, "
             + Key_Schedule_List_link + " TEXT, "
+            + Key_Schedule_List_linkvote + " TEXT, "
             + Key_Schedule_List_status + " TEXT) ";
     private static final String query_delete_table_ScheduleList = "DROP TABLE IF EXISTS " + TableScheduleList;
 
@@ -442,6 +444,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+
         db.execSQL(query_delete_table_UserData);
         db.execSQL(query_delete_table_ListEvent);
         db.execSQL(query_delete_table_Wallet);
@@ -459,22 +462,8 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         db.execSQL(query_delete_table_Gallery);
         db.execSQL(query_delete_table_HomeContent);
 
-        db.execSQL(query_add_table_UserData);
-        db.execSQL(query_add_table_ListEvent);
-        db.execSQL(query_add_table_Wallet);
-        db.execSQL(query_add_table_GlobalData);
-        db.execSQL(query_add_table_EventAbout);
-        db.execSQL(query_add_table_ContactList);
-        db.execSQL(query_add_table_ImportantInfo);
-        db.execSQL(query_add_table_ScheduleList);
-        db.execSQL(query_add_table_TheEvent);
-        db.execSQL(query_add_table_PlaceList);
-        db.execSQL(query_add_table_Feedback);
-        db.execSQL(query_add_table_Emergencie);
-        db.execSQL(query_add_table_Area);
-        db.execSQL(query_add_table_CommiteNote);
-        db.execSQL(query_add_table_Gallery);
-        db.execSQL(query_add_table_HomeContent);
+        onCreate(db);
+
     }
 
     @Override
@@ -688,6 +677,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         contentValues.put(Key_Schedule_List_detail, model.getDetail());
         contentValues.put(Key_Schedule_List_action, model.getAction());
         contentValues.put(Key_Schedule_List_link, model.getLink());
+        contentValues.put(Key_Schedule_List_linkvote, model.getLinkvote());
         contentValues.put(Key_Schedule_List_status, model.getStatus());
         db.insert(TableScheduleList, null, contentValues);
         db.close();
@@ -921,6 +911,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         contentValues.put(Key_Schedule_List_detail, model.getDetail());
         contentValues.put(Key_Schedule_List_action, model.getAction());
         contentValues.put(Key_Schedule_List_link, model.getLink());
+        contentValues.put(Key_Schedule_List_linkvote, model.getLinkvote());
         contentValues.put(Key_Schedule_List_status, model.getStatus());
         db.update(TableScheduleList, contentValues, Key_Schedule_List_EventId + " = ? ", new String[]{eventId});
         db.close();
@@ -1281,6 +1272,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
                 model.setLocation(cursor.getString(cursor.getColumnIndex(Key_Schedule_List_location)));
                 model.setAction(cursor.getString(cursor.getColumnIndex(Key_Schedule_List_action)));
                 model.setLink(cursor.getString(cursor.getColumnIndex(Key_Schedule_List_link)));
+                model.setLinkvote(cursor.getString(cursor.getColumnIndex(Key_Schedule_List_linkvote)));
                 model.setStatus(cursor.getString(cursor.getColumnIndex(Key_Schedule_List_status)));
                 modelList.add(model);
             } while (cursor.moveToNext());
@@ -1308,6 +1300,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
                 model.setDetail(cursor.getString(cursor.getColumnIndex(Key_Schedule_List_detail)));
                 model.setAction(cursor.getString(cursor.getColumnIndex(Key_Schedule_List_action)));
                 model.setLink(cursor.getString(cursor.getColumnIndex(Key_Schedule_List_link)));
+                model.setLinkvote(cursor.getString(cursor.getColumnIndex(Key_Schedule_List_linkvote)));
                 model.setStatus(cursor.getString(cursor.getColumnIndex(Key_Schedule_List_status)));
                 modelList.add(model);
             } while (cursor.moveToNext());

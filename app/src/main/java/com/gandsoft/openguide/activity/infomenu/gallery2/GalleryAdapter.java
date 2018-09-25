@@ -12,7 +12,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.gandsoft.openguide.API.APIresponse.Gallery.GalleryResponseModel;
@@ -50,8 +49,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
         Glide.with(activity)
                 .load(model.getImage_posted())
                 .asBitmap()
-                .skipMemoryCache(true)
-                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .thumbnail(0.1f)
                 .centerCrop()
                 .into(new SimpleTarget<Bitmap>() {
                     @Override
@@ -60,7 +58,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
                         holder.mImg.setImageBitmap(resizeImage);
                     }
                 });
-        Glide.with(activity)
+        /*Glide.with(activity)
                 .load(model.getImage_posted())
                 .asBitmap()
                 .into(new SimpleTarget<Bitmap>() {
@@ -68,7 +66,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
                     public void onResourceReady(Bitmap resource, GlideAnimation glideAnimation) {
                         saveImage(resource, position, model.getId());
                     }
-                });
+                });*/
     }
 
     @Override
@@ -105,8 +103,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
         int i1 = r.nextInt(1000);*/
         String savedImagePath = null;
         String imageFileName = id + ".jpg";
-        File storageDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
-                + "/.Gandsoft/" + eventId);
+        File storageDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/.Gandsoft/" + eventId);
         boolean success = true;
         if (!storageDir.exists()) {
             success = storageDir.mkdirs();
