@@ -3,6 +3,8 @@ package com.gandsoft.openguide.activity.infomenu.adapter;
 import android.app.Activity;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +14,7 @@ import android.widget.TextView;
 
 import com.gandsoft.openguide.API.APIresponse.Event.EventCommitteeNote;
 import com.gandsoft.openguide.R;
+import com.gandsoft.openguide.database.SQLiteHelper;
 
 import org.sufficientlysecure.htmltextview.HtmlTextView;
 
@@ -20,13 +23,18 @@ import java.util.List;
 
 public class InboxRecViewAdapter extends RecyclerView.Adapter<InboxRecViewAdapter.ViewHolder> {
 
-
     private Activity activity;
     private List<EventCommitteeNote> models;
+    private final String accountId;
+    private final String eventId;
+    private final SQLiteHelper db;
 
-    public InboxRecViewAdapter(Activity activity, ArrayList<EventCommitteeNote> models) {
+    public InboxRecViewAdapter(Activity activity, ArrayList<EventCommitteeNote> models, String accountId, String eventId, SQLiteHelper db) {
         this.activity = activity;
         this.models = models;
+        this.accountId = accountId;
+        this.eventId = eventId;
+        this.db = db;
     }
 
     @NonNull
@@ -42,10 +50,23 @@ public class InboxRecViewAdapter extends RecyclerView.Adapter<InboxRecViewAdapte
         holder.tvInboxTitlefvbi.setText(model.getTitle());
         holder.tvInboxDateTimefvbi.setText(model.getTanggal());
         holder.tvInboxDetailfvbi.setHtml(model.getNote());
+        Log.d("Lihat", "onBindViewHolder InboxRecViewAdapter : " + model.getHas_been_opened());
+
+        if (!TextUtils.isEmpty(model.getHas_been_opened())) {
+            if (model.getHas_been_opened().equalsIgnoreCase("1")) {
+                holder.tvInboxTitlefvbi.setTextColor(activity.getResources().getColor(R.color.colorPrimaryDark));
+            } else {
+                holder.tvInboxTitlefvbi.setTextColor(activity.getResources().getColor(R.color.colorAccent));
+            }
+        } else {
+            holder.tvInboxTitlefvbi.setTextColor(activity.getResources().getColor(R.color.colorAccent));
+        }
 
         holder.bInboxDetailfvbi.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                db.updateOneKey(SQLiteHelper.TableCommiteNote, SQLiteHelper.Key_CommiteNote_Id, model.getId(), SQLiteHelper.Key_CommiteNote_Has_been_opened, String.valueOf(1));
+                holder.tvInboxTitlefvbi.setTextColor(activity.getResources().getColor(R.color.colorPrimaryDark));
                 holder.bInboxDetailfvbi.setVisibility(View.GONE);
                 holder.llInboxNotefvbi.setVisibility(View.VISIBLE);
             }

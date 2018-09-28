@@ -1,20 +1,25 @@
 package com.gandsoft.openguide.support;
 
 import android.content.Context;
+import android.util.Log;
 
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class DateTimeUtil {
     private static final int SECOND_MILLIS = 1000;
     private static final int MINUTE_MILLIS = 60 * SECOND_MILLIS;
     private static final int HOUR_MILLIS = 60 * MINUTE_MILLIS;
     private static final int DAY_MILLIS = 24 * HOUR_MILLIS;
+    private static final int DAYS_SELECT = 1;
+    private static final int HOURS_SELECT = 2;
+    private static final int MINUTES_SELECT = 3;
+    private static final int SECONDS_SELECT = 4;
 
     public static String getAge(int year, int month, int day) {
         Calendar dob = Calendar.getInstance();
@@ -59,46 +64,127 @@ public class DateTimeUtil {
         return day;
     }
 
-    public static String convertStringDateToNewFormat(String timeDefault, SimpleDateFormat dateFormat, SimpleDateFormat timeFormat) {
+    public static String convertStringDateToNewFormat(String timeDefault, SimpleDateFormat defaultDateFormat, SimpleDateFormat newDateFormat) {
         String mytime = timeDefault;
         //SimpleDateFormat dateFormat = new SimpleDateFormat(dateFormatDefault);
         Date myDate = null;
         try {
-            myDate = dateFormat.parse(mytime);
+            myDate = defaultDateFormat.parse(mytime);
         } catch (ParseException e) {
             e.printStackTrace();
         }
 
         //SimpleDateFormat timeFormat = new SimpleDateFormat(dateFormatNew);
-        String finalDate = timeFormat.format(myDate);
-
+        String finalDate = newDateFormat.format(myDate);
         return finalDate;
     }
 
-    /**
-     * "yyyy-MM-dd" format
-     *
-     * @param dateString1
-     * @param dateString2
-     * @return
-     */
-    public static List<Date> getDates(String dateString1, String dateString2, DateFormat df1) {
-        ArrayList<Date> dates = new ArrayList<Date>();
-        //DateFormat df1 = new SimpleDateFormat("yyyy-MM-dd");
+    public static Date addDays(Date date, int days) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        cal.add(Calendar.DATE, days); //minus number would decrement the days
+        return cal.getTime();
+    }
 
-        Date date1 = null;
-        Date date2 = null;
+    public static int getDayBetween2Date(Date startDate, Date endDate) {
+        //milliseconds
+        long different = endDate.getTime() - startDate.getTime();
 
+        System.out.println("startDate : " + startDate);
+        System.out.println("endDate : " + endDate);
+        System.out.println("different : " + different);
+
+        long secondsInMilli = 1000;
+        long minutesInMilli = secondsInMilli * 60;
+        long hoursInMilli = minutesInMilli * 60;
+        long daysInMilli = hoursInMilli * 24;
+
+        long elapsedDays = different / daysInMilli;
+        different = different % daysInMilli;
+
+        long elapsedHours = different / hoursInMilli;
+        different = different % hoursInMilli;
+
+        long elapsedMinutes = different / minutesInMilli;
+        different = different % minutesInMilli;
+
+        long elapsedSeconds = different / secondsInMilli;
+
+        //System.out.printf("%d days, %d hours, %d minutes, %d seconds%n", elapsedDays, elapsedHours, elapsedMinutes, elapsedSeconds);
+
+        return convertLongToInt(elapsedDays);
+    }
+
+    public static int convertLongToInt(long l) {
+        if (l < Integer.MIN_VALUE || l > Integer.MAX_VALUE) {
+            throw new IllegalArgumentException
+                    (l + " cannot be cast to int without changing its value.");
+        }
+        return (int) l;
+    }
+
+    public static boolean isNowAfterDate(String my_date, SimpleDateFormat sdf) {
         try {
-            date1 = df1.parse(dateString1);
-            date2 = df1.parse(dateString2);
+            Date strDate = sdf.parse(my_date);
+            return isNowAfterDate(strDate);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            Log.d("Lihat", "isNowAfterDate DateTimeUtil : " + e.getMessage());
+            return false;
+        }
+    }
+
+    public static boolean isNowAfterDate(Date date) {
+        if (new Date().after(date)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public static boolean isNowBeforeDate(String my_date, SimpleDateFormat sdf) {
+        try {
+            Date strDate = sdf.parse(my_date);
+            return isNowBeforeDate(strDate);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            Log.d("Lihat", "isNowAfterDate DateTimeUtil : " + e.getMessage());
+            return false;
+        }
+    }
+
+    public static boolean isNowBeforeDate(Date date) {
+        if (new Date().before(date)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public static Date stringToDate(String dtStart, SimpleDateFormat format) {
+        //String dtStart = "2010-10-15T09:27:37Z";
+        //SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        try {
+            Date date = format.parse(dtStart);
+            return date;
         } catch (ParseException e) {
             e.printStackTrace();
         }
+        return null;
+    }
+
+    public static String dateToString(SimpleDateFormat dateFormat) {
+        //SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        Date date = new Date();
+        String dateTime = dateFormat.format(date);
+        return dateTime;
+    }
+
+    public static List<Date> getDates(Date date1, Date date2) {
+        ArrayList<Date> dates = new ArrayList<Date>();
 
         Calendar cal1 = Calendar.getInstance();
         cal1.setTime(date1);
-
 
         Calendar cal2 = Calendar.getInstance();
         cal2.setTime(date2);
@@ -110,21 +196,33 @@ public class DateTimeUtil {
         return dates;
     }
 
-    /*
-     * Copyright 2012 Google Inc.
-     *
-     * Licensed under the Apache License, Version 2.0 (the "License");
-     * you may not use this file except in compliance with the License.
-     * You may obtain a copy of the License at
-     *
-     *      http://www.apache.org/licenses/LICENSE-2.0
-     *
-     * Unless required by applicable law or agreed to in writing, software
-     * distributed under the License is distributed on an "AS IS" BASIS,
-     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     * See the License for the specific language governing permissions and
-     * limitations under the License.
-     */
+    public static List<Date> getDates(String dateString1, String dateString2, SimpleDateFormat simpleDateFormat) {
+        Date date1 = null;
+        Date date2 = null;
+
+        try {
+            date1 = simpleDateFormat.parse(dateString1);
+            date2 = simpleDateFormat.parse(dateString2);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        return getDates(date1, date2);
+    }
+
+    public static boolean isBetween2Time(String start,String end) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("HHmm", Locale.getDefault());
+        String now = dateFormat.format(new Date());
+        String qstart = start.replace(":", "");
+        String qend = end.replace(":", "");
+        return Integer.valueOf(now) > Integer.valueOf(qstart) && Integer.valueOf(now) < Integer.valueOf(qend);
+    }
+
+    public static boolean isBetween2Date(Date startDate,Date endDate){
+        return new Date().after(startDate) && new Date().before(endDate);
+    }
+
+    //
     public static String getTimeAgo(long time, Context ctx) {
         if (time < 1000000000000L) {
             // if timestamp given in seconds, convert to millis
@@ -155,9 +253,7 @@ public class DateTimeUtil {
         }
     }
 
-
-    /**/
-    public static String getTimeAgos(Date date) {
+    public static String getTimeAgo(Date date) {
 
         if (date == null) {
             return null;
@@ -207,31 +303,189 @@ public class DateTimeUtil {
     }
 
     public static Date currentDate() {
-        Calendar calendar = Calendar.getInstance();
-        return calendar.getTime();
+        return Calendar.getInstance().getTime();
     }
 
     private static int getTimeDistanceInMinutes(long time) {
         long timeDistance = currentDate().getTime() - time;
         return Math.round((Math.abs(timeDistance) / 1000) / 60);
     }
+    //
 
-    public static Date stringToDate(String dtStart,SimpleDateFormat format) {
-        //String dtStart = "2010-10-15T09:27:37Z";
-        //SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-        try {
-            Date date = format.parse(dtStart);
-            return date;
-        } catch (ParseException e) {
-            e.printStackTrace();
+    public static boolean isSameDay(Date date1, Date date2) {
+        if (date1 == null || date2 == null) {
+            throw new IllegalArgumentException("The dates must not be null");
         }
-        return null;
+        Calendar cal1 = Calendar.getInstance();
+        cal1.setTime(date1);
+        Calendar cal2 = Calendar.getInstance();
+        cal2.setTime(date2);
+        return isSameDay(cal1, cal2);
     }
 
-    public static String dateToString(SimpleDateFormat dateFormat) {
-        //SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-        Date date = new Date();
-        String dateTime = dateFormat.format(date);
-        return dateTime;
+    public static boolean isSameDay(Calendar cal1, Calendar cal2) {
+        if (cal1 == null || cal2 == null) {
+            throw new IllegalArgumentException("The dates must not be null");
+        }
+        return (cal1.get(Calendar.ERA) == cal2.get(Calendar.ERA) &&
+                cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
+                cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR));
     }
+
+    public static boolean isToday(Date date) {
+        return isSameDay(date, Calendar.getInstance().getTime());
+    }
+
+    public static boolean isToday(Calendar cal) {
+        return isSameDay(cal, Calendar.getInstance());
+    }
+
+    public static boolean isBeforeDay(Date date1, Date date2) {
+        if (date1 == null || date2 == null) {
+            throw new IllegalArgumentException("The dates must not be null");
+        }
+        Calendar cal1 = Calendar.getInstance();
+        cal1.setTime(date1);
+        Calendar cal2 = Calendar.getInstance();
+        cal2.setTime(date2);
+        return isBeforeDay(cal1, cal2);
+    }
+
+    public static boolean isBeforeDay(Calendar cal1, Calendar cal2) {
+        if (cal1 == null || cal2 == null) {
+            throw new IllegalArgumentException("The dates must not be null");
+        }
+        if (cal1.get(Calendar.ERA) < cal2.get(Calendar.ERA)) return true;
+        if (cal1.get(Calendar.ERA) > cal2.get(Calendar.ERA)) return false;
+        if (cal1.get(Calendar.YEAR) < cal2.get(Calendar.YEAR)) return true;
+        if (cal1.get(Calendar.YEAR) > cal2.get(Calendar.YEAR)) return false;
+        return cal1.get(Calendar.DAY_OF_YEAR) < cal2.get(Calendar.DAY_OF_YEAR);
+    }
+
+    public static boolean isAfterDay(Date date1, Date date2) {
+        if (date1 == null || date2 == null) {
+            throw new IllegalArgumentException("The dates must not be null");
+        }
+        Calendar cal1 = Calendar.getInstance();
+        cal1.setTime(date1);
+        Calendar cal2 = Calendar.getInstance();
+        cal2.setTime(date2);
+        return isAfterDay(cal1, cal2);
+    }
+
+    public static boolean isAfterDay(Calendar cal1, Calendar cal2) {
+        if (cal1 == null || cal2 == null) {
+            throw new IllegalArgumentException("The dates must not be null");
+        }
+        if (cal1.get(Calendar.ERA) < cal2.get(Calendar.ERA)) return false;
+        if (cal1.get(Calendar.ERA) > cal2.get(Calendar.ERA)) return true;
+        if (cal1.get(Calendar.YEAR) < cal2.get(Calendar.YEAR)) return false;
+        if (cal1.get(Calendar.YEAR) > cal2.get(Calendar.YEAR)) return true;
+        return cal1.get(Calendar.DAY_OF_YEAR) > cal2.get(Calendar.DAY_OF_YEAR);
+    }
+
+    public static boolean isWithinDaysFuture(Date date, int days) {
+        if (date == null) {
+            throw new IllegalArgumentException("The date must not be null");
+        }
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        return isWithinDaysFuture(cal, days);
+    }
+
+    public static boolean isWithinDaysFuture(Calendar cal, int days) {
+        if (cal == null) {
+            throw new IllegalArgumentException("The date must not be null");
+        }
+        Calendar today = Calendar.getInstance();
+        Calendar future = Calendar.getInstance();
+        future.add(Calendar.DAY_OF_YEAR, days);
+        return (isAfterDay(cal, today) && !isAfterDay(cal, future));
+    }
+
+    public static boolean isWithinDaysPast(Date date, int days) {
+        if (date == null) {
+            throw new IllegalArgumentException("The date must not be null");
+        }
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        return isWithinDaysPast(cal, days);
+    }
+
+    public static boolean isWithinDaysPast(Calendar cal, int days) {
+        if (cal == null) {
+            throw new IllegalArgumentException("The date must not be null");
+        }
+        Calendar today = Calendar.getInstance();
+        Calendar future = Calendar.getInstance();
+        future.add(Calendar.DAY_OF_YEAR, days);
+        return (isBeforeDay(cal, today) && !isBeforeDay(cal, future));
+    }
+
+    public static Date getStart(Date date) {
+        return clearTime(date);
+    }
+
+    public static Date clearTime(Date date) {
+        if (date == null) {
+            return null;
+        }
+        Calendar c = Calendar.getInstance();
+        c.setTime(date);
+        c.set(Calendar.HOUR_OF_DAY, 0);
+        c.set(Calendar.MINUTE, 0);
+        c.set(Calendar.SECOND, 0);
+        c.set(Calendar.MILLISECOND, 0);
+        return c.getTime();
+    }
+
+    public static boolean hasTime(Date date) {
+        if (date == null) {
+            return false;
+        }
+        Calendar c = Calendar.getInstance();
+        c.setTime(date);
+        if (c.get(Calendar.HOUR_OF_DAY) > 0) {
+            return true;
+        }
+        if (c.get(Calendar.MINUTE) > 0) {
+            return true;
+        }
+        if (c.get(Calendar.SECOND) > 0) {
+            return true;
+        }
+        if (c.get(Calendar.MILLISECOND) > 0) {
+            return true;
+        }
+        return false;
+    }
+
+    public static Date getEnd(Date date) {
+        if (date == null) {
+            return null;
+        }
+        Calendar c = Calendar.getInstance();
+        c.setTime(date);
+        c.set(Calendar.HOUR_OF_DAY, 23);
+        c.set(Calendar.MINUTE, 59);
+        c.set(Calendar.SECOND, 59);
+        c.set(Calendar.MILLISECOND, 999);
+        return c.getTime();
+    }
+
+    public static Date max(Date d1, Date d2) {
+        if (d1 == null && d2 == null) return null;
+        if (d1 == null) return d2;
+        if (d2 == null) return d1;
+        return (d1.after(d2)) ? d1 : d2;
+    }
+
+    public static Date min(Date d1, Date d2) {
+        if (d1 == null && d2 == null) return null;
+        if (d1 == null) return d2;
+        if (d2 == null) return d1;
+        return (d1.before(d2)) ? d1 : d2;
+    }
+
+    public static Date MAX_DATE = new Date(Long.MAX_VALUE);
 }

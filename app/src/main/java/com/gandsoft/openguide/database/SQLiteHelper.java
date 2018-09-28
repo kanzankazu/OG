@@ -22,6 +22,7 @@ import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentResponseMod
 import com.gandsoft.openguide.API.APIresponse.UserData.UserDataResponseModel;
 import com.gandsoft.openguide.API.APIresponse.UserData.UserListEventResponseModel;
 import com.gandsoft.openguide.API.APIresponse.UserData.UserWalletDataResponseModel;
+import com.gandsoft.openguide.IConfig;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,8 +30,8 @@ import java.util.List;
 
 public class SQLiteHelper extends SQLiteOpenHelper {
     // Databases information
-    private static final String DATABASE_NAME = "openguides.db";
-    private static final int DATABASE_VERSION = 5;
+    private static final String DB_NM = "openguides.db";
+    private static final int DB_VER = IConfig.DB_Version_SQLITE;
 
     public static String TableGlobalData = "tabGlobalData";
     public static String KEY_GlobalData_dbver = "dbver";
@@ -250,7 +251,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
             + KEY_ListEvent_groupCode + " TEXT, "
             + KEY_ListEvent_roleName + " TEXT, "
             + KEY_ListEvent_date + " TEXT, "
-            + KEY_ListEvent_IsFirstIn + " BOOLEAN) ";
+            + KEY_ListEvent_IsFirstIn + " INTEGER) ";
     private static final String query_delete_table_ListEvent = "DROP TABLE IF EXISTS " + TableListEvent;
 
     private static final String query_add_table_Wallet = "CREATE TABLE IF NOT EXISTS " + TableWallet + "("
@@ -377,7 +378,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
             + Key_CommiteNote_Title + " TEXT, "
             + Key_CommiteNote_Note + " TEXT, "
             + Key_CommiteNote_Tanggal + " TEXT, "
-            + Key_CommiteNote_Has_been_opened + " BOOLEAN, "
+            + Key_CommiteNote_Has_been_opened + " INTEGER, "
             + Key_CommiteNote_Sort_inbox + " INTEGER) ";
     private static final String query_delete_table_CommiteNote = "DROP TABLE IF EXISTS " + TableCommiteNote;
 
@@ -417,7 +418,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     private static final String query_delete_table_HomeContent = "DROP TABLE IF EXISTS " + TableHomeContent;
 
     public SQLiteHelper(Context context) {
-        super(context, DATABASE_NAME, null, DATABASE_VERSION);
+        super(context, DB_NM, null, DB_VER);
         // TODO Auto-generated constructor stub
     }
 
@@ -485,22 +486,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         db.execSQL(query_delete_table_Gallery);
         db.execSQL(query_delete_table_HomeContent);
 
-        db.execSQL(query_add_table_UserData);
-        db.execSQL(query_add_table_ListEvent);
-        db.execSQL(query_add_table_Wallet);
-        db.execSQL(query_add_table_GlobalData);
-        db.execSQL(query_add_table_EventAbout);
-        db.execSQL(query_add_table_ContactList);
-        db.execSQL(query_add_table_ImportantInfo);
-        db.execSQL(query_add_table_ScheduleList);
-        db.execSQL(query_add_table_TheEvent);
-        db.execSQL(query_add_table_PlaceList);
-        db.execSQL(query_add_table_Feedback);
-        db.execSQL(query_add_table_Emergencie);
-        db.execSQL(query_add_table_Area);
-        db.execSQL(query_add_table_CommiteNote);
-        db.execSQL(query_add_table_Gallery);
-        db.execSQL(query_add_table_HomeContent);
+        onCreate(db);
     }
 
 
@@ -604,7 +590,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         contentValues.put(KEY_ListEvent_groupCode, model.getGroup_code());
         contentValues.put(KEY_ListEvent_roleName, model.getRole_name());
         contentValues.put(KEY_ListEvent_date, model.getDate());
-        contentValues.put(KEY_ListEvent_IsFirstIn, false);
+        contentValues.put(KEY_ListEvent_IsFirstIn, 0);
         db.insert(TableListEvent, null, contentValues);
         db.close();
     }
@@ -860,7 +846,6 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         contentValues.put(KEY_ListEvent_groupCode, model.getGroup_code());
         contentValues.put(KEY_ListEvent_roleName, model.getRole_name());
         contentValues.put(KEY_ListEvent_date, model.getDate());
-        contentValues.put(KEY_ListEvent_IsFirstIn, false);
         int i = db.update(TableListEvent, contentValues, KEY_ListEvent_eventId + " = ? ", new String[]{model.getEvent_id()});
         db.close();
     }
@@ -1477,6 +1462,21 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         return modelList;
     }
 
+    public int getCommiteHasBeenOpened(String eventId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(TableCommiteNote, null, Key_CommiteNote_EventId + " = ? AND " + Key_CommiteNote_Has_been_opened + " = 1", new String[]{eventId}, null, null, null);
+        int total;
+        if (cursor.getCount() > 0) {
+            total = cursor.getCount();
+            cursor.close();
+            return total;
+        } else {
+            total = 0;
+            cursor.close();
+            return total;
+        }
+    }
+
     public ArrayList<EventFeedback> getFeedback(String eventId) {
         ArrayList<EventFeedback> modelList = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
@@ -1702,8 +1702,8 @@ public class SQLiteHelper extends SQLiteOpenHelper {
 
     public boolean isFirstIn(String eventId) {
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.query(TableListEvent, null, KEY_ListEvent_eventId + " = ? AND " + KEY_ListEvent_IsFirstIn + " = ? ", new String[]{eventId, String.valueOf(true)}, null, null, null);
-        if (cursor != null) {
+        Cursor cursor = db.query(TableListEvent, null, KEY_ListEvent_eventId + " = ? AND " + KEY_ListEvent_IsFirstIn + " = 1 ", new String[]{eventId}, null, null, null);
+        if (cursor.getCount() > 0) {
             cursor.close();
             return true;
         } else {

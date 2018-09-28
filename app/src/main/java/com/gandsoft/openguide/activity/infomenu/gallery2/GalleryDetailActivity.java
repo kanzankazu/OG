@@ -1,5 +1,7 @@
 package com.gandsoft.openguide.activity.infomenu.gallery2;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
@@ -16,13 +18,29 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
+import com.gandsoft.openguide.API.API;
+import com.gandsoft.openguide.API.APIrequest.HomeContent.HomeContentPostLikeRequestModel;
+import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentCommentModelParcelable;
+import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentResponseModel;
+import com.gandsoft.openguide.API.APIresponse.LocalBaseResponseModel;
+import com.gandsoft.openguide.IConfig;
+import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
+import com.gandsoft.openguide.activity.main.adapter.HomeContentAdapter;
+import com.gandsoft.openguide.activity.main.fragments.aHomeActivityInFragment.aHomePostCommentActivity;
 import com.gandsoft.openguide.support.PictureUtil;
+import com.gandsoft.openguide.support.SessionUtil;
 
 import java.util.ArrayList;
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class GalleryDetailActivity extends AppCompatActivity {
 
+    private static final int REQ_CODE_COMMENT = 123;
     private GalleryDetailPagerAdapter mGalleryDetailPagerAdapter;
 
     public ArrayList<GalleryImageModel> models = new ArrayList<>();
@@ -35,6 +53,8 @@ public class GalleryDetailActivity extends AppCompatActivity {
     private LinearLayout llDetailGalleryCommentfvbi, llDetailGalleryLikefvbi;
     private TextView tvDetailGalleryCommentfvbi, tvDetailGalleryLikefvbi, tvDetailGalleryUsernamefvbi, tvDetailGalleryCaptionfvbi;
     private ImageView ivDetailGalleryLikefvbi, ivDetailGalleryIconfvbi;
+    private String accountId;
+    private String eventId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,13 +85,16 @@ public class GalleryDetailActivity extends AppCompatActivity {
 
     private void initParam() {
         models = getIntent().getParcelableArrayListExtra("models");
-        Log.d("Lihat", "initParam GalleryDetailActivity : " + models.get(0).getImage_posted());
         posData = getIntent().getIntExtra("posData", 0);
-        Log.d("Lihat", "initParam GalleryDetailActivity : " + posData);
     }
 
     private void initSession() {
-
+        if (SessionUtil.checkIfExist(ISeasonConfig.KEY_ACCOUNT_ID)) {
+            accountId = SessionUtil.getStringPreferences(ISeasonConfig.KEY_ACCOUNT_ID, null);
+        }
+        if (SessionUtil.checkIfExist(ISeasonConfig.KEY_EVENT_ID)) {
+            eventId = SessionUtil.getStringPreferences(ISeasonConfig.KEY_EVENT_ID, null);
+        }
     }
 
     private void initContent() {
@@ -126,7 +149,7 @@ public class GalleryDetailActivity extends AppCompatActivity {
                         ivDetailGalleryIconfvbi.setImageBitmap(bitmap);
                     }
                 });
-        if (Integer.parseInt(model.getStatus_like()) != 0) {
+        if (model.getStatus_like() != 0) {
             ivDetailGalleryLikefvbi.setImageResource(R.drawable.ic_love_fill);
         } else {
             ivDetailGalleryLikefvbi.setImageResource(R.drawable.ic_love_empty);
@@ -136,21 +159,103 @@ public class GalleryDetailActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 int iLike = Integer.parseInt(model.getLike());
-                if (Integer.parseInt(model.getStatus_like()) == 0) {
+                if (model.getStatus_like() == 0) {
                     tvDetailGalleryLikefvbi.setText(String.valueOf(iLike + 1));
                     ivDetailGalleryLikefvbi.setImageResource(R.drawable.ic_love_fill);
-                    model.setStatus_like(String.valueOf(1));
+                    model.setStatus_like(1);
                     model.setLike(String.valueOf(iLike + 1));
+                    postLike(model.getLike(),model);
                 } else {
                     tvDetailGalleryLikefvbi.setText(String.valueOf(iLike - 1));
                     ivDetailGalleryLikefvbi.setImageResource(R.drawable.ic_love_empty);
-                    model.setStatus_like(String.valueOf(0));
+                    model.setStatus_like(0);
                     model.setLike(String.valueOf(iLike - 1));
+                    postLike(model.getLike(),model);
                 }
+            }
+        });
+
+        llDetailGalleryCommentfvbi.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                moveToAHomeComment(model, position);
             }
         });
     }
 
+    private void moveToAHomeComment(GalleryImageModel model, int position) {
+        ArrayList<HomeContentCommentModelParcelable> dataParam = new ArrayList<>();
+        HomeContentCommentModelParcelable mode = new HomeContentCommentModelParcelable();
+        mode.setId(model.getId());
+        mode.setLike(model.getLike());
+        mode.setAccount_id(model.getAccount_id());
+        mode.setTotal_comment(model.getTotal_comment());
+        mode.setStatus_like(model.getStatus_like());
+        mode.setUsername(model.getUsername());
+        mode.setImage_icon(model.getImage_icon());
+        mode.setImage_posted(model.getImage_posted());
+        if (dataParam.size() > 0) {
+            dataParam.clear();
+            dataParam.add(mode);
+        } else {
+            dataParam.add(mode);
+        }
+        Intent intent = new Intent(this, aHomePostCommentActivity.class);
+        intent.putParcelableArrayListExtra(ISeasonConfig.INTENT_PARAM, dataParam);
+        intent.putExtra(ISeasonConfig.INTENT_PARAM2, position);
+        startActivityForResult(intent, REQ_CODE_COMMENT);
+    }
+
+    public void postLike(String likes, GalleryImageModel model) {
+        HomeContentPostLikeRequestModel requestModel = new HomeContentPostLikeRequestModel();
+        requestModel.setAccount_id(accountId);
+        requestModel.setEvent_id(eventId);
+        requestModel.setId_content(model.getId());
+        requestModel.setVal_like(likes);
+        requestModel.setDbver(String.valueOf(IConfig.DB_Version));
+        if (model.getStatus_like() == 1) {
+            requestModel.setStatus_like("0");
+        } else if (model.getStatus_like() == 0) {
+            requestModel.setStatus_like("1");
+        }
+
+        API.doHomeContentPostLikeRet(requestModel).enqueue(new Callback<List<LocalBaseResponseModel>>() {
+            @Override
+            public void onResponse(Call<List<LocalBaseResponseModel>> call, Response<List<LocalBaseResponseModel>> response) {
+                if (response.isSuccessful()) {
+                    List<LocalBaseResponseModel> s = response.body();
+                    if (s.size() == 1) {
+                        for (int i = 0; i < s.size(); i++) {
+                            LocalBaseResponseModel model = s.get(i);
+                            if (model.getStatus().equalsIgnoreCase("ok")) {
+                                Log.d("Status ok", "ok");
+
+                            } else {
+                            }
+                        }
+                    } else {
+                    }
+                } else {
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<LocalBaseResponseModel>> call, Throwable t) {
+                Log.d("tmassage", String.valueOf(t));
+            }
+        });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQ_CODE_COMMENT && resultCode == Activity.RESULT_OK) {
+            int position = data.getIntExtra(ISeasonConfig.INTENT_PARAM, 0);
+            String totalComment = data.getStringExtra(ISeasonConfig.INTENT_PARAM2);
+            tvDetailGalleryCommentfvbi.setText(totalComment);
+            models.get(position).setTotal_comment(totalComment);
+        }
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

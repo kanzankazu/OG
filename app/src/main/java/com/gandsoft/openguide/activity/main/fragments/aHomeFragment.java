@@ -6,7 +6,6 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -56,6 +55,7 @@ import com.gandsoft.openguide.activity.main.adapter.HomeContentAdapter;
 import com.gandsoft.openguide.activity.main.fragments.aHomeActivityInFragment.aHomePostCommentActivity;
 import com.gandsoft.openguide.activity.main.fragments.aHomeActivityInFragment.aHomePostImageCaptionActivity;
 import com.gandsoft.openguide.database.SQLiteHelper;
+import com.gandsoft.openguide.support.DateTimeUtil;
 import com.gandsoft.openguide.support.NetworkUtil;
 import com.gandsoft.openguide.support.PictureUtil;
 import com.gandsoft.openguide.support.SessionUtil;
@@ -69,6 +69,7 @@ import java.io.FileOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -177,22 +178,7 @@ public class aHomeFragment extends Fragment {
 
         updateUi();//init content
 
-        /*Log.d("Lihat", "initContent aHomeFragment : " + "\\");// = \
-        Log.d("Lihat", "initContent aHomeFragment : " + "\\\\");// = \\
-        Log.d("Lihat", "initContent aHomeFragment : " + "\"");// = "
-        Log.d("Lihat", "initContent aHomeFragment : " + "\\\"");// = \"*/
-
-        walletData = db.getWalletDataIdCard(eventId);
-        Log.d("Lihat", "initContent aHomeFragment : " + walletData.getBody_wallet());
-        String replace1 = walletData.getBody_wallet().replace("\\", " ");
-        String replace2 = replace1.replace("\"", " ");
-        String replace3 = replace2.replace("status-checkin , ", "status-checkin,");
-        String replace4 = replace3.replace("status-feedback , ", "status-feedback,");
-        Log.d("Lihat", "initContent aHomeFragment replace4.matches : " + (replace4.matches("(?i).*status-checkin,0.*")));
-        Log.d("Lihat", "initContent aHomeFragment replace4.matches : " + (replace4.matches("(?i).*status-checkin,1.*")));
-        if (replace4.matches("(?i).*status-checkin,1.*")) {
-            homeBTapCheckInfvbi.setVisibility(View.GONE);
-        }
+        checkTheCheckIn();
 
         adapter = new HomeContentAdapter(getActivity(), menuUi, getContext(), eventId, accountId, theEventModel, oneListEventModel, new HomeContentAdapter.HomeContentListener() {
             @Override
@@ -221,6 +207,7 @@ public class aHomeFragment extends Fragment {
         formattedDate = df.format(c.getTime());
         SimpleDateFormat dfGMT = new SimpleDateFormat("z");
         formattedDateGMT = dfGMT.format(c.getTime()).substring(3, 6);
+
     }
 
     private void initListener(View view) {
@@ -356,6 +343,90 @@ public class aHomeFragment extends Fragment {
             }
         } else {
             Snackbar.make(getActivity().findViewById(android.R.id.content), "data kosong", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+        }
+    }
+
+    private void checkTheCheckIn() {
+
+
+        /*INIT VALIDATE HAS CHECKIN*/
+        /*Log.d("Lihat", "initContent aHomeFragment : " + "\\");// = \
+        Log.d("Lihat", "initContent aHomeFragment : " + "\\\\");// = \\
+        Log.d("Lihat", "initContent aHomeFragment : " + "\"");// = "
+        Log.d("Lihat", "initContent aHomeFragment : " + "\\\"");// = \"*/
+
+        walletData = db.getWalletDataIdCard(eventId);
+        String replace1 = walletData.getBody_wallet().replace("\\", " ");
+        String replace2 = replace1.replace("\"", " ");
+        String replace3 = replace2.replace("status-checkin , ", "status-checkin,");
+        String replace4 = replace3.replace("status-feedback , ", "status-feedback,");
+        Log.d("Lihat", "initContent aHomeFragment replace4.matches : " + (replace4.matches("(?i).*status-checkin,0.*")));
+        Log.d("Lihat", "initContent aHomeFragment replace4.matches : " + (replace4.matches("(?i).*status-checkin,1.*")));
+
+        /*INIT VALIDATE DATE*/
+        Date currentDate = DateTimeUtil.currentDate();
+        Log.d("Lihat", "checkTheCheckIn aHomeFragment currentDate: " + currentDate);
+
+        //
+        /*Date day3BeforecurrentDate = DateTimeUtil.addDays(currentDate, -3);
+        Log.d("Lihat", "checkTheCheckIn aHomeFragment day3BeforecurrentDate: " + day3BeforecurrentDate);
+        Date day7AftercurrentDate = DateTimeUtil.addDays(currentDate, 7);
+        Log.d("Lihat", "checkTheCheckIn aHomeFragment day7AftercurrentDate: " + day7AftercurrentDate);
+
+        Log.d("Lihat", "checkTheCheckIn aHomeFragment DateTimeUtil.isNowAfterDate(day3BeforecurrentDate: " + DateTimeUtil.isNowAfterDate(day3BeforecurrentDate));
+        Log.d("Lihat", "checkTheCheckIn aHomeFragment DateTimeUtil.isNowAfterDate(day7AftercurrentDate: " + DateTimeUtil.isNowAfterDate(day7AftercurrentDate));
+        Log.d("Lihat", "checkTheCheckIn aHomeFragment DateTimeUtil.isNowBeforeDate(day3BeforecurrentDate: " + DateTimeUtil.isNowBeforeDate(day3BeforecurrentDate));
+        Log.d("Lihat", "checkTheCheckIn aHomeFragment DateTimeUtil.isNowBeforeDate(day7AftercurrentDate: " + DateTimeUtil.isNowBeforeDate(day7AftercurrentDate));
+
+        Log.d("Lihat", "checkTheCheckIn aHomeFragment DateTimeUtil.isWithinDaysFuture(DateTimeUtil: " + DateTimeUtil.isWithinDaysFuture(DateTimeUtil.stringToDate("20180929", new SimpleDateFormat("yyyyMMdd")), 1));//28
+        Log.d("Lihat", "checkTheCheckIn aHomeFragment DateTimeUtil.isWithinDaysFuture(DateTimeUtil: " + DateTimeUtil.isWithinDaysFuture(DateTimeUtil.stringToDate("20180929", new SimpleDateFormat("yyyyMMdd")), 2));//29
+        Log.d("Lihat", "checkTheCheckIn aHomeFragment DateTimeUtil.isWithinDaysFuture(DateTimeUtil: " + DateTimeUtil.isWithinDaysFuture(DateTimeUtil.stringToDate("20180929", new SimpleDateFormat("yyyyMMdd")), 3));//30
+        Log.d("Lihat", "checkTheCheckIn aHomeFragment DateTimeUtil.isWithinDaysFuture(DateTimeUtil: " + DateTimeUtil.isWithinDaysFuture(DateTimeUtil.stringToDate("20181112", new SimpleDateFormat("yyyyMMdd")), 3));//30
+        Log.d("Lihat", "checkTheCheckIn aHomeFragment DateTimeUtil.isWithinDaysFuture(DateTimeUtil: " + DateTimeUtil.isWithinDaysFuture(DateTimeUtil.stringToDate("20181112", new SimpleDateFormat("yyyyMMdd")), 100));//30
+
+        Log.d("Lihat", "checkTheCheckIn aHomeFragment DateTimeUtil.isWithinDaysPast(DateTimeUtil: " + DateTimeUtil.isWithinDaysPast(DateTimeUtil.stringToDate("20180924", new SimpleDateFormat("yyyyMMdd")), -1));//26
+        Log.d("Lihat", "checkTheCheckIn aHomeFragment DateTimeUtil.isWithinDaysPast(DateTimeUtil: " + DateTimeUtil.isWithinDaysPast(DateTimeUtil.stringToDate("20180924", new SimpleDateFormat("yyyyMMdd")), -2));//25
+        Log.d("Lihat", "checkTheCheckIn aHomeFragment DateTimeUtil.isWithinDaysPast(DateTimeUtil: " + DateTimeUtil.isWithinDaysPast(DateTimeUtil.stringToDate("20180924", new SimpleDateFormat("yyyyMMdd")), -3));//24
+        Log.d("Lihat", "checkTheCheckIn aHomeFragment DateTimeUtil.isWithinDaysPast(DateTimeUtil: " + DateTimeUtil.isWithinDaysPast(DateTimeUtil.stringToDate("20180924", new SimpleDateFormat("yyyyMMdd")), -4));//23
+        Log.d("Lihat", "checkTheCheckIn aHomeFragment DateTimeUtil.isWithinDaysPast(DateTimeUtil: " + DateTimeUtil.isWithinDaysPast(DateTimeUtil.stringToDate("20180924", new SimpleDateFormat("yyyyMMdd")), -5));//22
+
+        Log.d("Lihat", "checkTheCheckIn aHomeFragment DateTimeUtil.getDates1: " + DateTimeUtil.getDates(new Date(),DateTimeUtil.stringToDate("20181112",new SimpleDateFormat("yyyyMMdd"))));
+        Log.d("Lihat", "checkTheCheckIn aHomeFragment DateTimeUtil.getDates2: " + DateTimeUtil.getDates(new Date(),DateTimeUtil.stringToDate("20180929",new SimpleDateFormat("yyyyMMdd"))));
+
+        Log.d("Lihat", "checkTheCheckIn aHomeFragment : " + DateTimeUtil.getDayBetween2Date(new Date(),DateTimeUtil.stringToDate("20181112",new SimpleDateFormat("yyyyMMdd"))));*/
+        //
+        String startDate = db.getOneListEvent(eventId).getStart_date();//"yyyyMMdd"
+        String startDateYearMonth = startDate.substring(0, 6);//"yyyyMM"
+        Log.d("Lihat", "checkTheCheckIn aHomeFragment startDateYearMonth: " + startDateYearMonth);
+
+        String dateStartEnd = db.getOneListEvent(eventId).getDate();//"dd-dd mm yyyy"
+        String[] dates = dateStartEnd.split(" ");
+        String daysEvent = dates[0];
+        String[] daysEvents = daysEvent.split("-");
+        String startDay = daysEvents[0];
+        String startDay1 = startDay.length() == 1 ? "0" + startDay : startDay;
+        String endDay = daysEvents[1];
+        String endDay1 = endDay.length() == 1 ? "0" + endDay : endDay;
+        Log.d("Lihat", "checkTheCheckIn aHomeFragment startDay1: " + startDay1);
+        Log.d("Lihat", "checkTheCheckIn aHomeFragment endDay1: " + endDay1);
+
+        String startDayComplete = startDateYearMonth + startDay1 + " 00:00:00";//"yyyyMMdd HH:mm:ss"
+        Log.d("Lihat", "checkTheCheckIn aHomeFragment startDayComplete: " + startDayComplete);
+        Date startDayCompleteD = DateTimeUtil.stringToDate(startDayComplete, new SimpleDateFormat("yyyyMMdd HH:mm:ss"));
+        Log.d("Lihat", "checkTheCheckIn aHomeFragment startDayCompleteD: " + startDayCompleteD);
+        String endDayComplete = startDateYearMonth + endDay1 + " 23:59:59";//"yyyyMMdd HH:mm:ss"
+        Log.d("Lihat", "checkTheCheckIn aHomeFragment endDayComplete: " + endDayComplete);
+        Date endDayCompleteD = DateTimeUtil.stringToDate(endDayComplete, new SimpleDateFormat("yyyyMMdd HH:mm:ss"));
+        Log.d("Lihat", "checkTheCheckIn aHomeFragment endDayCompleteD: " + endDayCompleteD);
+
+        Date day3BeforeStart = DateTimeUtil.addDays(startDayCompleteD, -3);
+        Log.d("Lihat", "checkTheCheckIn aHomeFragment day3BeforeStart: " + day3BeforeStart);
+        Date day7AfterEnd = DateTimeUtil.addDays(endDayCompleteD, 7);
+        Log.d("Lihat", "checkTheCheckIn aHomeFragment day7AfterEnd: " + day7AfterEnd);
+
+        /*EXECUTE*/
+        if (replace4.matches("(?i).*status-checkin,1.*")||!DateTimeUtil.isBetween2Date(day3BeforeStart, endDayCompleteD)) {
+            homeBTapCheckInfvbi.setVisibility(View.GONE);
         }
     }
 

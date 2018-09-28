@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,6 +38,7 @@ import java.util.List;
 
 
 public class eInfoFragment extends Fragment implements InfoListViewAdapter.ListAdapterListener {
+    private static final int REQ_CODE_INBOX = 123;
     private RecyclerView rvMenufvbi;
     private ImageView ivInfoUserImagefvbi;
     private TextView tvInfoFullNamefvbi, tvInfoUserNamefvbi, tvInfoUserPhoneNumberfvbi;
@@ -119,7 +119,7 @@ public class eInfoFragment extends Fragment implements InfoListViewAdapter.ListA
         int[] ints = ListArrayUtil.convertListIntegertToIntArray(s);
 
         for (int i = 0; i < infoMenu.length; i++) {
-            if (!ListArrayUtil.isListContainInt(ints,i)){
+            if (!ListArrayUtil.isListContainInt(ints, i)) {
                 listviewModels.add(new InfoListviewModel(infoMenu[i], infoPic[i]));
             }
         }
@@ -127,7 +127,6 @@ public class eInfoFragment extends Fragment implements InfoListViewAdapter.ListA
         adapter = new InfoListViewAdapter(getActivity(), listviewModels, this);
         rvMenufvbi.setNestedScrollingEnabled(false);
         rvMenufvbi.setAdapter(adapter);
-
         rvMenufvbi.setLayoutManager(new LinearLayoutManager(getActivity()));
 
     }
@@ -173,8 +172,8 @@ public class eInfoFragment extends Fragment implements InfoListViewAdapter.ListA
         } else if (s.equalsIgnoreCase("Inbox")) {
             String title = "Inbox";
             Intent intent3 = new Intent(getActivity(), cInboxActivity.class);
-            intent3.putExtra("TITLE",title);
-            getActivity().startActivity(intent3);
+            intent3.putExtra("TITLE", title);
+            startActivityForResult(intent3, REQ_CODE_INBOX);
         } else if (s.equalsIgnoreCase("Comitee Contact")) {
             Intent intent4 = new Intent(getActivity(), dComitteContactActivity.class);
             getActivity().startActivity(intent4);
@@ -194,6 +193,15 @@ public class eInfoFragment extends Fragment implements InfoListViewAdapter.ListA
             Intent intent9 = new Intent(getActivity(), ChangeEventActivity.class);
             getActivity().startActivity(intent9);
             getActivity().finish();
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (REQ_CODE_INBOX == requestCode && resultCode == getActivity().RESULT_OK) {
+            int intExtra = data.getIntExtra(ISeasonConfig.INTENT_PARAM_BACK, 0);
+            adapter.notifyDataSetChanged();
         }
     }
 }

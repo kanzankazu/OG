@@ -20,7 +20,6 @@ import com.gandsoft.openguide.support.DateTimeUtil;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -59,27 +58,31 @@ class HomeContentCommentAdapter extends RecyclerView.Adapter<HomeContentCommentA
 
         holder.tvRVCommentUsernamefvbi.setText(model.getFull_name());
         holder.tvRVCommentContentfvbi.setText(model.getPost_content());
+        holder.tvRVCommentTimefvbi.setText(DateTimeUtil.getTimeAgo(DateTimeUtil.stringToDate(model.getPost_time(), new SimpleDateFormat("yyyy/MM/dd HH:mm:ss"))));
 
-        Timer timer = new Timer();
+        /*Timer timer = new Timer();
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                holder.tvRVCommentTimefvbi.setText(DateTimeUtil.getTimeAgos(DateTimeUtil.stringToDate(model.getPost_time(), new SimpleDateFormat("yyyy/MM/dd HH:mm:ss"))));
+                activity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
 
-                //contoh diff date
-                /*SimpleDateFormat format = new SimpleDateFormat("hh:mm:ss aa");
-                Date date1 = format.parse("08:00:12 pm");
-                Date date2 = format.parse("05:30:12 pm");
-                long mills = date1.getTime() - date2.getTime();
-                Log.v("Data1", ""+date1.getTime());
-                Log.v("Data2", ""+date2.getTime());
-                int hours = (int) (mills/(1000 * 60 * 60));
-                int mins = (int) (mills/(1000*60)) % 60;
-
-                String diff = hours + ":" + mins; // updated value every1 second
-                txtCurrentTime.setText(diff);*/
+                        //contoh diff date
+                        *//*SimpleDateFormat format = new SimpleDateFormat("hh:mm:ss aa");
+                        Date date1 = format.parse("08:00:12 pm");
+                        Date date2 = format.parse("05:30:12 pm");
+                        long mills = date1.getTime() - date2.getTime();
+                        Log.v("Data1", ""+date1.getTime());
+                        Log.v("Data2", ""+date2.getTime());
+                        int hours = (int) (mills/(1000 * 60 * 60));
+                        int mins = (int) (mills/(1000*60)) % 60;
+                        String diff = hours + ":" + mins; // updated value every1 second
+                        txtCurrentTime.setText(diff);*//*
+                    }
+                });
             }
-        }, 0, 1000);
+        }, 0, 1000);*/
 
 
         Glide.with(activity)

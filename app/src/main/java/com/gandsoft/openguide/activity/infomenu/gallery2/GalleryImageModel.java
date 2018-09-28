@@ -9,7 +9,7 @@ public class GalleryImageModel implements Parcelable {
     private String like;
     private String account_id;
     private String total_comment;
-    private String status_like;
+    private int status_like;
     private String username;
     private String caption;
     private String image_posted;
@@ -27,7 +27,7 @@ public class GalleryImageModel implements Parcelable {
         like = in.readString();
         account_id = in.readString();
         total_comment = in.readString();
-        status_like = in.readString();
+        status_like = Integer.parseInt(in.readString());
         username = in.readString();
         caption = in.readString();
         image_posted = in.readString();
@@ -61,7 +61,7 @@ public class GalleryImageModel implements Parcelable {
         parcel.writeString(like);
         parcel.writeString(account_id);
         parcel.writeString(total_comment);
-        parcel.writeString(status_like);
+        parcel.writeString(String.valueOf(status_like));
         parcel.writeString(username);
         parcel.writeString(caption);
         parcel.writeString(image_posted);
@@ -88,7 +88,7 @@ public class GalleryImageModel implements Parcelable {
         this.total_comment = total_comment;
     }
 
-    public void setStatus_like(String status_like) {
+    public void setStatus_like(int status_like) {
         this.status_like = status_like;
     }
 
@@ -140,7 +140,7 @@ public class GalleryImageModel implements Parcelable {
         return total_comment;
     }
 
-    public String getStatus_like() {
+    public int getStatus_like() {
         return status_like;
     }
 

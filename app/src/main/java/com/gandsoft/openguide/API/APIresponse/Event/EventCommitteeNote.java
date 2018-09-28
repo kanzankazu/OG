@@ -7,6 +7,7 @@ public class EventCommitteeNote {
     public String note;
     public String tanggal;
     public String has_been_opened;
+    public String is_opened;
     public String sort_inbox;
 
     public int number;
@@ -58,6 +59,14 @@ public class EventCommitteeNote {
 
     public void setHas_been_opened(String has_been_opened) {
         this.has_been_opened = has_been_opened;
+    }
+
+    public String getIs_opened() {
+        return is_opened;
+    }
+
+    public void setIs_opened(String is_opened) {
+        this.is_opened = is_opened;
     }
 
     public String getSort_inbox() {

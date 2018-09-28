@@ -1,9 +1,7 @@
 package com.gandsoft.openguide.activity.main.adapter;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -15,12 +13,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.gandsoft.openguide.API.APIresponse.Event.EventCommitteeNote;
-import com.gandsoft.openguide.API.APIresponse.Event.EventTheEvent;
 import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
-import com.gandsoft.openguide.activity.ChangeEventPastHook;
-import com.gandsoft.openguide.activity.infomenu.cInboxActivity;
-import com.gandsoft.openguide.activity.main.fragments.eInfoFragment;
 import com.gandsoft.openguide.database.SQLiteHelper;
 import com.gandsoft.openguide.support.DeviceDetailUtil;
 import com.gandsoft.openguide.support.ListArrayUtil;
@@ -51,7 +45,7 @@ public class InfoListViewAdapter extends RecyclerView.Adapter<InfoListViewAdapte
         return new ViewHolder(view);
     }
 
-    @SuppressLint("NewApi")
+    @SuppressLint({"NewApi", "SetTextI18n"})
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         InfoListviewModel model = models.get(position);
@@ -62,37 +56,23 @@ public class InfoListViewAdapter extends RecyclerView.Adapter<InfoListViewAdapte
         }
         holder.tvListInfofvbi.setText(model.getTitle());
 
-
         if (models.get(position).getTitle().equals("Inbox")) {
-            Log.d("holder eventid",holder.eventId);
-            ArrayList<EventCommitteeNote> wew =  holder.db.getCommiteNote(holder.eventId);
-            int zz =0;
-            try {
-                if(!wew.isEmpty()) {
-                    for (int ux = 0; ux < wew.size(); ux++) {
-                        Log.d("get db error", wew.get(ux).getHas_been_opened());
-                        Log.d("get db error", wew.get(1).getHas_been_opened());
-                        if (wew.get(ux).getHas_been_opened().equals("1")) {
-                            zz++;
-                        }
-                    }
-                    if(zz>0) {
-                        holder.tvListInfofvbi.setText("Inbox" + " (" + zz + "/" + wew.size() + ")");
-                        holder.ivAlertNotif.setVisibility(View.VISIBLE);
-                    }else {
-                        holder.tvListInfofvbi.setText("Inbox" + " (" + 0 + "/" + wew.size() + ")");
-                    }
-                }else{
-                    holder.tvListInfofvbi.setText("Inbox (0/0)");
-                    holder.llListInfofvbi.setClickable(false);
+            Log.d("holder eventid", holder.eventId);
+            ArrayList<EventCommitteeNote> commiteNote = holder.db.getCommiteNote(holder.eventId);
+            int noteIsOpen = holder.db.getCommiteHasBeenOpened(holder.eventId);
+            if (commiteNote.size() != 0) {
+                holder.tvListInfofvbi.setText("Inbox" + " (" + noteIsOpen + "/" + commiteNote.size() + ")");
+                if (commiteNote.size() == noteIsOpen) {
+                    holder.ivListInfoAlert.setVisibility(View.GONE);
+                } else {
+                    holder.ivListInfoAlert.setVisibility(View.VISIBLE);
                 }
-            }catch (Exception w){
-                Log.d("inbox error ",String.valueOf(w));
+            } else {
                 holder.tvListInfofvbi.setText("Inbox (0/0)");
-                holder.llListInfofvbi.setClickable(false);
+                holder.tvListInfofvbi.setTextColor(context.getResources().getColor(R.color.colorPrimary));
+                holder.llListInfofvbi.setEnabled(false);
             }
         }
-
         holder.llListInfofvbi.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -111,10 +91,11 @@ public class InfoListViewAdapter extends RecyclerView.Adapter<InfoListViewAdapte
         LinearLayout llListInfofvbi;
         ImageView ivListInfofvbi;
         TextView tvListInfofvbi;
-        ImageView ivAlertNotif;
+        ImageView ivListInfoAlert;
 
         SQLiteHelper db;
-        String eventId,accountId;
+        String eventId, accountId;
+
         public ViewHolder(View itemView) {
 
             super(itemView);
@@ -122,7 +103,7 @@ public class InfoListViewAdapter extends RecyclerView.Adapter<InfoListViewAdapte
             llListInfofvbi = (LinearLayout) itemView.findViewById(R.id.llListInfo);
             ivListInfofvbi = (ImageView) itemView.findViewById(R.id.ivListInfo);
             tvListInfofvbi = (TextView) itemView.findViewById(R.id.tvListInfo);
-            ivAlertNotif = (ImageView) itemView.findViewById(R.id.ivListInfoAlert);
+            ivListInfoAlert = (ImageView) itemView.findViewById(R.id.ivListInfoAlert);
             accountId = SessionUtil.getStringPreferences(ISeasonConfig.KEY_ACCOUNT_ID, null);
             eventId = SessionUtil.getStringPreferences(ISeasonConfig.KEY_EVENT_ID, null);
 
@@ -130,7 +111,12 @@ public class InfoListViewAdapter extends RecyclerView.Adapter<InfoListViewAdapte
     }
 
     public void setData(List<InfoListviewModel> datas) {
-        models = datas;
+        if (datas.size() > 0) {
+            models.clear();
+            models = datas;
+        } else {
+            models = datas;
+        }
         notifyDataSetChanged();
     }
 
@@ -145,7 +131,7 @@ public class InfoListViewAdapter extends RecyclerView.Adapter<InfoListViewAdapte
         notifyItemRangeInserted(models.size(), datas.size());
     }
 
-    public void deleteData(List<Integer> index){
+    public void deleteData(List<Integer> index) {
         int[] ints = ListArrayUtil.convertListIntegertToIntArray(index);
         for (int anInt : ints) {
             models.remove(anInt);

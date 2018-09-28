@@ -2,8 +2,13 @@ package com.gandsoft.openguide.activity.main;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.bluetooth.BluetoothHealthAppConfiguration;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.TabLayout;
@@ -17,17 +22,22 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.SimpleTarget;
 import com.gandsoft.openguide.API.APIresponse.Event.EventCommitteeNote;
 import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
 import com.gandsoft.openguide.activity.ChangeEventActivity;
 import com.gandsoft.openguide.activity.infomenu.cInboxActivity;
 import com.gandsoft.openguide.database.SQLiteHelper;
+import com.gandsoft.openguide.support.PictureUtil;
 import com.gandsoft.openguide.support.SessionUtil;
 
 import org.jsoup.Jsoup;
@@ -71,6 +81,8 @@ public class BaseHomeActivity extends AppCompatActivity {
             showFirstDialogEvent();
         }
 
+        Log.d("Lihat", "onCreate BaseHomeActivity : " + db.isFirstIn(eventId));
+
         initComponent();
         initContent();
         initListener();
@@ -113,46 +125,55 @@ public class BaseHomeActivity extends AppCompatActivity {
     }
 
     private void showFirstDialogEvent() {
-        Dialog dialog = new Dialog(this);
-        dialog.setContentView(R.layout.custom_dialog);
-        dialog.show();
-        imviewdial = dialog.findViewById(R.id.ivDialWelcom);
-        Log.d("wew", String.valueOf(R.id.ivDialWelcom));
 
         String wew = db.getTheEvent(eventId).welcome_note;
         Document doc = Jsoup.parse(wew);
         Elements img = doc.select("img");
         String urlsd = img.attr("abs:src");
-        Log.d("wew", urlsd);
-        try {
-            Glide.with(this)
-                    .load(urlsd)
-                    .into(imviewdial);
-        } catch (Exception e) {
-            Log.d("errornya di ", String.valueOf(e));
-        }
 
-        Button declineButton = (Button) dialog.findViewById(R.id.btn_cancel);
-        declineButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                db.updateOneKey(SQLiteHelper.TableListEvent, SQLiteHelper.KEY_ListEvent_eventId, eventId, SQLiteHelper.KEY_ListEvent_IsFirstIn, "true");
-                dialog.dismiss();
-            }
-        });
-        /*
-        new AlertDialog.Builder(BaseHomeActivity.this)
-                .setTitle("INFO")
-                .setMessage("Test")
-                .setCancelable(false)
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+        Glide.with(this)
+                .load(urlsd)
+                .asBitmap()
+                .fitCenter()
+                .into(new SimpleTarget<Bitmap>() {
                     @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        db.updateOneKey(SQLiteHelper.TableListEvent, SQLiteHelper.KEY_ListEvent_eventId, eventId, SQLiteHelper.KEY_ListEvent_IsFirstIn, "false");
+                    public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+
+                        Dialog dialogOpeningEvent;
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                            dialogOpeningEvent = new Dialog(BaseHomeActivity.this, android.R.style.Theme_DeviceDefault_Light_Dialog);
+                        } else {
+                            dialogOpeningEvent = new Dialog(BaseHomeActivity.this);
+                        }
+                        dialogOpeningEvent.requestWindowFeature(Window.FEATURE_NO_TITLE);//untuk tidak ada title
+                        dialogOpeningEvent.setContentView(R.layout.custom_dialog);
+                        dialogOpeningEvent.setCancelable(false);
+                        dialogOpeningEvent.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));//untuk menghilangkan background
+                        dialogOpeningEvent.setTitle("");
+
+                        WindowManager.LayoutParams layoutparams = new WindowManager.LayoutParams();
+                        layoutparams.copyFrom(dialogOpeningEvent.getWindow().getAttributes());
+                        layoutparams.width = WindowManager.LayoutParams.WRAP_CONTENT;//ukuran lebar layout
+                        layoutparams.height = WindowManager.LayoutParams.WRAP_CONTENT;//ukuran tinggi layout
+
+                        ImageView ivDialWelcomOpeningEvent = (ImageView) dialogOpeningEvent.findViewById(R.id.ivDialWelcom);
+                        Button btn_cancelOpeningEvent = (Button) dialogOpeningEvent.findViewById(R.id.btn_cancel);
+
+                        Bitmap resizeImageBitmap = PictureUtil.resizeImageBitmap(resource, 1080);
+                        ivDialWelcomOpeningEvent.setImageBitmap(resizeImageBitmap);
+
+                        btn_cancelOpeningEvent.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                db.updateOneKey(SQLiteHelper.TableListEvent, SQLiteHelper.KEY_ListEvent_eventId, eventId, SQLiteHelper.KEY_ListEvent_IsFirstIn, String.valueOf(1));
+                                dialogOpeningEvent.dismiss();
+                            }
+                        });
+
+                        dialogOpeningEvent.show();
+                        dialogOpeningEvent.getWindow().setAttributes(layoutparams);
                     }
-                })*/
-        /*.show();
-         */
+                });
     }
 
     private void initActionBar() {
@@ -196,7 +217,6 @@ public class BaseHomeActivity extends AppCompatActivity {
             if (wew.get(i).getHas_been_opened().equals("0")) {
                 a++;
             }
-            ;
         }
         return a;
     }
@@ -204,11 +224,12 @@ public class BaseHomeActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        if (checkNotif() > 0) {
+        /*if (checkNotif() > 0) {
             inflater.inflate(R.menu.menu_main2, menu);
         } else {
             inflater.inflate(R.menu.menu_main, menu);
-        }
+        }*/
+        inflater.inflate(R.menu.menu_main, menu);
         return true;
     }
 
@@ -219,10 +240,6 @@ public class BaseHomeActivity extends AppCompatActivity {
         intent.putExtra("TITLE", title);
         startActivity(intent);
         return super.onOptionsItemSelected(item);
-    }
-
-    public static Intent getActIntent(Activity activity) {
-        return new Intent(activity, BaseHomeActivity.class);
     }
 
     @Override

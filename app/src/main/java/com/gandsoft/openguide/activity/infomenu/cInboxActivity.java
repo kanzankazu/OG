@@ -1,6 +1,7 @@
 package com.gandsoft.openguide.activity.infomenu;
 
-import android.os.BadParcelableException;
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -12,10 +13,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import com.gandsoft.openguide.API.APIresponse.Event.EventCommitteeNote;
-import com.gandsoft.openguide.API.APIresponse.Event.EventDataContactList;
 import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
-import com.gandsoft.openguide.activity.infomenu.adapter.ComitteContactAdapter;
 import com.gandsoft.openguide.activity.infomenu.adapter.InboxRecViewAdapter;
 import com.gandsoft.openguide.database.SQLiteHelper;
 import com.gandsoft.openguide.support.SessionUtil;
@@ -27,7 +26,7 @@ public class cInboxActivity extends AppCompatActivity {
 
     RecyclerView rvCommiteNotefvbi;
     private InboxRecViewAdapter adapter;
-    private String accountId,eventId;
+    private String accountId, eventId;
     private Toolbar toolbar;
     private ActionBar ab;
     private String title;
@@ -65,7 +64,7 @@ public class cInboxActivity extends AppCompatActivity {
         ab.setTitle(title);
 
         ArrayList<EventCommitteeNote> models = db.getCommiteNote(eventId);
-        adapter = new InboxRecViewAdapter(this, models);
+        adapter = new InboxRecViewAdapter(this, models, accountId, eventId, db);
         rvCommiteNotefvbi.setNestedScrollingEnabled(false);
         rvCommiteNotefvbi.setAdapter(adapter);
         rvCommiteNotefvbi.setLayoutManager(new LinearLayoutManager(this));
@@ -84,7 +83,15 @@ public class cInboxActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        finish();
+        onBackPressed();
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent();
+        setResult(Activity.RESULT_OK, intent);
+        intent.putExtra(ISeasonConfig.INTENT_PARAM_BACK,db.getCommiteHasBeenOpened(eventId));
+        finish();
     }
 }

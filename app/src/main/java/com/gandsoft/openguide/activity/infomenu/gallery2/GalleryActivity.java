@@ -222,7 +222,7 @@ public class GalleryActivity extends AppCompatActivity {
                         model1.setLike(model.getLike());
                         model1.setAccount_id(model.getAccount_id());
                         model1.setTotal_comment(model.getTotal_comment());
-                        model1.setStatus_like(model.getStatus_like());
+                        model1.setStatus_like(Integer.parseInt(model.getStatus_like()));
                         model1.setUsername(model.getUsername());
                         model1.setCaption(model.getCaption());
                         model1.setImage_posted(model.getImage_posted());
@@ -290,7 +290,7 @@ public class GalleryActivity extends AppCompatActivity {
                         model1.setLike(model.getLike());
                         model1.setAccount_id(model.getAccount_id());
                         model1.setTotal_comment(model.getTotal_comment());
-                        model1.setStatus_like(model.getStatus_like());
+                        model1.setStatus_like(Integer.parseInt(model.getStatus_like()));
                         model1.setUsername(model.getUsername());
                         model1.setCaption(model.getCaption());
                         model1.setImage_posted(model.getImage_posted());

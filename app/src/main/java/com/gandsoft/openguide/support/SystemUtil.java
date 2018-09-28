@@ -167,39 +167,4 @@ public class SystemUtil {
         textview.setPaintFlags(textview.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
     }
 
-    public static Bitmap resizeImage(Bitmap bitmap, int newSize) {
-        int width = bitmap.getWidth();
-        int height = bitmap.getHeight();
-
-        int newWidth = 0;
-        int newHeight = 0;
-
-        if (width > height) {
-            newWidth = newSize;
-            newHeight = (newSize * height) / width;
-        } else if (width < height) {
-            newHeight = newSize;
-            newWidth = (newSize * width) / height;
-        } else if (width == height) {
-            newHeight = newSize;
-            newWidth = newSize;
-        }
-
-        float scaleWidth = ((float) newWidth) / width;
-        float scaleHeight = ((float) newHeight) / height;
-
-        Matrix matrix = new Matrix();
-        matrix.postScale(scaleWidth, scaleHeight);
-
-        return Bitmap.createBitmap(bitmap, 0, 0, width, height, matrix, true);
-    }
-
-    public static Bitmap rotateImage(Bitmap img, int degree) {
-        Matrix matrix = new Matrix();
-        matrix.postRotate(degree);
-        Bitmap rotatedImg = Bitmap.createBitmap(img, 0, 0, img.getWidth(), img.getHeight(), matrix, true);
-        img.recycle();
-        return rotatedImg;
-    }
-
 }
