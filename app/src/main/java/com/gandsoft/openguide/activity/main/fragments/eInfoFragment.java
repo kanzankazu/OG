@@ -193,7 +193,13 @@ public class eInfoFragment extends Fragment implements InfoListViewAdapter.ListA
             Intent intent9 = new Intent(getActivity(), ChangeEventActivity.class);
             getActivity().startActivity(intent9);
             getActivity().finish();
+            SessionUtil.deleteKeyPreferences(ISeasonConfig.KEY_EVENT_ID);
         }
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
     }
 
     @Override

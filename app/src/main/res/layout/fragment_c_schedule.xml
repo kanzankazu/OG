@@ -49,6 +49,8 @@
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/recycleView"
+                android:focusable="false"
+                android:focusableInTouchMode="false"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginBottom="15dp"

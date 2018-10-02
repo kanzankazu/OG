@@ -2,9 +2,12 @@ package com.gandsoft.openguide.activity.main;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.bluetooth.BluetoothHealthAppConfiguration;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
@@ -12,12 +15,14 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -31,12 +36,12 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
-import com.gandsoft.openguide.API.APIresponse.Event.EventCommitteeNote;
+import com.gandsoft.openguide.API.APIresponse.UserData.UserListEventResponseModel;
 import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
-import com.gandsoft.openguide.activity.ChangeEventActivity;
 import com.gandsoft.openguide.activity.infomenu.cInboxActivity;
 import com.gandsoft.openguide.database.SQLiteHelper;
+import com.gandsoft.openguide.support.HomeWatcher;
 import com.gandsoft.openguide.support.PictureUtil;
 import com.gandsoft.openguide.support.SessionUtil;
 
@@ -44,9 +49,8 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
-import java.util.ArrayList;
-
 public class BaseHomeActivity extends AppCompatActivity {
+    private static final int ID_NOTIF = 0;
     SQLiteHelper db = new SQLiteHelper(this);
 
     static final int NUM_ITEMS = 5;
@@ -64,28 +68,26 @@ public class BaseHomeActivity extends AppCompatActivity {
     private boolean doubleBackToExitPressedOnce;
     ImageView imviewdial;
     int a = 0;
+    private NotificationManager notificationManager;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_base_home);
+
         db = new SQLiteHelper(this);
+        notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
-        if (SessionUtil.checkIfExist(ISeasonConfig.KEY_ACCOUNT_ID)) {
-            accountId = SessionUtil.getStringPreferences(ISeasonConfig.KEY_ACCOUNT_ID, null);
+        if (isNotificationVisible()) {
+            notificationManager.cancel(ID_NOTIF);
         }
-        if (SessionUtil.checkIfExist(ISeasonConfig.KEY_EVENT_ID)) {
-            eventId = SessionUtil.getStringPreferences(ISeasonConfig.KEY_EVENT_ID, null);
-        }
-        if (!db.isFirstIn(eventId)) {
-            showFirstDialogEvent();
-        }
-
-        Log.d("Lihat", "onCreate BaseHomeActivity : " + db.isFirstIn(eventId));
 
         initComponent();
+        initSession();
+        initParam();
         initContent();
         initListener();
+
     }
 
     private void initComponent() {
@@ -94,12 +96,44 @@ public class BaseHomeActivity extends AppCompatActivity {
         mPager = (ViewPager) findViewById(R.id.pager);
     }
 
+    private void initSession() {
+        if (SessionUtil.checkIfExist(ISeasonConfig.KEY_ACCOUNT_ID)) {
+            accountId = SessionUtil.getStringPreferences(ISeasonConfig.KEY_ACCOUNT_ID, null);
+        }
+        if (SessionUtil.checkIfExist(ISeasonConfig.KEY_EVENT_ID)) {
+            eventId = SessionUtil.getStringPreferences(ISeasonConfig.KEY_EVENT_ID, null);
+        }
+    }
+
+    private void initParam() {
+
+    }
+
     private void initContent() {
+        Log.d("Lihat", "onCreate BaseHomeActivity : " + db.isFirstIn(eventId));
+        if (!db.isFirstIn(eventId)) {
+            showFirstDialogEvent();
+        }
+
         initActionBar();
         initTablayoutViewpager();
+
+        HomeWatcher mHomeWatcher = new HomeWatcher(this);
+        mHomeWatcher.setOnHomePressedListener(new HomeWatcher.OnHomePressedListener() {
+            @Override
+            public void onHomePressed() {
+                Log.d("Lihat", "onHomePressed BaseHomeActivity : " + "home");
+                makeNotifyApps();
+            }
+            @Override
+            public void onHomeLongPressed() {
+            }
+        });
+        mHomeWatcher.startWatch();
     }
 
     private void initListener() {
+
         mPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
 
         tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
@@ -211,16 +245,6 @@ public class BaseHomeActivity extends AppCompatActivity {
         mPager.setCurrentItem(0);
     }
 
-    private int checkNotif() {
-        ArrayList<EventCommitteeNote> wew = db.getCommiteNote(eventId);
-        for (int i = 0; i < wew.size(); i++) {
-            if (wew.get(i).getHas_been_opened().equals("0")) {
-                a++;
-            }
-        }
-        return a;
-    }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -245,9 +269,8 @@ public class BaseHomeActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         if (doubleBackToExitPressedOnce) {
-            Intent intent9 = new Intent(this, ChangeEventActivity.class);
-            startActivity(intent9);
             finish();
+            makeNotifyApps();
         }
         this.doubleBackToExitPressedOnce = true;
         Toast.makeText(this, "Tekan sekali lagi untuk keluar", Toast.LENGTH_SHORT).show();
@@ -259,5 +282,37 @@ public class BaseHomeActivity extends AppCompatActivity {
                 doubleBackToExitPressedOnce = false;
             }
         }, 2000);
+    }
+
+    /*@Override
+    public void onBackPressed() {
+
+    }*/
+
+    private boolean isNotificationVisible() {
+        Intent notificationIntent = new Intent(this, BaseHomeActivity.class);
+        PendingIntent test = PendingIntent.getActivity(this, ID_NOTIF, notificationIntent, PendingIntent.FLAG_NO_CREATE);
+        return test != null;
+    }
+
+    private void makeNotifyApps() {
+        UserListEventResponseModel oneListEvent = db.getOneListEvent(eventId);
+        String title = oneListEvent.getTitle();
+        String date = oneListEvent.getDate();
+
+        Intent intent = new Intent(this, BaseHomeActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, ID_NOTIF, intent, PendingIntent.FLAG_ONE_SHOT);
+
+        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
+                .setContentTitle("Openguides")
+                .setContentText(title + " , " + date)
+                .setSmallIcon(R.drawable.ic_love_fill)
+                .setLargeIcon(BitmapFactory.decodeResource(this.getResources(), R.mipmap.ic_launcher))
+                .setAutoCancel(true)
+                .setOngoing(true)
+                .setContentIntent(pendingIntent);
+
+        notificationManager.notify(ID_NOTIF, notificationBuilder.build());
     }
 }

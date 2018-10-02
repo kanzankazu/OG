@@ -3,6 +3,7 @@ package com.gandsoft.openguide.activity.main.fragments;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.NestedScrollView;
@@ -21,8 +22,11 @@ import com.gandsoft.openguide.R;
 import com.gandsoft.openguide.activity.main.adapter.SchedulePagerAdapter;
 import com.gandsoft.openguide.activity.main.adapter.ScheduleRecycleviewAdapter;
 import com.gandsoft.openguide.database.SQLiteHelper;
+import com.gandsoft.openguide.support.DateTimeUtil;
+import com.gandsoft.openguide.support.ListArrayUtil;
 import com.gandsoft.openguide.support.SessionUtil;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 
@@ -35,7 +39,7 @@ public class cScheduleFragment extends Fragment {
 
     private RecyclerView recyclerView;
     private ScheduleRecycleviewAdapter adapter;
-    private NestedScrollView scroller;
+    private NestedScrollView infoNSVInfofvbi;
     private ViewPager pagerBig;
     private ViewPager pagerSmall;
     private LinearLayout llScheduleDotsfvbi;
@@ -43,6 +47,7 @@ public class cScheduleFragment extends Fragment {
     private SchedulePagerAdapter pagerAdapterBig;
     private SchedulePagerAdapter pagerAdapterSmall;
     private String accountId, eventId;
+    private String group_code;
     private int iPagerCount;
     private boolean isBigVP;
 
@@ -57,7 +62,7 @@ public class cScheduleFragment extends Fragment {
         db = new SQLiteHelper(getActivity());
 
         initComponent(view);
-        initContent(view);
+        initContent();
         initListener(view);
 
         //Method call for populating the view
@@ -65,15 +70,18 @@ public class cScheduleFragment extends Fragment {
     }
 
     private void initComponent(View view) {
-        scroller = (NestedScrollView) view.findViewById(R.id.infoNSVInfo);
+        infoNSVInfofvbi = (NestedScrollView) view.findViewById(R.id.infoNSVInfo);
         recyclerView = (RecyclerView) view.findViewById(R.id.recycleView);
         pagerBig = (ViewPager) view.findViewById(R.id.pagerinfrag);
         pagerSmall = (ViewPager) view.findViewById(R.id.pagerinfragmini);
         llScheduleDotsfvbi = (LinearLayout) view.findViewById(R.id.llScheduleDots);
     }
 
-    private void initContent(View view) {
-        scheduleDates = db.getScheduleListDate(eventId);
+    private void initContent() {
+
+        group_code = "groupcode_" + db.getOneListEvent(eventId).getGroup_code();
+        scheduleDates = db.getScheduleListDate(group_code);
+
         pagerAdapterBig = new SchedulePagerAdapter(getActivity(), 0, scheduleDates);
         pagerBig.setAdapter(pagerAdapterBig);
         pagerBig.setOffscreenPageLimit(0);
@@ -83,7 +91,7 @@ public class cScheduleFragment extends Fragment {
 
         addBottomDots();
 
-        scheduleListPerDate = db.getScheduleListPerDate(eventId, scheduleDates.get(pagerBig.getCurrentItem()));
+        scheduleListPerDate = db.getScheduleListPerDate(group_code, scheduleDates.get(pagerBig.getCurrentItem()));
         adapter = new ScheduleRecycleviewAdapter(getActivity(), scheduleListPerDate, new ScheduleRecycleviewAdapter.ScheduleListener() {
             @Override
             public void onClickQNA(String link) {
@@ -92,13 +100,64 @@ public class cScheduleFragment extends Fragment {
                 startActivityForResult(intent, REQ_CODE_QNA);
                 //finish();
             }
-        });
+        }, scheduleDates, group_code);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+
+        checkDate(scheduleDates);
+
+    }
+
+    private void checkDate(ArrayList<String> scheduleDates) {
+        //code here
+        String currentDate = DateTimeUtil.dateToString(DateTimeUtil.currentDate(), new SimpleDateFormat("EEEE dd MMMM yyyy"));
+        Log.d("Lihat", "checkDate cScheduleFragment : " + currentDate);
+        Log.d("Lihat", "checkDate cScheduleFragment : " + scheduleDates);
+
+        if (ListArrayUtil.isListContainString(scheduleDates, currentDate)) {
+            Log.d("Lihat", "checkDate cScheduleFragment : " + ListArrayUtil.isListContainString(scheduleDates, currentDate));
+            int posCurrDate = ListArrayUtil.getPosStringInList(scheduleDates, currentDate);
+            ArrayList<String> scheduleTimes = db.getScheduleListTime(group_code, scheduleDates.get(posCurrDate));
+            Log.d("Lihat", "checkDate cScheduleFragment : " + scheduleTimes);
+            //code here
+            new Handler().postDelayed(new Runnable() {
+                public void run() {
+                    //code here
+                    pagerBig.setCurrentItem(posCurrDate);
+                    //code here
+                    for (int i = 0; i < scheduleTimes.size(); i++) {
+                        String time = scheduleTimes.get(i);
+                        if (time.contains("-")) {
+                            String[] split = time.split("-");
+                            if (DateTimeUtil.isBetween2Time(split[0], split[1])) {
+                                int finalI = i;
+                                new Handler().postDelayed(new Runnable() {
+                                    public void run() {
+                                        //code here
+                                        int measuredHeight = pagerBig.getMeasuredHeight();
+                                        int measuredHeight1 = llScheduleDotsfvbi.getMeasuredHeight();
+                                        int measuredHeight2 = 0;
+                                        for (int i2 = 0; i2 < finalI - 1; i2++) {
+                                            measuredHeight2 = measuredHeight2 + recyclerView.getChildAt(i2).getMeasuredHeight();
+                                        }
+                                        int heightTotal = measuredHeight + measuredHeight1 + measuredHeight2;
+                                        infoNSVInfofvbi.smoothScrollTo(0, heightTotal);
+
+                                        Log.d("Lihat", "checkDate cScheduleFragment : " + finalI);
+                                    }
+                                }, 1000);
+                            }
+                        }
+                    }
+                }
+            }, 1000);
+
+        }
+
     }
 
     private void initListener(View view) {
-        scroller.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
+        infoNSVInfofvbi.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
             @Override
             public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
                 Log.i("SCROOLLL X = ", String.valueOf(scrollX));
@@ -137,7 +196,7 @@ public class cScheduleFragment extends Fragment {
             @Override
             public void onPageSelected(int position) {
                 pagerSmall.setCurrentItem(position);
-                adapter.setData(db.getScheduleListPerDate(eventId, scheduleDates.get(position)));
+                adapter.setData(db.getScheduleListPerDate(group_code, scheduleDates.get(position)));
                 for (int i = 0; i < iPagerCount; i++) {
                     ivIndicatorPromo[i].setImageDrawable(getResources().getDrawable(R.drawable.nonselected_item));
                 }

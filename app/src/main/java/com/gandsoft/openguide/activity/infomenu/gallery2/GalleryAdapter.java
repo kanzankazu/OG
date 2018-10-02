@@ -98,29 +98,5 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
         notifyItemRangeInserted(models.size(), datas.size());
     }
 
-    private String saveImage(Bitmap image, int position, String id) {
-        /*Random r = new Random();
-        int i1 = r.nextInt(1000);*/
-        String savedImagePath = null;
-        String imageFileName = id + ".jpg";
-        File storageDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/.Gandsoft/" + eventId);
-        boolean success = true;
-        if (!storageDir.exists()) {
-            success = storageDir.mkdirs();
-        }
-        if (success) {
-            File imageFile = new File(storageDir, imageFileName);
-            savedImagePath = imageFile.getAbsolutePath();
-            try {
-                OutputStream fOut = new FileOutputStream(imageFile);
-                Bitmap storedata = PictureUtil.resizeImageBitmap(image, 500);
-                storedata.compress(Bitmap.CompressFormat.JPEG, 50, fOut);
-                fOut.close();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        Log.d("Lihat", "saveImage GalleryAdapter : " + savedImagePath);
-        return savedImagePath;
-    }
+
 }

@@ -178,12 +178,12 @@
                                 android:layout_gravity="center_vertical"
                                 android:layout_marginLeft="10dp"
                                 android:layout_marginRight="10dp"
-                                android:maxLines="10"
                                 android:layout_weight="1"
                                 android:focusable="true"
                                 android:focusableInTouchMode="true"
                                 android:hint="Write Something..."
                                 android:inputType="textMultiLine"
+                                android:maxLines="10"
                                 android:textSize="14dp" />
 
                             <ImageView
@@ -249,6 +249,8 @@
                         android:id="@+id/homeRVEvent"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
+                        android:focusable="false"
+                        android:focusableInTouchMode="false"
                         android:padding="12dp"
                         android:visibility="visible"
                         tools:listitem="@layout/layout_list_home_adapter" />

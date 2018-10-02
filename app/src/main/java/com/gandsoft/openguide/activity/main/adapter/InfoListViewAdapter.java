@@ -69,7 +69,7 @@ public class InfoListViewAdapter extends RecyclerView.Adapter<InfoListViewAdapte
                 }
             } else {
                 holder.tvListInfofvbi.setText("Inbox (0/0)");
-                holder.tvListInfofvbi.setTextColor(context.getResources().getColor(R.color.colorPrimary));
+                holder.tvListInfofvbi.setTextColor(context.getResources().getColor(R.color.grey));
                 holder.llListInfofvbi.setEnabled(false);
             }
         }

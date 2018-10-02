@@ -16,12 +16,16 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.util.Base64;
+import android.util.Log;
+
+import com.gandsoft.openguide.database.SQLiteHelper;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 
 public class PictureUtil {
 
@@ -279,5 +283,73 @@ public class PictureUtil {
 
 
         return flipImage;
+    }
+
+    private void deleteImageFile(String eventIds) {
+        //db.deleleDataByKey(SQLiteHelper.TableGallery, SQLiteHelper.Key_Gallery_eventId, eventIds);
+
+        File dir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/.Gandsoft/" + eventIds);
+        if (dir.isDirectory()) {
+            String[] children = dir.list();
+            for (int i = 0; i < children.length; i++) {
+                new File(dir, children[i]).delete();
+            }
+        }
+    }
+
+    private void onSelectGallery(Intent data) {
+        /*Uri selectedImageUri = data.getData();
+        String[] projection = {MediaStore.MediaColumns.DATA};
+        @SuppressWarnings("deprecation")
+        Cursor cursor = getActivity().managedQuery(selectedImageUri, projection, null, null, null);
+        int column_index = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
+        cursor.moveToFirst();
+
+        String selectedImagePath = cursor.getString(column_index);
+
+        Bitmap bm;
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(selectedImagePath, options);
+        final int REQUIRED_SIZE = 200;
+        int scale = 1;
+        while (options.outWidth / scale / 2 >= REQUIRED_SIZE && options.outHeight / scale / 2 >= REQUIRED_SIZE)
+            scale *= 2;
+        options.inSampleSize = scale;
+        options.inJustDecodeBounds = false;
+        bm = BitmapFactory.decodeFile(selectedImagePath, options);
+
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        bm.compress(Bitmap.CompressFormat.PNG, 10, byteArrayOutputStream);
+        byte[] byteArray = byteArrayOutputStream.toByteArray();
+        base64pic = Base64.encodeToString(byteArray, Base64.DEFAULT);
+
+        Log.d("bes64 ", base64pic);*/
+    }
+
+    private String saveImage(Bitmap image, int position, String id) {
+        /*Random r = new Random();
+        int i1 = r.nextInt(1000);*/
+        String savedImagePath = null;
+        String imageFileName = id + ".jpg";
+        File storageDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/.Gandsoft/" + id);
+        boolean success = true;
+        if (!storageDir.exists()) {
+            success = storageDir.mkdirs();
+        }
+        if (success) {
+            File imageFile = new File(storageDir, imageFileName);
+            savedImagePath = imageFile.getAbsolutePath();
+            try {
+                OutputStream fOut = new FileOutputStream(imageFile);
+                Bitmap storedata = PictureUtil.resizeImageBitmap(image, 500);
+                storedata.compress(Bitmap.CompressFormat.JPEG, 50, fOut);
+                fOut.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        Log.d("Lihat", "saveImage GalleryAdapter : " + savedImagePath);
+        return savedImagePath;
     }
 }

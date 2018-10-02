@@ -16,6 +16,20 @@
 
 package com.gandsoft.openguide.API.FirebaseNotification;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.media.RingtoneManager;
+import android.net.Uri;
+import android.support.v4.app.NotificationCompat;
+import android.util.Log;
+
+import com.gandsoft.openguide.R;
+import com.gandsoft.openguide.activity.ChangeEventActivity;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
@@ -29,29 +43,42 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
+
+        Log.d("Lihat", "onMessageReceived MyFirebaseMessagingService remoteMessage.getFrom: " + remoteMessage.getFrom());
+        Log.d("Lihat", "onMessageReceived MyFirebaseMessagingService remoteMessage.getMessageId: " + remoteMessage.getMessageId());
+        Log.d("Lihat", "onMessageReceived MyFirebaseMessagingService remoteMessage.getMessageType: " + remoteMessage.getMessageType());
+        Log.d("Lihat", "onMessageReceived MyFirebaseMessagingService remoteMessage.getSentTime: " + remoteMessage.getSentTime());
+        Log.d("Lihat", "onMessageReceived MyFirebaseMessagingService remoteMessage.getNotification().getBody: " + remoteMessage.getNotification().getBody());
+        Log.d("Lihat", "onMessageReceived MyFirebaseMessagingService remoteMessage.getNotification().getColor: " + remoteMessage.getNotification().getColor());
+        Log.d("Lihat", "onMessageReceived MyFirebaseMessagingService remoteMessage.getNotification().getClickAction: " + remoteMessage.getNotification().getClickAction());
+        Log.d("Lihat", "onMessageReceived MyFirebaseMessagingService remoteMessage.getNotification().getTitle: " + remoteMessage.getNotification().getTitle());
+
         if (remoteMessage.getData().size() > 0) {
-            Map<String, String> m = remoteMessage.getData();
-            List<String> list1 = new ArrayList<String>(m.keySet());
-            List<String> list21 = new ArrayList<String>(m.values());
-            JSONObject mapToObject = new JSONObject(m);
-        }
+            Map<String, String> remoteMessageData = remoteMessage.getData();
+            List<String> list1 = new ArrayList<String>(remoteMessageData.keySet());
+            Log.d("Lihat", "onMessageReceived MyFirebaseMessagingService list1 : " + list1);
+            List<String> list21 = new ArrayList<String>(remoteMessageData.values());
+            Log.d("Lihat", "onMessageReceived MyFirebaseMessagingService list21 : " + list21);
+            JSONObject mapToObject = new JSONObject(remoteMessageData);
+            Log.d("Lihat", "onMessageReceived MyFirebaseMessagingService mapToObject : " + mapToObject);
 
-        if (remoteMessage.getNotification() != null) {
+            for (String key : remoteMessageData.keySet()) {
+                Log.d("Lihat", "onMessageReceived MyFirebaseMessagingService key : " + key);
+            }
         }
-
-        //makeNotification(remoteMessage.getNotification().getBody());
+        makeNotification(remoteMessage.getNotification().getBody());
     }
 
-    /*private void makeNotification(String messageBody) {
-        Intent intent = new Intent(this, MainWebView.class);
+    private void makeNotification(String messageBody) {
+        Intent intent = new Intent(this, ChangeEventActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 *//* Request code *//*, intent, PendingIntent.FLAG_ONE_SHOT);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT);
 
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
-                .setContentTitle("Remote Router Notification")
-                .setSmallIcon(R.drawable.ic_notif_remoterouter)
-                .setLargeIcon(BitmapFactory.decodeResource(this.getResources(), R.drawable.ic_notif_remoterouter))
+                .setContentTitle("Openguides Notification")
+                .setSmallIcon(R.drawable.ic_love_fill)
+                .setLargeIcon(BitmapFactory.decodeResource(this.getResources(), R.mipmap.ic_launcher))
                 .setContentText(messageBody)
                 .setAutoCancel(true)
                 .setLights(Color.GREEN, 3000, 3000)
@@ -59,6 +86,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 .setContentIntent(pendingIntent);
 
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        notificationManager.notify(0 *//* ID of notification *//*, notificationBuilder.build());
-    }*/
+        notificationManager.notify(0, notificationBuilder.build());
+    }
 }

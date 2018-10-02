@@ -16,6 +16,10 @@
 
 package com.gandsoft.openguide.API.FirebaseNotification;
 
+import android.content.Intent;
+import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
+
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.FirebaseInstanceIdService;
 
@@ -27,7 +31,16 @@ public class MyFirebaseInstanceIDService extends FirebaseInstanceIdService {
     @Override
     public void onTokenRefresh() {
         String refreshedToken = FirebaseInstanceId.getInstance().getToken();
+        Log.d("Lihat", "onTokenRefresh MyFirebaseInstanceIDService : " + refreshedToken);
+
+        final Intent intent = new Intent("tokenReceiver");
+        intent.putExtra("token", refreshedToken);
+        final LocalBroadcastManager broadcastManager = LocalBroadcastManager.getInstance(this);
+        broadcastManager.sendBroadcast(intent);
+
         sendRegistrationToServer(refreshedToken);
+
+        System.out.println("Registration.onTokenRefresh TOKEN: " + refreshedToken);
     }
 
     private void sendRegistrationToServer(String token) {

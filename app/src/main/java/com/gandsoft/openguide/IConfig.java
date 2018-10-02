@@ -9,7 +9,6 @@ public interface IConfig {
 
     String API_BASE_URL = "http://api.openguides.id:3000/";
     int DB_Version = 3;
-    int DB_Version_SQLITE = 3;
 
     String RETURN_STATUS_SUCCESS = "success";
 

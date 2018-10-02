@@ -2,8 +2,8 @@ package com.gandsoft.openguide.activity;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.graphics.Bitmap;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,9 +12,11 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.SimpleTarget;
 import com.gandsoft.openguide.API.APIresponse.UserData.UserListEventResponseModel;
 import com.gandsoft.openguide.R;
+import com.gandsoft.openguide.support.PictureUtil;
 import com.github.siyamed.shapeimageview.RoundedImageView;
 
 import java.util.ArrayList;
@@ -46,22 +48,25 @@ public class ChangeEventPastAdapter extends RecyclerView.Adapter<ChangeEventPast
         UserListEventResponseModel model = models.get(position);
         if (model.getStatus().equalsIgnoreCase("PAST EVENT")) {
             Glide.with((Activity) parent)
-                    .load(model.getLogo())
-                    .placeholder(R.drawable.template_account_og)
-                    .error(R.drawable.template_account_og)
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)
-                    .animate(R.anim.fadein)
-                    .skipMemoryCache(true)
-                    .into(holder.ivListChangeEventLogofvbi);
-            Glide.with((Activity) parent)
                     .load(model.getBackground())
-                    .placeholder(R.drawable.template_account_og)
-                    .error(R.drawable.template_account_og)
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)
-                    .animate(R.anim.fadein)
-                    .skipMemoryCache(true)
-                    .fitCenter()
-                    .into(holder.ivListChangeEventBackgroundfvbi);
+                    .asBitmap()
+                    .into(new SimpleTarget<Bitmap>() {
+                        @Override
+                        public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+                            Bitmap resizeImageBitmap = PictureUtil.resizeImageBitmap(resource, 720);
+                            holder.ivListChangeEventBackgroundfvbi.setImageBitmap(resizeImageBitmap);
+                        }
+                    });
+            Glide.with((Activity) parent)
+                    .load(model.getLogo())
+                    .asBitmap()
+                    .into(new SimpleTarget<Bitmap>() {
+                        @Override
+                        public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+                            Bitmap resizeImageBitmap = PictureUtil.resizeImageBitmap(resource, 720);
+                            holder.ivListChangeEventLogofvbi.setImageBitmap(resizeImageBitmap);
+                        }
+                    });
             holder.tvListChangeEventTitlefvbi.setText(model.getTitle());
             holder.tvListChangeEventDatefvbi.setText(model.getDate());
             holder.llListChangeEventfvbi.setOnClickListener(new View.OnClickListener() {

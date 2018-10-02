@@ -437,7 +437,7 @@ public class aHomeFragment extends Fragment {
             imgExists = false;
         }
 
-        deleteImageFile(eventId);
+        //deleteImageFile(eventId);
         db.deleleDataByKey(SQLiteHelper.TableHomeContent, SQLiteHelper.Key_HomeContent_EventId, eventId);
 
         ProgressDialog progressDialog = ProgressDialog.show(getActivity(), "Loading...", "Please Wait..", false, false);
@@ -846,62 +846,7 @@ public class aHomeFragment extends Fragment {
         }
     }
 
-    private void createDirectoryAndSaveFile(Bitmap imageToSave, String fileName) {
-        File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/.Gandsoft/" + eventId + "/" + fileName);
-        if (file.exists()) {
-            file.delete();
-        }
-        try {
-            FileOutputStream out = new FileOutputStream(file);
-            imageToSave.compress(Bitmap.CompressFormat.JPEG, 10, out);
-            out.flush();
-            out.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 
-    private void deleteImageFile(String eventIds) {
-        db.deleleDataByKey(SQLiteHelper.TableGallery, SQLiteHelper.Key_Gallery_eventId, eventIds);
-
-        File dir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/.Gandsoft/" + eventIds);
-        if (dir.isDirectory()) {
-            String[] children = dir.list();
-            for (int i = 0; i < children.length; i++) {
-                new File(dir, children[i]).delete();
-            }
-        }
-    }
-
-    private void onSelectGallery(Intent data) {
-        /*Uri selectedImageUri = data.getData();
-        String[] projection = {MediaStore.MediaColumns.DATA};
-        @SuppressWarnings("deprecation")
-        Cursor cursor = getActivity().managedQuery(selectedImageUri, projection, null, null, null);
-        int column_index = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
-        cursor.moveToFirst();
-
-        String selectedImagePath = cursor.getString(column_index);
-
-        Bitmap bm;
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inJustDecodeBounds = true;
-        BitmapFactory.decodeFile(selectedImagePath, options);
-        final int REQUIRED_SIZE = 200;
-        int scale = 1;
-        while (options.outWidth / scale / 2 >= REQUIRED_SIZE && options.outHeight / scale / 2 >= REQUIRED_SIZE)
-            scale *= 2;
-        options.inSampleSize = scale;
-        options.inJustDecodeBounds = false;
-        bm = BitmapFactory.decodeFile(selectedImagePath, options);
-
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        bm.compress(Bitmap.CompressFormat.PNG, 10, byteArrayOutputStream);
-        byte[] byteArray = byteArrayOutputStream.toByteArray();
-        base64pic = Base64.encodeToString(byteArray, Base64.DEFAULT);
-
-        Log.d("bes64 ", base64pic);*/
-    }
 }
 
 

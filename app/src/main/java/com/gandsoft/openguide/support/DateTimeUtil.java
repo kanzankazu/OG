@@ -86,6 +86,13 @@ public class DateTimeUtil {
         return cal.getTime();
     }
 
+    public static Date addTimes(Date date, int hour) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        cal.add(Calendar.HOUR, hour); //minus number would decrement the days
+        return cal.getTime();
+    }
+
     public static int getDayBetween2Date(Date startDate, Date endDate) {
         //milliseconds
         long different = endDate.getTime() - startDate.getTime();
@@ -173,11 +180,10 @@ public class DateTimeUtil {
         return null;
     }
 
-    public static String dateToString(SimpleDateFormat dateFormat) {
+    public static String dateToString(Date date,SimpleDateFormat dateFormat) {
         //SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-        Date date = new Date();
-        String dateTime = dateFormat.format(date);
-        return dateTime;
+        //Date date = new Date();
+        return dateFormat.format(date);
     }
 
     public static List<Date> getDates(Date date1, Date date2) {

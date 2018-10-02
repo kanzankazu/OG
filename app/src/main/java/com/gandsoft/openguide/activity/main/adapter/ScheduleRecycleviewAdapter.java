@@ -15,20 +15,27 @@ import android.widget.TextView;
 
 import com.gandsoft.openguide.API.APIresponse.Event.EventScheduleListDateDataList;
 import com.gandsoft.openguide.R;
+import com.gandsoft.openguide.database.SQLiteHelper;
+import com.gandsoft.openguide.support.DateTimeUtil;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ScheduleRecycleviewAdapter extends RecyclerView.Adapter<ScheduleRecycleviewAdapter.MyViewHolder> {
     private List<EventScheduleListDateDataList> models = new ArrayList<>();
     private ScheduleListener mListener;
+    private ArrayList<String> scheduleDates;
+    private String group_code;
     private Context context;
 
 
-    public ScheduleRecycleviewAdapter(Context context, ArrayList<EventScheduleListDateDataList> models, ScheduleListener mListener) {
+    public ScheduleRecycleviewAdapter(Context context, ArrayList<EventScheduleListDateDataList> models, ScheduleListener mListener, ArrayList<String> scheduleDates, String group_code) {
         this.context = context;
         this.models = models;
         this.mListener = mListener;
+        this.scheduleDates = scheduleDates;
+        this.group_code = group_code;
     }
 
     @Override
@@ -88,7 +95,6 @@ public class ScheduleRecycleviewAdapter extends RecyclerView.Adapter<ScheduleRec
             }
         });
 
-        //code here
         if (position == getItemCount() - 1) {
             holder.vRvSchedulelinefvbi.setVisibility(View.GONE);
             holder.ivRvScheduleIndicatorfvbi.setBackgroundResource(R.color.colorPrimary);
@@ -97,11 +103,25 @@ public class ScheduleRecycleviewAdapter extends RecyclerView.Adapter<ScheduleRec
             holder.ivRvScheduleIndicatorfvbi.setBackgroundResource(R.color.colorAccent);
         }
 
+        if (DateTimeUtil.isToday(DateTimeUtil.stringToDate(model.getDate(), new SimpleDateFormat("EEEE dd MMMM yyyy")))) {
+            if (model.getWaktu().contains("-")) {
+                String[] split = model.getWaktu().split("-");
+                if (DateTimeUtil.isBetween2Time(split[0], split[1])) {
+                    holder.tvRvScheduleTimefvbi.setTextColor(context.getResources().getColor(R.color.colorAccent));
+                    holder.ivRvScheduleIndicatorfvbi.setBackgroundResource(R.color.black);
+                }
+            }
+        } else {
+            holder.tvRvScheduleTimefvbi.setTextColor(context.getResources().getColor(R.color.colorPrimary));
+            holder.ivRvScheduleIndicatorfvbi.setBackgroundResource(R.color.colorAccent);
+        }
+
         /*if (TextUtils.isEmpty(model.getDate())){
             holder.vRvSchedulelinefvbi.setVisibility(View.GONE);
             holder.llRvScheduleContentfvbi.setVisibility(View.GONE);
             holder.ivRvScheduleIndicatorfvbi.setBackgroundColor(R.color.colorPrimary);
         }*/
+
 
     }
 
@@ -120,11 +140,13 @@ public class ScheduleRecycleviewAdapter extends RecyclerView.Adapter<ScheduleRec
         private final ImageView ivRvScheduleIndicatorfvbi;
         private final View vRvSchedulelinefvbi;
         private final LinearLayout llRvScheduleContentfvbi;
+        private final LinearLayout llRvScheduleContent2fvbi;
+        private final SQLiteHelper db;
 
         public MyViewHolder(View itemView) {
             super(itemView);
             //itemView.setOnClickListener(this);
-
+            db = new SQLiteHelper(itemView.getContext());
             tvRvScheduleTimefvbi = (TextView) itemView.findViewById(R.id.tvRvScheduleTime);
             tvRvScheduleTitlefvbi = (TextView) itemView.findViewById(R.id.tvRvScheduleTitle);
             llRvScheduleLocationfvbi = (LinearLayout) itemView.findViewById(R.id.llRvScheduleLocation);
@@ -135,6 +157,7 @@ public class ScheduleRecycleviewAdapter extends RecyclerView.Adapter<ScheduleRec
             ivRvScheduleIndicatorfvbi = (ImageView) itemView.findViewById(R.id.ivRvScheduleIndicator);
             vRvSchedulelinefvbi = (View) itemView.findViewById(R.id.vRvScheduleline);
             llRvScheduleContentfvbi = (LinearLayout) itemView.findViewById(R.id.llRvScheduleContent);
+            llRvScheduleContent2fvbi = (LinearLayout) itemView.findViewById(R.id.llRvScheduleContent2);
 
         }
 

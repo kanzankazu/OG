@@ -440,18 +440,22 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
 
                             for (int i6 = 0; i6 < model.getSchedule_list().size(); i6++) {
                                 Map<String, List<EventScheduleListDate>> scheduleList = model.getSchedule_list().get(i6);
+                                Log.d("Lihat", "onResponse ChangeEventActivity scheduleList: " + scheduleList);
                                 for (Map.Entry<String, List<EventScheduleListDate>> entry : scheduleList.entrySet()) {
                                     String key = entry.getKey();
+                                    Log.d("Lihat", "onResponse ChangeEventActivity key: " + key);
                                     List<EventScheduleListDate> value = entry.getValue();
+                                    Log.d("Lihat", "onResponse ChangeEventActivity value: " + value);
                                     for (int i61 = 0; i61 < value.size(); i61++) {
                                         EventScheduleListDate listDate = value.get(i61);
+                                        Log.d("Lihat", "onResponse ChangeEventActivity listDate: " + listDate.getDate());
                                         List<EventScheduleListDateDataList> value2 = listDate.getData();
                                         for (int i62 = 0; i62 < value2.size(); i62++) {
                                             EventScheduleListDateDataList listDateDataList = value2.get(i62);
-                                            if (db.isDataTableValueMultipleNull(SQLiteHelper.TableScheduleList, SQLiteHelper.Key_Schedule_List_EventId, SQLiteHelper.Key_Schedule_List_id, model.getEvent_id(), listDateDataList.getId())) {
-                                                db.saveScheduleList(listDateDataList, listDate.getDate(), model.getEvent_id());
+                                            if (db.isDataTableValueMultipleNull(SQLiteHelper.TableScheduleList, SQLiteHelper.Key_Schedule_List_GroupCode, SQLiteHelper.Key_Schedule_List_id, key, listDateDataList.getId())) {
+                                                db.saveScheduleList(listDateDataList, listDate.getDate(), model.getEvent_id(), key);
                                             } else {
-                                                db.updateScheduleList(listDateDataList, listDate.getDate(), model.getEvent_id());
+                                                db.updateScheduleList(listDateDataList, listDate.getDate(), model.getEvent_id(), key);
                                             }
                                         }
                                     }

@@ -16,6 +16,7 @@ public class EventScheduleListDateDataList  {
     public int number;
     public String eventId;
     public String date;
+    private String groupCode;
 
     public String getDate() {
         return date;
@@ -111,5 +112,13 @@ public class EventScheduleListDateDataList  {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getGroupCode() {
+        return groupCode;
+    }
+
+    public void setGroupCode(String groupCode) {
+        this.groupCode = groupCode;
     }
 }
