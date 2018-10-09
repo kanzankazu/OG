@@ -80,7 +80,7 @@ public class SplashscreenActivity extends LocalBaseActivity {
                     }
                 }
                 if (key.equalsIgnoreCase(ISeasonConfig.KEY_IS_UPDATE_INFO_NOTIF)) {
-                    if (ValidUtil.isEmptyField(value)) {
+                    if (InputValidUtil.isEmptyField(value)) {
                         SessionManager.setStringPreferences(KEY_IS_UPDATE_INFO, value);
                     }
                 }*/

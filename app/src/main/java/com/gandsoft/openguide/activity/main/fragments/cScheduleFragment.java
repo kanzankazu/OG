@@ -28,7 +28,8 @@ import com.gandsoft.openguide.support.SessionUtil;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class cScheduleFragment extends Fragment {
     private static final int REQ_CODE_QNA = 123;
@@ -105,6 +106,8 @@ public class cScheduleFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         checkDate(scheduleDates);
+
+        adapter.notifyDataSetChanged();
 
     }
 

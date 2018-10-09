@@ -30,6 +30,7 @@ import android.util.Log;
 
 import com.gandsoft.openguide.R;
 import com.gandsoft.openguide.activity.ChangeEventActivity;
+import com.gandsoft.openguide.activity.main.BaseHomeActivity;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
@@ -70,7 +71,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     }
 
     private void makeNotification(String messageBody) {
-        Intent intent = new Intent(this, ChangeEventActivity.class);
+        Intent intent = new Intent(this, BaseHomeActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT);
 

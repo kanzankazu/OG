@@ -17,7 +17,8 @@ import com.gandsoft.openguide.support.SessionUtil;
 
 import java.util.ArrayList;
 import java.util.List;
-
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class bWalletFragment extends Fragment {
     private RecyclerView rvWalletfvbi;
@@ -58,6 +59,8 @@ public class bWalletFragment extends Fragment {
         adapter = new WalletViewAdapter(getActivity(), getActivity(), listWalletData);
         rvWalletfvbi.setAdapter(adapter);
         rvWalletfvbi.setLayoutManager(new LinearLayoutManager(getActivity()));
+
+        adapter.notifyDataSetChanged();
     }
 
     private void initListener() {

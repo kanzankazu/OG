@@ -9,6 +9,7 @@ public class EventFeedback {
     public String name;
     public String subName;
     public String label;
+    public String value;
     public String placeholder;
 
     public int number;

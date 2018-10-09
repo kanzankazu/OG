@@ -1,11 +1,14 @@
 package com.gandsoft.openguide.activity.infomenu;
 
 import android.annotation.SuppressLint;
+import android.app.ProgressDialog;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -22,9 +25,14 @@ import android.widget.RadioGroup;
 import android.widget.TableRow;
 import android.widget.TextView;
 
+import com.gandsoft.openguide.API.API;
+import com.gandsoft.openguide.API.APIrequest.PostFeedbackTheEventDataFeedback;
+import com.gandsoft.openguide.API.APIrequest.PostFeedbackTheEventRequestModel;
 import com.gandsoft.openguide.API.APIresponse.Event.EventFeedback;
 import com.gandsoft.openguide.API.APIresponse.Event.EventTheEvent;
+import com.gandsoft.openguide.API.APIresponse.PostFeedbackTheEventResponseModel;
 import com.gandsoft.openguide.API.APIresponse.UserData.UserWalletDataResponseModel;
+import com.gandsoft.openguide.IConfig;
 import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
 import com.gandsoft.openguide.database.SQLiteHelper;
@@ -40,6 +48,11 @@ import org.jsoup.select.Elements;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class hFeedbackActivity extends AppCompatActivity {
     SQLiteHelper db = new SQLiteHelper(this);
@@ -71,7 +84,7 @@ public class hFeedbackActivity extends AppCompatActivity {
         EventTheEvent theEvent = db.getTheEvent(eventId);
         Document doc = Jsoup.parse(theEvent.getFeedback());
         Elements subTitles = doc.select("h1");
-        if (subTitles.size() > 0) {
+        if (subTitles.size() > 0) { // get subtitle
             for (int i1 = 0; i1 < subTitles.size(); i1++) {
                 EventFeedback feedback = new EventFeedback();
                 ArrayList<String> subnames = new ArrayList<>();
@@ -204,6 +217,7 @@ public class hFeedbackActivity extends AppCompatActivity {
                 for (int i = 0; i < labels.length; i++) {
                     CheckBox checkBox = new CheckBox(this);
                     checkBox.setId(i);
+                    checkBox.setTag(subNames[i]);
                     checkBox.setText(labels[i]);
                     row.addView(checkBox);
                 }
@@ -214,11 +228,14 @@ public class hFeedbackActivity extends AppCompatActivity {
                 String[] labels = ListArrayUtil.convertStringToArrayString1(feedback.getLabel());
                 String[] subNames = ListArrayUtil.convertStringToArrayString1(feedback.getSubName());
                 rg = new RadioGroup(this); //create the RadioGroup
+                rg.setId(i1);
+                rg.setTag(name);
                 rg.setOrientation(RadioGroup.VERTICAL);//or RadioGroup.VERTICAL
                 for (int i = 0; i < labels.length; i++) {
                     RadioButton radioButton = new RadioButton(this);
+                    radioButton.setId(i);
+                    radioButton.setTag(subNames[i]);
                     radioButton.setText(labels[i]);
-                    radioButton.setId(i1 + i);
                     rg.addView(radioButton);
                 }
                 childLL.addView(rg);
@@ -226,6 +243,8 @@ public class hFeedbackActivity extends AppCompatActivity {
             } else if (inputType.equalsIgnoreCase("textarea")) {
 
                 input = new EditText(this);
+                input.setId(i1);
+                input.setTag(name);
                 input.setHint(feedback.getPlaceholder());
                 input.setInputType(InputType.TYPE_CLASS_TEXT);
                 input.setImeOptions(EditorInfo.IME_ACTION_DONE);
@@ -247,7 +266,89 @@ public class hFeedbackActivity extends AppCompatActivity {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Snackbar.make(findViewById(android.R.id.content), "clickked", Snackbar.LENGTH_SHORT).show();
 
+                List<PostFeedbackTheEventDataFeedback> models = new ArrayList<>();
+
+                for (int i = 0; i < llfeedbackfvbi.getChildCount(); i++) {
+                    View child = llfeedbackfvbi.getChildAt(i);
+
+
+                    if (child instanceof LinearLayout) {
+                        LinearLayout linearLayout = (LinearLayout) child;
+
+                        for (int i1 = 0; i1 < linearLayout.getChildCount(); i1++) {
+                            View child1 = linearLayout.getChildAt(i1);
+
+                            if (child1 instanceof RadioGroup) {
+                                PostFeedbackTheEventDataFeedback model = new PostFeedbackTheEventDataFeedback();
+
+                                RadioGroup radioGroup = (RadioGroup) child1;
+                                Log.d("Lihat", "onClick hFeedbackActivity radioGroup.getTag: " + radioGroup.getTag());
+                                int checkedRadioButtonId = radioGroup.getCheckedRadioButtonId();
+
+                                for (int i2 = 0; i2 < radioGroup.getChildCount(); i2++) {
+                                    RadioButton btn = (RadioButton) radioGroup.getChildAt(i2);
+                                    if (btn.getId() == checkedRadioButtonId) {
+                                        model.setName(radioGroup.getTag().toString());
+                                        model.setValue(btn.getTag().toString().substring(2));
+                                        models.add(model);
+                                        Log.d("Lihat", "onClick hFeedbackActivity radioButton.getTag: " + btn.getTag().toString().substring(2));
+                                    }
+                                }
+                            } else if (child1 instanceof EditText) {
+                                PostFeedbackTheEventDataFeedback model = new PostFeedbackTheEventDataFeedback();
+
+                                EditText editText = (EditText) child1;
+                                model.setName(editText.getTag().toString());
+                                model.setValue(editText.getText().toString().trim());
+                                models.add(model);
+                                Log.d("Lihat", "onClick hFeedbackActivity editText.getTag().toString(): " + editText.getTag().toString());
+                                Log.d("Lihat", "onClick hFeedbackActivity editText.getText().toString(): " + editText.getText().toString().trim());
+                            } /*else if (child1 instanceof CheckBox) {
+
+                            }*/
+                        }
+                    }
+
+                    if (i == (llfeedbackfvbi.getChildCount() - 1)) {
+                        ProgressDialog progressDialog = ProgressDialog.show(hFeedbackActivity.this, "Loading...", "Please Wait..", false, false);
+
+                        PostFeedbackTheEventRequestModel requestModel = new PostFeedbackTheEventRequestModel();
+                        requestModel.setAccount_id(accountId);
+                        requestModel.setEvent_id(eventId);
+                        requestModel.setDbver(String.valueOf(IConfig.DB_Version));
+                        requestModel.setData_feedback(models);
+
+                        API.doPostFeedbackTheEventRet(requestModel).enqueue(new Callback<List<PostFeedbackTheEventResponseModel>>() {
+                            @Override
+                            public void onResponse(Call<List<PostFeedbackTheEventResponseModel>> call, Response<List<PostFeedbackTheEventResponseModel>> response) {
+                                progressDialog.dismiss();
+                                if (response.isSuccessful()) {
+                                    List<PostFeedbackTheEventResponseModel> models = response.body();
+                                    if (models.get(0).getStatus().equalsIgnoreCase("ok")) {
+                                        finish();
+                                        Snackbar.make(findViewById(android.R.id.content), "Success give feedback", Snackbar.LENGTH_SHORT).show();
+                                    } else {
+                                        Snackbar.make(findViewById(android.R.id.content), "Failed give feedback", Snackbar.LENGTH_SHORT).show();
+                                    }
+                                } else {
+                                    Log.d("Lihat", "onFailure hFeedbackActivity : " + response.message());
+                                    //Crashlytics.logException(new Exception(response.message()));
+                                    Snackbar.make(findViewById(android.R.id.content), "Failed Connection To Server", Snackbar.LENGTH_LONG).show();
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Call<List<PostFeedbackTheEventResponseModel>> call, Throwable t) {
+                                progressDialog.dismiss();
+                                //Crashlytics.logException(new Exception(t.getMessage()));
+                                Log.d("Lihat", "onFailure hFeedbackActivity : " + t.getMessage());
+                                Snackbar.make(findViewById(android.R.id.content), "Failed Connection To Server", Snackbar.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+                }
             }
         });
     }
@@ -323,7 +424,6 @@ public class hFeedbackActivity extends AppCompatActivity {
 
         /*INIT VALIDATE DATE*/
         Date currentDate = DateTimeUtil.currentDate();
-
 
         String startDate = db.getOneListEvent(eventId).getStart_date();//"yyyyMMdd"
         String startDateYearMonth = startDate.substring(0, 6);//"yyyyMM"

@@ -1,10 +1,10 @@
 package com.gandsoft.openguide.activity.main.adapter;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,17 +22,19 @@ import com.gandsoft.openguide.support.SessionUtil;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class InfoListViewAdapter extends RecyclerView.Adapter<InfoListViewAdapter.ViewHolder> {
     private List<InfoListviewModel> models = new ArrayList<>();
-    private Context context;
+    private Activity context;
     private ListAdapterListener mListener;
 
     public interface ListAdapterListener { // create an interface
         void click(String position); // create callback function
     }
 
-    public InfoListViewAdapter(Context context, List<InfoListviewModel> items, ListAdapterListener mListener) {
+    public InfoListViewAdapter(Activity context, List<InfoListviewModel> items, ListAdapterListener mListener) {
         this.context = context;
         this.mListener = mListener;
         models = items;
@@ -45,34 +47,47 @@ public class InfoListViewAdapter extends RecyclerView.Adapter<InfoListViewAdapte
         return new ViewHolder(view);
     }
 
-    @SuppressLint({"NewApi", "SetTextI18n"})
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         InfoListviewModel model = models.get(position);
         if (DeviceDetailUtil.isKitkatBelow()) {
             holder.ivListInfofvbi.setImageResource(model.getPicTitle());
         } else {
-            holder.ivListInfofvbi.setImageDrawable(context.getDrawable(model.getPicTitle()));
+            holder.ivListInfofvbi.setImageDrawable(context.getApplicationContext().getDrawable(model.getPicTitle()));
         }
         holder.tvListInfofvbi.setText(model.getTitle());
 
-        if (models.get(position).getTitle().equals("Inbox")) {
-            Log.d("holder eventid", holder.eventId);
-            ArrayList<EventCommitteeNote> commiteNote = holder.db.getCommiteNote(holder.eventId);
-            int noteIsOpen = holder.db.getCommiteHasBeenOpened(holder.eventId);
-            if (commiteNote.size() != 0) {
-                holder.tvListInfofvbi.setText("Inbox" + " (" + noteIsOpen + "/" + commiteNote.size() + ")");
-                if (commiteNote.size() == noteIsOpen) {
-                    holder.ivListInfoAlert.setVisibility(View.GONE);
-                } else {
-                    holder.ivListInfoAlert.setVisibility(View.VISIBLE);
-                }
-            } else {
-                holder.tvListInfofvbi.setText("Inbox (0/0)");
-                holder.tvListInfofvbi.setTextColor(context.getResources().getColor(R.color.grey));
-                holder.llListInfofvbi.setEnabled(false);
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                context.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (models.get(position).getTitle().equals("Inbox")) {
+                            ArrayList<EventCommitteeNote> commiteNote = holder.db.getCommiteNote(holder.eventId);
+                            int noteIsOpen = holder.db.getCommiteHasBeenOpened(holder.eventId);
+                            if (commiteNote.size() != 0) {
+                                holder.tvListInfofvbi.setText("Inbox");
+                                //holder.tvListInfofvbi.setText("Inbox" + " (" + noteIsOpen + "/" + commiteNote.size() + ")");
+                                if (commiteNote.size() == noteIsOpen) {
+                                    holder.ivListInfoAlert.setVisibility(View.GONE);
+                                } else {
+                                    holder.ivListInfoAlert.setVisibility(View.VISIBLE);
+                                }
+                            } else {
+                                holder.tvListInfofvbi.setText("Inbox");
+                                //holder.tvListInfofvbi.setText("Inbox (0/0)");
+                                holder.tvListInfofvbi.setTextColor(context.getResources().getColor(R.color.grey));
+                                holder.llListInfofvbi.setEnabled(false);
+                            }
+                        }
+                    }
+                });
             }
-        }
+        }, 0, 60000);
+
+
+
         holder.llListInfofvbi.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

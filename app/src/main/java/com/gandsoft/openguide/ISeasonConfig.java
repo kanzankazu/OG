@@ -26,4 +26,6 @@ public interface ISeasonConfig {
 
     String OK = "ok";
     String SUCCESS = "success";
+
+    int ID_NOTIF_OUTAPP = 0;
 }

@@ -1,11 +1,18 @@
 package com.gandsoft.openguide.support;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.support.design.widget.Snackbar;
 import android.text.TextUtils;
 
 import com.gandsoft.openguide.App;
 import com.gandsoft.openguide.IConfig;
+import com.gandsoft.openguide.ISeasonConfig;
+import com.gandsoft.openguide.activity.LoginActivity;
+import com.gandsoft.openguide.database.SQLiteHelper;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
@@ -19,20 +26,11 @@ import static com.gandsoft.openguide.ISeasonConfig.ERROR_RETRIEVAL;
  */
 
 public class SessionUtil implements IConfig {
-    //SHAREDPREFERENCE
     Context mContext;
     private static final int PRIVATE_MODE = 0;
 
     private static SharedPreferences pref = App.getContext().getSharedPreferences(PACKAGE_NAME, PRIVATE_MODE);
     private static SharedPreferences.Editor editor = pref.edit();
-    //private SharedPreferences pref ;
-    //private SharedPreferences.Editor editor ;
-
-    /*public static SessionUtil() {
-        this.mContext = App.getContext();
-        pref = mContext.getSharedPreferences(IConfig.PACKAGE_NAME, PRIVATE_MODE);
-        editor = pref.edit();
-    }*/
 
     public boolean saveData(Object model, String key) {
         if (pref == null) {
@@ -63,11 +61,6 @@ public class SessionUtil implements IConfig {
     public static boolean checkIfExist(String key) {
         return pref != null ? pref.contains(key) : false;
     }
-
-    /*public static void purgeUImodel() {
-        editor.remove(KEY_UITEM).apply();
-        //editor.commit();
-    }*/
 
     public static void checkForNullKey(String key) {
         if (key == null) {

@@ -5,55 +5,77 @@ import android.app.Dialog;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
-import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
+import com.gandsoft.openguide.API.API;
+import com.gandsoft.openguide.API.APIrequest.VerificationStatusLoginAppUserRequestModel;
+import com.gandsoft.openguide.API.APIresponse.Event.EventCommitteeNote;
 import com.gandsoft.openguide.API.APIresponse.UserData.UserListEventResponseModel;
+import com.gandsoft.openguide.API.APIresponse.VerificationStatusLoginAppUserResponseModel;
+import com.gandsoft.openguide.IConfig;
 import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
+import com.gandsoft.openguide.activity.ChangeEventActivity;
 import com.gandsoft.openguide.activity.infomenu.cInboxActivity;
+import com.gandsoft.openguide.activity.services.MyService;
 import com.gandsoft.openguide.database.SQLiteHelper;
+import com.gandsoft.openguide.support.AppUtil;
+import com.gandsoft.openguide.support.DeviceDetailUtil;
 import com.gandsoft.openguide.support.HomeWatcher;
+import com.gandsoft.openguide.support.NotifUtil;
 import com.gandsoft.openguide.support.PictureUtil;
 import com.gandsoft.openguide.support.SessionUtil;
+import com.gandsoft.openguide.support.SystemUtil;
+import com.google.firebase.auth.FirebaseAuth;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 public class BaseHomeActivity extends AppCompatActivity {
     private static final int ID_NOTIF = 0;
-    SQLiteHelper db = new SQLiteHelper(this);
+    private static final int REQ_CODE_INBOX = 123;
 
     static final int NUM_ITEMS = 5;
+
+    SQLiteHelper db = new SQLiteHelper(this);
+    HomeWatcher mHomeWatcher = new HomeWatcher(this);
 
     ViewPager mPager;
     SlidePagerAdapter mPagerAdapter;
@@ -69,25 +91,38 @@ public class BaseHomeActivity extends AppCompatActivity {
     ImageView imviewdial;
     int a = 0;
     private NotificationManager notificationManager;
+    private TextView textCartItemCount;
+    private FirebaseAuth mAuth;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_base_home);
 
-        db = new SQLiteHelper(this);
-        notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        if (db.doesDatabaseExist(this, SQLiteHelper.DB_NM)) {
+            notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
-        if (isNotificationVisible()) {
-            notificationManager.cancel(ID_NOTIF);
+            clearNotif();
+
+            if (!SystemUtil.isMyServiceRunning(BaseHomeActivity.this, MyService.class)) {
+                startService(new Intent(this, MyService.class));
+            }
+
+            initSession();
+            initParam();
+            initComponent();
+            initContent();
+            initListener();
+        } else {
+            outEvent(this, ChangeEventActivity.class, notificationManager);
         }
 
-        initComponent();
-        initSession();
-        initParam();
-        initContent();
-        initListener();
+    }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        clearNotif();
     }
 
     private void initComponent() {
@@ -102,6 +137,8 @@ public class BaseHomeActivity extends AppCompatActivity {
         }
         if (SessionUtil.checkIfExist(ISeasonConfig.KEY_EVENT_ID)) {
             eventId = SessionUtil.getStringPreferences(ISeasonConfig.KEY_EVENT_ID, null);
+        } else {
+            outEvent(this, ChangeEventActivity.class, notificationManager);
         }
     }
 
@@ -110,26 +147,64 @@ public class BaseHomeActivity extends AppCompatActivity {
     }
 
     private void initContent() {
-        Log.d("Lihat", "onCreate BaseHomeActivity : " + db.isFirstIn(eventId));
         if (!db.isFirstIn(eventId)) {
             showFirstDialogEvent();
         }
 
+        //getAPIVerivyUser();
+
+        mAuth = FirebaseAuth.getInstance();
+
         initActionBar();
         initTablayoutViewpager();
 
-        HomeWatcher mHomeWatcher = new HomeWatcher(this);
         mHomeWatcher.setOnHomePressedListener(new HomeWatcher.OnHomePressedListener() {
             @Override
             public void onHomePressed() {
                 Log.d("Lihat", "onHomePressed BaseHomeActivity : " + "home");
-                makeNotifyApps();
+                setNotif();
             }
+
             @Override
             public void onHomeLongPressed() {
             }
         });
         mHomeWatcher.startWatch();
+    }
+
+    private void initActionBar() {
+        setSupportActionBar(toolbar);
+        ab = getSupportActionBar();
+        ab.setTitle(titleTab[0]);
+    }
+
+    private void initTablayoutViewpager() {
+        int tabIconColorSelect = ContextCompat.getColor(this, R.color.colorPrimary);
+        int tabIconColorUnSelect = ContextCompat.getColor(this, R.color.grey);
+        for (int i = 0; i < titleTab.length; i++) {
+            tabLayout.addTab(tabLayout.newTab().setIcon(iconTab[i]));
+            if (i == 0) {
+                tabLayout.getTabAt(i).getIcon().setColorFilter(tabIconColorSelect, PorterDuff.Mode.SRC_IN);
+            } else {
+                tabLayout.getTabAt(i).getIcon().setColorFilter(tabIconColorUnSelect, PorterDuff.Mode.SRC_IN);
+            }
+        }
+        /*tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.ic_tab_home));
+        tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.ic_tab_wallet));
+        tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.ic_tab_schedule));
+        tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.ic_tab_about));
+        tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.ic_tab_info));
+        tabLayout.getTabAt(0).getIcon().setColorFilter(tabIconColorSelect, PorterDuff.Mode.SRC_IN);
+        tabLayout.getTabAt(1).getIcon().setColorFilter(tabIconColorUnSelect, PorterDuff.Mode.SRC_IN);
+        tabLayout.getTabAt(2).getIcon().setColorFilter(tabIconColorUnSelect, PorterDuff.Mode.SRC_IN);
+        tabLayout.getTabAt(3).getIcon().setColorFilter(tabIconColorUnSelect, PorterDuff.Mode.SRC_IN);
+        tabLayout.getTabAt(4).getIcon().setColorFilter(tabIconColorUnSelect, PorterDuff.Mode.SRC_IN);*/
+        tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
+
+        mPagerAdapter = new SlidePagerAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
+        mPager.setAdapter(mPagerAdapter);
+        mPager.setOffscreenPageLimit(4);
+        mPager.setCurrentItem(0);
     }
 
     private void initListener() {
@@ -210,67 +285,170 @@ public class BaseHomeActivity extends AppCompatActivity {
                 });
     }
 
-    private void initActionBar() {
-        setSupportActionBar(toolbar);
-        ab = getSupportActionBar();
-        ab.setTitle(titleTab[0]);
+    private void clearNotif() {
+        NotifUtil.clearNotification(this, ISeasonConfig.ID_NOTIF_OUTAPP);
     }
 
-    private void initTablayoutViewpager() {
-        int tabIconColorSelect = ContextCompat.getColor(this, R.color.colorPrimary);
-        int tabIconColorUnSelect = ContextCompat.getColor(this, R.color.grey);
-        for (int i = 0; i < titleTab.length; i++) {
-            tabLayout.addTab(tabLayout.newTab().setIcon(iconTab[i]));
-            if (i == 0) {
-                tabLayout.getTabAt(i).getIcon().setColorFilter(tabIconColorSelect, PorterDuff.Mode.SRC_IN);
-            } else {
-                tabLayout.getTabAt(i).getIcon().setColorFilter(tabIconColorUnSelect, PorterDuff.Mode.SRC_IN);
-            }
-        }
-        /*tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.ic_tab_home));
-        tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.ic_tab_wallet));
-        tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.ic_tab_schedule));
-        tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.ic_tab_about));
-        tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.ic_tab_info));
-        tabLayout.getTabAt(0).getIcon().setColorFilter(tabIconColorSelect, PorterDuff.Mode.SRC_IN);
-        tabLayout.getTabAt(1).getIcon().setColorFilter(tabIconColorUnSelect, PorterDuff.Mode.SRC_IN);
-        tabLayout.getTabAt(2).getIcon().setColorFilter(tabIconColorUnSelect, PorterDuff.Mode.SRC_IN);
-        tabLayout.getTabAt(3).getIcon().setColorFilter(tabIconColorUnSelect, PorterDuff.Mode.SRC_IN);
-        tabLayout.getTabAt(4).getIcon().setColorFilter(tabIconColorUnSelect, PorterDuff.Mode.SRC_IN);*/
-        tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
+    private void getAPIVerivyUser() {
+        VerificationStatusLoginAppUserRequestModel requestModel = new VerificationStatusLoginAppUserRequestModel();
+        requestModel.setAccount_id(accountId);
+        requestModel.setDevice_app(DeviceDetailUtil.getAllDataPhone2(BaseHomeActivity.this));
+        requestModel.setDbver(String.valueOf(IConfig.DB_Version));
 
-        mPagerAdapter = new SlidePagerAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
-        mPager.setAdapter(mPagerAdapter);
-        mPager.setOffscreenPageLimit(4);
-        mPager.setCurrentItem(0);
+        API.doVerificationStatusLoginAppUserRet(requestModel).enqueue(new Callback<List<VerificationStatusLoginAppUserResponseModel>>() {
+            @Override
+            public void onResponse(Call<List<VerificationStatusLoginAppUserResponseModel>> call, Response<List<VerificationStatusLoginAppUserResponseModel>> response) {
+                //progressDialog.dismiss();
+                if (response.isSuccessful()) {
+                    List<VerificationStatusLoginAppUserResponseModel> model = response.body();
+                    if (model.size() == 0) {
+                        new AlertDialog.Builder(BaseHomeActivity.this)
+                                .setTitle("Informasi")
+                                .setMessage("Akun anda digunakan oleh perangkat lain, anda akan logout otomatis.")
+                                .setCancelable(false)
+                                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        AppUtil.signOutFull(BaseHomeActivity.this, db, false);
+                                    }
+                                })
+                                .show();
+                    }
+                } else {
+                    Log.d("Lihat", "onFailure BaseHomeActivity : " + response.message());
+                    //Crashlytics.logException(new Exception(response.message()));
+                    Snackbar.make(findViewById(android.R.id.content), "Failed Connection To Server", Snackbar.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<VerificationStatusLoginAppUserResponseModel>> call, Throwable t) {
+                //progressDialog.dismiss();
+                //Crashlytics.logException(new Exception(t.getMessage()));
+                Log.d("Lihat", "onFailure BaseHomeActivity : " + t.getMessage());
+                Snackbar.make(findViewById(android.R.id.content), "Failed Connection To Server", Snackbar.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void dialogSignOut() {
+        new AlertDialog.Builder(BaseHomeActivity.this)
+                .setTitle("Confirmation")
+                .setMessage("Akun anda di gunakan oleh perangkat lain")
+                .setCancelable(false)
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        //code here
+                        AppUtil.signOutFull(BaseHomeActivity.this, db, false);
+                    }
+                })
+                .show();
+    }
+
+    private void setNotif() {
+        UserListEventResponseModel oneListEvent = db.getOneListEvent(eventId);
+        String title = oneListEvent.getTitle();
+        String date = oneListEvent.getDate();
+
+        Intent intent = new Intent(this, BaseHomeActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, ID_NOTIF, intent, PendingIntent.FLAG_ONE_SHOT);
+
+        NotifUtil.setNotification(this, "Openguide", title + " , " + date, R.drawable.ic_love_fill, R.mipmap.ic_launcher, true, pendingIntent, ISeasonConfig.ID_NOTIF_OUTAPP);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        /*if (checkNotif() > 0) {
+        /*MenuInflater inflater = getMenuInflater();
+         *//*if (checkNotif() > 0) {
             inflater.inflate(R.menu.menu_main2, menu);
         } else {
             inflater.inflate(R.menu.menu_main, menu);
-        }*/
-        inflater.inflate(R.menu.menu_main, menu);
+        }*//*
+        inflater.inflate(R.menu.menu_main, menu);*/
+
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+
+        final MenuItem menuItem = menu.findItem(R.id.action_settings);
+
+        //View actionView = MenuItemCompat.getActionView(menuItem);
+        View actionView = menuItem.getActionView();
+        textCartItemCount = (TextView) actionView.findViewById(R.id.cart_badge);
+        textCartItemCount.setText("");
+
+        setupBadge();
+
+        actionView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onOptionsItemSelected(menuItem);
+            }
+        });
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        String title = "Notification";
-        Intent intent = new Intent(this, cInboxActivity.class);
-        intent.putExtra("TITLE", title);
-        startActivity(intent);
+        switch (item.getItemId()) {
+            case R.id.action_settings: {
+                String title = "Inbox";
+                Intent intent = new Intent(this, cInboxActivity.class);
+                intent.putExtra("TITLE", title);
+                startActivityForResult(intent, REQ_CODE_INBOX);
+            }
+        }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void setupBadge() {
+
+        ArrayList<EventCommitteeNote> commiteNote = db.getCommiteNote(eventId);
+        int noteIsOpen = db.getCommiteHasBeenOpened(eventId);
+        if (commiteNote.size() != 0) {
+            if (commiteNote.size() == noteIsOpen) {
+                textCartItemCount.setVisibility(View.GONE);
+            } else {
+                textCartItemCount.setVisibility(View.VISIBLE);
+            }
+        } else {
+            textCartItemCount.setVisibility(View.GONE);
+        }
+
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (REQ_CODE_INBOX == requestCode && resultCode == RESULT_OK) {
+            recreate();
+        }
+    }
+
+    private static boolean isNotificationVisible(Context context) {
+        Intent notificationIntent = new Intent(context, context.getClass());
+        PendingIntent test = PendingIntent.getActivity(context, ISeasonConfig.ID_NOTIF_OUTAPP, notificationIntent, PendingIntent.FLAG_NO_CREATE);
+        return test != null;
+    }
+
+    public static void outEvent(Activity activity, Class<?> targetClass, NotificationManager notificationManager) {
+        Intent intent9 = new Intent(activity, targetClass);
+        activity.startActivity(intent9);
+        activity.finish();
+        SessionUtil.deleteKeyPreferences(ISeasonConfig.KEY_EVENT_ID);
+
+        if (isNotificationVisible(activity)) {
+            notificationManager.cancel(ID_NOTIF);
+        }
+
+        activity.stopService(new Intent(activity, MyService.class));
     }
 
     @Override
     public void onBackPressed() {
         if (doubleBackToExitPressedOnce) {
             finish();
-            makeNotifyApps();
+            setNotif();
         }
         this.doubleBackToExitPressedOnce = true;
         Toast.makeText(this, "Tekan sekali lagi untuk keluar", Toast.LENGTH_SHORT).show();
@@ -284,35 +462,9 @@ public class BaseHomeActivity extends AppCompatActivity {
         }, 2000);
     }
 
-    /*@Override
-    public void onBackPressed() {
-
-    }*/
-
-    private boolean isNotificationVisible() {
-        Intent notificationIntent = new Intent(this, BaseHomeActivity.class);
-        PendingIntent test = PendingIntent.getActivity(this, ID_NOTIF, notificationIntent, PendingIntent.FLAG_NO_CREATE);
-        return test != null;
-    }
-
-    private void makeNotifyApps() {
-        UserListEventResponseModel oneListEvent = db.getOneListEvent(eventId);
-        String title = oneListEvent.getTitle();
-        String date = oneListEvent.getDate();
-
-        Intent intent = new Intent(this, BaseHomeActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, ID_NOTIF, intent, PendingIntent.FLAG_ONE_SHOT);
-
-        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
-                .setContentTitle("Openguides")
-                .setContentText(title + " , " + date)
-                .setSmallIcon(R.drawable.ic_love_fill)
-                .setLargeIcon(BitmapFactory.decodeResource(this.getResources(), R.mipmap.ic_launcher))
-                .setAutoCancel(true)
-                .setOngoing(true)
-                .setContentIntent(pendingIntent);
-
-        notificationManager.notify(ID_NOTIF, notificationBuilder.build());
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mHomeWatcher.stopWatch();
     }
 }

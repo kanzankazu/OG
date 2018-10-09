@@ -48,6 +48,7 @@ import com.gandsoft.openguide.API.APIresponse.UserUpdate.UserUpdateResponseModel
 import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
 import com.gandsoft.openguide.database.SQLiteHelper;
+import com.gandsoft.openguide.support.AppUtil;
 import com.gandsoft.openguide.support.PictureUtil;
 import com.gandsoft.openguide.support.SessionUtil;
 import com.google.firebase.auth.FirebaseAuth;
@@ -78,24 +79,39 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
     private ImageView ivWrapPicfvbi;
 
     private boolean isNewUser = false;
-    private String accountId,eventId;
+    private String accountId, eventId;
     private String base64pic = "";
 
     private Spinner mySpinner;
     private Calendar myCalendar;
 
     private Uri imageUri;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_account);
 
-        initCheck();
-        initPermission();
+        initSession();
 
-        initComponent();
-        initContent();
-        initListener();
+        if (db.doesDatabaseExist(this, SQLiteHelper.DB_NM)) {
+            initPermission();
+            initComponent();
+            initContent();
+            initListener();
+        } else {
+            AppUtil.signOutFull(AccountActivity.this, db, false);
+        }
+
+    }
+
+    private void initSession() {
+        if (SessionUtil.checkIfExist(ISeasonConfig.KEY_ACCOUNT_ID)) {
+            accountId = SessionUtil.getStringPreferences(ISeasonConfig.KEY_ACCOUNT_ID, null);
+        }
+        if (SessionUtil.checkIfExist(ISeasonConfig.KEY_EVENT_ID)) {
+            eventId = SessionUtil.getStringPreferences(ISeasonConfig.KEY_EVENT_ID, null);
+        }
     }
 
     private void initPermission() {
@@ -112,15 +128,6 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
                         Manifest.permission.READ_EXTERNAL_STORAGE};
                 ActivityCompat.requestPermissions(AccountActivity.this, perm, RP_ACCESS);
             }
-        }
-    }
-
-    private void initCheck() {
-        if (SessionUtil.checkIfExist(ISeasonConfig.KEY_ACCOUNT_ID)) {
-            accountId = SessionUtil.getStringPreferences(ISeasonConfig.KEY_ACCOUNT_ID, null);
-        }
-        if (SessionUtil.checkIfExist(ISeasonConfig.KEY_EVENT_ID)) {
-            eventId = SessionUtil.getStringPreferences(ISeasonConfig.KEY_EVENT_ID, null);
         }
     }
 
@@ -182,21 +189,21 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
 
     private void initListener() {
         llAccPicfvbi.setOnClickListener(new View.OnClickListener() {
-                public void onClick(View v){
-                    ContentValues values = new ContentValues();
-                    values.put(MediaStore.Images.Media.TITLE, "New Picture");
-                    values.put(MediaStore.Images.Media.DESCRIPTION, "From your Camera");
-                    imageUri = getContentResolver().insert(
-                            MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
-                    Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                    intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
-                        intent.putExtra("android.intent.extras.LENS_FACING_FRONT", 1);
-                    } else {
-                        intent.putExtra("android.intent.extras.CAMERA_FACING", 1);
-                    }
-                    startActivityForResult(intent, 5);
+            public void onClick(View v) {
+                ContentValues values = new ContentValues();
+                values.put(MediaStore.Images.Media.TITLE, "New Picture");
+                values.put(MediaStore.Images.Media.DESCRIPTION, "From your Camera");
+                imageUri = getContentResolver().insert(
+                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+                    intent.putExtra("android.intent.extras.LENS_FACING_FRONT", 1);
+                } else {
+                    intent.putExtra("android.intent.extras.CAMERA_FACING", 1);
                 }
+                startActivityForResult(intent, 5);
+            }
         });
 
         DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
@@ -258,37 +265,33 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
         }
     }
 
-    private void signOut() {
-        // Munculkan alert dialog apabila user ingin keluar aplikasi
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
-        alertDialogBuilder.setMessage("ARE YOU SURE WANNA SIGN-OUT?");
-        alertDialogBuilder.setCancelable(false);
-        alertDialogBuilder.setPositiveButton("YES",
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface arg0, int arg1) {
-                        mAuth.signOut();
-                        Snackbar.make(findViewById(android.R.id.content), "Success Sign Out", Snackbar.LENGTH_SHORT).show();
-                        startActivity(new Intent(AccountActivity.this, LoginActivity.class));
-                        finishAffinity();
-                        SessionUtil.setBoolPreferences(ISeasonConfig.KEY_IS_HAS_LOGIN, false);
-                        SessionUtil.deleteKeyPreferences(ISeasonConfig.KEY_ACCOUNT_ID);
-                        db.deleteAllDataUser();
-                        db.deleteAllDataListEvent();
-                        db.deleteAllDataWallet();
-                    }
-                });
-        // Pilihan jika NO
-        alertDialogBuilder.setNegativeButton("CANCEL",
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface arg0, int arg1) {
+    private void signOut(boolean isDialog) {
+        if (isDialog) {
+// Munculkan alert dialog apabila user ingin keluar aplikasi
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+            alertDialogBuilder.setMessage("ARE YOU SURE WANNA SIGN-OUT?");
+            alertDialogBuilder.setCancelable(false);
+            alertDialogBuilder.setPositiveButton("YES",
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface arg0, int arg1) {
+                            AppUtil.signOutFull(AccountActivity.this, db, false);
+                        }
+                    });
+            // Pilihan jika NO
+            alertDialogBuilder.setNegativeButton("CANCEL",
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface arg0, int arg1) {
 
-                    }
-                });
-        // Tampilkan alert dialog
-        AlertDialog alertDialog = alertDialogBuilder.create();
-        alertDialog.show();
+                        }
+                    });
+            // Tampilkan alert dialog
+            AlertDialog alertDialog = alertDialogBuilder.create();
+            alertDialog.show();
+        } else {
+            AppUtil.signOutFull(AccountActivity.this, db, false);
+        }
 
     }
 
@@ -329,7 +332,7 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
         if (isNewUser) {
             moveToChangeEvent();
         } else {
-            signOut();
+            signOut(true);
         }
     }
 
@@ -363,7 +366,6 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
         requestModel.setDate(tvAccTglfvbi.getText().toString());
         requestModel.setMonth(tvAccBulanfvbi.getText().toString());
         requestModel.setYear(tvAccTahunfvbi.getText().toString());
-
 
         ProgressDialog progressDialog = new ProgressDialog(this);
         progressDialog.setCancelable(false);
@@ -455,15 +457,14 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
         }
     }
 
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 5 && resultCode == Activity.RESULT_OK) {
-            String imageurl = PictureUtil.getPathFromUri(imageUri,this);
+            String imageurl = PictureUtil.getPathFromUri(imageUri, this);
 
-            Log.d("image uri ",imageurl);
-            Log.d("string val from file",String.valueOf(new File(imageurl)));
+            Log.d("image uri ", imageurl);
+            Log.d("string val from file", String.valueOf(new File(imageurl)));
 
             Glide.with(this)
                     .load(R.drawable.loading)
@@ -479,12 +480,11 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
                         public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
                             Bitmap resizeImage = PictureUtil.resizeImageBitmap(resource, 1080);
                             ivWrapPicfvbi.setImageBitmap(resizeImage);
-                            base64pic = PictureUtil.bitmapToBase64(resizeImage, Bitmap.CompressFormat.JPEG,100);
+                            base64pic = PictureUtil.bitmapToBase64(resizeImage, Bitmap.CompressFormat.JPEG, 100);
                         }
                     })
             ;
-        }
-        else{
+        } else {
             finish();
         }
     }

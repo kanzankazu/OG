@@ -225,7 +225,7 @@ public class aHomePostCommentActivity extends AppCompatActivity {
                                 nsvCommentfvbi.setNestedScrollingEnabled(false);
                                 callGetCommentListMore();
                             }
-                        }, 1000);
+                        }, 500);
 
                     } else {
                         Snackbar.make(findViewById(android.R.id.content), "Sudah tidak ada data", Snackbar.LENGTH_SHORT).show();

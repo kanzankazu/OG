@@ -95,14 +95,6 @@ public class ScheduleRecycleviewAdapter extends RecyclerView.Adapter<ScheduleRec
             }
         });
 
-        if (position == getItemCount() - 1) {
-            holder.vRvSchedulelinefvbi.setVisibility(View.GONE);
-            holder.ivRvScheduleIndicatorfvbi.setBackgroundResource(R.color.colorPrimary);
-        } else {
-            holder.vRvSchedulelinefvbi.setVisibility(View.VISIBLE);
-            holder.ivRvScheduleIndicatorfvbi.setBackgroundResource(R.color.colorAccent);
-        }
-
         if (DateTimeUtil.isToday(DateTimeUtil.stringToDate(model.getDate(), new SimpleDateFormat("EEEE dd MMMM yyyy")))) {
             if (model.getWaktu().contains("-")) {
                 String[] split = model.getWaktu().split("-");
@@ -113,6 +105,14 @@ public class ScheduleRecycleviewAdapter extends RecyclerView.Adapter<ScheduleRec
             }
         } else {
             holder.tvRvScheduleTimefvbi.setTextColor(context.getResources().getColor(R.color.colorPrimary));
+            holder.ivRvScheduleIndicatorfvbi.setBackgroundResource(R.color.colorAccent);
+        }
+
+        if (position == getItemCount() - 1) {
+            holder.vRvSchedulelinefvbi.setVisibility(View.GONE);
+            holder.ivRvScheduleIndicatorfvbi.setBackgroundResource(R.color.colorPrimary);
+        } else {
+            holder.vRvSchedulelinefvbi.setVisibility(View.VISIBLE);
             holder.ivRvScheduleIndicatorfvbi.setBackgroundResource(R.color.colorAccent);
         }
 

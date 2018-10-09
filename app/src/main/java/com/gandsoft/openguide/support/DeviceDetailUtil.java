@@ -226,7 +226,7 @@ public class DeviceDetailUtil {
     }
 
     public static String getAllDataPhone2(Context context) {
-        String detailDevice = Build.MANUFACTURER + " " + Build.MODEL + " " + getDeviceId(context) + "." + Build.SERIAL;
+        String detailDevice = "Android " + Build.MANUFACTURER + " " + Build.MODEL    + " " + getDeviceId(context) /*+ "." + Build.SERIAL*/;
         return detailDevice;
     }
 

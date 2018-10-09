@@ -1,5 +1,8 @@
 package com.gandsoft.openguide.activity.main.fragments;
 
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -27,6 +30,7 @@ import com.gandsoft.openguide.activity.infomenu.fPracticalInfoActivity;
 import com.gandsoft.openguide.activity.infomenu.gSurroundingAreaActivity;
 import com.gandsoft.openguide.activity.infomenu.gallery2.GalleryActivity;
 import com.gandsoft.openguide.activity.infomenu.hFeedbackActivity;
+import com.gandsoft.openguide.activity.main.BaseHomeActivity;
 import com.gandsoft.openguide.activity.main.adapter.InfoListViewAdapter;
 import com.gandsoft.openguide.activity.main.adapter.InfoListviewModel;
 import com.gandsoft.openguide.database.SQLiteHelper;
@@ -35,10 +39,12 @@ import com.gandsoft.openguide.support.SessionUtil;
 
 import java.util.ArrayList;
 import java.util.List;
-
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class eInfoFragment extends Fragment implements InfoListViewAdapter.ListAdapterListener {
     private static final int REQ_CODE_INBOX = 123;
+    private static final int ID_NOTIF = 0;
     private RecyclerView rvMenufvbi;
     private ImageView ivInfoUserImagefvbi;
     private TextView tvInfoFullNamefvbi, tvInfoUserNamefvbi, tvInfoUserPhoneNumberfvbi;
@@ -72,7 +78,7 @@ public class eInfoFragment extends Fragment implements InfoListViewAdapter.ListA
             R.drawable.ic_option_event_change
     };
     private List<InfoListviewModel> listviewModels = new ArrayList<>();
-
+    private NotificationManager notificationManager;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -82,6 +88,8 @@ public class eInfoFragment extends Fragment implements InfoListViewAdapter.ListA
 
         accountId = SessionUtil.getStringPreferences(ISeasonConfig.KEY_ACCOUNT_ID, null);
         eventId = SessionUtil.getStringPreferences(ISeasonConfig.KEY_EVENT_ID, null);
+
+        notificationManager = (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
 
         initComponent(view);
         initContent();
@@ -156,7 +164,6 @@ public class eInfoFragment extends Fragment implements InfoListViewAdapter.ListA
                         .skipMemoryCache(true)
                         .into(ivInfoUserImagefvbi);
 
-
             }
         }
     }
@@ -190,16 +197,14 @@ public class eInfoFragment extends Fragment implements InfoListViewAdapter.ListA
             Intent intent8 = new Intent(getActivity(), hFeedbackActivity.class);
             getActivity().startActivity(intent8);
         } else if (s.equalsIgnoreCase("Change Event")) {
-            Intent intent9 = new Intent(getActivity(), ChangeEventActivity.class);
-            getActivity().startActivity(intent9);
-            getActivity().finish();
-            SessionUtil.deleteKeyPreferences(ISeasonConfig.KEY_EVENT_ID);
+            BaseHomeActivity.outEvent(getActivity(), ChangeEventActivity.class, notificationManager);
         }
     }
 
-    @Override
-    public void onStop() {
-        super.onStop();
+    private boolean isNotificationVisible() {
+        Intent notificationIntent = new Intent(getActivity(), BaseHomeActivity.class);
+        PendingIntent test = PendingIntent.getActivity(getActivity(), ID_NOTIF, notificationIntent, PendingIntent.FLAG_NO_CREATE);
+        return test != null;
     }
 
     @Override

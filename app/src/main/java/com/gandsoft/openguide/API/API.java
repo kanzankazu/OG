@@ -12,8 +12,10 @@ import com.gandsoft.openguide.API.APIrequest.HomeContent.HomeContentPostImageCap
 import com.gandsoft.openguide.API.APIrequest.HomeContent.HomeContentPostLikeRequestModel;
 import com.gandsoft.openguide.API.APIrequest.HomeContent.HomeContentRequestModel;
 import com.gandsoft.openguide.API.APIrequest.Login.LoginRequestModel;
+import com.gandsoft.openguide.API.APIrequest.PostFeedbackTheEventRequestModel;
 import com.gandsoft.openguide.API.APIrequest.UserData.UserDataRequestModel;
 import com.gandsoft.openguide.API.APIrequest.UserUpdate.UserUpdateRequestModel;
+import com.gandsoft.openguide.API.APIrequest.VerificationStatusLoginAppUserRequestModel;
 import com.gandsoft.openguide.API.APIresponse.Event.EventDataResponseModel;
 import com.gandsoft.openguide.API.APIresponse.Gallery.GalleryResponseModel;
 import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentPostCaptionDeleteResponseModel;
@@ -23,8 +25,10 @@ import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentPostComment
 import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentResponseModel;
 import com.gandsoft.openguide.API.APIresponse.LocalBaseResponseModel;
 import com.gandsoft.openguide.API.APIresponse.Login.LoginResponseModel;
+import com.gandsoft.openguide.API.APIresponse.PostFeedbackTheEventResponseModel;
 import com.gandsoft.openguide.API.APIresponse.UserData.UserDataResponseModel;
 import com.gandsoft.openguide.API.APIresponse.UserUpdate.UserUpdateResponseModel;
+import com.gandsoft.openguide.API.APIresponse.VerificationStatusLoginAppUserResponseModel;
 import com.gandsoft.openguide.IConfig;
 
 import java.util.List;
@@ -94,5 +98,11 @@ public class API {
         return getAPIService().homeContentPostCommentGetRet(requestModel);
     }
 
+    public static Call<List<VerificationStatusLoginAppUserResponseModel>> doVerificationStatusLoginAppUserRet(VerificationStatusLoginAppUserRequestModel requestModel) {
+        return getAPIService().verificationStatusLoginAppUserRet(requestModel);
+    }
 
+    public static Call<List<PostFeedbackTheEventResponseModel>> doPostFeedbackTheEventRet(PostFeedbackTheEventRequestModel requestModel) {
+        return getAPIService().postFeedbackTheEventRet(requestModel);
+    }
 }

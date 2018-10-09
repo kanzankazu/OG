@@ -27,9 +27,10 @@ import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
 import com.gandsoft.openguide.database.SQLiteHelper;
 import com.gandsoft.openguide.support.DeviceDetailUtil;
+import com.gandsoft.openguide.support.InputValidUtil;
+import com.gandsoft.openguide.support.NetworkUtil;
 import com.gandsoft.openguide.support.SessionUtil;
 import com.gandsoft.openguide.support.SystemUtil;
-import com.gandsoft.openguide.support.ValidUtil;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseException;
@@ -154,7 +155,7 @@ public class LoginActivity extends LocalBaseActivity {
                 if (e instanceof FirebaseAuthInvalidCredentialsException) {
                     etLoginfvbi.setError("Invalid phone number, please check your number");
                 } else if (e instanceof FirebaseTooManyRequestsException) {
-                    snackBar("Quota exceeded.", false); // The SMS quota for the project has been exceeded
+                    snackBar("Quota exceeded, Please try again tommorow.", false); // The SMS quota for the project has been exceeded
                 }
 
                 updateUI(UI_LOGIN, null);
@@ -196,6 +197,7 @@ public class LoginActivity extends LocalBaseActivity {
             @Override
             public void onClick(View view) {
                 resendVerificationCode(phoneNumberSavedwPlus, mResendToken);
+                snackBar("Resend Code", false);
             }
         });
 
@@ -211,9 +213,14 @@ public class LoginActivity extends LocalBaseActivity {
         tvLoginAppVersionfvbi.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (!ValidUtil.isEmptyField(etLoginfvbi)) {
-                    SessionUtil.setStringPreferences(ISeasonConfig.KEY_ACCOUNT_ID, getNumberValid(etLoginfvbi));
-                    moveToChangeEvent();
+                if (!InputValidUtil.isEmptyField(etLoginfvbi)) {
+                    //SessionUtil.setStringPreferences(ISeasonConfig.KEY_ACCOUNT_ID, getNumberValid(etLoginfvbi));
+                    //moveToChangeEvent();
+                    if (NetworkUtil.isConnectedIsOnline(LoginActivity.this)) {
+                        phoneNumberSavedwPlus = "+" + getNumberValid(etLoginfvbi);
+                        phoneNumberSavedwoPlus = getNumberValid(etLoginfvbi);
+                        sendLoginData();
+                    }
                 } else {
                     SystemUtil.etReqFocus(LoginActivity.this, etLoginfvbi, "Data Kosong");
                 }
@@ -249,18 +256,20 @@ public class LoginActivity extends LocalBaseActivity {
     }
 
     private void checkData() {
-        if (!ValidUtil.isEmptyField(etLoginfvbi)) {
+        if (!InputValidUtil.isEmptyField(etLoginfvbi)) {
             if (isLogin) {
-                if (ValidUtil.isValidatePhoneNumber(etLoginfvbi.getText().toString())) {
+                if (InputValidUtil.isValidatePhoneNumber(etLoginfvbi.getText().toString())) {
                     //Toast.makeText(getApplicationContext(), getNumberValid(etLoginfvbi), Toast.LENGTH_SHORT).show();
                     startPhoneNumberVerification("+" + getNumberValid(etLoginfvbi));
                     phoneNumberSavedwPlus = "+" + getNumberValid(etLoginfvbi);
                     phoneNumberSavedwoPlus = getNumberValid(etLoginfvbi);
+                    snackBar("Start Verify Phone Number", false);
                 } else {
                     SystemUtil.etReqFocus(LoginActivity.this, etLoginfvbi, "Data Tidak Valid");
                 }
             } else if (isVerify) {
                 verifyPhoneNumberWithCode(mVerificationId, etLoginfvbi.getText().toString());
+                snackBar("Start Verify Phone Number", false);
             }
         } else {
             SystemUtil.etReqFocus(LoginActivity.this, etLoginfvbi, "Data Kosong");
@@ -375,7 +384,8 @@ public class LoginActivity extends LocalBaseActivity {
     @SuppressLint("NewApi")
     private void moveToAccountForNewUser() {
         SessionUtil.setBoolPreferences(ISeasonConfig.KEY_IS_HAS_LOGIN, true);
-        startActivity(AccountActivity.getActIntent(LoginActivity.this)
+        startActivity(AccountActivity
+                .getActIntent(LoginActivity.this)
                 .putExtra(ISeasonConfig.KEY_IS_FIRST_ACCOUNT, true)
         );
         finish();

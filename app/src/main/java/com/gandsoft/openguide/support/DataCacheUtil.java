@@ -19,6 +19,14 @@ public class DataCacheUtil {
         }
     }
 
+    public static void clearCache(Context context) {
+        try {
+            File dir = context.getCacheDir();
+            deleteDir(dir);
+        } catch (Exception e) {
+        }
+    }
+
     private static boolean deleteFile(File file) {
         boolean deletedAll = true;
         if (file != null) {
@@ -33,14 +41,6 @@ public class DataCacheUtil {
         }
 
         return deletedAll;
-    }
-
-    public static void clearCache(Context context) {
-        try {
-            File dir = context.getCacheDir();
-            deleteDir(dir);
-        } catch (Exception e) {
-        }
     }
 
     private static boolean deleteDir(File dir) {

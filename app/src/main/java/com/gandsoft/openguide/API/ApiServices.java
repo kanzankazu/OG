@@ -14,6 +14,8 @@ import com.gandsoft.openguide.API.APIrequest.HomeContent.HomeContentRequestModel
 import com.gandsoft.openguide.API.APIrequest.Login.LoginRequestModel;
 import com.gandsoft.openguide.API.APIrequest.UserData.UserDataRequestModel;
 import com.gandsoft.openguide.API.APIrequest.UserUpdate.UserUpdateRequestModel;
+import com.gandsoft.openguide.API.APIrequest.PostFeedbackTheEventRequestModel;
+import com.gandsoft.openguide.API.APIrequest.VerificationStatusLoginAppUserRequestModel;
 import com.gandsoft.openguide.API.APIresponse.Event.EventDataResponseModel;
 import com.gandsoft.openguide.API.APIresponse.Gallery.GalleryResponseModel;
 import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentPostCaptionDeleteResponseModel;
@@ -25,6 +27,8 @@ import com.gandsoft.openguide.API.APIresponse.LocalBaseResponseModel;
 import com.gandsoft.openguide.API.APIresponse.Login.LoginResponseModel;
 import com.gandsoft.openguide.API.APIresponse.UserData.UserDataResponseModel;
 import com.gandsoft.openguide.API.APIresponse.UserUpdate.UserUpdateResponseModel;
+import com.gandsoft.openguide.API.APIresponse.PostFeedbackTheEventResponseModel;
+import com.gandsoft.openguide.API.APIresponse.VerificationStatusLoginAppUserResponseModel;
 
 import java.util.List;
 
@@ -88,5 +92,12 @@ public interface ApiServices {
 
     @POST("get_posted_comment_list")
     Call<List<HomeContentPostCommentGetResponseModel>> homeContentPostCommentGetRet(@Body HomeContentPostCommentGetRequestModel model);
+
+    @POST("verification_statuslogin_appusers")
+    Call<List<VerificationStatusLoginAppUserResponseModel>> verificationStatusLoginAppUserRet(@Body VerificationStatusLoginAppUserRequestModel model);
+
+    @POST("post_feedback_the_event")
+    Call<List<PostFeedbackTheEventResponseModel>> postFeedbackTheEventRet(@Body PostFeedbackTheEventRequestModel model);
+
 
 }

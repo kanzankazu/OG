@@ -23,14 +23,15 @@ import com.gandsoft.openguide.API.APIresponse.UserData.UserDataResponseModel;
 import com.gandsoft.openguide.API.APIresponse.UserData.UserListEventResponseModel;
 import com.gandsoft.openguide.API.APIresponse.UserData.UserWalletDataResponseModel;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class SQLiteHelper extends SQLiteOpenHelper {
     // Databases information
-    private static final String DB_NM = "openguides.db";
-    private static final int DB_VER = 2;
+    public static final String DB_NM = "openguides.db";
+    public static final int DB_VER = 3;
 
     public static String TableGlobalData = "tabGlobalData";
     public static String KEY_GlobalData_dbver = "dbver";
@@ -297,6 +298,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     public static String KEY_UserData_email = "email";
     public static String KEY_UserData_gender = "gender";
     public static String KEY_UserData_fullName = "fullName";
+    public static String KEY_UserData_isStillIn = "isStillIn";
     private static final String query_add_table_UserData = "CREATE TABLE IF NOT EXISTS " + TableUserData + "("
             + KEY_UserData_No + " INTEGER PRIMARY KEY AUTOINCREMENT, "
             + KEY_UserData_accountId + " TEXT, "
@@ -312,7 +314,8 @@ public class SQLiteHelper extends SQLiteOpenHelper {
             + KEY_UserData_phoneNumber + " TEXT, "
             + KEY_UserData_email + " TEXT, "
             + KEY_UserData_gender + " TEXT, "
-            + KEY_UserData_fullName + " TEXT) ";
+            + KEY_UserData_fullName + " TEXT, "
+            + KEY_UserData_isStillIn + " INTEGER) ";
     private static final String query_delete_table_UserData = "DROP TABLE IF EXISTS " + TableUserData;
 
     public void saveUserData(UserDataResponseModel model) {
@@ -359,7 +362,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     public ArrayList<UserDataResponseModel> getUserData(String accountid) {
         ArrayList<UserDataResponseModel> modelList = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.query(TableUserData, null, KEY_UserData_accountId + " = ? ", new String[]{accountid}, null, null, null);
+        Cursor cursor = db.query(TableUserData, null, KEY_UserData_accountId + " = ? ", new String[]{accountid}, KEY_UserData_accountId, null, null);
         if (cursor.moveToFirst()) {
             do {
                 UserDataResponseModel model = new UserDataResponseModel();
@@ -387,7 +390,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
 
     public UserDataResponseModel getOneUserData(String accountid) {
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.query(TableUserData, null, KEY_UserData_accountId + " = ? ", new String[]{accountid}, null, null, null);
+        Cursor cursor = db.query(TableUserData, null, KEY_UserData_accountId + " = ? ", new String[]{accountid}, KEY_UserData_accountId, null, null);
         if (cursor != null)
             cursor.moveToFirst();
 
@@ -409,6 +412,30 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         model.setImage_url_local(cursor.getString(cursor.getColumnIndex(KEY_UserData_imageUrl_local)));
         // return model
         return model;
+    }
+
+    public boolean isUserStillIn(String accountid) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(TableUserData, null, KEY_UserData_accountId + " = ? AND " + KEY_UserData_isStillIn + " = 1", new String[]{accountid}, null, null, null);
+        if (cursor.getCount() == 1) {
+            cursor.close();
+            return true;
+        } else {
+            cursor.close();
+            return false;
+        }
+    }
+
+    public void setUserStillIn(String accountid, boolean isStillIn) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        if (isStillIn) {
+            contentValues.put(KEY_UserData_isStillIn, 1);
+        } else {
+            contentValues.put(KEY_UserData_isStillIn, 0);
+        }
+        db.update(TableUserData, contentValues, KEY_UserData_accountId + " = ? ", new String[]{accountid});
+        db.close();
     }
 
     /**/
@@ -672,7 +699,6 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         ContentValues contentValues = new ContentValues();
         contentValues.put(Key_Schedule_List_EventId, eventId);
         contentValues.put(Key_Schedule_List_GroupCode, groupCode);
-        Log.d("Lihat", "saveScheduleList SQLiteHelper : " + groupCode);
         contentValues.put(Key_Schedule_List_date, date);
         contentValues.put(Key_Schedule_List_id, model.getId());
         contentValues.put(Key_Schedule_List_waktu, model.getWaktu());
@@ -735,8 +761,6 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     }
 
     public ArrayList<EventScheduleListDateDataList> getScheduleListPerDate(String param1, String date) {
-        Log.d("Lihat", "getScheduleListPerDate SQLiteHelper group_code: " + param1);
-        Log.d("Lihat", "getScheduleListPerDate SQLiteHelper date: " + date);
         ArrayList<EventScheduleListDateDataList> modelList = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.query(TableScheduleList, null, Key_Schedule_List_GroupCode + " = ? AND " + Key_Schedule_List_date + " = ? ", new String[]{param1, date}, Key_Schedule_List_id, null, Key_Schedule_List_id);
@@ -961,7 +985,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     public ArrayList<EventAbout> getAbout(String eventId) {
         ArrayList<EventAbout> modelList = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.query(TableEventAbout, null, Key_Event_About_EventId + " = ? ", new String[]{eventId}, null, null, null);
+        Cursor cursor = db.query(TableEventAbout, null, Key_Event_About_EventId + " = ? ", new String[]{eventId}, Key_Event_About_EventId, null, null);
 
         if (cursor.moveToFirst()) {
             do {
@@ -1022,7 +1046,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     public ArrayList<EventPlaceList> getPlaceList(String eventId) {
         ArrayList<EventPlaceList> modelList = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.query(TablePlaceList, null, Key_Place_List_EventId + " = ? ", new String[]{eventId}, null, null, Key_Place_List_No);
+        Cursor cursor = db.query(TablePlaceList, null, Key_Place_List_EventId + " = ? ", new String[]{eventId}, Key_Place_List_EventId, null, Key_Place_List_No);
 
         if (cursor.moveToFirst()) {
             do {
@@ -1184,7 +1208,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         contentValues.put(Key_CommiteNote_Title, model.getTitle());
         contentValues.put(Key_CommiteNote_Note, model.getNote());
         contentValues.put(Key_CommiteNote_Tanggal, model.getTanggal());
-        contentValues.put(Key_CommiteNote_Has_been_opened, model.getHas_been_opened());
+        //contentValues.put(Key_CommiteNote_Has_been_opened, model.getHas_been_opened());
         contentValues.put(Key_CommiteNote_Sort_inbox, model.getSort_inbox());
         db.insert(TableCommiteNote, null, contentValues);
         db.close();
@@ -1198,7 +1222,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         contentValues.put(Key_CommiteNote_Title, model.getTitle());
         contentValues.put(Key_CommiteNote_Note, model.getNote());
         contentValues.put(Key_CommiteNote_Tanggal, model.getTanggal());
-        contentValues.put(Key_CommiteNote_Has_been_opened, model.getHas_been_opened());
+        //contentValues.put(Key_CommiteNote_Has_been_opened, model.getHas_been_opened());
         contentValues.put(Key_CommiteNote_Sort_inbox, model.getSort_inbox());
         db.update(TableCommiteNote, contentValues, Key_CommiteNote_EventId + " = ?", new String[]{eventId});
         db.close();
@@ -1207,7 +1231,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     public ArrayList<EventCommitteeNote> getCommiteNote(String eventId) {
         ArrayList<EventCommitteeNote> modelList = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.query(TableCommiteNote, null, Key_CommiteNote_EventId + " = ? ", new String[]{eventId}, Key_CommiteNote_Title, null, Key_CommiteNote_No);
+        Cursor cursor = db.query(TableCommiteNote, null, Key_CommiteNote_EventId + " = ? ", new String[]{eventId}, Key_CommiteNote_Id, null, Key_CommiteNote_No);
 
         if (cursor.moveToFirst()) {
             do {
@@ -1284,7 +1308,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     public ArrayList<EventFeedback> getFeedback(String eventId) {
         ArrayList<EventFeedback> modelList = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.query(TableFeedback, null, Key_Feedback_EventId + " = ? ", new String[]{eventId}, null, null, Key_Feedback_No);
+        Cursor cursor = db.query(TableFeedback, null, Key_Feedback_EventId + " = ? ", new String[]{eventId}, Key_Feedback_EventId, null, Key_Feedback_No);
 
         if (cursor.moveToFirst()) {
             do {
@@ -1521,7 +1545,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
 
     public int getCommiteHasBeenOpened(String eventId) {
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.query(TableCommiteNote, null, Key_CommiteNote_EventId + " = ? AND " + Key_CommiteNote_Has_been_opened + " = 1", new String[]{eventId}, null, null, null);
+        Cursor cursor = db.query(TableCommiteNote, null, Key_CommiteNote_EventId + " = ? AND " + Key_CommiteNote_Has_been_opened + " = 1", new String[]{eventId}, Key_CommiteNote_Id, null, null);
         int total;
         if (cursor.getCount() > 0) {
             total = cursor.getCount();
@@ -1554,7 +1578,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
 
     public int getVersionDataIdUser(String accountId) {
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.query(TableUserData, new String[]{KEY_UserData_versionData}, KEY_UserData_accountId + " = ? ", new String[]{accountId}, null, null, null);
+        Cursor cursor = db.query(TableUserData, new String[]{KEY_UserData_versionData}, KEY_UserData_accountId + " = ? ", new String[]{accountId}, KEY_UserData_accountId, null, null);
         if (cursor.moveToFirst()) {
             return cursor.getInt(cursor.getColumnIndex(KEY_UserData_versionData));
         } else {
@@ -1564,7 +1588,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
 
     public int getVersionDataIdEvent(String eventId) {
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.query(TableTheEvent, new String[]{Key_The_Event_version_data}, Key_The_Event_EventId + " = ? ", new String[]{eventId}, null, null, null);
+        Cursor cursor = db.query(TableTheEvent, new String[]{Key_The_Event_version_data}, Key_The_Event_EventId + " = ? ", new String[]{eventId}, Key_The_Event_EventId, null, null);
         if (cursor.moveToFirst()) {
             return cursor.getInt(cursor.getColumnIndex(Key_The_Event_version_data));
         } else {
@@ -1716,6 +1740,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     }
 
     public void updateOneKey(String table, String keyWhere, String valueWhere, String keyParam, String valueParam) {
+        Log.d("Lihat", "updateOneKey SQLiteHelper : " + keyParam + "," + valueParam);
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(keyParam, valueParam);
@@ -1737,7 +1762,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
 
     public String getFeedbackString(String eventId) {
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.query(TableTheEvent, null, Key_The_Event_EventId + " = ? ", new String[]{eventId}, null, null, null);
+        Cursor cursor = db.query(TableTheEvent, null, Key_The_Event_EventId + " = ? ", new String[]{eventId}, Key_The_Event_EventId, null, null);
 
         cursor.close();
         return cursor.getString(cursor.getColumnIndex(Key_The_Event_feedback));
@@ -1751,7 +1776,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
 
     public boolean isFirstIn(String eventId) {
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.query(TableListEvent, null, KEY_ListEvent_eventId + " = ? AND " + KEY_ListEvent_IsFirstIn + " = 1 ", new String[]{eventId}, null, null, null);
+        Cursor cursor = db.query(TableListEvent, null, KEY_ListEvent_eventId + " = ? AND " + KEY_ListEvent_IsFirstIn + " = 1 ", new String[]{eventId}, KEY_ListEvent_eventId, null, null);
         if (cursor.getCount() > 0) {
             cursor.close();
             return true;
@@ -1776,5 +1801,21 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         contentValues.put(KEY_ListEvent_logo_local, logoCachePath);
         db.update(TableListEvent, contentValues, KEY_ListEvent_eventId + " = ? ", new String[]{model1.getEvent_id()});
         db.close();
+    }
+
+    /*private boolean checkDataBase() {
+        SQLiteDatabase checkDB = null;
+        try {
+            checkDB = SQLiteDatabase.openDatabase(DB_FULL_PATH, null, SQLiteDatabase.OPEN_READONLY);
+            checkDB.close();
+        } catch (SQLiteException e) {
+            // database doesn't exist yet.
+        }
+        return checkDB != null;
+    }*/
+
+    public boolean doesDatabaseExist(Context context, String dbName) {
+        File dbFile = context.getDatabasePath(dbName);
+        return dbFile.exists();
     }
 }

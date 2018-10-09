@@ -1,6 +1,7 @@
 package com.gandsoft.openguide.support;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -9,6 +10,7 @@ import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.provider.Settings;
+import android.support.design.widget.Snackbar;
 import android.telephony.SubscriptionInfo;
 import android.telephony.SubscriptionManager;
 import android.telephony.TelephonyManager;
@@ -19,13 +21,11 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.net.HttpURLConnection;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.NetworkInterface;
 import java.net.Socket;
 import java.net.SocketAddress;
-import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -84,28 +84,12 @@ public class NetworkUtil {
         return false;
     }
 
-    public static boolean isInternetWorking() {
-        boolean success = false;
-        try {
-            URL url = new URL("https://google.com");
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setConnectTimeout(10000);
-            connection.connect();
-            success = connection.getResponseCode() == 200;
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return success;
-    }
-
     public static boolean isOnline1() {
         try {
             Process p1 = Runtime.getRuntime().exec("ping -c 1 www.google.com");
             int returnVal = p1.waitFor();
-            boolean reachable = (returnVal == 0);
-            return reachable;
+            return (returnVal == 0);
         } catch (Exception e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         return false;
@@ -114,12 +98,10 @@ public class NetworkUtil {
     public static boolean isOnline2() {
         Runtime runtime = Runtime.getRuntime();
         try {
-            Process ipProcess = runtime.exec("/system/bin/ping -c 1 8.8.8.8");
-            int exitValue = ipProcess.waitFor();
-            return (exitValue == 0);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
+            Process p1 = runtime.exec("/system/bin/ping -c 1 8.8.8.8");
+            int returnVal = p1.waitFor();
+            return (returnVal == 0);
+        } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
         return false;
@@ -134,6 +116,20 @@ public class NetworkUtil {
             sock.close();
             return true;
         } catch (IOException e) {
+            return false;
+        }
+    }
+
+    public static boolean isConnectedIsOnline(Activity activity) {
+        if (isConnected(activity)) {
+            if (isOnline1()) {
+                return true;
+            } else {
+                Snackbar.make(activity.findViewById(android.R.id.content), "Slow Internet Connection", Snackbar.LENGTH_SHORT).show();
+                return false;
+            }
+        } else {
+            Snackbar.make(activity.findViewById(android.R.id.content), "No Internet Connection", Snackbar.LENGTH_SHORT).show();
             return false;
         }
     }
@@ -404,7 +400,7 @@ public class NetworkUtil {
         return wifiInfo.getState() == NetworkInfo.State.CONNECTED;
     }
 
-    public static void setWifiEnabled(Context context) {
+    /*public static void setWifiEnabled(Context context) {
         try {
             WifiManager wifi = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
 
@@ -434,7 +430,7 @@ public class NetworkUtil {
 
             e.printStackTrace();
         }
-    }
+    }*/
 
     public static boolean isMobileDataEnabled(Context context) {
         ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(CONNECTIVITY_SERVICE);
@@ -899,6 +895,5 @@ public class NetworkUtil {
         }
         return (SubscriptionManager.INVALID_SUBSCRIPTION_ID);
     }
-
 
 }

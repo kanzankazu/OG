@@ -257,7 +257,7 @@ public class aHomeFragment extends Fragment {
                                 homeNSVHomefvbi.setNestedScrollingEnabled(false);
                                 callHomeContentAPILoadMore();
                             }
-                        }, 1000);
+                        }, 500);
 
                     } else {
                         Snackbar.make(getActivity().findViewById(android.R.id.content), "Sudah tidak ada data", Snackbar.LENGTH_LONG).show();

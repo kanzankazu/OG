@@ -7,7 +7,7 @@ import android.widget.EditText;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class ValidUtil {
+public class InputValidUtil {
 
     public static boolean isMatch(String s1, String s2) {
         return s1.equals(s2);
