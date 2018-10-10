@@ -1,8 +1,6 @@
 package com.gandsoft.openguide.activity.main.adapter;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -16,6 +14,7 @@ import com.gandsoft.openguide.API.APIresponse.Event.EventCommitteeNote;
 import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
 import com.gandsoft.openguide.database.SQLiteHelper;
+import com.gandsoft.openguide.support.DateTimeUtil;
 import com.gandsoft.openguide.support.DeviceDetailUtil;
 import com.gandsoft.openguide.support.ListArrayUtil;
 import com.gandsoft.openguide.support.SessionUtil;
@@ -53,7 +52,7 @@ public class InfoListViewAdapter extends RecyclerView.Adapter<InfoListViewAdapte
         if (DeviceDetailUtil.isKitkatBelow()) {
             holder.ivListInfofvbi.setImageResource(model.getPicTitle());
         } else {
-            holder.ivListInfofvbi.setImageDrawable(context.getApplicationContext().getDrawable(model.getPicTitle()));
+            holder.ivListInfofvbi.setImageDrawable(context.getResources().getDrawable(model.getPicTitle()));
         }
         holder.tvListInfofvbi.setText(model.getTitle());
 
@@ -77,16 +76,14 @@ public class InfoListViewAdapter extends RecyclerView.Adapter<InfoListViewAdapte
                             } else {
                                 holder.tvListInfofvbi.setText("Inbox");
                                 //holder.tvListInfofvbi.setText("Inbox (0/0)");
-                                holder.tvListInfofvbi.setTextColor(context.getResources().getColor(R.color.grey));
-                                holder.llListInfofvbi.setEnabled(false);
+                                //holder.tvListInfofvbi.setTextColor(context.getResources().getColor(R.color.grey));
+                                //holder.llListInfofvbi.setEnabled(false);
                             }
                         }
                     }
                 });
             }
-        }, 0, 60000);
-
-
+        }, 0, DateTimeUtil.MINUTE_MILLIS);
 
         holder.llListInfofvbi.setOnClickListener(new View.OnClickListener() {
             @Override

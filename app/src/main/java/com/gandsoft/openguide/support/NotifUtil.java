@@ -1,6 +1,6 @@
 package com.gandsoft.openguide.support;
 
-import android.annotation.TargetApi;
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -25,17 +25,19 @@ public class NotifUtil {
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context)
                 .setContentTitle(title)
                 .setContentText(text)
+                .setContentIntent(pendingIntent)
                 .setSmallIcon(smallIcon)
                 .setLargeIcon(BitmapFactory.decodeResource(context.getResources(), R.mipmap.ic_launcher))
                 .setAutoCancel(true)
                 .setOngoing(isNotCancelAble)
-                .setContentIntent(pendingIntent);
+                .setPriority(Notification.PRIORITY_HIGH)
+                //.setProgress()
+                ;
 
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.notify(NOTIFICATION_ID, notificationBuilder.build());
     }
 
-    @TargetApi(Build.VERSION_CODES.M)
     @RequiresApi(api = Build.VERSION_CODES.M)
     public static boolean isNotificationShow(Context context, int NOTIFICATION_ID) {
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);

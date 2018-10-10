@@ -34,13 +34,12 @@ import com.gandsoft.openguide.activity.main.BaseHomeActivity;
 import com.gandsoft.openguide.activity.main.adapter.InfoListViewAdapter;
 import com.gandsoft.openguide.activity.main.adapter.InfoListviewModel;
 import com.gandsoft.openguide.database.SQLiteHelper;
+import com.gandsoft.openguide.support.AppUtil;
 import com.gandsoft.openguide.support.ListArrayUtil;
 import com.gandsoft.openguide.support.SessionUtil;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class eInfoFragment extends Fragment implements InfoListViewAdapter.ListAdapterListener {
     private static final int REQ_CODE_INBOX = 123;
@@ -197,7 +196,7 @@ public class eInfoFragment extends Fragment implements InfoListViewAdapter.ListA
             Intent intent8 = new Intent(getActivity(), hFeedbackActivity.class);
             getActivity().startActivity(intent8);
         } else if (s.equalsIgnoreCase("Change Event")) {
-            BaseHomeActivity.outEvent(getActivity(), ChangeEventActivity.class, notificationManager);
+            AppUtil.outEventFull(getActivity(), ChangeEventActivity.class, ISeasonConfig.ID_NOTIF);
         }
     }
 

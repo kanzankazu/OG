@@ -3,7 +3,6 @@ package com.gandsoft.openguide.activity.main.fragments.aHomeActivityInFragment;
 import android.app.Activity;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,8 +20,6 @@ import com.gandsoft.openguide.support.DateTimeUtil;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
 class HomeContentCommentAdapter extends RecyclerView.Adapter<HomeContentCommentAdapter.ViewHolder> {
 
@@ -84,7 +81,6 @@ class HomeContentCommentAdapter extends RecyclerView.Adapter<HomeContentCommentA
             }
         }, 0, 1000);*/
 
-
         Glide.with(activity)
                 .load(model.getImage_icon())
                 .placeholder(R.drawable.template_account_og)
@@ -92,7 +88,7 @@ class HomeContentCommentAdapter extends RecyclerView.Adapter<HomeContentCommentA
                 .error(R.drawable.template_account_og)
                 .into(holder.ivRVCommentIconfvbi);
 
-        if (Integer.parseInt(theEventModel.getDeletepost_status()) == 1 || model.getAccount_id().equalsIgnoreCase(accountId)) {
+        if ((Integer.parseInt(theEventModel.getDeletepost_status()) == 1 && model.getAccount_id().equalsIgnoreCase(accountId)) || oneListEventModel.getRole_name().equalsIgnoreCase("ADMIN")) {
             holder.llRVCommentRemovefvbi.setVisibility(View.VISIBLE);
         }
 

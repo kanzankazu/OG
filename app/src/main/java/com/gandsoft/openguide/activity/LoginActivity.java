@@ -393,7 +393,8 @@ public class LoginActivity extends LocalBaseActivity {
 
     private void moveToChangeEvent() {
         SessionUtil.setBoolPreferences(ISeasonConfig.KEY_IS_HAS_LOGIN, true);
-        startActivity(ChangeEventActivity.getActIntent(LoginActivity.this)
+        startActivity(ChangeEventActivity
+                .getActIntent(LoginActivity.this)
         );
         finish();
     }

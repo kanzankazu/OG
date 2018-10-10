@@ -154,7 +154,7 @@ public class SessionUtil implements IConfig {
         editor.commit();
     }
 
-    public static void removeAllPreferences() {
+    /*public static void removeAllPreferences() {
         editor.clear().apply();
-    }
+    }*/
 }

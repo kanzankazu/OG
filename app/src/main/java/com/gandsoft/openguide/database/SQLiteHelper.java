@@ -22,6 +22,8 @@ import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentResponseMod
 import com.gandsoft.openguide.API.APIresponse.UserData.UserDataResponseModel;
 import com.gandsoft.openguide.API.APIresponse.UserData.UserListEventResponseModel;
 import com.gandsoft.openguide.API.APIresponse.UserData.UserWalletDataResponseModel;
+import com.gandsoft.openguide.ISeasonConfig;
+import com.gandsoft.openguide.support.SessionUtil;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -31,7 +33,7 @@ import java.util.List;
 public class SQLiteHelper extends SQLiteOpenHelper {
     // Databases information
     public static final String DB_NM = "openguides.db";
-    public static final int DB_VER = 3;
+    public static final int DB_VER = 2;
 
     public static String TableGlobalData = "tabGlobalData";
     public static String KEY_GlobalData_dbver = "dbver";
@@ -124,6 +126,8 @@ public class SQLiteHelper extends SQLiteOpenHelper {
 
         onCreate(db);
 
+        SessionUtil.deleteKeyPreferences(ISeasonConfig.KEY_EVENT_ID);
+
     }
 
     @Override
@@ -146,6 +150,8 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         db.execSQL(query_delete_table_HomeContent);
 
         onCreate(db);
+
+        SessionUtil.deleteKeyPreferences(ISeasonConfig.KEY_EVENT_ID);
     }
 
     /*Version data*/
@@ -334,6 +340,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         contentValues.put(KEY_UserData_email, model.getEmail());
         contentValues.put(KEY_UserData_gender, model.getGender());
         contentValues.put(KEY_UserData_fullName, model.getFull_name());
+        contentValues.put(KEY_UserData_isStillIn, 1);
         db.insert(TableUserData, null, contentValues);
         db.close();
     }
@@ -677,6 +684,9 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     public static String Key_Schedule_List_action = "action";
     public static String Key_Schedule_List_link = "link";
     public static String Key_Schedule_List_linkvote = "linkvote";
+    public static String Key_Schedule_List_name = "name";
+    public static String Key_Schedule_List_link_external = "link_external";
+    public static String Key_Schedule_List_external = "external";
     public static String Key_Schedule_List_status = "status";
     private static final String query_add_table_ScheduleList = "CREATE TABLE IF NOT EXISTS " + TableScheduleList + "("
             + Key_Schedule_List_No + " INTEGER PRIMARY KEY AUTOINCREMENT, "
@@ -691,6 +701,9 @@ public class SQLiteHelper extends SQLiteOpenHelper {
             + Key_Schedule_List_action + " TEXT, "
             + Key_Schedule_List_link + " TEXT, "
             + Key_Schedule_List_linkvote + " TEXT, "
+            + Key_Schedule_List_name + " TEXT, "
+            + Key_Schedule_List_link_external + " TEXT, "
+            + Key_Schedule_List_external + " TEXT, "
             + Key_Schedule_List_status + " TEXT) ";
     private static final String query_delete_table_ScheduleList = "DROP TABLE IF EXISTS " + TableScheduleList;
 
@@ -708,6 +721,9 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         contentValues.put(Key_Schedule_List_action, model.getAction());
         contentValues.put(Key_Schedule_List_link, model.getLink());
         contentValues.put(Key_Schedule_List_linkvote, model.getLinkvote());
+        contentValues.put(Key_Schedule_List_name, model.getExternalframe().getName());
+        contentValues.put(Key_Schedule_List_link_external, model.getExternalframe().getLink());
+        contentValues.put(Key_Schedule_List_external, model.getExternalframe().getExternal());
         contentValues.put(Key_Schedule_List_status, model.getStatus());
         db.insert(TableScheduleList, null, contentValues);
         db.close();

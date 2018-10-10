@@ -49,6 +49,7 @@ import com.gandsoft.openguide.activity.infomenu.cInboxActivity;
 import com.gandsoft.openguide.activity.services.MyService;
 import com.gandsoft.openguide.database.SQLiteHelper;
 import com.gandsoft.openguide.support.AppUtil;
+import com.gandsoft.openguide.support.DateTimeUtil;
 import com.gandsoft.openguide.support.DeviceDetailUtil;
 import com.gandsoft.openguide.support.HomeWatcher;
 import com.gandsoft.openguide.support.NotifUtil;
@@ -63,13 +64,14 @@ import org.jsoup.select.Elements;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
 public class BaseHomeActivity extends AppCompatActivity {
-    private static final int ID_NOTIF = 0;
     private static final int REQ_CODE_INBOX = 123;
 
     static final int NUM_ITEMS = 5;
@@ -79,7 +81,6 @@ public class BaseHomeActivity extends AppCompatActivity {
 
     ViewPager mPager;
     SlidePagerAdapter mPagerAdapter;
-    private Activity activity;
     private TabLayout tabLayout;
     private ActionBar ab;
     private String[] titleTab = new String[]{"Home", "Wallet", "Schedule", "About the Event", "Important Information"};
@@ -91,7 +92,8 @@ public class BaseHomeActivity extends AppCompatActivity {
     ImageView imviewdial;
     int a = 0;
     private NotificationManager notificationManager;
-    private TextView textCartItemCount;
+    private MenuItem menuItem;
+    private TextView tvMenuItemBadge;
     private FirebaseAuth mAuth;
 
     @Override
@@ -99,23 +101,19 @@ public class BaseHomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_base_home);
 
-        if (db.doesDatabaseExist(this, SQLiteHelper.DB_NM)) {
-            notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
-            clearNotif();
+        clearNotif();
 
-            if (!SystemUtil.isMyServiceRunning(BaseHomeActivity.this, MyService.class)) {
-                startService(new Intent(this, MyService.class));
-            }
-
-            initSession();
-            initParam();
-            initComponent();
-            initContent();
-            initListener();
-        } else {
-            outEvent(this, ChangeEventActivity.class, notificationManager);
+        if (!SystemUtil.isMyServiceRunning(BaseHomeActivity.this, MyService.class)) {
+            startService(new Intent(this, MyService.class));
         }
+
+        initSession();
+        initParam();
+        initComponent();
+        initContent();
+        initListener();
 
     }
 
@@ -138,7 +136,7 @@ public class BaseHomeActivity extends AppCompatActivity {
         if (SessionUtil.checkIfExist(ISeasonConfig.KEY_EVENT_ID)) {
             eventId = SessionUtil.getStringPreferences(ISeasonConfig.KEY_EVENT_ID, null);
         } else {
-            outEvent(this, ChangeEventActivity.class, notificationManager);
+            AppUtil.outEventFull(this, ChangeEventActivity.class, ISeasonConfig.ID_NOTIF);
         }
     }
 
@@ -170,6 +168,38 @@ public class BaseHomeActivity extends AppCompatActivity {
             }
         });
         mHomeWatcher.startWatch();
+
+        getAPIVerivyUser();
+
+        initLoopCheck();
+
+    }
+
+    private void initLoopCheck() {
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (!db.isUserStillIn(accountId)) {
+                            new AlertDialog.Builder(BaseHomeActivity.this)
+                                    .setTitle("Informasi")
+                                    .setMessage("Akun anda sudah di gunakan perangkat lain, otomatis anda akan keluar dari event")
+                                    .setCancelable(false)
+                                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialogInterface, int i) {
+                                            //code here
+                                            AppUtil.signOutFull(BaseHomeActivity.this, db, true, accountId);
+                                        }
+                                    })
+                                    .show();
+                        }
+                    }
+                });
+            }
+        }, 0, DateTimeUtil.MINUTE_MILLIS / 2);
     }
 
     private void initActionBar() {
@@ -286,7 +316,7 @@ public class BaseHomeActivity extends AppCompatActivity {
     }
 
     private void clearNotif() {
-        NotifUtil.clearNotification(this, ISeasonConfig.ID_NOTIF_OUTAPP);
+        NotifUtil.clearNotification(this, ISeasonConfig.ID_NOTIF);
     }
 
     private void getAPIVerivyUser() {
@@ -309,7 +339,7 @@ public class BaseHomeActivity extends AppCompatActivity {
                                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialogInterface, int i) {
-                                        AppUtil.signOutFull(BaseHomeActivity.this, db, false);
+                                        AppUtil.signOutFull(BaseHomeActivity.this, db, true, accountId);
                                     }
                                 })
                                 .show();
@@ -331,21 +361,6 @@ public class BaseHomeActivity extends AppCompatActivity {
         });
     }
 
-    private void dialogSignOut() {
-        new AlertDialog.Builder(BaseHomeActivity.this)
-                .setTitle("Confirmation")
-                .setMessage("Akun anda di gunakan oleh perangkat lain")
-                .setCancelable(false)
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        //code here
-                        AppUtil.signOutFull(BaseHomeActivity.this, db, false);
-                    }
-                })
-                .show();
-    }
-
     private void setNotif() {
         UserListEventResponseModel oneListEvent = db.getOneListEvent(eventId);
         String title = oneListEvent.getTitle();
@@ -353,29 +368,21 @@ public class BaseHomeActivity extends AppCompatActivity {
 
         Intent intent = new Intent(this, BaseHomeActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, ID_NOTIF, intent, PendingIntent.FLAG_ONE_SHOT);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, ISeasonConfig.ID_NOTIF, intent, PendingIntent.FLAG_ONE_SHOT);
 
-        NotifUtil.setNotification(this, "Openguide", title + " , " + date, R.drawable.ic_love_fill, R.mipmap.ic_launcher, true, pendingIntent, ISeasonConfig.ID_NOTIF_OUTAPP);
+        NotifUtil.setNotification(this, "Openguide", title + " , " + date, R.drawable.ic_love_fill, R.mipmap.ic_launcher, true, pendingIntent, ISeasonConfig.ID_NOTIF);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        /*MenuInflater inflater = getMenuInflater();
-         *//*if (checkNotif() > 0) {
-            inflater.inflate(R.menu.menu_main2, menu);
-        } else {
-            inflater.inflate(R.menu.menu_main, menu);
-        }*//*
-        inflater.inflate(R.menu.menu_main, menu);*/
+        getMenuInflater().inflate(R.menu.menu_base_home, menu);
 
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-
-        final MenuItem menuItem = menu.findItem(R.id.action_settings);
+        menuItem = menu.findItem(R.id.action_settings);
 
         //View actionView = MenuItemCompat.getActionView(menuItem);
         View actionView = menuItem.getActionView();
-        textCartItemCount = (TextView) actionView.findViewById(R.id.cart_badge);
-        textCartItemCount.setText("");
+        tvMenuItemBadge = (TextView) actionView.findViewById(R.id.cart_badge);
+        tvMenuItemBadge.setText("");
 
         setupBadge();
 
@@ -407,12 +414,14 @@ public class BaseHomeActivity extends AppCompatActivity {
         int noteIsOpen = db.getCommiteHasBeenOpened(eventId);
         if (commiteNote.size() != 0) {
             if (commiteNote.size() == noteIsOpen) {
-                textCartItemCount.setVisibility(View.GONE);
+                tvMenuItemBadge.setVisibility(View.GONE);
             } else {
-                textCartItemCount.setVisibility(View.VISIBLE);
+                tvMenuItemBadge.setVisibility(View.VISIBLE);
+                //menuItem.setVisible(true);
             }
         } else {
-            textCartItemCount.setVisibility(View.GONE);
+            tvMenuItemBadge.setVisibility(View.GONE);
+            //menuItem.setVisible(false);
         }
 
     }
@@ -423,25 +432,6 @@ public class BaseHomeActivity extends AppCompatActivity {
         if (REQ_CODE_INBOX == requestCode && resultCode == RESULT_OK) {
             recreate();
         }
-    }
-
-    private static boolean isNotificationVisible(Context context) {
-        Intent notificationIntent = new Intent(context, context.getClass());
-        PendingIntent test = PendingIntent.getActivity(context, ISeasonConfig.ID_NOTIF_OUTAPP, notificationIntent, PendingIntent.FLAG_NO_CREATE);
-        return test != null;
-    }
-
-    public static void outEvent(Activity activity, Class<?> targetClass, NotificationManager notificationManager) {
-        Intent intent9 = new Intent(activity, targetClass);
-        activity.startActivity(intent9);
-        activity.finish();
-        SessionUtil.deleteKeyPreferences(ISeasonConfig.KEY_EVENT_ID);
-
-        if (isNotificationVisible(activity)) {
-            notificationManager.cancel(ID_NOTIF);
-        }
-
-        activity.stopService(new Intent(activity, MyService.class));
     }
 
     @Override

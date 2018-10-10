@@ -12,14 +12,14 @@ import java.util.List;
 import java.util.Locale;
 
 public class DateTimeUtil {
-    private static final int SECOND_MILLIS = 1000;
-    private static final int MINUTE_MILLIS = 60 * SECOND_MILLIS;
-    private static final int HOUR_MILLIS = 60 * MINUTE_MILLIS;
-    private static final int DAY_MILLIS = 24 * HOUR_MILLIS;
-    private static final int DAYS_SELECT = 1;
-    private static final int HOURS_SELECT = 2;
-    private static final int MINUTES_SELECT = 3;
-    private static final int SECONDS_SELECT = 4;
+    public static final int SECOND_MILLIS = 1000;
+    public static final int MINUTE_MILLIS = 60 * SECOND_MILLIS;
+    public static final int HOUR_MILLIS = 60 * MINUTE_MILLIS;
+    public static final int DAY_MILLIS = 24 * HOUR_MILLIS;
+    public static final int DAYS_SELECT = 1;
+    public static final int HOURS_SELECT = 2;
+    public static final int MINUTES_SELECT = 3;
+    public static final int SECONDS_SELECT = 4;
 
     public static String getAge(int year, int month, int day) {
         Calendar dob = Calendar.getInstance();

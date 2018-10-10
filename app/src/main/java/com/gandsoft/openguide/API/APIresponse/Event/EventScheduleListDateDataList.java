@@ -11,6 +11,7 @@ public class EventScheduleListDateDataList  {
     public String action;
     public String link;
     public String linkvote;
+    public EventScheduleListExternalframe externalframe;
     public String status;
 
     public int number;
@@ -120,5 +121,13 @@ public class EventScheduleListDateDataList  {
 
     public void setGroupCode(String groupCode) {
         this.groupCode = groupCode;
+    }
+
+    public EventScheduleListExternalframe getExternalframe() {
+        return externalframe;
+    }
+
+    public void setExternalframe(EventScheduleListExternalframe externalframe) {
+        this.externalframe = externalframe;
     }
 }

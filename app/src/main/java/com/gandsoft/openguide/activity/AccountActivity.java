@@ -93,15 +93,10 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
         setContentView(R.layout.activity_account);
 
         initSession();
-
-        if (db.doesDatabaseExist(this, SQLiteHelper.DB_NM)) {
-            initPermission();
-            initComponent();
-            initContent();
-            initListener();
-        } else {
-            AppUtil.signOutFull(AccountActivity.this, db, false);
-        }
+        initPermission();
+        initComponent();
+        initContent();
+        initListener();
 
     }
 
@@ -275,7 +270,7 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
                     new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface arg0, int arg1) {
-                            AppUtil.signOutFull(AccountActivity.this, db, false);
+                            AppUtil.signOutFull(AccountActivity.this, db, false, accountId);
                         }
                     });
             // Pilihan jika NO
@@ -290,7 +285,7 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
             AlertDialog alertDialog = alertDialogBuilder.create();
             alertDialog.show();
         } else {
-            AppUtil.signOutFull(AccountActivity.this, db, false);
+            AppUtil.signOutFull(AccountActivity.this, db, false, accountId);
         }
 
     }

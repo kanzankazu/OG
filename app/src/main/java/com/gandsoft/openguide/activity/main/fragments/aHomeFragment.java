@@ -3,11 +3,11 @@ package com.gandsoft.openguide.activity.main.fragments;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
@@ -15,6 +15,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
@@ -65,7 +66,6 @@ import com.squareup.picasso.Picasso;
 import org.sufficientlysecure.htmltextview.HtmlTextView;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -85,22 +85,19 @@ public class aHomeFragment extends Fragment {
     private static final int REQ_CODE_POST_IMAGE = 12;
     SQLiteHelper db;
 
-
     private View view;
     private SwipeRefreshLayout homeSRLHomefvbi;
     private NestedScrollView homeNSVHomefvbi;
     private RecyclerView recyclerView;
-    private LinearLayout llLoadModefvbi;
     private LinearLayout homeLLWriteSomethingfvbi;
     private LinearLayout llLoadMode2fvbi;
+    private LinearLayout homeLLLoadingfvbi;
     private ImageView homeIVOpenCamerafvbi;
     private ImageView homeIVEventfvbi;
     private ImageView homeIVEventBackgroundfvbi;
     private ImageView homeIVShareSomethingfvbi;
     private TextView homeTVTitleEventfvbi;
     private TextView homeTVDescEventfvbi;
-    private TextView homeTVOpenCamerafvbi;
-    private TextView homeTVOpenGalleryfvbi;
     private HtmlTextView homeHtmlTVTitleEventfvbi;
     private HtmlTextView homeHtmlTVDescEventfvbi;
     private EditText homeETWritePostCreatefvbi;
@@ -149,8 +146,7 @@ public class aHomeFragment extends Fragment {
     }
 
     private void initComponent() {
-        homeTVOpenCamerafvbi = view.findViewById(R.id.homeTVOpenCamera);
-        homeTVOpenGalleryfvbi = view.findViewById(R.id.homeTVOpenGallery);
+        homeLLLoadingfvbi = (LinearLayout) view.findViewById(R.id.homeLLLoading);
         homeFABHomeUpfvbi = (FloatingActionButton) view.findViewById(R.id.homeFABHomeUp);
         homeSRLHomefvbi = (SwipeRefreshLayout) view.findViewById(R.id.homeSRLHome);
         homeNSVHomefvbi = (NestedScrollView) view.findViewById(R.id.homeNSVHome);
@@ -166,7 +162,6 @@ public class aHomeFragment extends Fragment {
         homeETWritePostCreatefvbi = (EditText) view.findViewById(R.id.homeETWritePostCreate);
         homeBTapCheckInfvbi = (Button) view.findViewById(R.id.homeBTapCheckIn);
         recyclerView = (RecyclerView) view.findViewById(R.id.homeRVEvent);
-        llLoadModefvbi = (LinearLayout) view.findViewById(R.id.llLoadMode);
         llLoadMode2fvbi = (LinearLayout) view.findViewById(R.id.llLoadMode2);
         homeLLWriteSomethingfvbi = (LinearLayout) view.findViewById(R.id.homeLLWriteSomething);
     }
@@ -213,18 +208,20 @@ public class aHomeFragment extends Fragment {
     private void initListener(View view) {
         homeIVOpenCamerafvbi.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                openCamera();
-            }
-        });
-        homeTVOpenGalleryfvbi.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                startActivityForResult(intent, 2);
+                if (Integer.parseInt(theEventModel.getAddpost_status()) == 0) {
+                    dialogNoPostPermission();
+                } else {
+                    openCamera();
+                }
             }
         });
         homeIVShareSomethingfvbi.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                callPostCaption();
+                if (Integer.parseInt(theEventModel.getAddpost_status()) == 0) {
+                    dialogNoPostPermission();
+                } else {
+                    callPostCaption();
+                }
             }
         });
         homeSRLHomefvbi.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -298,6 +295,20 @@ public class aHomeFragment extends Fragment {
         });
     }
 
+    private void dialogNoPostPermission() {
+        new AlertDialog.Builder(getActivity())
+                .setTitle("Information")
+                .setMessage("You not have permission to post content")
+                .setCancelable(false)
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        //code here
+                    }
+                })
+                .show();
+    }
+
     private void openCamera() {
         ContentValues values = new ContentValues();
         values.put(MediaStore.Images.Media.TITLE, "New Picture");
@@ -338,9 +349,9 @@ public class aHomeFragment extends Fragment {
                     .error(R.drawable.template_account_og)
                     .into(homeIVEventBackgroundfvbi);
 
-            if (Integer.parseInt(theEventModel.getAddpost_status()) == 0) {
+            /*if (Integer.parseInt(theEventModel.getAddpost_status()) == 0) {
                 homeLLWriteSomethingfvbi.setVisibility(View.GONE);
-            }
+            }*/
         } else {
             Snackbar.make(getActivity().findViewById(android.R.id.content), "data kosong", Snackbar.LENGTH_LONG).setAction("Action", null).show();
         }
@@ -425,7 +436,7 @@ public class aHomeFragment extends Fragment {
         Log.d("Lihat", "checkTheCheckIn aHomeFragment day7AfterEnd: " + day7AfterEnd);
 
         /*EXECUTE*/
-        if (replace4.matches("(?i).*status-checkin,1.*")||!DateTimeUtil.isBetween2Date(day3BeforeStart, endDayCompleteD)) {
+        if (replace4.matches("(?i).*status-checkin,1.*") || !DateTimeUtil.isBetween2Date(day3BeforeStart, endDayCompleteD)) {
             homeBTapCheckInfvbi.setVisibility(View.GONE);
         }
     }
@@ -440,7 +451,7 @@ public class aHomeFragment extends Fragment {
         //deleteImageFile(eventId);
         db.deleleDataByKey(SQLiteHelper.TableHomeContent, SQLiteHelper.Key_HomeContent_EventId, eventId);
 
-        ProgressDialog progressDialog = ProgressDialog.show(getActivity(), "Loading...", "Please Wait..", false, false);
+        homeLLLoadingfvbi.setVisibility(View.VISIBLE);
 
         HomeContentRequestModel model = new HomeContentRequestModel();
         model.setPhonenumber(accountId);
@@ -454,7 +465,7 @@ public class aHomeFragment extends Fragment {
         API.doHomeContentDataRet(model).enqueue(new Callback<List<HomeContentResponseModel>>() {
             @Override
             public void onResponse(Call<List<HomeContentResponseModel>> call, Response<List<HomeContentResponseModel>> response) {
-                progressDialog.dismiss();
+                homeLLLoadingfvbi.setVisibility(View.GONE);
                 if (response.isSuccessful()) {
                     List<HomeContentResponseModel> models = response.body();
                     adapter.setData(models);
@@ -484,7 +495,7 @@ public class aHomeFragment extends Fragment {
 
             @Override
             public void onFailure(Call<List<HomeContentResponseModel>> call, Throwable t) {
-                progressDialog.dismiss();
+                homeLLLoadingfvbi.setVisibility(View.GONE);
                 Snackbar.make(getActivity().findViewById(android.R.id.content), t.getMessage(), Snackbar.LENGTH_LONG).show();
             }
         });
@@ -540,7 +551,6 @@ public class aHomeFragment extends Fragment {
                 Snackbar.make(getActivity().findViewById(android.R.id.content), t.getMessage(), Snackbar.LENGTH_LONG).show();
             }
         });
-
 
     }
 
@@ -845,7 +855,6 @@ public class aHomeFragment extends Fragment {
             adapter.changeTotalComment(position, totalComment);
         }
     }
-
 
 }
 

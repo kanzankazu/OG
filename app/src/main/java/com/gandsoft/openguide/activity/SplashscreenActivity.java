@@ -8,7 +8,6 @@ import android.util.Log;
 
 import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
-import com.gandsoft.openguide.activity.main.BaseHomeActivity;
 import com.gandsoft.openguide.support.SessionUtil;
 
 import io.supercharge.shimmerlayout.ShimmerLayout;
@@ -23,7 +22,7 @@ public class SplashscreenActivity extends LocalBaseActivity {
         shimmerText.startShimmerAnimation();
 
         if (SessionUtil.checkIfExist(ISeasonConfig.KEY_EVENT_ID)) {
-            moveToBaseHome();
+            moveToChangeEvent();
         } else {
             initComponent();
             initContent();
@@ -32,8 +31,8 @@ public class SplashscreenActivity extends LocalBaseActivity {
 
     }
 
-    private void moveToBaseHome() {
-        Intent intent = new Intent(SplashscreenActivity.this, BaseHomeActivity.class);
+    private void moveToChangeEvent() {
+        Intent intent = new Intent(SplashscreenActivity.this, ChangeEventActivity.class);
         startActivity(intent);
         finish();
     }

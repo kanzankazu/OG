@@ -15,10 +15,9 @@ import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.util.Base64;
 import android.util.Log;
-
-import com.gandsoft.openguide.database.SQLiteHelper;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -281,7 +280,6 @@ public class PictureUtil {
         //Draw the Flipped Image
         canvas.drawBitmap(flipImage, width + flipGap, 0, null);*/
 
-
         return flipImage;
     }
 
@@ -351,5 +349,33 @@ public class PictureUtil {
         }
         Log.d("Lihat", "saveImage GalleryAdapter : " + savedImagePath);
         return savedImagePath;
+    }
+
+    public static void saveImageDownload(Activity activity, Bitmap bitmap, String title, String id) {
+        String savedImagePath;
+        String replace = title.replace(" ", "");
+        String imageFileName = replace + "_" + id + ".jpg";
+        File imageDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)/* + "/Openguide/" + id*/.toString());
+        boolean success = true;
+        if (!imageDir.exists()) {
+            success = imageDir.mkdirs();
+        }
+        if (success) {
+            File imageFile = new File(imageDir, imageFileName);
+            if (!imageFile.exists()) {
+                try {
+                    OutputStream fileOutputStream = new FileOutputStream(imageFile);
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fileOutputStream);
+                    fileOutputStream.close();
+                    Snackbar.make(activity.findViewById(android.R.id.content), "Save Image Success", Snackbar.LENGTH_SHORT).show();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            } else {
+                Snackbar.make(activity.findViewById(android.R.id.content), "Image Exists", Snackbar.LENGTH_SHORT).show();
+            }
+            savedImagePath = imageFile.getAbsolutePath();
+            Log.d("Lihat", "saveImageDownload PictureUtil : " + savedImagePath);
+        }
     }
 }

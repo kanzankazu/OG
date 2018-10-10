@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -55,8 +54,8 @@
             android:layout_height="wrap_content"
             android:animateLayoutChanges="true"
             android:gravity="center"
-            android:weightSum="100"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:weightSum="100">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -83,7 +82,7 @@
                         android:text="account id"
                         android:textAllCaps="true"
                         android:textColor="@color/white"
-                        android:textStyle="bold"/>
+                        android:textStyle="bold" />
 
                     <TextView
                         android:id="@+id/tvAccID"
@@ -96,7 +95,6 @@
 
                 <!--Select Picture-->
                 <LinearLayout
-                    android:id="@+id/llAccPic"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:animateLayoutChanges="true"
@@ -116,33 +114,33 @@
                         android:id="@+id/ivWrapPic"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:scaleType="fitCenter"/>
+                        android:scaleType="fitCenter" />
 
                     <LinearLayout
+                        android:id="@+id/llAccPic"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
                         android:animateLayoutChanges="true"
                         android:gravity="start"
-                        android:layout_marginTop="10dp"
                         android:orientation="horizontal">
 
                         <ImageButton
                             android:id="@+id/ibAccCamera"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:src="@drawable/ic_action_camera"
                             android:background="@drawable/flag_transparent"
-                            android:clickable="true"/>
+                            android:src="@drawable/ic_action_camera" />
 
                         <TextView
                             android:id="@+id/tvAccSelPic"
-                            android:layout_width="wrap_content"
+                            android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:text="Select Picture"
-                            android:gravity="center"
-                            android:layout_marginStart="10dp"
                             android:layout_marginEnd="10dp"
+                            android:layout_marginStart="10dp"
+                            android:gravity="left|center"
                             android:selectAllOnFocus="true"
+                            android:text="Select Picture"
                             android:textColor="@color/colorPrimary"
                             android:textSize="12dp" />
 
@@ -256,15 +254,16 @@
                         android:textColor="@color/colorAccent" />
 
                     <Spinner
+                        android:id="@+id/spinGender"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:id="@+id/spinGender"
-                        android:paddingTop="5dp"
                         android:layout_marginTop="5dp"
                         android:background="@android:color/transparent"
+                        android:entries="@array/names"
+                        android:gravity="center|left"
+                        android:paddingTop="5dp"
                         android:textColor="@color/colorPrimary"
-                        android:textSize="12dp">
-                    </Spinner>
+                        android:textSize="12dp" />
 
                 </LinearLayout>
 
@@ -276,7 +275,6 @@
 
                 <!--Birthdate-->
                 <LinearLayout
-                    android:id="@+id/llAccBirthdate"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:animateLayoutChanges="true"
@@ -294,31 +292,30 @@
                         android:textColor="@color/colorAccent" />
 
 
-
                     <LinearLayout
-                        android:layout_width="wrap_content"
+                        android:id="@+id/llAccBirthdate"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:animateLayoutChanges="true"
-                        android:gravity="center"
                         android:layout_marginTop="10dp"
+                        android:animateLayoutChanges="true"
+                        android:gravity="left|center"
                         android:orientation="horizontal">
 
                         <ImageButton
                             android:id="@+id/ibAccCalendar"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:src="@drawable/ic_account_calendar"
                             android:background="@drawable/flag_transparent"
-                            android:clickable="true"/>
+                            android:src="@drawable/ic_account_calendar" />
 
                         <TextView
                             android:id="@+id/tvAccTgl"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="DD"
-                            android:layout_marginStart="10dp"
                             android:layout_marginEnd="10dp"
+                            android:layout_marginStart="10dp"
                             android:selectAllOnFocus="true"
+                            android:text="DD"
                             android:textColor="@color/colorPrimary"
                             android:textSize="12dp" />
 
@@ -331,10 +328,10 @@
                             android:id="@+id/tvAccBulan"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="MM"
-                            android:layout_marginStart="10dp"
                             android:layout_marginEnd="10dp"
+                            android:layout_marginStart="10dp"
                             android:selectAllOnFocus="true"
+                            android:text="MM"
                             android:textColor="@color/colorPrimary"
                             android:textSize="12dp" />
 
@@ -347,10 +344,10 @@
                             android:id="@+id/tvAccTahun"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="YYYY"
-                            android:layout_marginStart="10dp"
                             android:layout_marginEnd="10dp"
+                            android:layout_marginStart="10dp"
                             android:selectAllOnFocus="true"
+                            android:text="YYYY"
                             android:textColor="@color/colorPrimary"
                             android:textSize="12dp" />
 

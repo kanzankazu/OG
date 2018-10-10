@@ -13,6 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:background="@android:color/white"
+        android:visibility="gone"
         app:elevation="0dp"
         app:popupTheme="@style/AppTheme.PopupOverlay"
         app:titleTextColor="@color/colorPrimary" />
@@ -147,6 +148,32 @@
                     android:text="caption"
                     android:textColor="@color/grey" />
             </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:animateLayoutChanges="true"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/ibDetailGalleryDownloadFile"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@color/super_red"
+                android:src="@drawable/ic_download_file" />
+
+            <TextView
+                android:id="@+id/tvDetailGalleryClose"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@color/colorPrimaryDark"
+                android:gravity="center"
+                android:text="Close"
+                android:textColor="@color/white"
+                android:textStyle="bold" />
         </LinearLayout>
     </LinearLayout>
 

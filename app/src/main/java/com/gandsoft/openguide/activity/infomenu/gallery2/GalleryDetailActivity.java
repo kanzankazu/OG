@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -21,13 +22,12 @@ import com.bumptech.glide.request.target.SimpleTarget;
 import com.gandsoft.openguide.API.API;
 import com.gandsoft.openguide.API.APIrequest.HomeContent.HomeContentPostLikeRequestModel;
 import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentCommentModelParcelable;
-import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentResponseModel;
 import com.gandsoft.openguide.API.APIresponse.LocalBaseResponseModel;
 import com.gandsoft.openguide.IConfig;
 import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
-import com.gandsoft.openguide.activity.main.adapter.HomeContentAdapter;
 import com.gandsoft.openguide.activity.main.fragments.aHomeActivityInFragment.aHomePostCommentActivity;
+import com.gandsoft.openguide.database.SQLiteHelper;
 import com.gandsoft.openguide.support.PictureUtil;
 import com.gandsoft.openguide.support.SessionUtil;
 
@@ -40,6 +40,8 @@ import retrofit2.Response;
 
 public class GalleryDetailActivity extends AppCompatActivity {
 
+    SQLiteHelper db = new SQLiteHelper(this);
+
     private static final int REQ_CODE_COMMENT = 123;
     private GalleryDetailPagerAdapter mGalleryDetailPagerAdapter;
 
@@ -51,10 +53,13 @@ public class GalleryDetailActivity extends AppCompatActivity {
     private ImageViewTouchViewPager mViewPager;
     private ScaleImageView zivDetailGalleryfvbi;
     private LinearLayout llDetailGalleryCommentfvbi, llDetailGalleryLikefvbi;
-    private TextView tvDetailGalleryCommentfvbi, tvDetailGalleryLikefvbi, tvDetailGalleryUsernamefvbi, tvDetailGalleryCaptionfvbi;
+    private TextView tvDetailGalleryCommentfvbi, tvDetailGalleryClosefvbi, tvDetailGalleryLikefvbi, tvDetailGalleryUsernamefvbi, tvDetailGalleryCaptionfvbi;
     private ImageView ivDetailGalleryLikefvbi, ivDetailGalleryIconfvbi;
+    private ImageButton ibDetailGalleryDownloadFilefvbi;
+
     private String accountId;
     private String eventId;
+    private GalleryImageModel model;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,6 +86,8 @@ public class GalleryDetailActivity extends AppCompatActivity {
         tvDetailGalleryCaptionfvbi = (TextView) findViewById(R.id.tvDetailGalleryCaption);
         ivDetailGalleryLikefvbi = (ImageView) findViewById(R.id.ivDetailGalleryLike);
         ivDetailGalleryIconfvbi = (ImageView) findViewById(R.id.ivDetailGalleryIcon);
+        ibDetailGalleryDownloadFilefvbi = (ImageButton) findViewById(R.id.ibDetailGalleryDownloadFile);
+        tvDetailGalleryClosefvbi = (TextView) findViewById(R.id.tvDetailGalleryClose);
     }
 
     private void initParam() {
@@ -130,10 +137,33 @@ public class GalleryDetailActivity extends AppCompatActivity {
             public void onPageScrollStateChanged(int state) {
             }
         });
+
+        ibDetailGalleryDownloadFilefvbi.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Glide.with(GalleryDetailActivity.this)
+                        .load(model.getImage_posted())
+                        .asBitmap()
+                        .into(new SimpleTarget<Bitmap>() {
+                            @Override
+                            public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+                                PictureUtil.saveImageDownload(GalleryDetailActivity.this, resource, db.getOneListEvent(eventId).getTitle(), model.getId());
+                            }
+                        });
+
+            }
+        });
+
+        tvDetailGalleryClosefvbi.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onBackPressed();
+            }
+        });
     }
 
     private void updateUi(int position) {
-        GalleryImageModel model = models.get(position);
+        model = models.get(position);
         setTitle(model.getUsername());
         tvDetailGalleryCommentfvbi.setText(model.getTotal_comment());
         tvDetailGalleryLikefvbi.setText(model.getLike());
@@ -155,6 +185,12 @@ public class GalleryDetailActivity extends AppCompatActivity {
             ivDetailGalleryLikefvbi.setImageResource(R.drawable.ic_love_empty);
         }
 
+        if (Integer.parseInt(db.getTheEvent(eventId).getCommentpost_status()) == 1) {
+            llDetailGalleryCommentfvbi.setVisibility(View.VISIBLE);
+        } else {
+            llDetailGalleryCommentfvbi.setVisibility(View.GONE);
+        }
+
         llDetailGalleryLikefvbi.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -164,13 +200,13 @@ public class GalleryDetailActivity extends AppCompatActivity {
                     ivDetailGalleryLikefvbi.setImageResource(R.drawable.ic_love_fill);
                     model.setStatus_like(1);
                     model.setLike(String.valueOf(iLike + 1));
-                    postLike(model.getLike(),model);
+                    postLike(model.getLike(), model);
                 } else {
                     tvDetailGalleryLikefvbi.setText(String.valueOf(iLike - 1));
                     ivDetailGalleryLikefvbi.setImageResource(R.drawable.ic_love_empty);
                     model.setStatus_like(0);
                     model.setLike(String.valueOf(iLike - 1));
-                    postLike(model.getLike(),model);
+                    postLike(model.getLike(), model);
                 }
             }
         });

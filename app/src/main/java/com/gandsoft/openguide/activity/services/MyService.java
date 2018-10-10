@@ -1,10 +1,8 @@
 package com.gandsoft.openguide.activity.services;
 
 import android.app.Service;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.IBinder;
-import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -31,7 +29,7 @@ import com.gandsoft.openguide.API.APIresponse.VerificationStatusLoginAppUserResp
 import com.gandsoft.openguide.IConfig;
 import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.database.SQLiteHelper;
-import com.gandsoft.openguide.support.AppUtil;
+import com.gandsoft.openguide.support.DateTimeUtil;
 import com.gandsoft.openguide.support.DeviceDetailUtil;
 import com.gandsoft.openguide.support.NetworkUtil;
 import com.gandsoft.openguide.support.SessionUtil;
@@ -53,9 +51,6 @@ public class MyService extends Service {
     private String accountId;
     private Timer timer = new Timer();
     private int count;
-
-    public MyService() {
-    }
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -102,7 +97,7 @@ public class MyService extends Service {
                     getAPICheckUser();
                 }
             }
-        }, 0, 60000);
+        }, 0, DateTimeUtil.MINUTE_MILLIS);
     }
 
     private void getAPIUserDataDo(String accountId) {
@@ -322,10 +317,10 @@ public class MyService extends Service {
                 //progressDialog.dismiss();
                 if (response.isSuccessful()) {
                     List<VerificationStatusLoginAppUserResponseModel> model = response.body();
-                    if (model.size() == 0) {
-                        db.setUserStillIn(accountId,false);
-                    }else {
-                        db.setUserStillIn(accountId,true);
+                    if (model.size() != 0) {
+                        db.setUserStillIn(accountId, true);
+                    } else {
+                        db.setUserStillIn(accountId, false);
                     }
                 } else {
                     Log.d("Lihat", "onFailure ChangeEventActivity : " + response.message());

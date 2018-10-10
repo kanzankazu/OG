@@ -120,14 +120,24 @@ public class HomeContentAdapter extends RecyclerView.Adapter<HomeContentAdapter.
             holder.ivRVHomeContentLike.setImageResource(R.drawable.ic_love_empty);
         }
 
-        if (Integer.parseInt(theEventModel.getCommentpost_status()) == 0) {
+        if (Integer.parseInt(theEventModel.getCommentpost_status()) == 1) {
+            holder.llRVHomeContentComment.setVisibility(View.VISIBLE);
+        } else {
             holder.llRVHomeContentComment.setVisibility(View.GONE);
         }
 
-        if (Integer.parseInt(theEventModel.getDeletepost_status()) == 1 || model.getAccount_id().equalsIgnoreCase(accountId) || oneListEventModel.getRole_name().equalsIgnoreCase("ADMIN")) {
-            holder.llRVHomeContentRemove.setVisibility(View.VISIBLE);
+        Log.d("Lihat", "onBindViewHolder HomeContentAdapter theEventModel.getDeletepost_status: " + theEventModel.getDeletepost_status());
+        if (Integer.parseInt(theEventModel.getDeletepost_status()) == 1) {
+            Log.d("Lihat", "onBindViewHolder HomeContentAdapter model.getAccount_id: " + model.getAccount_id().equalsIgnoreCase(accountId));
+            Log.d("Lihat", "onBindViewHolder HomeContentAdapter oneListEventModel.getRole_name: " + oneListEventModel.getRole_name().equalsIgnoreCase("ADMIN"));
+            if (model.getAccount_id().equalsIgnoreCase(accountId) || oneListEventModel.getRole_name().equalsIgnoreCase("ADMIN")) {
+                holder.llRVHomeContentRemove.setVisibility(View.VISIBLE);
+            } else {
+                holder.llRVHomeContentRemove.setVisibility(View.GONE);
+            }
+        } else {
+            holder.llRVHomeContentRemove.setVisibility(View.GONE);
         }
-
 
         holder.llRVHomeContentLike.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -205,7 +215,10 @@ public class HomeContentAdapter extends RecyclerView.Adapter<HomeContentAdapter.
 
             @Override
             public void onFailure(Call<List<LocalBaseResponseModel>> call, Throwable t) {
-                Log.d("tmassage", String.valueOf(t));
+                //progressDialog.dismiss();
+                Log.d("Lihat", "onFailure HomeContentAdapter : " + t.getMessage());
+                //Snackbar.make(findViewById(android.R.id.content), "Failed Connection To Server", Snackbar.LENGTH_SHORT).show();
+                //Crashlytics.logException(new Exception(t.getMessage()));
             }
         });
     }

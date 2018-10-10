@@ -207,6 +207,8 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
         appPkg = this.getBaseContext().getPackageName();
         ceTVVersionAppfvbi.setText(getString(R.string.app_name) + " - v " + appVersionName + "." + appVersionCode + "" +
                 "\n Powered by Gandsoft");
+
+        getAPIVerivyUser();
     }
 
     private void initListener() {
@@ -286,11 +288,13 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
         UserDataRequestModel requestModel = new UserDataRequestModel();
         requestModel.setAccountid(accountId);
         requestModel.setDbver(IConfig.DB_Version);
-        if (db.isDataTableKeyNull(SQLiteHelper.TableUserData, SQLiteHelper.KEY_UserData_versionData)) {
+
+        requestModel.setVersion_data(IConfig.DB_Version);
+        /*if (db.isDataTableKeyNull(SQLiteHelper.TableUserData, SQLiteHelper.KEY_UserData_versionData)) {
             requestModel.setVersion_data(IConfig.DB_Version);
         } else {
             requestModel.setVersion_data(db.getVersionDataIdUser(accountId));
-        }
+        }*/
 
         ProgressDialog progressDialog = new ProgressDialog(this);
         progressDialog.setCancelable(false);
@@ -322,7 +326,7 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
                             List<UserListEventResponseModel> userListEventResponseModels = model.getList_event();
                             for (int j = 0; j < userListEventResponseModels.size(); j++) {
                                 UserListEventResponseModel model1 = userListEventResponseModels.get(j);
-                                if (db.isDataTableValueNull(SQLiteHelper.TableListEvent, SQLiteHelper.KEY_ListEvent_eventId, model1.getEvent_id())) {
+                                if (db.isDataTableValueMultipleNull(SQLiteHelper.TableListEvent, SQLiteHelper.KEY_ListEvent_eventId, SQLiteHelper.KEY_ListEvent_accountId, model1.getEvent_id(), accountId)) {
                                     db.saveListEvent(model1, accountId);
                                     updateRecycleView(userListEventResponseModels);
                                 } else {
@@ -385,12 +389,12 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
         requestModel.setId_event(eventId);
         requestModel.setPass("");
         requestModel.setPhonenumber(accountId);
-//        requestModel.setVersion_data(0);
-        if (db.isDataTableValueNull(SQLiteHelper.TableTheEvent, SQLiteHelper.Key_The_Event_EventId, eventId)) {
+        requestModel.setVersion_data(IConfig.DB_Version);
+        /*if (db.isDataTableValueNull(SQLiteHelper.TableTheEvent, SQLiteHelper.Key_The_Event_EventId, eventId)) {
             requestModel.setVersion_data(0);
         } else {
             requestModel.setVersion_data(db.getVersionDataIdEvent(eventId));
-        }
+        }*/
 
         ProgressDialog progressDialog = new ProgressDialog(this);
         progressDialog.setCancelable(false);
@@ -552,7 +556,7 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
                                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialogInterface, int i) {
-                                        AppUtil.signOutFull(ChangeEventActivity.this, db, false);
+                                        AppUtil.signOutFull(ChangeEventActivity.this, db, true, accountid);
                                     }
                                 })
                                 .show();
