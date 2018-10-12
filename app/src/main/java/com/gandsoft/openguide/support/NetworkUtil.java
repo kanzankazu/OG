@@ -335,7 +335,7 @@ public class NetworkUtil {
         } else if (mobile.isAvailable()) {
             networkStatus = 2;//mobile network
         } else {
-            networkStatus = 3;//no network
+            networkStatus = 3;//number network
         }
 
         return networkStatus;
@@ -356,7 +356,7 @@ public class NetworkUtil {
         } else if (mobile.isAvailable()) {
             networkStatus = 2;//mobile network
         } else {
-            networkStatus = 3;//no network
+            networkStatus = 3;//number network
         }
 
         return networkStatus;

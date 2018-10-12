@@ -46,7 +46,7 @@ import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentCommentMode
 import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentPostCaptionDeleteResponseModel;
 import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentResponseModel;
 import com.gandsoft.openguide.API.APIresponse.LocalBaseResponseModel;
-import com.gandsoft.openguide.API.APIresponse.UserData.UserDataResponseModel;
+import com.gandsoft.openguide.API.APIresponse.UserData.GetListUserEventResponseModel;
 import com.gandsoft.openguide.API.APIresponse.UserData.UserListEventResponseModel;
 import com.gandsoft.openguide.API.APIresponse.UserData.UserWalletDataResponseModel;
 import com.gandsoft.openguide.IConfig;
@@ -57,6 +57,7 @@ import com.gandsoft.openguide.activity.main.fragments.aHomeActivityInFragment.aH
 import com.gandsoft.openguide.activity.main.fragments.aHomeActivityInFragment.aHomePostImageCaptionActivity;
 import com.gandsoft.openguide.database.SQLiteHelper;
 import com.gandsoft.openguide.support.DateTimeUtil;
+import com.gandsoft.openguide.support.InputValidUtil;
 import com.gandsoft.openguide.support.NetworkUtil;
 import com.gandsoft.openguide.support.PictureUtil;
 import com.gandsoft.openguide.support.SessionUtil;
@@ -108,7 +109,7 @@ public class aHomeFragment extends Fragment {
     private UserWalletDataResponseModel walletData;
     private EventTheEvent theEventModel = null;
     private UserListEventResponseModel oneListEventModel = null;
-    private UserDataResponseModel userData = null;
+    private GetListUserEventResponseModel userData = null;
     private HomeContentAdapter adapter;
 
     private List<HomeContentResponseModel> menuUi = new ArrayList<>();
@@ -217,11 +218,16 @@ public class aHomeFragment extends Fragment {
         });
         homeIVShareSomethingfvbi.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                if (Integer.parseInt(theEventModel.getAddpost_status()) == 0) {
-                    dialogNoPostPermission();
+                if (!InputValidUtil.isEmptyField(homeETWritePostCreatefvbi)) {
+                    if (Integer.parseInt(theEventModel.getAddpost_status()) == 0) {
+                        dialogNoPostPermission();
+                    } else {
+                        callPostCaption();
+                    }
                 } else {
-                    callPostCaption();
+                    InputValidUtil.errorET(homeETWritePostCreatefvbi, "This Empty");
                 }
+
             }
         });
         homeSRLHomefvbi.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -448,7 +454,7 @@ public class aHomeFragment extends Fragment {
             imgExists = false;
         }
 
-        //deleteImageFile(eventId);
+        //deleteImageFile(event_Id);
         db.deleleDataByKey(SQLiteHelper.TableHomeContent, SQLiteHelper.Key_HomeContent_EventId, eventId);
 
         homeLLLoadingfvbi.setVisibility(View.VISIBLE);
@@ -761,7 +767,7 @@ public class aHomeFragment extends Fragment {
         mode.setImage_posted(model.getImage_posted());
         mode.setImage_posted_local(model.getImage_posted_local());
         mode.setKeterangan(model.getKeterangan());
-        mode.setEvent(model.getEvent());
+        mode.setEvent(model.getNew_event());
         if (dataParam.size() > 0) {
             dataParam.clear();
             dataParam.add(mode);
@@ -794,7 +800,7 @@ public class aHomeFragment extends Fragment {
         } else {
             model.setKeterangan("");
         }
-        model.setEvent("");
+        model.setNew_event("");
         model.setIs_new(true);
 
         adapter.addDataFirst(model);
@@ -847,7 +853,7 @@ public class aHomeFragment extends Fragment {
                 }
             }
         } else if (requestCode == REQ_CODE_TAKE_PHOTO_INTENT_ID_STANDART && resultCode == Activity.RESULT_OK) {
-            String imageurl = PictureUtil.getPathFromUri(imageUri, getActivity());
+            String imageurl = PictureUtil.getImagePathFromUri(getActivity(), imageUri);
             moveToAHomePostImage(imageurl);
         } else if (requestCode == REQ_CODE_COMMENT && resultCode == Activity.RESULT_OK) {
             int position = data.getIntExtra(ISeasonConfig.INTENT_PARAM, 0);

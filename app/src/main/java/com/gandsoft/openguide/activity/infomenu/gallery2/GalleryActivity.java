@@ -21,7 +21,7 @@ import android.widget.LinearLayout;
 
 import com.gandsoft.openguide.API.API;
 import com.gandsoft.openguide.API.APIrequest.Gallery.GalleryRequestModel;
-import com.gandsoft.openguide.API.APIresponse.Gallery.GalleryResponseModel;
+import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentResponseModel;
 import com.gandsoft.openguide.IConfig;
 import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
@@ -47,7 +47,7 @@ public class GalleryActivity extends AppCompatActivity {
     private Toolbar toolbar;
     private ActionBar ab;
     private ArrayList<GalleryImageModel> data = new ArrayList<>();
-    private List<GalleryResponseModel> menuUi = new ArrayList<>();
+    private List<HomeContentResponseModel> menuUi = new ArrayList<>();
 
     private String accountId, eventId;
     private String last_id = "";
@@ -192,12 +192,12 @@ public class GalleryActivity extends AppCompatActivity {
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         progressDialog.show();
 
-        API.doGalleryRet(requestModel).enqueue(new Callback<List<GalleryResponseModel>>() {
+        API.doGalleryRet(requestModel).enqueue(new Callback<List<HomeContentResponseModel>>() {
             @Override
-            public void onResponse(Call<List<GalleryResponseModel>> call, Response<List<GalleryResponseModel>> response) {
+            public void onResponse(Call<List<HomeContentResponseModel>> call, Response<List<HomeContentResponseModel>> response) {
                 progressDialog.dismiss();
                 if (response.isSuccessful()) {
-                    List<GalleryResponseModel> models = response.body();
+                    List<HomeContentResponseModel> models = response.body();
                     rvGalleryAdapter.setData(models);
                     if (models.size() == 18) {
                         last_data = false;
@@ -210,7 +210,7 @@ public class GalleryActivity extends AppCompatActivity {
                     }
 
                     for (int i = 0; i < models.size(); i++) {
-                        GalleryResponseModel model = models.get(i);
+                        HomeContentResponseModel model = models.get(i);
                         if (db.isDataTableValueMultipleNull(SQLiteHelper.TableGallery, SQLiteHelper.Key_Gallery_eventId, SQLiteHelper.Key_Gallery_galleryId, eventId, model.getId())) {
                             db.saveGallery(model, eventId);
                         } else {
@@ -222,13 +222,13 @@ public class GalleryActivity extends AppCompatActivity {
                         model1.setLike(model.getLike());
                         model1.setAccount_id(model.getAccount_id());
                         model1.setTotal_comment(model.getTotal_comment());
-                        model1.setStatus_like(Integer.parseInt(model.getStatus_like()));
+                        model1.setStatus_like(model.getStatus_like());
                         model1.setUsername(model.getUsername());
                         model1.setCaption(model.getCaption());
                         model1.setImage_posted(model.getImage_posted());
+                        model1.setImage_posted_local(model.getImage_posted_local());
                         model1.setImage_icon(model.getImage_icon());
-                        model1.setImage_postedLocal(model.getImage_postedLocal());
-                        model1.setImage_iconLocal(model.getImage_iconLocal());
+                        model1.setImage_icon_local(model.getImage_icon_local());
                         model1.setEvent_id(eventId);
                         data.add(model1);
                     }
@@ -238,7 +238,7 @@ public class GalleryActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Call<List<GalleryResponseModel>> call, Throwable t) {
+            public void onFailure(Call<List<HomeContentResponseModel>> call, Throwable t) {
                 progressDialog.dismiss();
                 Snackbar.make(findViewById(android.R.id.content), t.getMessage(), Snackbar.LENGTH_LONG).show();
             }
@@ -259,12 +259,12 @@ public class GalleryActivity extends AppCompatActivity {
         requestModel.setLastid(last_id);
         requestModel.setFirstid(first_id);
 
-        API.doGalleryRet(requestModel).enqueue(new Callback<List<GalleryResponseModel>>() {
+        API.doGalleryRet(requestModel).enqueue(new Callback<List<HomeContentResponseModel>>() {
             @Override
-            public void onResponse(Call<List<GalleryResponseModel>> call, Response<List<GalleryResponseModel>> response) {
+            public void onResponse(Call<List<HomeContentResponseModel>> call, Response<List<HomeContentResponseModel>> response) {
                 llLoadModeGalleryfvbi.setVisibility(View.GONE);
                 if (response.isSuccessful()) {
-                    List<GalleryResponseModel> models = response.body();
+                    List<HomeContentResponseModel> models = response.body();
                     rvGalleryAdapter.addDatas(models);
                     Log.d("Lihat", "onResponse GalleryActivity : " + models.size());
                     if (models.size() == 18) {
@@ -278,7 +278,7 @@ public class GalleryActivity extends AppCompatActivity {
                     }
 
                     for (int i = 0; i < models.size(); i++) {
-                        GalleryResponseModel model = models.get(i);
+                        HomeContentResponseModel model = models.get(i);
                         if (db.isDataTableValueMultipleNull(SQLiteHelper.TableGallery, SQLiteHelper.Key_Gallery_eventId, SQLiteHelper.Key_Gallery_galleryId, eventId, model.getId())) {
                             db.saveGallery(model, eventId);
                         } else {
@@ -290,13 +290,13 @@ public class GalleryActivity extends AppCompatActivity {
                         model1.setLike(model.getLike());
                         model1.setAccount_id(model.getAccount_id());
                         model1.setTotal_comment(model.getTotal_comment());
-                        model1.setStatus_like(Integer.parseInt(model.getStatus_like()));
+                        model1.setStatus_like(model.getStatus_like());
                         model1.setUsername(model.getUsername());
                         model1.setCaption(model.getCaption());
                         model1.setImage_posted(model.getImage_posted());
+                        model1.setImage_posted_local(model.getImage_posted_local());
                         model1.setImage_icon(model.getImage_icon());
-                        model1.setImage_postedLocal(model.getImage_postedLocal());
-                        model1.setImage_iconLocal(model.getImage_iconLocal());
+                        model1.setImage_icon_local(model.getImage_icon_local());
                         model1.setEvent_id(eventId);
                         data.add(model1);
                     }
@@ -306,12 +306,11 @@ public class GalleryActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Call<List<GalleryResponseModel>> call, Throwable t) {
+            public void onFailure(Call<List<HomeContentResponseModel>> call, Throwable t) {
                 llLoadModeGalleryfvbi.setVisibility(View.GONE);
                 Snackbar.make(findViewById(android.R.id.content), t.getMessage(), Snackbar.LENGTH_LONG).show();
             }
         });
-
 
     }
 

@@ -44,50 +44,38 @@
             android:gravity="end"
             android:orientation="horizontal">
 
-            <android.support.v7.widget.CardView
+            <LinearLayout
+                android:id="@+id/llDetailGalleryComment"
                 android:layout_width="wrap_content"
                 android:layout_height="25dp"
                 android:layout_marginRight="20dp"
-                app:cardBackgroundColor="#e4e4e4"
-                app:cardCornerRadius="10dp"
-                app:cardPreventCornerOverlap="true">
+                android:animateLayoutChanges="true"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp">
 
-                <LinearLayout
-                    android:id="@+id/llDetailGalleryComment"
+                <TextView
+                    android:id="@+id/tvDetailGalleryComment"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:animateLayoutChanges="true"
-                    android:backgroundTint="#e4e4e4"
                     android:gravity="center"
-                    android:orientation="horizontal"
-                    android:paddingLeft="10dp"
-                    android:paddingRight="10dp">
+                    android:text="0" />
 
-                    <TextView
-                        android:id="@+id/tvDetailGalleryComment"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:gravity="center"
-                        android:text="0" />
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="5dp"
+                    android:src="@drawable/ic_comment" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:layout_marginLeft="5dp"
-                        android:gravity="center"
-                        android:text="Comment" />
+            </LinearLayout>
 
-                </LinearLayout>
-
-            </android.support.v7.widget.CardView>
 
             <LinearLayout
                 android:id="@+id/llDetailGalleryLike"
                 android:layout_width="wrap_content"
                 android:layout_height="25dp"
                 android:animateLayoutChanges="true"
-                android:background="@drawable/background_radius_left_down"
-                android:backgroundTint="#e4e4e4"
                 android:gravity="center"
                 android:orientation="horizontal"
                 android:paddingLeft="10dp"
@@ -102,7 +90,7 @@
 
                 <ImageView
                     android:id="@+id/ivDetailGalleryLike"
-                    android:layout_width="15dp"
+                    android:layout_width="20dp"
                     android:layout_height="match_parent"
                     android:layout_marginLeft="5dp"
                     android:src="@drawable/ic_love_empty" />

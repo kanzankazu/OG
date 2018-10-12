@@ -1,7 +1,6 @@
 package com.gandsoft.openguide.API.APIresponse;
 
-import com.gandsoft.openguide.API.APIresponse.Login.LoginResponseModel;
-
+import com.gandsoft.openguide.API.APIresponse.Login.PostVerifyPhonenumberFirebaseResponseModel;
 
 import java.util.ArrayList;
 
@@ -14,7 +13,7 @@ import app.beelabs.com.codebase.base.response.BaseResponse;
 public class BaseResponseModel extends BaseResponse {
 
     private String message;
-    private ArrayList<LoginResponseModel> loginModel = new ArrayList<>();
+    private ArrayList<PostVerifyPhonenumberFirebaseResponseModel> loginModel = new ArrayList<>();
 
     public String getMessage() {
         return message;
@@ -24,11 +23,11 @@ public class BaseResponseModel extends BaseResponse {
         this.message = message;
     }
 
-    public ArrayList<LoginResponseModel> getLoginModel() {
+    public ArrayList<PostVerifyPhonenumberFirebaseResponseModel> getLoginModel() {
         return loginModel;
     }
 
-    public void setLoginModel(ArrayList<LoginResponseModel> loginModel) {
+    public void setLoginModel(ArrayList<PostVerifyPhonenumberFirebaseResponseModel> loginModel) {
         this.loginModel = loginModel;
     }
 }

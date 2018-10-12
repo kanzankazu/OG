@@ -34,7 +34,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.gandsoft.openguide.API.API;
 import com.gandsoft.openguide.API.APIrequest.Event.EventDataRequestModel;
-import com.gandsoft.openguide.API.APIrequest.UserData.UserDataRequestModel;
+import com.gandsoft.openguide.API.APIrequest.UserData.GetListUserEventRequestModel;
 import com.gandsoft.openguide.API.APIrequest.VerificationStatusLoginAppUserRequestModel;
 import com.gandsoft.openguide.API.APIresponse.Event.EventAbout;
 import com.gandsoft.openguide.API.APIresponse.Event.EventCommitteeNote;
@@ -48,7 +48,7 @@ import com.gandsoft.openguide.API.APIresponse.Event.EventScheduleListDate;
 import com.gandsoft.openguide.API.APIresponse.Event.EventScheduleListDateDataList;
 import com.gandsoft.openguide.API.APIresponse.Event.EventSurroundingArea;
 import com.gandsoft.openguide.API.APIresponse.Event.EventTheEvent;
-import com.gandsoft.openguide.API.APIresponse.UserData.UserDataResponseModel;
+import com.gandsoft.openguide.API.APIresponse.UserData.GetListUserEventResponseModel;
 import com.gandsoft.openguide.API.APIresponse.UserData.UserListEventResponseModel;
 import com.gandsoft.openguide.API.APIresponse.UserData.UserWalletDataResponseModel;
 import com.gandsoft.openguide.API.APIresponse.VerificationStatusLoginAppUserResponseModel;
@@ -105,6 +105,8 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
         } else if (SessionUtil.checkIfExist(ISeasonConfig.KEY_ACCOUNT_ID) && SessionUtil.checkIfExist(ISeasonConfig.KEY_EVENT_ID)) {
             accountid = SessionUtil.getStringPreferences(ISeasonConfig.KEY_ACCOUNT_ID, null);
             moveToHomeBase();
+        } else {
+            AppUtil.signOutFull(ChangeEventActivity.this, db, true, null);
         }
     }
 
@@ -285,7 +287,7 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
 
     private void getAPIUserDataDo(String accountId) {
 
-        UserDataRequestModel requestModel = new UserDataRequestModel();
+        GetListUserEventRequestModel requestModel = new GetListUserEventRequestModel();
         requestModel.setAccountid(accountId);
         requestModel.setDbver(IConfig.DB_Version);
 
@@ -307,21 +309,21 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
         //ProgressDialog progressDialog = ProgressDialog.show(ChangeEventActivity.this, "Loading...", "Please Wait..", true, false);
 
         //code here
-        API.doUserDataRet(requestModel).enqueue(new Callback<List<UserDataResponseModel>>() {
+        API.doGetListUserEventRet(requestModel).enqueue(new Callback<List<GetListUserEventResponseModel>>() {
             @Override
-            public void onResponse(Call<List<UserDataResponseModel>> call, Response<List<UserDataResponseModel>> response) {
+            public void onResponse(Call<List<GetListUserEventResponseModel>> call, Response<List<GetListUserEventResponseModel>> response) {
                 progressDialog.dismiss();
                 if (response.isSuccessful()) {
-                    List<UserDataResponseModel> userDataResponseModels = response.body();
-                    for (int i = 0; i < userDataResponseModels.size(); i++) {
-                        UserDataResponseModel model = userDataResponseModels.get(i);
+                    List<GetListUserEventResponseModel> getListUserEventResponseModels = response.body();
+                    for (int i = 0; i < getListUserEventResponseModels.size(); i++) {
+                        GetListUserEventResponseModel model = getListUserEventResponseModels.get(i);
                         if (!model.getVersion_data().equalsIgnoreCase("last version")) {//jika bukan lastversion
                             if (db.isDataTableValueNull(SQLiteHelper.TableUserData, SQLiteHelper.KEY_UserData_accountId, accountId)) {
-                                db.saveUserData(model);
+                                db.saveUserData(model, accountId);
                             } else {
                                 db.updateUserData(model, accountId);
                             }
-                            updateUserInfo(userDataResponseModels);
+                            updateUserInfo(getListUserEventResponseModels);
 
                             List<UserListEventResponseModel> userListEventResponseModels = model.getList_event();
                             for (int j = 0; j < userListEventResponseModels.size(); j++) {
@@ -330,7 +332,7 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
                                     db.saveListEvent(model1, accountId);
                                     updateRecycleView(userListEventResponseModels);
                                 } else {
-                                    db.updateListEvent(model1);
+                                    db.updateListEvent(model1, accountId);
                                     updateRecycleView(db.getAllListEvent(accountId));
                                 }
 
@@ -354,7 +356,7 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
             }
 
             @Override
-            public void onFailure(Call<List<UserDataResponseModel>> call, Throwable t) {
+            public void onFailure(Call<List<GetListUserEventResponseModel>> call, Throwable t) {
                 progressDialog.dismiss();
                 Snackbar.make(findViewById(android.R.id.content), "Tidak Dapat terhubung dengan server", Snackbar.LENGTH_LONG).setAction("Reload", new View.OnClickListener() {
                     @Override
@@ -390,10 +392,10 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
         requestModel.setPass("");
         requestModel.setPhonenumber(accountId);
         requestModel.setVersion_data(IConfig.DB_Version);
-        /*if (db.isDataTableValueNull(SQLiteHelper.TableTheEvent, SQLiteHelper.Key_The_Event_EventId, eventId)) {
+        /*if (db.isDataTableValueNull(SQLiteHelper.TableTheEvent, SQLiteHelper.Key_The_Event_EventId, event_Id)) {
             requestModel.setVersion_data(0);
         } else {
-            requestModel.setVersion_data(db.getVersionDataIdEvent(eventId));
+            requestModel.setVersion_data(db.getVersionDataIdEvent(event_Id));
         }*/
 
         ProgressDialog progressDialog = new ProgressDialog(this);
@@ -416,7 +418,7 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
                             for (int i1 = 0; i1 < model.getThe_event().size(); i1++) {
                                 EventTheEvent theEvent = model.getThe_event().get(i1);
                                 if (db.isDataTableValueMultipleNull(SQLiteHelper.TableTheEvent, SQLiteHelper.Key_The_Event_EventId, SQLiteHelper.Key_The_Event_version_data, model.getEvent_id(), model.getVersion_data())) {
-                                    db.saveTheEvent(theEvent, eventId, model.getFeedback_data(), model.getVersion_data());
+                                    db.saveTheEvent(theEvent, model.getEvent_id(), model.getFeedback_data(), model.getVersion_data());
                                 } else {
                                     db.updateTheEvent(theEvent, model.getEvent_id(), model.getFeedback_data(), model.getVersion_data());
                                 }
@@ -603,10 +605,10 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
         adapterOnGoing.replaceData(models);
     }
 
-    private void updateUserInfo(List<UserDataResponseModel> models) {
+    private void updateUserInfo(List<GetListUserEventResponseModel> models) {
         if (models.size() == 1) {
             for (int i = 0; i < models.size(); i++) {
-                UserDataResponseModel model = models.get(i);
+                GetListUserEventResponseModel model = models.get(i);
                 ceTVUserNamefvbi.setText(model.getFull_name());
                 ceTVUserIdfvbi.setText(model.getAccount_id());
                 Glide.with(getApplicationContext())
@@ -634,10 +636,8 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
     }
 
     private void moveToAccount() {
-        //startActivity(AccountActivity.getActIntent(ChangeEventActivity.this));
         Intent intent = new Intent(ChangeEventActivity.this, AccountActivity.class);
         startActivity(intent);
-        //finish();
     }
 
     @Override
@@ -648,7 +648,7 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
     }
 
     private void customText(TextView view) {
-        SpannableStringBuilder spanTxt = new SpannableStringBuilder("To create an event, please contact our phone number: ");
+        SpannableStringBuilder spanTxt = new SpannableStringBuilder("To create an new_event, please contact our phone number: ");
 
         spanTxt.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.colorPrimary)), 10, spanTxt.length(), 0);
         spanTxt.append("+62 21 53661536");

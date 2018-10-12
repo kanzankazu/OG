@@ -1,7 +1,6 @@
 package com.gandsoft.openguide.activity;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -11,7 +10,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.CardView;
-import android.text.InputFilter;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -21,8 +19,13 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.gandsoft.openguide.API.API;
-import com.gandsoft.openguide.API.APIrequest.Login.LoginRequestModel;
-import com.gandsoft.openguide.API.APIresponse.Login.LoginResponseModel;
+import com.gandsoft.openguide.API.APIrequest.Login.PostVerifyPhonenumberFirebaseRequestModel;
+import com.gandsoft.openguide.API.APIrequest.PostVerifyLoginUserRequestModel;
+import com.gandsoft.openguide.API.APIrequest.PostVerifyTokenFirebaseRequestModel;
+import com.gandsoft.openguide.API.APIresponse.Login.PostVerifyPhonenumberFirebaseResponseModel;
+import com.gandsoft.openguide.API.APIresponse.PostVerifyLoginUserResponseModel;
+import com.gandsoft.openguide.API.APIresponse.PostVerifyTokenFirebaseResponseModel;
+import com.gandsoft.openguide.IConfig;
 import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
 import com.gandsoft.openguide.database.SQLiteHelper;
@@ -41,6 +44,7 @@ import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.hbb20.CountryCodePicker;
 
 import java.util.List;
@@ -74,13 +78,16 @@ public class LoginActivity extends LocalBaseActivity {
     private String phoneNumberSavedwPlus;
     private String phoneNumberSavedwoPlus;
     private String mVerificationId;
-    private boolean isLogin, isVerify;
+    private boolean isLogin, isVerify, isVerifyOldUser;
     private ProgressDialog progressDialogSubmit;
+    private String refreshedToken;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        refreshedToken = FirebaseInstanceId.getInstance().getToken();
 
         initComponent();
         initContent();
@@ -128,7 +135,7 @@ public class LoginActivity extends LocalBaseActivity {
                 //     detect the incoming verification SMS and perform verification without
                 //     user action.
 
-                signInWithPhoneAuthCredential(credential);//onVerificationCompleted
+                phoneNumberSignInPhoneAuthWithCredential(credential);//onVerificationCompleted
 
                 if (credential != null) {
                     if (credential.getSmsCode() != null) {
@@ -138,9 +145,9 @@ public class LoginActivity extends LocalBaseActivity {
                                 //code here
                                 etLoginfvbi.setText(credential.getSmsCode());
                             }
-                        }, 1000);
+                        }, 500);
                     } else {
-                        snackBar("instant validation", false);
+                        //snackBar("instant validation", false);
                     }
                 }
             }
@@ -180,7 +187,7 @@ public class LoginActivity extends LocalBaseActivity {
             public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
                 boolean handled = false;
                 if (i == EditorInfo.IME_ACTION_GO) {
-                    checkData();
+                    initPhoneNumberValidationInput();
                 }
                 return handled;
             }
@@ -189,14 +196,14 @@ public class LoginActivity extends LocalBaseActivity {
         cvLoginSubmitfvbi.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                checkData();
+                initPhoneNumberValidationInput();
             }
         });
 
         tvLoginResendCodefvbi.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                resendVerificationCode(phoneNumberSavedwPlus, mResendToken);
+                phoneNumberResendVerificationCode(phoneNumberSavedwPlus, mResendToken);
                 snackBar("Resend Code", false);
             }
         });
@@ -214,12 +221,15 @@ public class LoginActivity extends LocalBaseActivity {
             @Override
             public void onClick(View view) {
                 if (!InputValidUtil.isEmptyField(etLoginfvbi)) {
-                    //SessionUtil.setStringPreferences(ISeasonConfig.KEY_ACCOUNT_ID, getNumberValid(etLoginfvbi));
+                    //SessionUtil.setStringPreferences(ISeasonConfig.KEY_ACCOUNT_ID, getPhoneNumberValid(etLoginfvbi));
                     //moveToChangeEvent();
                     if (NetworkUtil.isConnectedIsOnline(LoginActivity.this)) {
-                        phoneNumberSavedwPlus = "+" + getNumberValid(etLoginfvbi);
-                        phoneNumberSavedwoPlus = getNumberValid(etLoginfvbi);
-                        sendLoginData();
+
+                        SessionUtil.removeAllSharedPreferences();
+
+                        phoneNumberSavedwPlus = "+" + getPhoneNumberValid(etLoginfvbi);
+                        phoneNumberSavedwoPlus = getPhoneNumberValid(etLoginfvbi);
+                        sendVerifyPhonenumberFirebase();
                     }
                 } else {
                     SystemUtil.etReqFocus(LoginActivity.this, etLoginfvbi, "Data Kosong");
@@ -228,12 +238,34 @@ public class LoginActivity extends LocalBaseActivity {
         });
     }
 
+    private void initPhoneNumberValidationInput() {
+        if (!InputValidUtil.isEmptyField(etLoginfvbi)) {
+            if (isLogin) {
+                if (InputValidUtil.isValidatePhoneNumber(etLoginfvbi.getText().toString())) {
+                    phoneNumberSavedwPlus = "+" + getPhoneNumberValid(etLoginfvbi);
+                    phoneNumberSavedwoPlus = getPhoneNumberValid(etLoginfvbi);
+                    //Toast.makeText(getApplicationContext(), getPhoneNumberValid(etLoginfvbi), Toast.LENGTH_SHORT).show();
+                    //sendPhoneNumberVerification("+" + getPhoneNumberValid(etLoginfvbi));
+                    snackBar("Start Verify Phone Number", false);
+                    sendVerifyPhonenumberFirebase();
+                } else {
+                    SystemUtil.etReqFocus(LoginActivity.this, etLoginfvbi, "Data Tidak Valid");
+                }
+            } else if (isVerify) {
+                phoneNumberVerifyWithCode(mVerificationId, etLoginfvbi.getText().toString());
+                snackBar("Start Verify Phone Number", false);
+            }
+        } else {
+            SystemUtil.etReqFocus(LoginActivity.this, etLoginfvbi, "Data Kosong");
+        }
+    }
+
     private void updateUI(int ui, PhoneAuthCredential cred) {
         if (ui == UI_LOGIN) {
             disableViews(tvLoginVerifyInfofvbi, tvLoginResendCodefvbi, llLoginBackfvbi);
             enableViews(ccpLoginfvbi);
             etLoginfvbi.setHint("Enter Phone Number");
-            tvLoginSubmitfvbi.setText("VERIFY");
+            tvLoginSubmitfvbi.setText("VERIFY NUMBER");
             isLogin = true;
             isVerify = false;
         } else if (ui == UI_VERIFY) {
@@ -241,7 +273,7 @@ public class LoginActivity extends LocalBaseActivity {
             disableViews(ccpLoginfvbi);
             etLoginfvbi.setHint("Enter Code");
             etLoginfvbi.setText("");
-            tvLoginSubmitfvbi.setText("SEND");
+            tvLoginSubmitfvbi.setText("VERIFY OTP");
             isLogin = false;
             isVerify = true;
 
@@ -255,28 +287,251 @@ public class LoginActivity extends LocalBaseActivity {
         }
     }
 
-    private void checkData() {
-        if (!InputValidUtil.isEmptyField(etLoginfvbi)) {
-            if (isLogin) {
-                if (InputValidUtil.isValidatePhoneNumber(etLoginfvbi.getText().toString())) {
-                    //Toast.makeText(getApplicationContext(), getNumberValid(etLoginfvbi), Toast.LENGTH_SHORT).show();
-                    startPhoneNumberVerification("+" + getNumberValid(etLoginfvbi));
-                    phoneNumberSavedwPlus = "+" + getNumberValid(etLoginfvbi);
-                    phoneNumberSavedwoPlus = getNumberValid(etLoginfvbi);
-                    snackBar("Start Verify Phone Number", false);
+    /**/
+    private void sendVerifyPhonenumberFirebase() {
+        PostVerifyPhonenumberFirebaseRequestModel request = new PostVerifyPhonenumberFirebaseRequestModel();
+        request.setDbver(String.valueOf(IConfig.DB_Version));
+        request.setDevice_app(DeviceDetailUtil.getAllDataPhone2(this));
+        request.setPhonenumber(phoneNumberSavedwoPlus);
+        request.setLogin_status("1");
+
+        ProgressDialog progressDialog = ProgressDialog.show(LoginActivity.this, "Loading...", "Please Wait..", false, false);
+
+        API.doPostVerifyPhonenumberFirebaseRet(request).enqueue(new Callback<List<PostVerifyPhonenumberFirebaseResponseModel>>() {
+            @Override
+            public void onResponse(Call<List<PostVerifyPhonenumberFirebaseResponseModel>> call, Response<List<PostVerifyPhonenumberFirebaseResponseModel>> response) {
+                progressDialog.dismiss();
+                if (response.isSuccessful()) {
+                    List<PostVerifyPhonenumberFirebaseResponseModel> s = response.body();
+                    if (s.size() == 1) {
+                        for (int i = 0; i < s.size(); i++) {
+                            PostVerifyPhonenumberFirebaseResponseModel model = s.get(i);
+                            if (model.getStatus().equalsIgnoreCase("verify")) {
+                                Snackbar.make(findViewById(android.R.id.content), "verify", Snackbar.LENGTH_LONG).show();
+                                isVerifyOldUser = true;
+                            } else {
+                                Snackbar.make(findViewById(android.R.id.content), "number verify", Snackbar.LENGTH_LONG).show();
+                                isVerifyOldUser = false;
+                            }
+                            sendPhoneNumberVerification("+" + getPhoneNumberValid(etLoginfvbi));
+                        }
+                    } else {
+                        Snackbar.make(findViewById(android.R.id.content), "error data", Snackbar.LENGTH_LONG).show();
+                    }
                 } else {
-                    SystemUtil.etReqFocus(LoginActivity.this, etLoginfvbi, "Data Tidak Valid");
+                    Snackbar.make(findViewById(android.R.id.content), "get data unsuccessful", Snackbar.LENGTH_LONG).setAction("Action", null).show();
                 }
-            } else if (isVerify) {
-                verifyPhoneNumberWithCode(mVerificationId, etLoginfvbi.getText().toString());
-                snackBar("Start Verify Phone Number", false);
             }
-        } else {
-            SystemUtil.etReqFocus(LoginActivity.this, etLoginfvbi, "Data Kosong");
+
+            @Override
+            public void onFailure(Call<List<PostVerifyPhonenumberFirebaseResponseModel>> call, Throwable t) {
+                progressDialog.dismiss();
+                Log.d("Lihat", "onFailure LoginActivity : " + t.getMessage());
+                //Snackbar.make(findViewById(android.R.id.content), "Failed Connection To Server", Snackbar.LENGTH_SHORT).show();
+                /*Snackbar.make(findViewById(android.R.id.content), "Failed Connection To Server", Snackbar.LENGTH_SHORT).setAction("Reload", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+
+                    }
+                }).show();*/
+                //Crashlytics.logException(new Exception(t.getMessage()));
+            }
+        });
+    }
+
+    private void sendPhoneNumberVerification(String phoneNumber) {
+        PhoneAuthProvider.getInstance().verifyPhoneNumber(
+                phoneNumber,        // Phone number to verify
+                60,             // Timeout duration
+                TimeUnit.SECONDS,   // Unit of timeout
+                this,       // Activity (for callback binding)
+                mCallbacks);        // OnVerificationStateChangedCallbacks
+    }
+
+    private void phoneNumberResendVerificationCode(String phoneNumber, PhoneAuthProvider.ForceResendingToken token) {
+        PhoneAuthProvider.getInstance().verifyPhoneNumber(
+                phoneNumber,        // Phone number to verify
+                60,                 // Timeout duration
+                TimeUnit.SECONDS,   // Unit of timeout
+                this,               // Activity (for callback binding)
+                mCallbacks,         // OnVerificationStateChangedCallbacks
+                token);             // ForceResendingToken from callbacks
+    }
+
+    private void phoneNumberVerifyWithCode(String verificationId, String code) {
+
+        PhoneAuthCredential credential = PhoneAuthProvider.getCredential(verificationId, code);
+
+        phoneNumberSignInPhoneAuthWithCredential(credential);//phoneNumberVerifyWithCode
+    }
+
+    private void phoneNumberSignInPhoneAuthWithCredential(PhoneAuthCredential credential) {
+        mAuth.signInWithCredential(credential).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+            @SuppressLint("LongLogTag")
+            @Override
+            public void onComplete(@NonNull Task<AuthResult> task) {
+                if (task.isSuccessful()) {
+                    FirebaseUser user = task.getResult().getUser();
+                    snackBar("Success", false);
+                    if (isVerifyOldUser) {
+                        sendVerificationLoginUsers();//oldUser
+                    } else {
+                        sendVerivyTokenAccountFirebase();
+                    }
+                } else {
+                    if (task.getException() instanceof FirebaseAuthInvalidCredentialsException) {
+                        snackBar("Invalid code.", true);
+                    }
+                }
+            }
+        });
+    }
+
+    private void sendVerivyTokenAccountFirebase() {
+        PostVerifyTokenFirebaseRequestModel requestModel = new PostVerifyTokenFirebaseRequestModel();
+        requestModel.setPhonenumber(phoneNumberSavedwoPlus);
+        requestModel.setToken(refreshedToken);
+        requestModel.setCondition("verifytoken");
+        requestModel.setDbver(String.valueOf(IConfig.DB_Version));
+        requestModel.setCodecountry(ccpLoginfvbi.getDefaultCountryCode());
+
+        ProgressDialog progressDialog = ProgressDialog.show(LoginActivity.this, "Loading...", "Please Wait..", false, false);
+
+        API.doPostVerivyTokenAccountFirebase(requestModel).enqueue(new Callback<List<PostVerifyTokenFirebaseResponseModel>>() {
+            @Override
+            public void onResponse(Call<List<PostVerifyTokenFirebaseResponseModel>> call, Response<List<PostVerifyTokenFirebaseResponseModel>> response) {
+                progressDialog.dismiss();
+                if (response.isSuccessful()) {
+                    List<PostVerifyTokenFirebaseResponseModel> mods = response.body();
+                    if (mods.size() == 1) {
+                        for (int i = 0; i < mods.size(); i++) {
+                            PostVerifyTokenFirebaseResponseModel mod1 = mods.get(i);
+                            if (mod1.getStatus().equalsIgnoreCase("verify")) {
+                                sendVerificationLoginUsers();//newUser
+                            } else {
+                                signOut();
+                            }
+                        }
+                    } else {
+                        Log.d("Lihat", "onResponse LoginActivity : " + response.message());
+                        //Snackbar.make(findViewById(android.R.id.content), "error data", Snackbar.LENGTH_LONG).show();
+                        //Crashlytics.logException(new Exception(response.message()));
+                    }
+                } else {
+                    Log.d("Lihat", "onResponse LoginActivity : " + response.message());
+                    //Snackbar.make(findViewById(android.R.id.content), "Failed Connection To Server", Snackbar.LENGTH_LONG).show();
+                    //Crashlytics.logException(new Exception(response.message()));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<PostVerifyTokenFirebaseResponseModel>> call, Throwable t) {
+                progressDialog.dismiss();
+                Log.d("Lihat", "onFailure LoginActivity : " + t.getMessage());
+                //Snackbar.make(findViewById(android.R.id.content), "Failed Connection To Server", Snackbar.LENGTH_SHORT).show();
+                /*Snackbar.make(findViewById(android.R.id.content), "Failed Connection To Server", Snackbar.LENGTH_SHORT).setAction("Reload", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+
+                    }
+                }).show();*/
+                //Crashlytics.logException(new Exception(t.getMessage()));
+                signOut();
+            }
+        });
+    }
+
+    private void sendVerificationLoginUsers() {
+        new Handler().postDelayed(new Runnable() {
+            public void run() {
+                PostVerifyLoginUserRequestModel requestModel = new PostVerifyLoginUserRequestModel();
+                requestModel.setPhonenumber(phoneNumberSavedwoPlus);
+                requestModel.setToken(refreshedToken);
+                requestModel.setPassword("12345");
+                if (isVerifyOldUser) {
+                    requestModel.setKondisi("oldpassword");
+                } else {
+                    requestModel.setKondisi("createpass");
+                }
+                requestModel.setDbver(String.valueOf(IConfig.DB_Version));
+
+                API.doPostVerificationLoginUsers(requestModel).enqueue(new Callback<List<PostVerifyLoginUserResponseModel>>() {
+                    @Override
+                    public void onResponse(Call<List<PostVerifyLoginUserResponseModel>> call, Response<List<PostVerifyLoginUserResponseModel>> response) {
+                        //progressDialog.dismiss();
+                        if (response.isSuccessful()) {
+                            List<PostVerifyLoginUserResponseModel> mods = response.body();
+                            if (mods.size() == 1) {
+                                for (int i = 0; i < mods.size(); i++) {
+                                    PostVerifyLoginUserResponseModel mod1 = mods.get(i);
+                                    if (mod1.getStatus().equalsIgnoreCase("verify")) {
+                                        SessionUtil.setStringPreferences(ISeasonConfig.KEY_ACCOUNT_ID, phoneNumberSavedwoPlus);
+                                        if (isVerifyOldUser) {
+                                            moveToChangeEvent();
+                                        } else {
+                                            moveToAccountForNewUser();
+
+                                        }
+                                    } else {
+                                        signOut();
+                                    }
+                                }
+                            } else {
+                                Log.d("Lihat", "onResponse LoginActivity : " + response.message());
+                                //Snackbar.make(findViewById(android.R.id.content), "error data", Snackbar.LENGTH_LONG).show();
+                                //Crashlytics.logException(new Exception(response.message()));
+                            }
+                        } else {
+                            Log.d("Lihat", "onResponse LoginActivity : " + response.message());
+                            //Snackbar.make(findViewById(android.R.id.content), "Failed Connection To Server", Snackbar.LENGTH_LONG).show();
+                            //Crashlytics.logException(new Exception(response.message()));
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<List<PostVerifyLoginUserResponseModel>> call, Throwable t) {
+                        //progressDialog.dismiss();
+                        Log.d("Lihat", "onFailure LoginActivity : " + t.getMessage());
+                        //Snackbar.make(findViewById(android.R.id.content), "Failed Connection To Server", Snackbar.LENGTH_SHORT).show();
+                        //Crashlytics.logException(new Exception(t.getMessage()));
+                        signOut();
+                    }
+                });
+            }
+        }, 1000);
+    }
+    /**/
+
+    private void moveToAccountForNewUser() {
+        SessionUtil.setBoolPreferences(ISeasonConfig.KEY_IS_HAS_LOGIN, true);
+        Intent intent = new Intent(LoginActivity.this, AccountActivity.class);
+        intent.putExtra(ISeasonConfig.KEY_IS_FIRST_ACCOUNT, true);
+        startActivity(intent);
+        finish();
+    }
+
+    private void moveToChangeEvent() {
+        SessionUtil.setBoolPreferences(ISeasonConfig.KEY_IS_HAS_LOGIN, true);
+        startActivity(ChangeEventActivity.getActIntent(LoginActivity.this)
+        );
+        finish();
+    }
+
+    private void enableViews(View... views) {
+        for (View v : views) {
+            //v.setEnabled(true);
+            v.setVisibility(View.VISIBLE);
         }
     }
 
-    private String getNumberValid(EditText editText) {
+    private void disableViews(View... views) {
+        for (View v : views) {
+            //v.setEnabled(false);
+            v.setVisibility(View.GONE);
+        }
+    }
+
+    private String getPhoneNumberValid(EditText editText) {
         String string = editText.getText().toString();
         String sub0 = string.substring(0, 1);
         String sub62 = string.substring(0, 2);
@@ -294,138 +549,13 @@ public class LoginActivity extends LocalBaseActivity {
         return sVal;
     }
 
-    private void startPhoneNumberVerification(String phoneNumber) {
-        PhoneAuthProvider.getInstance().verifyPhoneNumber(
-                phoneNumber,        // Phone number to verify
-                60,             // Timeout duration
-                TimeUnit.SECONDS,   // Unit of timeout
-                this,       // Activity (for callback binding)
-                mCallbacks);        // OnVerificationStateChangedCallbacks
-    }
-
-    private void resendVerificationCode(String phoneNumber, PhoneAuthProvider.ForceResendingToken token) {
-        PhoneAuthProvider.getInstance().verifyPhoneNumber(
-                phoneNumber,        // Phone number to verify
-                60,                 // Timeout duration
-                TimeUnit.SECONDS,   // Unit of timeout
-                this,               // Activity (for callback binding)
-                mCallbacks,         // OnVerificationStateChangedCallbacks
-                token);             // ForceResendingToken from callbacks
-    }
-
-    private void verifyPhoneNumberWithCode(String verificationId, String code) {
-
-        PhoneAuthCredential credential = PhoneAuthProvider.getCredential(verificationId, code);
-
-        signInWithPhoneAuthCredential(credential);//verifyPhoneNumberWithCode
-    }
-
-    private void signInWithPhoneAuthCredential(PhoneAuthCredential credential) {
-        mAuth.signInWithCredential(credential).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-            @SuppressLint("LongLogTag")
-            @Override
-            public void onComplete(@NonNull Task<AuthResult> task) {
-                if (task.isSuccessful()) {
-                    FirebaseUser user = task.getResult().getUser();
-                    snackBar("Success", false);
-                    sendLoginData();
-                } else {
-                    if (task.getException() instanceof FirebaseAuthInvalidCredentialsException) {
-                        snackBar("Invalid code.", true);
-                    }
-                }
-            }
-        });
-    }
-
-    private void sendLoginData() {
-        LoginRequestModel request = new LoginRequestModel();
-        request.setDbver("3");
-        request.setDevice_app(DeviceDetailUtil.getAllDataPhone2(this));
-        request.setPhonenumber(phoneNumberSavedwoPlus);
-        request.setLogin_status("1");
-
-        ProgressDialog progressDialog = ProgressDialog.show(LoginActivity.this, "Loading...", "Please Wait..", false, false);
-
-        API.doLoginRet(request).enqueue(new Callback<List<LoginResponseModel>>() {
-            @Override
-            public void onResponse(Call<List<LoginResponseModel>> call, Response<List<LoginResponseModel>> response) {
-                progressDialog.dismiss();
-                if (response.isSuccessful()) {
-                    List<LoginResponseModel> s = response.body();
-                    if (s.size() == 1) {
-                        for (int i = 0; i < s.size(); i++) {
-                            LoginResponseModel model = s.get(i);
-                            SessionUtil.setStringPreferences(ISeasonConfig.KEY_ACCOUNT_ID, phoneNumberSavedwoPlus);
-                            if (model.getStatus().equalsIgnoreCase("verify")) {
-                                Snackbar.make(findViewById(android.R.id.content), "verify", Snackbar.LENGTH_LONG).show();
-                                moveToChangeEvent();
-                                //db.insertOneKey(SQLiteHelper.TableUserData, SQLiteHelper.KEY_UserData_accountId, phoneNumberSavedwoPlus);
-                            } else {
-                                Snackbar.make(findViewById(android.R.id.content), "no verify", Snackbar.LENGTH_LONG).show();
-                                moveToAccountForNewUser();
-                            }
-                        }
-                    } else {
-                        Snackbar.make(findViewById(android.R.id.content), "Data Tidak Sesuai", Snackbar.LENGTH_LONG).show();
-                    }
-                } else {
-                    Snackbar.make(findViewById(android.R.id.content), "Koneksi Ke Server bermasalah", Snackbar.LENGTH_LONG).setAction("Action", null).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<List<LoginResponseModel>> call, Throwable t) {
-                progressDialog.dismiss();
-            }
-        });
-    }
-
-    @SuppressLint("NewApi")
-    private void moveToAccountForNewUser() {
-        SessionUtil.setBoolPreferences(ISeasonConfig.KEY_IS_HAS_LOGIN, true);
-        startActivity(AccountActivity
-                .getActIntent(LoginActivity.this)
-                .putExtra(ISeasonConfig.KEY_IS_FIRST_ACCOUNT, true)
-        );
-        finish();
-    }
-
-    private void moveToChangeEvent() {
-        SessionUtil.setBoolPreferences(ISeasonConfig.KEY_IS_HAS_LOGIN, true);
-        startActivity(ChangeEventActivity
-                .getActIntent(LoginActivity.this)
-        );
-        finish();
-    }
-
-    public void setEditTextMaxLength(int length) {
-        InputFilter[] filterArray = new InputFilter[1];
-        filterArray[0] = new InputFilter.LengthFilter(length);
-        etLoginfvbi.setFilters(filterArray);
-    }
-
-    private void enableViews(View... views) {
-        for (View v : views) {
-            //v.setEnabled(true);
-            v.setVisibility(View.VISIBLE);
-        }
-    }
-
-    private void disableViews(View... views) {
-        for (View v : views) {
-            //v.setEnabled(false);
-            v.setVisibility(View.GONE);
-        }
-    }
-
     private void snackBar(String success, Boolean reloadAction) {
         if (reloadAction) {
             Snackbar.make(findViewById(android.R.id.content), success, Snackbar.LENGTH_INDEFINITE)
                     .setAction("RELOAD", new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            checkData();
+                            initPhoneNumberValidationInput();
                         }
                     })
                     .show();
@@ -440,7 +570,4 @@ public class LoginActivity extends LocalBaseActivity {
         Snackbar.make(findViewById(android.R.id.content), "Success Sign Out", Snackbar.LENGTH_SHORT).show();
     }
 
-    public static Intent getActIntent(Activity activity) {
-        return new Intent(activity, LoginActivity.class);
-    }
 }

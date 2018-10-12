@@ -1,5 +1,6 @@
 package com.gandsoft.openguide.support;
 
+import android.text.InputFilter;
 import android.text.TextUtils;
 import android.util.Patterns;
 import android.widget.EditText;
@@ -92,5 +93,16 @@ public class InputValidUtil {
 
     public static float getPercent(long number, long total) {
         return (float) number / (float) total * 100;
+    }
+
+    public static void errorET(EditText editText, CharSequence stringerror) {
+        editText.setError(stringerror);
+        editText.requestFocus();
+    }
+
+    public void setEditTextMaxLength(int length, EditText editText) {
+        InputFilter[] filterArray = new InputFilter[1];
+        filterArray[0] = new InputFilter.LengthFilter(length);
+        editText.setFilters(filterArray);
     }
 }

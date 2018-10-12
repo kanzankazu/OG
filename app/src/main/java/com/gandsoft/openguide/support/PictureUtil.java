@@ -54,6 +54,7 @@ public class PictureUtil {
             CropIntent.putExtra("aspectY", 4);
             CropIntent.putExtra("scaleUpIfNeeded", true);
             CropIntent.putExtra("return-data", true);
+
             return CropIntent;
         } catch (ActivityNotFoundException e) {
             return CropIntent;
@@ -188,22 +189,7 @@ public class PictureUtil {
         return temp;
     }
 
-    private static void createDirectoryAndSaveFile(Bitmap imageToSave, String fileName) {
-        File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/.Gandsoft/" + "/" + fileName);
-        if (file.exists()) {
-            file.delete();
-        }
-        try {
-            FileOutputStream out = new FileOutputStream(file);
-            imageToSave.compress(Bitmap.CompressFormat.PNG, 100, out);
-            out.flush();
-            out.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public static String getPathFromUri(Uri uri, Activity activity) {
+    public static String getImagePathFromUri(Activity activity, Uri uri) {
         String[] projection = {MediaStore.Images.Media.DATA};
 
         Cursor cursor = activity.managedQuery(uri, projection, null, null, null);
@@ -213,10 +199,37 @@ public class PictureUtil {
         return cursor.getString(column_index);
     }
 
-    public static Bitmap getBitmapFromPathFile(String imagePath) {
+    public static String getImagePathFromUri2(Activity activity, Uri uri) {
+        if (uri == null) {
+            return null;
+        }
+        String[] projection = {MediaStore.Images.Media.DATA};
+        Cursor cursor = activity.getContentResolver().query(uri, projection, null, null, null);
+        if (cursor != null) {
+            int column_index = cursor
+                    .getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+            cursor.moveToFirst();
+            return cursor.getString(column_index);
+        }
+        return uri.getPath();
+    }
+
+    public static Bitmap getImageBitmapFromPathFile(String imagePath) {
         BitmapFactory.Options bmOptions = new BitmapFactory.Options();
         Bitmap bitmap = BitmapFactory.decodeFile(imagePath, bmOptions);
         return bitmap;
+    }
+
+    public static Uri getImageUriFromBitmap(Context context, Bitmap inImage) {
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+        String path = MediaStore.Images.Media.insertImage(context.getContentResolver(), inImage, "Title", null);
+        return Uri.parse(path);
+    }
+
+    public static Uri getImageUriFromPath(Activity activity, String path) {
+        Bitmap bitmapFromPathFile = getImageBitmapFromPathFile(path);
+        return getImageUriFromBitmap(activity, bitmapFromPathFile);
     }
 
     public static boolean removeImageFromPathFile(String source_) {
@@ -283,19 +296,7 @@ public class PictureUtil {
         return flipImage;
     }
 
-    private void deleteImageFile(String eventIds) {
-        //db.deleleDataByKey(SQLiteHelper.TableGallery, SQLiteHelper.Key_Gallery_eventId, eventIds);
-
-        File dir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/.Gandsoft/" + eventIds);
-        if (dir.isDirectory()) {
-            String[] children = dir.list();
-            for (int i = 0; i < children.length; i++) {
-                new File(dir, children[i]).delete();
-            }
-        }
-    }
-
-    private void onSelectGallery(Intent data) {
+    public static void onSelectGallery(Intent data) {
         /*Uri selectedImageUri = data.getData();
         String[] projection = {MediaStore.MediaColumns.DATA};
         @SuppressWarnings("deprecation")
@@ -325,7 +326,22 @@ public class PictureUtil {
         Log.d("bes64 ", base64pic);*/
     }
 
-    private String saveImage(Bitmap image, int position, String id) {
+    public static void createDirectoryAndSaveFile(Bitmap imageToSave, String fileName) {
+        File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/.Gandsoft/" + "/" + fileName);
+        if (file.exists()) {
+            file.delete();
+        }
+        try {
+            FileOutputStream out = new FileOutputStream(file);
+            imageToSave.compress(Bitmap.CompressFormat.PNG, 100, out);
+            out.flush();
+            out.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static String saveImage(Bitmap image, int position, String id) {
         /*Random r = new Random();
         int i1 = r.nextInt(1000);*/
         String savedImagePath = null;
@@ -351,7 +367,7 @@ public class PictureUtil {
         return savedImagePath;
     }
 
-    public static void saveImageDownload(Activity activity, Bitmap bitmap, String title, String id) {
+    public static void saveImageToPicture(Activity activity, Bitmap bitmap, String title, String id) {
         String savedImagePath;
         String replace = title.replace(" ", "");
         String imageFileName = replace + "_" + id + ".jpg";
@@ -375,7 +391,19 @@ public class PictureUtil {
                 Snackbar.make(activity.findViewById(android.R.id.content), "Image Exists", Snackbar.LENGTH_SHORT).show();
             }
             savedImagePath = imageFile.getAbsolutePath();
-            Log.d("Lihat", "saveImageDownload PictureUtil : " + savedImagePath);
+            Log.d("Lihat", "saveImageToPicture PictureUtil : " + savedImagePath);
+        }
+    }
+
+    public static void deleteImageFile(String eventIds) {
+        //db.deleleDataByKey(SQLiteHelper.TableGallery, SQLiteHelper.Key_Gallery_eventId, eventIds);
+
+        File dir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/.Gandsoft/" + eventIds);
+        if (dir.isDirectory()) {
+            String[] children = dir.list();
+            for (int i = 0; i < children.length; i++) {
+                new File(dir, children[i]).delete();
+            }
         }
     }
 }

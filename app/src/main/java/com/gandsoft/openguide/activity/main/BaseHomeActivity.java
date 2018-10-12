@@ -185,7 +185,7 @@ public class BaseHomeActivity extends AppCompatActivity {
                         if (!db.isUserStillIn(accountId)) {
                             new AlertDialog.Builder(BaseHomeActivity.this)
                                     .setTitle("Informasi")
-                                    .setMessage("Akun anda sudah di gunakan perangkat lain, otomatis anda akan keluar dari event")
+                                    .setMessage("Akun anda sudah di gunakan perangkat lain, otomatis anda akan keluar dari new_event")
                                     .setCancelable(false)
                                     .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                                         @Override
@@ -370,7 +370,7 @@ public class BaseHomeActivity extends AppCompatActivity {
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, ISeasonConfig.ID_NOTIF, intent, PendingIntent.FLAG_ONE_SHOT);
 
-        NotifUtil.setNotification(this, "Openguide", title + " , " + date, R.drawable.ic_love_fill, R.mipmap.ic_launcher, true, pendingIntent, ISeasonConfig.ID_NOTIF);
+        NotifUtil.setNotification(this, "Openguide", title + " , " + date, R.drawable.ic_og_logo, R.mipmap.ic_launcher, true, pendingIntent, ISeasonConfig.ID_NOTIF);
     }
 
     @Override

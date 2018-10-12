@@ -77,8 +77,8 @@ public class HomeContentAdapter extends RecyclerView.Adapter<HomeContentAdapter.
         holder.tvRVHomeContentLike.setText(model.getLike());
         holder.tvRVHomeContentUsername.setText(model.getUsername());
         holder.tvRVHomeContentTime.setText(model.getDate_created());
-        if (!TextUtils.isEmpty(model.getKeterangan()) || !TextUtils.isEmpty(model.getEvent())) {
-            holder.tvRVHomeContentKeterangan.setHtml(model.getKeterangan() + "" + model.getEvent());
+        if (!TextUtils.isEmpty(model.getKeterangan()) || !TextUtils.isEmpty(model.getNew_event())) {
+            holder.tvRVHomeContentKeterangan.setHtml(model.getKeterangan() + "" + model.getNew_event());
             holder.tvRVHomeContentKeterangan.setVisibility(View.VISIBLE);
         } else {
             holder.tvRVHomeContentKeterangan.setVisibility(View.GONE);

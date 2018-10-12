@@ -1,41 +1,29 @@
 package com.gandsoft.openguide.API.APIresponse.HomeContent;
 
 public class HomeContentResponseModel {
-    public String id;
-    public String like;
-    public String account_id;
-    public String total_comment;
-    public int status_like;
-    public String username;
-    public String jabatan;
-    public String date_created;
-    public String image_icon;
-    public String image_icon_local;
-    public String image_posted;
-    public String image_posted_local;
-    public String keterangan;
-    public String event;
-    public boolean is_new;
+    private String id;
+    private String like;
+    private String account_id;
+    private String total_comment;
+    private int status_like;
+    private String username;
+    private String image_icon;
+    private String image_icon_local;
+    private String image_posted;
+    private String image_posted_local;
+    private String caption;
+
+    private String keterangan;
+    private String date_created;
+    private String jabatan;
 
     public int number;
-    public String eventId;
+    public String event_Id;
+
+    public String new_event;
+    public boolean is_new;
 
     public HomeContentResponseModel() {
-    }
-
-    public HomeContentResponseModel(String id, String like, String account_id, String total_comment, int status_like, String image_icon, String username, String jabatan, String date_created, String image_posted, String keterangan, String event) {
-        this.id = id;
-        this.like = like;
-        this.account_id = account_id;
-        this.total_comment = total_comment;
-        this.status_like = status_like;
-        this.image_icon = image_icon;
-        this.username = username;
-        this.jabatan = jabatan;
-        this.date_created = date_created;
-        this.image_posted = image_posted;
-        this.keterangan = keterangan;
-        this.event = event;
     }
 
     public String getId() {
@@ -78,14 +66,6 @@ public class HomeContentResponseModel {
         this.status_like = status_like;
     }
 
-    public String getImage_icon() {
-        return image_icon;
-    }
-
-    public void setImage_icon(String image_icon) {
-        this.image_icon = image_icon;
-    }
-
     public String getUsername() {
         return username;
     }
@@ -110,44 +90,12 @@ public class HomeContentResponseModel {
         this.date_created = date_created;
     }
 
-    public String getImage_posted() {
-        return image_posted;
+    public String getImage_icon() {
+        return image_icon;
     }
 
-    public void setImage_posted(String image_posted) {
-        this.image_posted = image_posted;
-    }
-
-    public String getKeterangan() {
-        return keterangan;
-    }
-
-    public void setKeterangan(String keterangan) {
-        this.keterangan = keterangan;
-    }
-
-    public String getEvent() {
-        return event;
-    }
-
-    public void setEvent(String event) {
-        this.event = event;
-    }
-
-    public int getNumber() {
-        return number;
-    }
-
-    public void setNumber(int number) {
-        this.number = number;
-    }
-
-    public String getEventId() {
-        return eventId;
-    }
-
-    public void setEventId(String eventId) {
-        this.eventId = eventId;
+    public void setImage_icon(String image_icon) {
+        this.image_icon = image_icon;
     }
 
     public String getImage_icon_local() {
@@ -158,12 +106,60 @@ public class HomeContentResponseModel {
         this.image_icon_local = image_icon_local;
     }
 
+    public String getImage_posted() {
+        return image_posted;
+    }
+
+    public void setImage_posted(String image_posted) {
+        this.image_posted = image_posted;
+    }
+
     public String getImage_posted_local() {
         return image_posted_local;
     }
 
     public void setImage_posted_local(String image_posted_local) {
         this.image_posted_local = image_posted_local;
+    }
+
+    public String getKeterangan() {
+        return keterangan;
+    }
+
+    public void setKeterangan(String keterangan) {
+        this.keterangan = keterangan;
+    }
+
+    public String getCaption() {
+        return caption;
+    }
+
+    public void setCaption(String caption) {
+        this.caption = caption;
+    }
+
+    public int getNumber() {
+        return number;
+    }
+
+    public void setNumber(int number) {
+        this.number = number;
+    }
+
+    public String getEvent_Id() {
+        return event_Id;
+    }
+
+    public void setEvent_Id(String event_Id) {
+        this.event_Id = event_Id;
+    }
+
+    public String getNew_event() {
+        return new_event;
+    }
+
+    public void setNew_event(String new_event) {
+        this.new_event = new_event;
     }
 
     public boolean getIs_new() {

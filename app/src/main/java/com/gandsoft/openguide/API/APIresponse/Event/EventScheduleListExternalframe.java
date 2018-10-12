@@ -5,6 +5,15 @@ public class EventScheduleListExternalframe {
     public String link;
     public String external;
 
+    public EventScheduleListExternalframe() {
+    }
+
+    public EventScheduleListExternalframe(String name, String link, String external) {
+        this.name = name;
+        this.link = link;
+        this.external = external;
+    }
+
     public String getName() {
         return name;
     }

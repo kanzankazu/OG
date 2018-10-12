@@ -4,7 +4,7 @@ package com.gandsoft.openguide.API.APIresponse.UserData;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UserDataResponseModel  {
+public class GetListUserEventResponseModel {
 
     public int number;
     public String account_id;
@@ -199,7 +199,7 @@ public class UserDataResponseModel  {
     *//**
      * No args constructor for use in serialization
      *//*
-    public UserDataResponseModel() {
+    public GetListUserEventResponseModel() {
     }
 
     */
@@ -219,7 +219,7 @@ public class UserDataResponseModel  {
      * @param gender
      * @param fullName
      *//*
-    public UserDataResponseModel(String accountId, String imageUrl, String fullName, String position, String phoneNumber, String email, String gender, String birthday, String checkin, String privacyPolicy, String versionData, String groupCode, String roleName, List<UserListEventResponseModel> listEvent) {
+    public GetListUserEventResponseModel(String accountId, String imageUrl, String fullName, String position, String phoneNumber, String email, String gender, String birthday, String checkin, String privacyPolicy, String versionData, String groupCode, String roleName, List<UserListEventResponseModel> listEvent) {
         super();
         this.accountId = accountId;
         this.imageUrl = imageUrl;

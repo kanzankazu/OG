@@ -108,7 +108,7 @@ public class GalleryDetailPagerAdapter extends PagerAdapter {
                 data.get(position).getImage_posted(),
                 data.get(position).getImage_icon(),
                 data.get(position).getImage_postedLocal(),
-                data.get(position).getImage_iconLocal());
+                data.get(position).getImage_icon_local());
     }
 
     @Override

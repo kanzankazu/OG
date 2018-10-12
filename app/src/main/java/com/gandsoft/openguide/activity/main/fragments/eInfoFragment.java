@@ -17,7 +17,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.gandsoft.openguide.API.APIresponse.UserData.UserDataResponseModel;
+import com.gandsoft.openguide.API.APIresponse.UserData.GetListUserEventResponseModel;
 import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
 import com.gandsoft.openguide.activity.AccountActivity;
@@ -148,10 +148,10 @@ public class eInfoFragment extends Fragment implements InfoListViewAdapter.ListA
     }
 
     private void updateUi() {
-        ArrayList<UserDataResponseModel> models = db.getUserData(accountId);
+        ArrayList<GetListUserEventResponseModel> models = db.getUserData(accountId);
         if (models != null) {
             for (int i = 0; i < models.size(); i++) {
-                UserDataResponseModel model = models.get(i);
+                GetListUserEventResponseModel model = models.get(i);
                 tvInfoUserNamefvbi.setText(model.getFull_name());
                 tvInfoUserPhoneNumberfvbi.setText(model.getPhone_number());
 

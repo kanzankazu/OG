@@ -6,7 +6,7 @@ import com.google.gson.annotations.SerializedName;
 
 
 
-public class LoginResponseModel  {
+public class PostVerifyPhonenumberFirebaseResponseModel {
 
     private String status;
 

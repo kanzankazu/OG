@@ -11,22 +11,25 @@ import com.gandsoft.openguide.API.APIrequest.HomeContent.HomeContentPostCommentS
 import com.gandsoft.openguide.API.APIrequest.HomeContent.HomeContentPostImageCaptionRequestModel;
 import com.gandsoft.openguide.API.APIrequest.HomeContent.HomeContentPostLikeRequestModel;
 import com.gandsoft.openguide.API.APIrequest.HomeContent.HomeContentRequestModel;
-import com.gandsoft.openguide.API.APIrequest.Login.LoginRequestModel;
+import com.gandsoft.openguide.API.APIrequest.Login.PostVerifyPhonenumberFirebaseRequestModel;
 import com.gandsoft.openguide.API.APIrequest.PostFeedbackTheEventRequestModel;
-import com.gandsoft.openguide.API.APIrequest.UserData.UserDataRequestModel;
+import com.gandsoft.openguide.API.APIrequest.PostVerifyLoginUserRequestModel;
+import com.gandsoft.openguide.API.APIrequest.PostVerifyTokenFirebaseRequestModel;
+import com.gandsoft.openguide.API.APIrequest.UserData.GetListUserEventRequestModel;
 import com.gandsoft.openguide.API.APIrequest.UserUpdate.UserUpdateRequestModel;
 import com.gandsoft.openguide.API.APIrequest.VerificationStatusLoginAppUserRequestModel;
 import com.gandsoft.openguide.API.APIresponse.Event.EventDataResponseModel;
-import com.gandsoft.openguide.API.APIresponse.Gallery.GalleryResponseModel;
 import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentPostCaptionDeleteResponseModel;
 import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentPostCommentDeleteResponseModel;
 import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentPostCommentGetResponseModel;
 import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentPostCommentSetResponseModel;
 import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentResponseModel;
 import com.gandsoft.openguide.API.APIresponse.LocalBaseResponseModel;
-import com.gandsoft.openguide.API.APIresponse.Login.LoginResponseModel;
+import com.gandsoft.openguide.API.APIresponse.Login.PostVerifyPhonenumberFirebaseResponseModel;
 import com.gandsoft.openguide.API.APIresponse.PostFeedbackTheEventResponseModel;
-import com.gandsoft.openguide.API.APIresponse.UserData.UserDataResponseModel;
+import com.gandsoft.openguide.API.APIresponse.PostVerifyLoginUserResponseModel;
+import com.gandsoft.openguide.API.APIresponse.PostVerifyTokenFirebaseResponseModel;
+import com.gandsoft.openguide.API.APIresponse.UserData.GetListUserEventResponseModel;
 import com.gandsoft.openguide.API.APIresponse.UserUpdate.UserUpdateResponseModel;
 import com.gandsoft.openguide.API.APIresponse.VerificationStatusLoginAppUserResponseModel;
 import com.gandsoft.openguide.IConfig;
@@ -42,12 +45,20 @@ public class API {
         return RetrofitClient.getClient(IConfig.API_BASE_URL).create(ApiServices.class);
     }
 
-    public static Call<List<LoginResponseModel>> doLoginRet(LoginRequestModel requestModel) {
-        return getAPIService().loginRet(requestModel);
+    public static Call<List<PostVerifyPhonenumberFirebaseResponseModel>> doPostVerifyPhonenumberFirebaseRet(PostVerifyPhonenumberFirebaseRequestModel requestModel) {
+        return getAPIService().postVerifyPhonenumberFirebaseRet(requestModel);
     }
 
-    public static Call<List<UserDataResponseModel>> doUserDataRet(UserDataRequestModel requestModel) {
-        return getAPIService().userDataRet(requestModel);
+    public static Call<List<PostVerifyTokenFirebaseResponseModel>> doPostVerivyTokenAccountFirebase(PostVerifyTokenFirebaseRequestModel requestModel) {
+        return getAPIService().postVerivyTokenAccountFirebaseRet(requestModel);
+    }
+
+    public static Call<List<PostVerifyLoginUserResponseModel>> doPostVerificationLoginUsers(PostVerifyLoginUserRequestModel requestModel) {
+        return getAPIService().postVerificationLoginUsersRet(requestModel);
+    }
+
+    public static Call<List<GetListUserEventResponseModel>> doGetListUserEventRet(GetListUserEventRequestModel requestModel) {
+        return getAPIService().getListUserEventRet(requestModel);
     }
 
     public static Call<List<UserUpdateResponseModel>> doUserUpdateRet(UserUpdateRequestModel requestModel) {
@@ -58,7 +69,7 @@ public class API {
         return getAPIService().eventDataRet(requestModel);
     }
 
-    public static Call<List<GalleryResponseModel>> doGalleryRet(GalleryRequestModel requestModel) {
+    public static Call<List<HomeContentResponseModel>> doGalleryRet(GalleryRequestModel requestModel) {
         return getAPIService().galleryDataRet(requestModel);
     }
 

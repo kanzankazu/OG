@@ -11,23 +11,26 @@ import com.gandsoft.openguide.API.APIrequest.HomeContent.HomeContentPostCommentS
 import com.gandsoft.openguide.API.APIrequest.HomeContent.HomeContentPostImageCaptionRequestModel;
 import com.gandsoft.openguide.API.APIrequest.HomeContent.HomeContentPostLikeRequestModel;
 import com.gandsoft.openguide.API.APIrequest.HomeContent.HomeContentRequestModel;
-import com.gandsoft.openguide.API.APIrequest.Login.LoginRequestModel;
-import com.gandsoft.openguide.API.APIrequest.UserData.UserDataRequestModel;
-import com.gandsoft.openguide.API.APIrequest.UserUpdate.UserUpdateRequestModel;
+import com.gandsoft.openguide.API.APIrequest.Login.PostVerifyPhonenumberFirebaseRequestModel;
 import com.gandsoft.openguide.API.APIrequest.PostFeedbackTheEventRequestModel;
+import com.gandsoft.openguide.API.APIrequest.PostVerifyLoginUserRequestModel;
+import com.gandsoft.openguide.API.APIrequest.PostVerifyTokenFirebaseRequestModel;
+import com.gandsoft.openguide.API.APIrequest.UserData.GetListUserEventRequestModel;
+import com.gandsoft.openguide.API.APIrequest.UserUpdate.UserUpdateRequestModel;
 import com.gandsoft.openguide.API.APIrequest.VerificationStatusLoginAppUserRequestModel;
 import com.gandsoft.openguide.API.APIresponse.Event.EventDataResponseModel;
-import com.gandsoft.openguide.API.APIresponse.Gallery.GalleryResponseModel;
 import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentPostCaptionDeleteResponseModel;
 import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentPostCommentDeleteResponseModel;
 import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentPostCommentGetResponseModel;
 import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentPostCommentSetResponseModel;
 import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentResponseModel;
 import com.gandsoft.openguide.API.APIresponse.LocalBaseResponseModel;
-import com.gandsoft.openguide.API.APIresponse.Login.LoginResponseModel;
-import com.gandsoft.openguide.API.APIresponse.UserData.UserDataResponseModel;
-import com.gandsoft.openguide.API.APIresponse.UserUpdate.UserUpdateResponseModel;
+import com.gandsoft.openguide.API.APIresponse.Login.PostVerifyPhonenumberFirebaseResponseModel;
 import com.gandsoft.openguide.API.APIresponse.PostFeedbackTheEventResponseModel;
+import com.gandsoft.openguide.API.APIresponse.PostVerifyLoginUserResponseModel;
+import com.gandsoft.openguide.API.APIresponse.PostVerifyTokenFirebaseResponseModel;
+import com.gandsoft.openguide.API.APIresponse.UserData.GetListUserEventResponseModel;
+import com.gandsoft.openguide.API.APIresponse.UserUpdate.UserUpdateResponseModel;
 import com.gandsoft.openguide.API.APIresponse.VerificationStatusLoginAppUserResponseModel;
 
 import java.util.List;
@@ -48,14 +51,20 @@ public interface ApiServices {
     Call<OuiResponseModel> Oui();
 
     @POST("verification_phonenumber_firebase")
-    Call<List<LoginResponseModel>> Login(@Body LoginRequestModel model);*/
+    Call<List<PostVerifyPhonenumberFirebaseResponseModel>> Login(@Body PostVerifyPhonenumberFirebaseRequestModel model);*/
 
     /**/
     @POST("verification_phonenumber_firebase")
-    Call<List<LoginResponseModel>> loginRet(@Body LoginRequestModel model);
+    Call<List<PostVerifyPhonenumberFirebaseResponseModel>> postVerifyPhonenumberFirebaseRet(@Body PostVerifyPhonenumberFirebaseRequestModel model);
+
+    @POST("verification_token_account_firebase")
+    Call<List<PostVerifyTokenFirebaseResponseModel>> postVerivyTokenAccountFirebaseRet(@Body PostVerifyTokenFirebaseRequestModel model);
+
+    @POST("verification_login_users")
+    Call<List<PostVerifyLoginUserResponseModel>> postVerificationLoginUsersRet(@Body PostVerifyLoginUserRequestModel model);
 
     @POST("get_list_user_event")
-    Call<List<UserDataResponseModel>> userDataRet(@Body UserDataRequestModel model);
+    Call<List<GetListUserEventResponseModel>> getListUserEventRet(@Body GetListUserEventRequestModel model);
 
     @POST("save_profile_account_user")
     Call<List<UserUpdateResponseModel>> userUpdateRet(@Body UserUpdateRequestModel model);
@@ -64,7 +73,7 @@ public interface ApiServices {
     Call<List<EventDataResponseModel>> eventDataRet(@Body EventDataRequestModel model);
 
     @POST("get_new_gallery_content")
-    Call<List<GalleryResponseModel>> galleryDataRet(@Body GalleryRequestModel model);
+    Call<List<HomeContentResponseModel>> galleryDataRet(@Body GalleryRequestModel model);
 
     @POST("get_new_home_content")
     Call<List<HomeContentResponseModel>> homeContentDataRet(@Body HomeContentRequestModel model);
@@ -98,6 +107,5 @@ public interface ApiServices {
 
     @POST("post_feedback_the_event")
     Call<List<PostFeedbackTheEventResponseModel>> postFeedbackTheEventRet(@Body PostFeedbackTheEventRequestModel model);
-
 
 }

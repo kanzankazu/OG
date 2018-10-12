@@ -2,10 +2,8 @@ package com.gandsoft.openguide.activity.infomenu.gallery2;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
-import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,13 +12,10 @@ import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
-import com.gandsoft.openguide.API.APIresponse.Gallery.GalleryResponseModel;
+import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentResponseModel;
 import com.gandsoft.openguide.R;
 import com.gandsoft.openguide.support.PictureUtil;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,9 +23,9 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
 
     private final Activity activity;
     private final String eventId;
-    private List<GalleryResponseModel> models = new ArrayList<>();
+    private List<HomeContentResponseModel> models = new ArrayList<>();
 
-    public GalleryAdapter(Activity activity, List<GalleryResponseModel> models, String eventId) {
+    public GalleryAdapter(Activity activity, List<HomeContentResponseModel> models, String eventId) {
         this.activity = activity;
         this.models = models;
         this.eventId = eventId;
@@ -45,7 +40,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
 
     @Override
     public void onBindViewHolder(@NonNull GalleryAdapter.ViewHolder holder, int position) {
-        GalleryResponseModel model = models.get(position);
+        HomeContentResponseModel model = models.get(position);
         Glide.with(activity)
                 .load(model.getImage_posted())
                 .asBitmap()
@@ -83,7 +78,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
         }
     }
 
-    public void setData(List<GalleryResponseModel> datas) {
+    public void setData(List<HomeContentResponseModel> datas) {
         if (datas.size() > 0) {
             models.clear();
             models = datas;
@@ -93,7 +88,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
         notifyDataSetChanged();
     }
 
-    public void addDatas(List<GalleryResponseModel> datas) {
+    public void addDatas(List<HomeContentResponseModel> datas) {
         models.addAll(datas);
         notifyItemRangeInserted(models.size(), datas.size());
     }

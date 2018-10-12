@@ -49,7 +49,7 @@ public class SystemUtil {
         InputMethodManager inputManager = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
         View focusedView = activity.getCurrentFocus();
         /*
-         * If no view is focused, an NPE will be thrown
+         * If number view is focused, an NPE will be thrown
          *
          * Maxim Dmitriev
          */
@@ -89,11 +89,6 @@ public class SystemUtil {
             Animation animation = AnimationUtils.loadAnimation(context, anim);
             view.startAnimation(animation);
         }
-    }
-
-    public static void errorET(EditText editText, CharSequence stringerror) {
-        editText.setError(stringerror);
-        editText.requestFocus();
     }
 
     public static boolean isVisible(View view) {

@@ -9,12 +9,15 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Paint;
 import android.icu.text.SimpleDateFormat;
 import android.icu.util.ULocale;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+import android.os.ParcelFileDescriptor;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
@@ -43,17 +46,22 @@ import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.gandsoft.openguide.API.API;
 import com.gandsoft.openguide.API.APIrequest.UserUpdate.UserUpdateRequestModel;
-import com.gandsoft.openguide.API.APIresponse.UserData.UserDataResponseModel;
+import com.gandsoft.openguide.API.APIresponse.UserData.GetListUserEventResponseModel;
 import com.gandsoft.openguide.API.APIresponse.UserUpdate.UserUpdateResponseModel;
 import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
+import com.gandsoft.openguide.activity.services.MyService;
 import com.gandsoft.openguide.database.SQLiteHelper;
 import com.gandsoft.openguide.support.AppUtil;
+import com.gandsoft.openguide.support.NotifUtil;
 import com.gandsoft.openguide.support.PictureUtil;
+import com.gandsoft.openguide.support.ServiceUtil;
 import com.gandsoft.openguide.support.SessionUtil;
 import com.google.firebase.auth.FirebaseAuth;
 
 import java.io.File;
+import java.io.FileDescriptor;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -65,6 +73,10 @@ import retrofit2.Response;
 @RequiresApi(api = Build.VERSION_CODES.N)
 public class AccountActivity extends LocalBaseActivity implements View.OnClickListener {
     private static final int RP_ACCESS = 21;
+    private static final int REQ_COD_CAMERA = 5;
+    private static final int REQ_COD_CROP = 6;
+    private static final int REQ_COD_CAMERA_KITKAT = 7;
+    private static final int REQ_CODE_GALLERY = 8;
     SQLiteHelper db = new SQLiteHelper(this);
 
     private static final int UI_NEW_USER = 0;
@@ -86,6 +98,9 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
     private Calendar myCalendar;
 
     private Uri imageUri;
+    private String imageFilePath;
+    private File imageFile;
+    private Uri imageFileUri;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -130,8 +145,8 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
         tvAccIDfvbi = (TextView) findViewById(R.id.tvAccID);
         ibAccClosefvbi = (ImageButton) findViewById(R.id.ibAccClose);
 
-        ibAccCamerafvbi = (ImageButton) findViewById(R.id.ibAccCamera);
         tvAccSelPicfvbi = (TextView) findViewById(R.id.tvAccSelPic);
+        ibAccCamerafvbi = (ImageButton) findViewById(R.id.ibAccCamera);
 
         tvAccTglfvbi = (TextView) findViewById(R.id.tvAccTgl);
         tvAccBulanfvbi = (TextView) findViewById(R.id.tvAccBulan);
@@ -146,6 +161,7 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
         ibCalendarfvbi = (ImageButton) findViewById(R.id.ibAccCalendar);
         llAccBirthdatefvbi = (LinearLayout) findViewById(R.id.llAccBirthdate);
         llAccAggrementfvbi = (LinearLayout) findViewById(R.id.llAccAggrement);
+
         llAccSavefvbi = (LinearLayout) findViewById(R.id.llAccSave);
         cbAccAggrementfvbi = (CheckBox) findViewById(R.id.cbAccAggrement);
 
@@ -183,9 +199,58 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
     }
 
     private void initListener() {
-        llAccPicfvbi.setOnClickListener(new View.OnClickListener() {
+        ibAccCamerafvbi.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                ContentValues values = new ContentValues();
+                // Munculkan alert dialog apabila user ingin keluar aplikasi
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(AccountActivity.this);
+                alertDialogBuilder.setMessage("Select to get image?");
+                alertDialogBuilder.setPositiveButton("Camera",
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface arg0, int arg1) {
+                                if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
+                                    imageFilePath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/picture.jpg";
+                                    imageFile = new File(imageFilePath);
+                                    imageFileUri = Uri.fromFile(imageFile); // convert path to Uri
+                                    Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+                                    cameraIntent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, imageFileUri);
+                                    startActivityForResult(cameraIntent, REQ_COD_CAMERA_KITKAT);
+                                } else {
+                                    /*Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+                                    startActivityForResult(cameraIntent, REQ_COD_CAMERA);*/
+
+                                    ContentValues values = new ContentValues();
+                                    values.put(MediaStore.Images.Media.TITLE, "New Picture");
+                                    values.put(MediaStore.Images.Media.DESCRIPTION, "From your Camera");
+                                    imageUri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+                                    Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                                    intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+                                        intent.putExtra("android.intent.extras.LENS_FACING_FRONT", 1);
+                                    } else {
+                                        intent.putExtra("android.intent.extras.CAMERA_FACING", 1);
+                                    }
+                                    startActivityForResult(intent, REQ_COD_CAMERA);
+                                }
+                            }
+                        });
+                // Pilihan jika NO
+                alertDialogBuilder.setNegativeButton("Gallery",
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface arg0, int arg1) {
+                                Intent intent = new Intent();
+                                intent.setType("image/*");
+                                intent.setAction(Intent.ACTION_GET_CONTENT);
+                                startActivityForResult(Intent.createChooser(intent, "Select Picture"), REQ_CODE_GALLERY);
+                            }
+                        });
+                // Tampilkan alert dialog
+                AlertDialog alertDialog = alertDialogBuilder.create();
+                alertDialog.show();
+
+
+                /*ContentValues values = new ContentValues();
                 values.put(MediaStore.Images.Media.TITLE, "New Picture");
                 values.put(MediaStore.Images.Media.DESCRIPTION, "From your Camera");
                 imageUri = getContentResolver().insert(
@@ -197,9 +262,11 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
                 } else {
                     intent.putExtra("android.intent.extras.CAMERA_FACING", 1);
                 }
-                startActivityForResult(intent, 5);
+                startActivityForResult(intent, REQ_COD_CAMERA);*/
             }
         });
+
+        llAccGenderfvbi.setOnClickListener(this);
 
         DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
             @Override
@@ -211,25 +278,27 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
             }
 
         };
-        llAccBirthdatefvbi.setOnClickListener(new View.OnClickListener() {
+        ibCalendarfvbi.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new DatePickerDialog(AccountActivity.this, date, myCalendar
-                        .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
-                        myCalendar.get(Calendar.DAY_OF_MONTH)).show();
+                new DatePickerDialog(AccountActivity.this,
+                        date,
+                        myCalendar.get(Calendar.YEAR),
+                        myCalendar.get(Calendar.MONTH),
+                        myCalendar.get(Calendar.DAY_OF_MONTH))
+                        .show();
             }
 
         });
-        llAccGenderfvbi.setOnClickListener(this);
+
         llAccSavefvbi.setOnClickListener(this);
         tvSignOutSkipfvbi.setOnClickListener(this);
         ibAccClosefvbi.setOnClickListener(this);
     }
 
-    private void updateData(ArrayList<UserDataResponseModel> models) {
-        tvAccIDfvbi.setText(accountId);
+    private void updateData(ArrayList<GetListUserEventResponseModel> models) {
         for (int i = 0; i < models.size(); i++) {
-            UserDataResponseModel model = models.get(i);
+            GetListUserEventResponseModel model = models.get(i);
             etAccNamefvbi.setText(model.getFull_name());
             etAccEmailfvbi.setText(model.getEmail());
 
@@ -249,6 +318,7 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
     }
 
     private void updateUI(int ui) {
+        tvAccIDfvbi.setText(accountId);
         if (ui == UI_NEW_USER) {
             llAccAggrementfvbi.setVisibility(View.VISIBLE);
             ibAccClosefvbi.setVisibility(View.GONE);
@@ -262,30 +332,29 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
 
     private void signOut(boolean isDialog) {
         if (isDialog) {
-// Munculkan alert dialog apabila user ingin keluar aplikasi
             AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
             alertDialogBuilder.setMessage("ARE YOU SURE WANNA SIGN-OUT?");
             alertDialogBuilder.setCancelable(false);
-            alertDialogBuilder.setPositiveButton("YES",
-                    new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface arg0, int arg1) {
-                            AppUtil.signOutFull(AccountActivity.this, db, false, accountId);
-                        }
-                    });
-            // Pilihan jika NO
-            alertDialogBuilder.setNegativeButton("CANCEL",
-                    new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface arg0, int arg1) {
+            alertDialogBuilder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface arg0, int arg1) {
+                    AppUtil.signOutFull(AccountActivity.this, db, false, accountId);
+                    ServiceUtil.stopSevice(AccountActivity.this, MyService.class);
+                    NotifUtil.clearNotificationAll(AccountActivity.this);
+                }
+            });
+            alertDialogBuilder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface arg0, int arg1) {
 
-                        }
-                    });
-            // Tampilkan alert dialog
+                }
+            });
             AlertDialog alertDialog = alertDialogBuilder.create();
             alertDialog.show();
         } else {
             AppUtil.signOutFull(AccountActivity.this, db, false, accountId);
+            ServiceUtil.stopSevice(AccountActivity.this, MyService.class);
+            NotifUtil.clearNotificationAll(AccountActivity.this);
         }
 
     }
@@ -300,7 +369,7 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
                     @Override
                     public void onClick(DialogInterface arg0, int arg1) {
                         Snackbar.make(findViewById(android.R.id.content), "Data tak tersimpan", Snackbar.LENGTH_SHORT).show();
-                        moveToChangeEvent();
+                        returnToBackActivity();
                     }
                 });
         // Pilihan jika NO
@@ -317,15 +386,13 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
 
     }
 
-    private void moveToChangeEvent() {
-        Intent intent = new Intent(AccountActivity.this, ChangeEventActivity.class);
-        startActivity(intent);
+    private void returnToBackActivity() {
         finish();
     }
 
     private void skipLogoutClick() {
         if (isNewUser) {
-            moveToChangeEvent();
+            returnToBackActivity();
         } else {
             signOut(true);
         }
@@ -382,7 +449,7 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
                             db.updateOneKey(SQLiteHelper.TableUserData, SQLiteHelper.KEY_UserData_accountId, accountId, SQLiteHelper.KEY_UserData_imageUrl, model.getImage_url());
                             if (model.getStatus().equalsIgnoreCase("ok")) {
                                 Snackbar.make(findViewById(android.R.id.content), "Tersimpan", Snackbar.LENGTH_SHORT).show();
-                                moveToChangeEvent();
+                                returnToBackActivity();
                             } else {
                                 Snackbar.make(findViewById(android.R.id.content), "Bad Response", Snackbar.LENGTH_SHORT).show();
                             }
@@ -390,7 +457,7 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
                     } else {
                         Snackbar.make(findViewById(android.R.id.content), "Data Tidak Sesuai", Snackbar.LENGTH_SHORT).show();
                     }
-                    moveToChangeEvent();
+                    returnToBackActivity();
                 } else {
                     Snackbar.make(findViewById(android.R.id.content), response.message(), Snackbar.LENGTH_SHORT).show();
                 }
@@ -398,7 +465,13 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
 
             @Override
             public void onFailure(Call<List<UserUpdateResponseModel>> call, Throwable t) {
-                Snackbar.make(findViewById(android.R.id.content), t.getMessage(), Snackbar.LENGTH_SHORT).show();
+                Log.d("Lihat", "onFailure AccountActivity : " + t.getMessage());
+                Snackbar.make(findViewById(android.R.id.content), "Failed to connect server", Snackbar.LENGTH_INDEFINITE).setAction("TRY AGAIN", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        updateData();
+                    }
+                }).show();
             }
         });
     }
@@ -430,10 +503,6 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
         view.setText(spanTxt, TextView.BufferType.SPANNABLE);
     }
 
-    public static Intent getActIntent(Activity activity) {
-        return new Intent(activity, AccountActivity.class);
-    }
-
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -455,12 +524,44 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 5 && resultCode == Activity.RESULT_OK) {
-            String imageurl = PictureUtil.getPathFromUri(imageUri, this);
+        if (resultCode == Activity.RESULT_OK && requestCode == REQ_COD_CAMERA) {
+            /*Uri selectedImage = PictureUtil.getUriFromResult(this, resultCode, data.getData());
+            try {
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), selectedImage);
+                Bitmap storedata = PictureUtil.resizeImageBitmap(bitmap, 720);
 
+                Intent cropperIntent = PictureUtil.getCropperIntent(AccountActivity.this, selectedImage, 720, 720);
+                startActivityForResult(cropperIntent, REQ_COD_CROP);
+
+                //ClearSlot();
+                //ivUploadFotoMain.setImageBitmap(bitmap);
+                //ivUploadFotoMain.setImageBitmap(storedata);
+                //Base64Store.add(PictureUtil.bitmapToBase64(storedata, Bitmap.CompressFormat.PNG, compressPic));
+                //CheckForSlot();
+
+            } catch (Exception e) {
+                Log.d("Lihat", "onActivityResult AccountActivity : " + e.getMessage());
+            }*/
+
+            String imageurl = PictureUtil.getImagePathFromUri(this, imageUri);
+            Glide.with(getApplicationContext())
+                    .load(new File(imageurl))
+                    .asBitmap()
+                    .into(new SimpleTarget<Bitmap>() {
+                        @Override
+                        public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+                            Bitmap resizeImage = PictureUtil.resizeImageBitmap(resource, 1080);
+                            Uri uri = PictureUtil.getImageUriFromBitmap(AccountActivity.this, resizeImage);
+
+                            Intent cropperIntent = PictureUtil.getCropperIntent(AccountActivity.this, uri, 720, 720);
+                            startActivityForResult(cropperIntent, REQ_COD_CROP);
+
+                        }
+                    });
+
+            /*String imageurl = PictureUtil.getImagePathFromUri(this, imageUri);
             Log.d("image uri ", imageurl);
             Log.d("string val from file", String.valueOf(new File(imageurl)));
-
             Glide.with(this)
                     .load(R.drawable.loading)
                     .asGif()
@@ -478,10 +579,109 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
                             base64pic = PictureUtil.bitmapToBase64(resizeImage, Bitmap.CompressFormat.JPEG, 100);
                         }
                     })
-            ;
+            ;*/
+
+        } else if (resultCode == Activity.RESULT_OK && requestCode == REQ_COD_CAMERA_KITKAT) {
+            BitmapFactory.Options bmpFactoryOptions = new BitmapFactory.Options();
+            bmpFactoryOptions.inJustDecodeBounds = false;
+
+            Bitmap bitmap = BitmapFactory.decodeFile(imageFilePath, bmpFactoryOptions);
+            Bitmap resizeImageBitmap = PictureUtil.resizeImageBitmap(bitmap, 720);
+            Uri imageUriFromBitmap = PictureUtil.getImageUriFromBitmap(AccountActivity.this, resizeImageBitmap);
+
+            Intent cropperIntent = PictureUtil.getCropperIntent(AccountActivity.this, imageUriFromBitmap, 720, 720);
+            startActivityForResult(cropperIntent, REQ_COD_CROP);
+
+            //ClearSlot();
+            //ivUploadFotoMain.setImageBitmap(bitmap);
+            //ivUploadFotoMain.setImageBitmap(storedata);
+            //Base64Store.add(SystemUtil.bitmapToBase64(storedata, Bitmap.CompressFormat.PNG, compressPic));
+            //CheckForSlot();
+
+        } else if (resultCode == Activity.RESULT_OK && requestCode == REQ_CODE_GALLERY) {
+            Uri selectedImageUri = data.getData();
+            if (Build.VERSION.SDK_INT < 19) {
+                String selectedImagePath = PictureUtil.getImagePathFromUri2(AccountActivity.this, selectedImageUri);
+                Bitmap bitmap = BitmapFactory.decodeFile(selectedImagePath);
+
+                Bitmap storedata = PictureUtil.resizeImageBitmap(bitmap, 720);
+
+                Intent cropperIntent = PictureUtil.getCropperIntent(AccountActivity.this, selectedImageUri, 720, 720);
+                startActivityForResult(cropperIntent, REQ_COD_CROP);
+
+                //ClearSlot();
+                //ivUploadFotoMain.setImageBitmap(bitmap);
+                //ivUploadFotoMain.setImageBitmap(storedata);
+                //Base64Store.add(PictureUtil.bitmapToBase64(storedata, Bitmap.CompressFormat.PNG, compressPic));
+                //CheckForSlot();
+
+            } else {
+                ParcelFileDescriptor parcelFileDescriptor;
+                try {
+                    parcelFileDescriptor = getContentResolver().openFileDescriptor(selectedImageUri, "r");
+                    FileDescriptor fileDescriptor = parcelFileDescriptor.getFileDescriptor();
+                    Bitmap bitmap = BitmapFactory.decodeFileDescriptor(fileDescriptor);
+                    parcelFileDescriptor.close();
+
+                    Bitmap storedata = PictureUtil.resizeImageBitmap(bitmap, 720);
+                    Intent cropperIntent = PictureUtil.getCropperIntent(AccountActivity.this, selectedImageUri, 720, 720);
+                    startActivityForResult(cropperIntent, REQ_COD_CROP);
+
+                    //ClearSlot();
+                    //ivUploadFotoMain.setImageBitmap(bitmap);
+                    //ivUploadFotoMain.setImageBitmap(storedata);
+                    //Base64Store.add(PictureUtil.bitmapToBase64(storedata, Bitmap.CompressFormat.PNG, compressPic));
+                    //CheckForSlot();
+
+                } catch (IOException e) {
+                    Log.d("Lihat", "onActivityResult AccountActivity : " + e.getMessage());
+                }
+            }
+        } else if (requestCode == REQ_COD_CROP && resultCode == Activity.RESULT_OK) {
+            Bundle bundle = data.getExtras();
+            Bitmap bitmap = (Bitmap) bundle.getParcelable("data");
+            Bitmap resizeImageBitmap = PictureUtil.resizeImageBitmap(bitmap, 720);
+            ivWrapPicfvbi.setImageBitmap(resizeImageBitmap);
+            base64pic = PictureUtil.bitmapToBase64(resizeImageBitmap, Bitmap.CompressFormat.JPEG, 100);
+
+            //ivWrapPicfvbi.setImageBitmap(((Bitmap) bundle.getParcelable("data")));
+
+        }
+
+        /*if (requestCode == REQ_COD_CAMERA && resultCode == Activity.RESULT_OK) {
+            Intent cropperIntent = PictureUtil.getCropperIntent(AccountActivity.this, imageUri, 720, 720);
+            startActivityForResult(cropperIntent, REQ_COD_CROP);
+        } else if (requestCode == REQ_COD_CROP && resultCode == Activity.RESULT_OK) {
+            Bundle bundle = data.getExtras();
+            Bitmap bitmap = (Bitmap) bundle.getParcelable("data");
+            Bitmap resizeImageBitmap = PictureUtil.resizeImageBitmap(bitmap, 720);
+            ivWrapPicfvbi.setImageBitmap(resizeImageBitmap);
+            //ivWrapPicfvbi.setImageBitmap(((Bitmap) bundle.getParcelable("data")));
+
+            *//*String imageurl = PictureUtil.getImagePathFromUri(imageUri, this);
+            Log.d("image uri ", imageurl);
+            Log.d("string val from file", String.valueOf(new File(imageurl)));
+            Glide.with(this)
+                    .load(R.drawable.loading)
+                    .asGif()
+                    .crossFade()
+                    .into(ivWrapPicfvbi);
+            ivWrapPicfvbi.setScaleType(ImageView.ScaleType.FIT_CENTER);
+            Glide.with(getApplicationContext())
+                    .load(new File(imageurl))
+                    .asBitmap()
+                    .into(new SimpleTarget<Bitmap>() {
+                        @Override
+                        public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+                            Bitmap resizeImage = PictureUtil.resizeImageBitmap(resource, 1080);
+                            ivWrapPicfvbi.setImageBitmap(resizeImage);
+                            base64pic = PictureUtil.bitmapToBase64(resizeImage, Bitmap.CompressFormat.JPEG, 100);
+                        }
+                    })
+            ;*//*
         } else {
             finish();
-        }
+        }*/
     }
 
     @Override
@@ -493,7 +693,7 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
         } else if (v == tvSignOutSkipfvbi) {
             skipLogoutClick();
         } else if (v == ibAccClosefvbi) {
-            finish();
+            returnToBackActivity();
         }
     }
 

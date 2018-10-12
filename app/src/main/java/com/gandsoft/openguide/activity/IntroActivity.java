@@ -129,7 +129,8 @@ public class IntroActivity extends LocalBaseActivity {
     }
 
     private void moveToLogin() {
-        startActivity(LoginActivity.getActIntent(IntroActivity.this));
+        Intent intent = new Intent(IntroActivity.this, LoginActivity.class);
+        startActivity(intent);
         finish();
     }
 

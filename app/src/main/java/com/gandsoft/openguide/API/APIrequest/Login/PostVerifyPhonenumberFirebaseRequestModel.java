@@ -1,6 +1,6 @@
 package com.gandsoft.openguide.API.APIrequest.Login;
 
-public class LoginRequestModel {
+public class PostVerifyPhonenumberFirebaseRequestModel {
     private String phonenumber;
     private String login_status;
     private String dbver;

@@ -29,7 +29,6 @@ public class ScheduleRecycleviewAdapter extends RecyclerView.Adapter<ScheduleRec
     private String group_code;
     private Context context;
 
-
     public ScheduleRecycleviewAdapter(Context context, ArrayList<EventScheduleListDateDataList> models, ScheduleListener mListener, ArrayList<String> scheduleDates, String group_code) {
         this.context = context;
         this.models = models;
@@ -64,10 +63,22 @@ public class ScheduleRecycleviewAdapter extends RecyclerView.Adapter<ScheduleRec
             holder.bRvScheduleDetailfvbi.setVisibility(View.GONE);
         }
 
-        if (!TextUtils.isEmpty(model.getLink()) || !TextUtils.isEmpty(model.getLinkvote())) {
+        if (!TextUtils.isEmpty(model.getLink())) {
             holder.bRvScheduleLiveQAfvbi.setVisibility(View.VISIBLE);
         } else {
             holder.bRvScheduleLiveQAfvbi.setVisibility(View.GONE);
+        }
+        if (!TextUtils.isEmpty(model.getLinkvote())) {
+            holder.bRvScheduleVotefvbi.setVisibility(View.VISIBLE);
+        } else {
+            holder.bRvScheduleVotefvbi.setVisibility(View.GONE);
+        }
+        if (!TextUtils.isEmpty(model.getExternalframe().getLink()) && model.getExternalframe().getExternal().equalsIgnoreCase("yes")) {
+            holder.bRvScheduleExternalfvbi.setText(model.getExternalframe().getName());
+            holder.bRvScheduleExternalfvbi.setVisibility(View.VISIBLE);
+        } else {
+            holder.bRvScheduleExternalfvbi.setText(model.getExternalframe().getName());
+            holder.bRvScheduleExternalfvbi.setVisibility(View.GONE);
         }
 
         holder.bRvScheduleDetailfvbi.setOnClickListener(new View.OnClickListener() {
@@ -84,14 +95,22 @@ public class ScheduleRecycleviewAdapter extends RecyclerView.Adapter<ScheduleRec
                 holder.tvRvScheduleDetailfvbi.setVisibility(View.GONE);
             }
         });
+        holder.bRvScheduleVotefvbi.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mListener.onClickVote(model.getLinkvote());
+            }
+        });
         holder.bRvScheduleLiveQAfvbi.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (!TextUtils.isEmpty(model.getLinkvote())) {
-                    mListener.onClickQNA(model.getLinkvote());
-                } else {
-                    mListener.onClickQNA(model.getLink());
-                }
+                mListener.onClickQNA(model.getLink());
+            }
+        });
+        holder.bRvScheduleExternalfvbi.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mListener.onClickExternal(model.getExternalframe().getLink());
             }
         });
 
@@ -122,7 +141,6 @@ public class ScheduleRecycleviewAdapter extends RecyclerView.Adapter<ScheduleRec
             holder.ivRvScheduleIndicatorfvbi.setBackgroundColor(R.color.colorPrimary);
         }*/
 
-
     }
 
     @Override
@@ -130,13 +148,12 @@ public class ScheduleRecycleviewAdapter extends RecyclerView.Adapter<ScheduleRec
         return models.size();
     }
 
-
     //View holder class, where all view components are defined
     class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         private final LinearLayout llRvScheduleLocationfvbi;
         private final TextView tvRvScheduleTimefvbi, tvRvScheduleTitlefvbi, tvRvScheduleLocationTitlefvbi, tvRvScheduleDetailfvbi;
-        private final Button bRvScheduleDetailfvbi, bRvScheduleLiveQAfvbi;
+        private final Button bRvScheduleDetailfvbi, bRvScheduleLiveQAfvbi, bRvScheduleVotefvbi, bRvScheduleExternalfvbi;
         private final ImageView ivRvScheduleIndicatorfvbi;
         private final View vRvSchedulelinefvbi;
         private final LinearLayout llRvScheduleContentfvbi;
@@ -153,7 +170,9 @@ public class ScheduleRecycleviewAdapter extends RecyclerView.Adapter<ScheduleRec
             tvRvScheduleLocationTitlefvbi = (TextView) itemView.findViewById(R.id.tvRvScheduleLocationTitle);
             bRvScheduleDetailfvbi = (Button) itemView.findViewById(R.id.bRvScheduleDetail);
             tvRvScheduleDetailfvbi = (TextView) itemView.findViewById(R.id.tvRvScheduleDetail);
+            bRvScheduleVotefvbi = (Button) itemView.findViewById(R.id.bRvScheduleVote);
             bRvScheduleLiveQAfvbi = (Button) itemView.findViewById(R.id.bRvScheduleLiveQA);
+            bRvScheduleExternalfvbi = (Button) itemView.findViewById(R.id.bRvScheduleExternal);
             ivRvScheduleIndicatorfvbi = (ImageView) itemView.findViewById(R.id.ivRvScheduleIndicator);
             vRvSchedulelinefvbi = (View) itemView.findViewById(R.id.vRvScheduleline);
             llRvScheduleContentfvbi = (LinearLayout) itemView.findViewById(R.id.llRvScheduleContent);
@@ -197,7 +216,11 @@ public class ScheduleRecycleviewAdapter extends RecyclerView.Adapter<ScheduleRec
     }
 
     public interface ScheduleListener {
+        void onClickVote(String link);
+
         void onClickQNA(String link);
+
+        void onClickExternal(String link);
     }
 
     /*public void setReplaceData(List<EventScheduleListDateDataList> datas) {

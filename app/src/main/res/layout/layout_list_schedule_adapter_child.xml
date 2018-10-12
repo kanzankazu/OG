@@ -1,29 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
     android:id="@+id/llRvScheduleContent2"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/white"
     android:animateLayoutChanges="true"
+    android:background="@color/white"
     android:gravity="center|top"
     android:orientation="vertical"
-    android:paddingBottom="20dp">
+    android:paddingBottom="15dp">
 
     <TextView
         android:id="@+id/tvRvScheduleTime"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="15dp"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
         android:layout_marginTop="15dp"
         android:gravity="center"
-        android:textColor="@color/colorPrimary"
-        android:text="TIME" />
+        android:text="TIME"
+        android:textColor="@color/colorPrimary" />
 
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
+        android:layout_marginTop="15dp"
         android:background="@color/gray_very_light" />
 
     <TextView
@@ -69,7 +69,7 @@
     <Button
         android:id="@+id/bRvScheduleDetail"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="40dp"
         android:layout_marginLeft="15dp"
         android:layout_marginRight="15dp"
         android:layout_marginTop="15dp"
@@ -83,6 +83,8 @@
         android:id="@+id/tvRvScheduleDetail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
         android:layout_marginTop="15dp"
         android:background="@color/colorPrimary"
         android:gravity="center"
@@ -91,16 +93,62 @@
         android:textColor="@color/white"
         android:visibility="gone" />
 
-    <Button
-        android:id="@+id/bRvScheduleLiveQA"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="15dp"
-        android:layout_marginRight="15dp"
         android:layout_marginTop="15dp"
-        android:background="@drawable/background_radius_primary"
-        android:text="live q.a"
-        android:textColor="@color/colorPrimary"
-        android:visibility="gone" />
+        android:animateLayoutChanges="true"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp">
+
+        <Button
+            android:id="@+id/bRvScheduleVote"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:layout_weight="1"
+            android:background="@drawable/background_radius_primary"
+            android:singleLine="true"
+            android:text="vote"
+            android:textColor="@color/colorPrimary"
+            android:textSize="11dp"
+            android:visibility="gone" />
+
+        <Button
+            android:id="@+id/bRvScheduleLiveQA"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:layout_weight="1"
+            android:background="@drawable/background_radius_primary"
+            android:singleLine="true"
+            android:text="live q.a"
+            android:textColor="@color/colorPrimary"
+            android:textSize="11dp"
+            android:visibility="gone" />
+
+        <Button
+            android:id="@+id/bRvScheduleExternal"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:layout_weight="1"
+            android:background="@drawable/background_radius_primary"
+            android:gravity="center"
+            android:padding="5dp"
+            android:singleLine="true"
+            android:text="asdasdasdasdasdas"
+            android:textColor="@color/colorPrimary"
+            android:textSize="11dp"
+            android:visibility="gone" />
+
+
+    </LinearLayout>
+
 
 </LinearLayout>

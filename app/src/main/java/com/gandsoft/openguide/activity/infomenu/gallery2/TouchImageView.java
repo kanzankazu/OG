@@ -863,7 +863,7 @@ public class TouchImageView extends android.support.v7.widget.AppCompatImageView
             }
 
             //
-            // indicate event was handled
+            // indicate new_event was handled
             //
             return true;
         }
@@ -1047,12 +1047,12 @@ public class TouchImageView extends android.support.v7.widget.AppCompatImageView
     }
 
     /**
-     * This function will transform the coordinates in the touch event to the coordinate
+     * This function will transform the coordinates in the touch new_event to the coordinate
      * system of the drawable that the imageview contain
      *
-     * @param x            x-coordinate of touch event
-     * @param y            y-coordinate of touch event
-     * @param clipToBitmap Touch event may occur within view, but outside image content. True, to clip return value
+     * @param x            x-coordinate of touch new_event
+     * @param y            y-coordinate of touch new_event
+     * @param clipToBitmap Touch new_event may occur within view, but outside image content. True, to clip return value
      *                     to the bounds of the bitmap size.
      * @return Coordinates of the point touched, in the coordinate system of the original drawable.
      */

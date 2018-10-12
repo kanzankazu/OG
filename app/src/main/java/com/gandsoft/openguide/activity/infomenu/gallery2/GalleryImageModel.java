@@ -11,12 +11,14 @@ public class GalleryImageModel implements Parcelable {
     private String total_comment;
     private int status_like;
     private String username;
-    private String caption;
-    private String image_posted;
     private String image_icon;
-    private String image_postedLocal;
-    private String image_iconLocal;
+    private String image_icon_local;
+    private String image_posted;
+    private String image_posted_local;
+    private String caption;
+
     private String event_id;
+
     private int number;
 
     public GalleryImageModel() {
@@ -32,8 +34,8 @@ public class GalleryImageModel implements Parcelable {
         caption = in.readString();
         image_posted = in.readString();
         image_icon = in.readString();
-        image_postedLocal = in.readString();
-        image_iconLocal = in.readString();
+        image_posted_local = in.readString();
+        image_icon_local = in.readString();
         event_id = in.readString();
         number = in.readInt();
     }
@@ -66,8 +68,8 @@ public class GalleryImageModel implements Parcelable {
         parcel.writeString(caption);
         parcel.writeString(image_posted);
         parcel.writeString(image_icon);
-        parcel.writeString(image_postedLocal);
-        parcel.writeString(image_iconLocal);
+        parcel.writeString(image_posted_local);
+        parcel.writeString(image_icon_local);
         parcel.writeString(event_id);
         parcel.writeInt(number);
     }
@@ -108,12 +110,12 @@ public class GalleryImageModel implements Parcelable {
         this.image_icon = image_icon;
     }
 
-    public void setImage_postedLocal(String image_postedLocal) {
-        this.image_postedLocal = image_postedLocal;
+    public void setImage_posted_local(String image_posted_local) {
+        this.image_posted_local = image_posted_local;
     }
 
-    public void setImage_iconLocal(String image_iconLocal) {
-        this.image_iconLocal = image_iconLocal;
+    public void setImage_icon_local(String image_icon_local) {
+        this.image_icon_local = image_icon_local;
     }
 
     public void setEvent_id(String event_id) {
@@ -160,12 +162,12 @@ public class GalleryImageModel implements Parcelable {
         return image_icon;
     }
 
-    public String getImage_postedLocal() {
-        return image_postedLocal;
+    public String getImage_posted_local() {
+        return image_posted_local;
     }
 
-    public String getImage_iconLocal() {
-        return image_iconLocal;
+    public String getImage_icon_local() {
+        return image_icon_local;
     }
 
     public String getEvent_id() {

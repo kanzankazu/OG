@@ -37,7 +37,7 @@
             android:layout_marginTop="20dp"
             android:paddingLeft="@dimen/slide_padding"
             android:paddingRight="@dimen/slide_padding"
-            android:text="Keep all your event detail in one place and your reservation handy."
+            android:text="Keep all your new_event detail in one place and your reservation handy."
             android:textAlignment="center"
             android:textColor="@android:color/white"
             android:textSize="@dimen/slide_desc" />

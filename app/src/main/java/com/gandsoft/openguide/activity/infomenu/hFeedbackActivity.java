@@ -122,7 +122,7 @@ public class hFeedbackActivity extends AppCompatActivity {
                     }
                 }
 
-                //db.saveFeedback(feedback, eventId);
+                //db.saveFeedback(feedback, event_Id);
                 feedbacks.add(feedback);
             }
         } else {
@@ -156,9 +156,9 @@ public class hFeedbackActivity extends AppCompatActivity {
         if (!isHasFeedback()) {
             if (isOutDateEvent()) {
                 if (isHasntStartDateEvent()) {
-                    tvFeedbackTitlefvbi.setText("Thank you for participating in our event. but sorry you can't give feedback because, the event hasn't started yet. see you on the event");
+                    tvFeedbackTitlefvbi.setText("Thank you for participating in our new_event. but sorry you can't give feedback because, the new_event hasn't started yet. see you on the new_event");
                 } else if (isHasPassedDateEvent()) {
-                    tvFeedbackTitlefvbi.setText("Thank you for participating in our event. but sorry you can't give feedback because, You have passed the event. see you on the next event");
+                    tvFeedbackTitlefvbi.setText("Thank you for participating in our new_event. but sorry you can't give feedback because, You have passed the new_event. see you on the next new_event");
                 }
             } else {
                 if (feedbacks.size() > 1) {
@@ -169,7 +169,7 @@ public class hFeedbackActivity extends AppCompatActivity {
                 }
             }
         } else {
-            tvFeedbackTitlefvbi.setText("Thanks you for the feedback. Your feedback is very important to us. see you on the next event");
+            tvFeedbackTitlefvbi.setText("Thanks you for the feedback. Your feedback is very important to us. see you on the next new_event");
         }
     }
 

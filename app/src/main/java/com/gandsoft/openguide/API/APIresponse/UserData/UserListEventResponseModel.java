@@ -146,7 +146,7 @@ public class UserListEventResponseModel  {
 
     /*@SerializedName("event_id")
     @Expose
-    public String eventId;
+    public String event_Id;
     @SerializedName("background")
     @Expose
     public String background;
@@ -188,7 +188,7 @@ public class UserListEventResponseModel  {
      * @param startDate
      * @param logo
      * @param title
-     * @param eventId
+     * @param event_Id
      * @param groupCompany
      * @param status
      * @param background
@@ -197,9 +197,9 @@ public class UserListEventResponseModel  {
      * @param date
      * @param walletData
      *//*
-    public UserListEventResponseModel(String eventId, String background, String logo, String title, String startDate, String date, String status, String groupCode, String groupCompany, String roleName, List<UserWalletDataResponseModel> walletData) {
+    public UserListEventResponseModel(String event_Id, String background, String logo, String title, String startDate, String date, String status, String groupCode, String groupCompany, String roleName, List<UserWalletDataResponseModel> walletData) {
         super();
-        this.eventId = eventId;
+        this.event_Id = event_Id;
         this.background = background;
         this.logo = logo;
         this.title = title;
@@ -212,12 +212,12 @@ public class UserListEventResponseModel  {
         this.walletData = walletData;
     }
 
-    public String getEventId() {
-        return eventId;
+    public String getEvent_Id() {
+        return event_Id;
     }
 
-    public void setEventId(String eventId) {
-        this.eventId = eventId;
+    public void setEvent_Id(String event_Id) {
+        this.event_Id = event_Id;
     }
 
     public String getBackground() {

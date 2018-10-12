@@ -2,6 +2,7 @@ package com.gandsoft.openguide.activity.main.fragments;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
@@ -28,8 +29,6 @@ import com.gandsoft.openguide.support.SessionUtil;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class cScheduleFragment extends Fragment {
     private static final int REQ_CODE_QNA = 123;
@@ -95,11 +94,30 @@ public class cScheduleFragment extends Fragment {
         scheduleListPerDate = db.getScheduleListPerDate(group_code, scheduleDates.get(pagerBig.getCurrentItem()));
         adapter = new ScheduleRecycleviewAdapter(getActivity(), scheduleListPerDate, new ScheduleRecycleviewAdapter.ScheduleListener() {
             @Override
+            public void onClickVote(String link) {
+                Intent intent = new Intent(getActivity(), cScheduleQNAActivity.class);
+                intent.putExtra(ISeasonConfig.INTENT_PARAM, link);
+                startActivityForResult(intent, REQ_CODE_QNA);
+
+            }
+
+            @Override
             public void onClickQNA(String link) {
                 Intent intent = new Intent(getActivity(), cScheduleQNAActivity.class);
                 intent.putExtra(ISeasonConfig.INTENT_PARAM, link);
                 startActivityForResult(intent, REQ_CODE_QNA);
                 //finish();
+            }
+
+            @Override
+            public void onClickExternal(String link) {
+                /*Intent intent = new Intent(getActivity(), cScheduleQNAActivity.class);
+                intent.putExtra(ISeasonConfig.INTENT_PARAM, link);
+                startActivityForResult(intent, REQ_CODE_QNA);*/
+
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(link));
+                startActivity(browserIntent);
+
             }
         }, scheduleDates, group_code);
         recyclerView.setAdapter(adapter);
@@ -220,7 +238,7 @@ public class cScheduleFragment extends Fragment {
             @Override
             public void onPageSelected(int position) {
                 pagerBig.setCurrentItem(position);
-                /*adapter.setData(db.getScheduleListPerDate(eventId, scheduleDates.get(position)));
+                /*adapter.setData(db.getScheduleListPerDate(event_Id, scheduleDates.get(position)));
                 for (int i = 0; i < iPagerCount; i++) {
                     ivIndicatorPromo[i].setImageDrawable(getResources().getDrawable(R.drawable.nonselected_item));
                 }

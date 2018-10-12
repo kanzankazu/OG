@@ -37,7 +37,7 @@
             android:layout_marginTop="20dp"
             android:paddingLeft="@dimen/slide_padding"
             android:paddingRight="@dimen/slide_padding"
-            android:text="Mobile app as pocket book guide for various event in your company, school and friend group."
+            android:text="Mobile app as pocket book guide for various new_event in your company, school and friend group."
             android:textAlignment="center"
             android:textColor="@android:color/white"
             android:textSize="@dimen/slide_desc" />

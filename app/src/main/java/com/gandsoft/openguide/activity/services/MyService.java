@@ -8,7 +8,7 @@ import android.widget.Toast;
 
 import com.gandsoft.openguide.API.API;
 import com.gandsoft.openguide.API.APIrequest.Event.EventDataRequestModel;
-import com.gandsoft.openguide.API.APIrequest.UserData.UserDataRequestModel;
+import com.gandsoft.openguide.API.APIrequest.UserData.GetListUserEventRequestModel;
 import com.gandsoft.openguide.API.APIrequest.VerificationStatusLoginAppUserRequestModel;
 import com.gandsoft.openguide.API.APIresponse.Event.EventAbout;
 import com.gandsoft.openguide.API.APIresponse.Event.EventCommitteeNote;
@@ -22,7 +22,7 @@ import com.gandsoft.openguide.API.APIresponse.Event.EventScheduleListDate;
 import com.gandsoft.openguide.API.APIresponse.Event.EventScheduleListDateDataList;
 import com.gandsoft.openguide.API.APIresponse.Event.EventSurroundingArea;
 import com.gandsoft.openguide.API.APIresponse.Event.EventTheEvent;
-import com.gandsoft.openguide.API.APIresponse.UserData.UserDataResponseModel;
+import com.gandsoft.openguide.API.APIresponse.UserData.GetListUserEventResponseModel;
 import com.gandsoft.openguide.API.APIresponse.UserData.UserListEventResponseModel;
 import com.gandsoft.openguide.API.APIresponse.UserData.UserWalletDataResponseModel;
 import com.gandsoft.openguide.API.APIresponse.VerificationStatusLoginAppUserResponseModel;
@@ -102,7 +102,7 @@ public class MyService extends Service {
 
     private void getAPIUserDataDo(String accountId) {
 
-        UserDataRequestModel requestModel = new UserDataRequestModel();
+        GetListUserEventRequestModel requestModel = new GetListUserEventRequestModel();
         requestModel.setAccountid(accountId);
         requestModel.setDbver(IConfig.DB_Version);
         if (db.isDataTableValueNull(SQLiteHelper.TableUserData, SQLiteHelper.KEY_UserData_accountId, accountId)) {
@@ -112,17 +112,17 @@ public class MyService extends Service {
         }
         Log.d("Lihat", "getAPIUserDataDo MyService : " + db.getVersionDataIdUser(accountId));
 
-        API.doUserDataRet(requestModel).enqueue(new Callback<List<UserDataResponseModel>>() {
+        API.doGetListUserEventRet(requestModel).enqueue(new Callback<List<GetListUserEventResponseModel>>() {
             @Override
-            public void onResponse(Call<List<UserDataResponseModel>> call, Response<List<UserDataResponseModel>> response) {
+            public void onResponse(Call<List<GetListUserEventResponseModel>> call, Response<List<GetListUserEventResponseModel>> response) {
                 if (response.isSuccessful()) {
-                    List<UserDataResponseModel> userDataResponseModels = response.body();
-                    for (int i = 0; i < userDataResponseModels.size(); i++) {
-                        UserDataResponseModel model = userDataResponseModels.get(i);
+                    List<GetListUserEventResponseModel> getListUserEventResponseModels = response.body();
+                    for (int i = 0; i < getListUserEventResponseModels.size(); i++) {
+                        GetListUserEventResponseModel model = getListUserEventResponseModels.get(i);
                         if (!model.getVersion_data().equalsIgnoreCase("last version")) {//jika bukan lastversion
                             Log.d("Lihat", "onResponse MyService getAPIUserDataDo: " + "ok");
                             if (db.isDataTableValueNull(SQLiteHelper.TableUserData, SQLiteHelper.KEY_UserData_accountId, accountId)) {
-                                db.saveUserData(model);
+                                db.saveUserData(model, accountId);
                             } else {
                                 db.updateUserData(model, accountId);
                             }
@@ -133,7 +133,7 @@ public class MyService extends Service {
                                 if (db.isDataTableValueNull(SQLiteHelper.TableListEvent, SQLiteHelper.KEY_ListEvent_eventId, model1.getEvent_id())) {
                                     db.saveListEvent(model1, accountId);
                                 } else {
-                                    db.updateListEvent(model1);
+                                    db.updateListEvent(model1, accountId);
                                 }
 
                                 List<UserWalletDataResponseModel> userWalletDataResponseModels = model1.getWallet_data();
@@ -148,7 +148,6 @@ public class MyService extends Service {
                             }
                         } else {
                             Log.d("Lihat", "onResponse MyService : " + model.getVersion_data());
-                            Log.d("Lihat", "onResponse MyService getAPIUserDataDo: " + "skip");
                         }
                     }
                 } else {
@@ -157,7 +156,7 @@ public class MyService extends Service {
             }
 
             @Override
-            public void onFailure(Call<List<UserDataResponseModel>> call, Throwable t) {
+            public void onFailure(Call<List<GetListUserEventResponseModel>> call, Throwable t) {
                 Log.d("Lihat", "onFailure MyService : " + t.getMessage());
             }
         });
@@ -186,7 +185,6 @@ public class MyService extends Service {
                     for (int i = 0; i < eventDataResponseModels.size(); i++) {
                         EventDataResponseModel model = eventDataResponseModels.get(i);
                         if (model.getStatus().equalsIgnoreCase("ok")) {//jika status ok
-                            Log.d("Lihat", "onResponse MyService getAPIEventDataDo: " + "ok");
                             for (int i1 = 0; i1 < model.getThe_event().size(); i1++) {
                                 EventTheEvent theEvent = model.getThe_event().get(i1);
                                 if (db.isDataTableValueMultipleNull(SQLiteHelper.TableTheEvent, SQLiteHelper.Key_The_Event_EventId, SQLiteHelper.Key_The_Event_version_data, model.getEvent_id(), model.getVersion_data())) {
@@ -289,12 +287,11 @@ public class MyService extends Service {
                                 }
                             }
                         } else {
-                            //Snackbar.make(findViewById(android.R.id.content), model.getStatus(), Snackbar.LENGTH_LONG).show();
                             Log.d("Lihat", "onResponse MyService getAPIEventDataDo: " + "skip");
                         }
                     }
                 } else {
-                    //Snackbar.make(findViewById(android.R.id.content), response.message(), Snackbar.LENGTH_LONG).show();
+                    Log.d("Lihat", "onResponse MyService : " + response.message());
                 }
             }
 

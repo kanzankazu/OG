@@ -78,7 +78,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
                 .setContentTitle("Openguides Notification")
-                .setSmallIcon(R.drawable.ic_love_fill)
+                .setSmallIcon(R.drawable.ic_og_logo)
                 .setLargeIcon(BitmapFactory.decodeResource(this.getResources(), R.mipmap.ic_launcher))
                 .setContentText(messageBody)
                 .setAutoCancel(true)

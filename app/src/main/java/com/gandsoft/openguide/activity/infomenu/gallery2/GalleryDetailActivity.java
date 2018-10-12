@@ -147,7 +147,7 @@ public class GalleryDetailActivity extends AppCompatActivity {
                         .into(new SimpleTarget<Bitmap>() {
                             @Override
                             public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
-                                PictureUtil.saveImageDownload(GalleryDetailActivity.this, resource, db.getOneListEvent(eventId).getTitle(), model.getId());
+                                PictureUtil.saveImageToPicture(GalleryDetailActivity.this, resource, db.getOneListEvent(eventId).getTitle(), model.getId());
                             }
                         });
 

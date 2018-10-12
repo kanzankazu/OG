@@ -49,7 +49,7 @@ public class RequestHandler {
     /*public String sendGetRequestJSONOkHTTP1(Context context, String requestURL) throws IOException {
         //RequestBody body = RequestBody.create(JSON, postDataParams);
         OkHttpClient client = new OkHttpClient.Builder().addNetworkInterceptor(new ChuckInterceptor(context)).connectTimeout(60, TimeUnit.SECONDS).writeTimeout(40, TimeUnit.SECONDS).readTimeout(40, TimeUnit.SECONDS).build();
-        Request request = new Request.Builder().url(requestURL).get().addHeader("Content-Type", "application/json").addHeader("Authorization", "Your Token").addHeader("cache-control", "no-cache").build();
+        Request request = new Request.Builder().url(requestURL).get().addHeader("Content-Type", "application/json").addHeader("Authorization", "Your Token").addHeader("cache-control", "number-cache").build();
         try (Response response = client.newCall(request).execute()) {
             return response.body().string();
         }
