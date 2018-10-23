@@ -1,4 +1,4 @@
-package com.gandsoft.openguide.activity.infomenu;
+package com.gandsoft.openguide.view.infomenu;
 
 import android.app.Activity;
 import android.text.Html;
@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.gandsoft.openguide.R;
 

@@ -1,4 +1,4 @@
-package com.gandsoft.openguide.activity.main.fragments;
+package com.gandsoft.openguide.view.main.fragments;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -52,9 +52,9 @@ import com.gandsoft.openguide.API.APIresponse.UserData.UserWalletDataResponseMod
 import com.gandsoft.openguide.IConfig;
 import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
-import com.gandsoft.openguide.activity.main.adapter.HomeContentAdapter;
-import com.gandsoft.openguide.activity.main.fragments.aHomeActivityInFragment.aHomePostCommentActivity;
-import com.gandsoft.openguide.activity.main.fragments.aHomeActivityInFragment.aHomePostImageCaptionActivity;
+import com.gandsoft.openguide.view.main.adapter.HomeContentAdapter;
+import com.gandsoft.openguide.view.main.fragments.aHomeActivityInFragment.aHomePostCommentActivity;
+import com.gandsoft.openguide.view.main.fragments.aHomeActivityInFragment.aHomePostImageCaptionActivity;
 import com.gandsoft.openguide.database.SQLiteHelper;
 import com.gandsoft.openguide.support.DateTimeUtil;
 import com.gandsoft.openguide.support.InputValidUtil;
@@ -374,7 +374,7 @@ public class aHomeFragment extends Fragment {
                     .asBitmap()
                     .placeholder(R.drawable.template_account_og)
                     .skipMemoryCache(false)
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
                     .error(R.drawable.template_account_og)
                     .into(new SimpleTarget<Bitmap>() {
                         @Override
@@ -391,7 +391,7 @@ public class aHomeFragment extends Fragment {
                     .asBitmap()
                     .placeholder(R.drawable.template_account_og)
                     .skipMemoryCache(false)
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
                     .error(R.drawable.template_account_og)
                     .into(new SimpleTarget<Bitmap>() {
                         @Override
@@ -956,7 +956,7 @@ public class aHomeFragment extends Fragment {
                             .load(new File(newPostImgPath))
                             .asBitmap()
                             .skipMemoryCache(false)
-                            .diskCacheStrategy(DiskCacheStrategy.ALL)
+                            .diskCacheStrategy(DiskCacheStrategy.NONE)
                             .into(new SimpleTarget<Bitmap>() {
                                 @Override
                                 public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {

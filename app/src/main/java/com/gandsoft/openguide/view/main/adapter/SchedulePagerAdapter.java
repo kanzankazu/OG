@@ -12,7 +12,7 @@
  https://commonsware.com/Android
  */
 
-package com.gandsoft.openguide.activity.main.adapter;
+package com.gandsoft.openguide.view.main.adapter;
 
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;

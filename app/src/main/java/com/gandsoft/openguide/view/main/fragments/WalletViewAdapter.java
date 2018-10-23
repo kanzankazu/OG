@@ -1,7 +1,6 @@
-package com.gandsoft.openguide.activity.main.fragments;
+package com.gandsoft.openguide.view.main.fragments;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.CardView;
@@ -18,15 +17,10 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.request.animation.GlideAnimation;
-import com.bumptech.glide.request.target.SimpleTarget;
 import com.gandsoft.openguide.API.APIresponse.UserData.UserWalletDataResponseModel;
 import com.gandsoft.openguide.R;
 import com.gandsoft.openguide.database.SQLiteHelper;
-import com.gandsoft.openguide.support.InputValidUtil;
 import com.gandsoft.openguide.support.ListArrayUtil;
-import com.gandsoft.openguide.support.NetworkUtil;
-import com.gandsoft.openguide.support.PictureUtil;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -34,7 +28,6 @@ import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Entities;
 import org.jsoup.select.Elements;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -103,7 +96,7 @@ class WalletViewAdapter extends RecyclerView.Adapter<WalletViewAdapter.ViewHolde
                 Glide.with(activity)
                         .load(imgUrl)
                         .placeholder(R.drawable.template_account_og)
-                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .diskCacheStrategy(DiskCacheStrategy.NONE)
                         .skipMemoryCache(false)
                         .error(R.drawable.template_account_og)
                         .into(holder1.ivWalletIdCardfvbi);

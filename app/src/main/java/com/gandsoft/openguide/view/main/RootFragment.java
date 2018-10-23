@@ -1,4 +1,4 @@
-package com.gandsoft.openguide.activity.main;
+package com.gandsoft.openguide.view.main;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -8,7 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.gandsoft.openguide.R;
-import com.gandsoft.openguide.activity.main.fragments.aHomeFragment;
+import com.gandsoft.openguide.view.main.fragments.aHomeFragment;
 
 
 /**

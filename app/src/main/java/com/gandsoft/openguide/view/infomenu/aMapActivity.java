@@ -1,4 +1,4 @@
-package com.gandsoft.openguide.activity.infomenu;
+package com.gandsoft.openguide.view.infomenu;
 
 import android.Manifest;
 import android.content.Context;
@@ -32,7 +32,7 @@ import com.bumptech.glide.request.target.SimpleTarget;
 import com.gandsoft.openguide.API.APIresponse.Event.EventPlaceList;
 import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
-import com.gandsoft.openguide.activity.LocalBaseActivity;
+import com.gandsoft.openguide.view.LocalBaseActivity;
 import com.gandsoft.openguide.database.SQLiteHelper;
 import com.gandsoft.openguide.support.NetworkUtil;
 import com.gandsoft.openguide.support.PictureUtil;

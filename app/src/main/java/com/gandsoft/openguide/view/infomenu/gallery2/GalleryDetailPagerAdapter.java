@@ -1,4 +1,4 @@
-package com.gandsoft.openguide.activity.infomenu.gallery2;
+package com.gandsoft.openguide.view.infomenu.gallery2;
 
 import android.graphics.Bitmap;
 import android.support.v4.view.PagerAdapter;
@@ -7,7 +7,6 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.gandsoft.openguide.support.PictureUtil;

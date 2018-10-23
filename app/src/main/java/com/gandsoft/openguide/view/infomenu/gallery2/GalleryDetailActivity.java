@@ -1,4 +1,4 @@
-package com.gandsoft.openguide.activity.infomenu.gallery2;
+package com.gandsoft.openguide.view.infomenu.gallery2;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -26,7 +26,7 @@ import com.gandsoft.openguide.API.APIresponse.LocalBaseResponseModel;
 import com.gandsoft.openguide.IConfig;
 import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
-import com.gandsoft.openguide.activity.main.fragments.aHomeActivityInFragment.aHomePostCommentActivity;
+import com.gandsoft.openguide.view.main.fragments.aHomeActivityInFragment.aHomePostCommentActivity;
 import com.gandsoft.openguide.database.SQLiteHelper;
 import com.gandsoft.openguide.support.PictureUtil;
 import com.gandsoft.openguide.support.SessionUtil;

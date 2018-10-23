@@ -1,4 +1,4 @@
-package com.gandsoft.openguide.activity.infomenu;
+package com.gandsoft.openguide.view.infomenu;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;

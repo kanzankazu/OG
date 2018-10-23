@@ -1,4 +1,4 @@
-package com.gandsoft.openguide.activity.main.adapter;
+package com.gandsoft.openguide.view.main.adapter;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -111,7 +111,7 @@ public class HomeContentAdapter extends RecyclerView.Adapter<HomeContentAdapter.
                     .load(InputValidUtil.isLinkUrl(image_posted) ? image_posted : new File(image_posted))
                     .asBitmap()
                     .skipMemoryCache(false)
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
                     .thumbnail(0.1f)
                     .error(R.drawable.template_account_og)
                     .into(new SimpleTarget<Bitmap>() {
@@ -134,7 +134,7 @@ public class HomeContentAdapter extends RecyclerView.Adapter<HomeContentAdapter.
                     .asBitmap()
                     .placeholder(R.drawable.template_account_og)
                     .skipMemoryCache(false)
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
                     .error(R.drawable.template_account_og)
                     .into(new SimpleTarget<Bitmap>() {
                         @Override

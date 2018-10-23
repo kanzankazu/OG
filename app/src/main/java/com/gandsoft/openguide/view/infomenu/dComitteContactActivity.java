@@ -1,4 +1,4 @@
-package com.gandsoft.openguide.activity.infomenu;
+package com.gandsoft.openguide.view.infomenu;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -16,8 +16,8 @@ import com.gandsoft.openguide.API.APIresponse.Event.EventDataContactList;
 import com.gandsoft.openguide.API.APIresponse.Event.EventTheEvent;
 import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
-import com.gandsoft.openguide.activity.infomenu.adapter.ComitteContactAdapter;
-import com.gandsoft.openguide.activity.infomenu.adapter.ComitteContactHook;
+import com.gandsoft.openguide.view.infomenu.adapter.ComitteContactAdapter;
+import com.gandsoft.openguide.view.infomenu.adapter.ComitteContactHook;
 import com.gandsoft.openguide.database.SQLiteHelper;
 import com.gandsoft.openguide.support.SessionUtil;
 

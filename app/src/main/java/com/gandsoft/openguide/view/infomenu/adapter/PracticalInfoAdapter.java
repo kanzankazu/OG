@@ -1,4 +1,4 @@
-package com.gandsoft.openguide.activity.infomenu.adapter;
+package com.gandsoft.openguide.view.infomenu.adapter;
 
 import android.app.Activity;
 import android.view.LayoutInflater;

@@ -1,4 +1,4 @@
-package com.gandsoft.openguide.activity.main.fragments.aHomeActivityInFragment;
+package com.gandsoft.openguide.view.main.fragments.aHomeActivityInFragment;
 
 import android.app.Activity;
 import android.support.annotation.NonNull;
@@ -86,7 +86,7 @@ class HomeContentCommentAdapter extends RecyclerView.Adapter<HomeContentCommentA
                 .load(model.getImage_icon())
                 .placeholder(R.drawable.template_account_og)
                 .skipMemoryCache(false)
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
                 .error(R.drawable.template_account_og)
                 .into(holder.ivRVCommentIconfvbi);
 

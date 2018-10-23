@@ -1,4 +1,4 @@
-package com.gandsoft.openguide.activity.services;
+package com.gandsoft.openguide.view.services;
 
 import android.app.Service;
 import android.content.Intent;

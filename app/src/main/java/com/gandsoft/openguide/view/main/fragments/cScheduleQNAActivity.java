@@ -1,10 +1,8 @@
-package com.gandsoft.openguide.activity.main.fragments;
+package com.gandsoft.openguide.view.main.fragments;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;

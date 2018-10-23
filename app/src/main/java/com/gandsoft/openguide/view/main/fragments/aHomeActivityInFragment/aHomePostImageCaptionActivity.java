@@ -1,4 +1,4 @@
-package com.gandsoft.openguide.activity.main.fragments.aHomeActivityInFragment;
+package com.gandsoft.openguide.view.main.fragments.aHomeActivityInFragment;
 
 import android.app.Activity;
 import android.content.ContentValues;

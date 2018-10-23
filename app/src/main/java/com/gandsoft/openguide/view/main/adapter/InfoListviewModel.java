@@ -1,4 +1,4 @@
-package com.gandsoft.openguide.activity.main.adapter;
+package com.gandsoft.openguide.view.main.adapter;
 
 public class InfoListviewModel {
     String title;

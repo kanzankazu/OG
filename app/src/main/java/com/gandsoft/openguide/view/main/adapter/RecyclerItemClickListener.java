@@ -1,4 +1,4 @@
-package com.gandsoft.openguide.activity.main.adapter;
+package com.gandsoft.openguide.view.main.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;

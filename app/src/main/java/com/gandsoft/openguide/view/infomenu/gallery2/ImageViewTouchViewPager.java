@@ -1,4 +1,4 @@
-package com.gandsoft.openguide.activity.infomenu.gallery2;
+package com.gandsoft.openguide.view.infomenu.gallery2;
 
 import android.content.Context;
 import android.support.v4.view.ViewPager;

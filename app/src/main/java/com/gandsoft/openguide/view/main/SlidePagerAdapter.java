@@ -1,16 +1,16 @@
-package com.gandsoft.openguide.activity.main;
+package com.gandsoft.openguide.view.main;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
-import com.gandsoft.openguide.activity.main.fragments.aHomeFragment;
-import com.gandsoft.openguide.activity.main.fragments.bWalletFragment;
-import com.gandsoft.openguide.activity.main.fragments.cScheduleFragment;
-import com.gandsoft.openguide.activity.main.fragments.dAboutFragment;
-import com.gandsoft.openguide.activity.main.fragments.eInfoFragment;
+import com.gandsoft.openguide.view.main.fragments.aHomeFragment;
+import com.gandsoft.openguide.view.main.fragments.bWalletFragment;
+import com.gandsoft.openguide.view.main.fragments.cScheduleFragment;
+import com.gandsoft.openguide.view.main.fragments.dAboutFragment;
+import com.gandsoft.openguide.view.main.fragments.eInfoFragment;
 
-import static com.gandsoft.openguide.activity.main.BaseHomeActivity.NUM_ITEMS;
+import static com.gandsoft.openguide.view.main.BaseHomeActivity.NUM_ITEMS;
 
 public class SlidePagerAdapter extends FragmentStatePagerAdapter {
 

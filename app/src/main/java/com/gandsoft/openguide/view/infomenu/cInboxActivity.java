@@ -1,4 +1,4 @@
-package com.gandsoft.openguide.activity.infomenu;
+package com.gandsoft.openguide.view.infomenu;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -15,7 +15,7 @@ import android.view.MenuItem;
 import com.gandsoft.openguide.API.APIresponse.Event.EventCommitteeNote;
 import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
-import com.gandsoft.openguide.activity.infomenu.adapter.InboxRecViewAdapter;
+import com.gandsoft.openguide.view.infomenu.adapter.InboxRecViewAdapter;
 import com.gandsoft.openguide.database.SQLiteHelper;
 import com.gandsoft.openguide.support.SessionUtil;
 

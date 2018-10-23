@@ -1,4 +1,4 @@
-package com.gandsoft.openguide.activity.main.fragments.aHomeActivityInFragment;
+package com.gandsoft.openguide.view.main.fragments.aHomeActivityInFragment;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -55,10 +55,6 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-
-import static com.gandsoft.openguide.database.SQLiteHelper.Key_Comment_Id;
-import static com.gandsoft.openguide.database.SQLiteHelper.Key_Comment_PostId;
-import static com.gandsoft.openguide.database.SQLiteHelper.TableComment;
 
 public class aHomePostCommentActivity extends AppCompatActivity {
     SQLiteHelper db = new SQLiteHelper(this);
@@ -159,7 +155,7 @@ public class aHomePostCommentActivity extends AppCompatActivity {
                 .asBitmap()
                 .thumbnail(0.1f)
                 .skipMemoryCache(false)
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
                 .into(ivCommentTsIconfvbi);
 
         if (!TextUtils.isEmpty(model.getImage_posted())) {
@@ -168,7 +164,7 @@ public class aHomePostCommentActivity extends AppCompatActivity {
                     .asBitmap()
                     .thumbnail(0.1f)
                     .skipMemoryCache(false)
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
                     .into(new SimpleTarget<Bitmap>() {
                         @Override
                         public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {

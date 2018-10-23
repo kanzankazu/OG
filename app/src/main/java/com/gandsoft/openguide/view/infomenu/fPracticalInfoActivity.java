@@ -1,4 +1,4 @@
-package com.gandsoft.openguide.activity.infomenu;
+package com.gandsoft.openguide.view.infomenu;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -16,7 +16,7 @@ import android.widget.ExpandableListView;
 import com.gandsoft.openguide.API.APIresponse.Event.EventImportanInfo;
 import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
-import com.gandsoft.openguide.activity.infomenu.adapter.PracticalInfoAdapter;
+import com.gandsoft.openguide.view.infomenu.adapter.PracticalInfoAdapter;
 import com.gandsoft.openguide.database.SQLiteHelper;
 import com.gandsoft.openguide.support.SessionUtil;
 

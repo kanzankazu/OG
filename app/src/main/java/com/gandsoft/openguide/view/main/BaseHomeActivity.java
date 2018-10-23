@@ -1,4 +1,4 @@
-package com.gandsoft.openguide.activity.main;
+package com.gandsoft.openguide.view.main;
 
 import android.app.Dialog;
 import android.app.NotificationManager;
@@ -31,7 +31,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.gandsoft.openguide.API.API;
@@ -43,9 +42,9 @@ import com.gandsoft.openguide.API.APIresponse.VerificationStatusLoginAppUserResp
 import com.gandsoft.openguide.IConfig;
 import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
-import com.gandsoft.openguide.activity.ChangeEventActivity;
-import com.gandsoft.openguide.activity.infomenu.cInboxActivity;
-import com.gandsoft.openguide.activity.services.MyService;
+import com.gandsoft.openguide.view.ChangeEventActivity;
+import com.gandsoft.openguide.view.infomenu.cInboxActivity;
+import com.gandsoft.openguide.view.services.MyService;
 import com.gandsoft.openguide.database.SQLiteHelper;
 import com.gandsoft.openguide.support.AppUtil;
 import com.gandsoft.openguide.support.DateTimeUtil;

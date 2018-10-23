@@ -1,4 +1,4 @@
-package com.gandsoft.openguide.activity.main.fragments;
+package com.gandsoft.openguide.view.main.fragments;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -20,8 +20,8 @@ import android.widget.LinearLayout;
 import com.gandsoft.openguide.API.APIresponse.Event.EventScheduleListDateDataList;
 import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
-import com.gandsoft.openguide.activity.main.adapter.SchedulePagerAdapter;
-import com.gandsoft.openguide.activity.main.adapter.ScheduleRecycleviewAdapter;
+import com.gandsoft.openguide.view.main.adapter.SchedulePagerAdapter;
+import com.gandsoft.openguide.view.main.adapter.ScheduleRecycleviewAdapter;
 import com.gandsoft.openguide.database.SQLiteHelper;
 import com.gandsoft.openguide.support.DateTimeUtil;
 import com.gandsoft.openguide.support.ListArrayUtil;

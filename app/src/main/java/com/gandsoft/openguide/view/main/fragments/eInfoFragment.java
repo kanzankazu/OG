@@ -1,4 +1,4 @@
-package com.gandsoft.openguide.activity.main.fragments;
+package com.gandsoft.openguide.view.main.fragments;
 
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -20,19 +20,19 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.gandsoft.openguide.API.APIresponse.UserData.GetListUserEventResponseModel;
 import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
-import com.gandsoft.openguide.activity.AccountActivity;
-import com.gandsoft.openguide.activity.ChangeEventActivity;
-import com.gandsoft.openguide.activity.infomenu.aMapActivity;
-import com.gandsoft.openguide.activity.infomenu.cInboxActivity;
-import com.gandsoft.openguide.activity.infomenu.dComitteContactActivity;
-import com.gandsoft.openguide.activity.infomenu.eEmergenciesActivity;
-import com.gandsoft.openguide.activity.infomenu.fPracticalInfoActivity;
-import com.gandsoft.openguide.activity.infomenu.gSurroundingAreaActivity;
-import com.gandsoft.openguide.activity.infomenu.gallery2.GalleryActivity;
-import com.gandsoft.openguide.activity.infomenu.hFeedbackActivity;
-import com.gandsoft.openguide.activity.main.BaseHomeActivity;
-import com.gandsoft.openguide.activity.main.adapter.InfoListViewAdapter;
-import com.gandsoft.openguide.activity.main.adapter.InfoListviewModel;
+import com.gandsoft.openguide.view.AccountActivity;
+import com.gandsoft.openguide.view.ChangeEventActivity;
+import com.gandsoft.openguide.view.infomenu.aMapActivity;
+import com.gandsoft.openguide.view.infomenu.cInboxActivity;
+import com.gandsoft.openguide.view.infomenu.dComitteContactActivity;
+import com.gandsoft.openguide.view.infomenu.eEmergenciesActivity;
+import com.gandsoft.openguide.view.infomenu.fPracticalInfoActivity;
+import com.gandsoft.openguide.view.infomenu.gSurroundingAreaActivity;
+import com.gandsoft.openguide.view.infomenu.gallery2.GalleryActivity;
+import com.gandsoft.openguide.view.infomenu.hFeedbackActivity;
+import com.gandsoft.openguide.view.main.BaseHomeActivity;
+import com.gandsoft.openguide.view.main.adapter.InfoListViewAdapter;
+import com.gandsoft.openguide.view.main.adapter.InfoListviewModel;
 import com.gandsoft.openguide.database.SQLiteHelper;
 import com.gandsoft.openguide.support.AppUtil;
 import com.gandsoft.openguide.support.ListArrayUtil;
@@ -161,7 +161,7 @@ public class eInfoFragment extends Fragment implements InfoListViewAdapter.ListA
                         .placeholder(R.drawable.template_account_og)
                         .error(R.drawable.template_account_og)
                         .skipMemoryCache(false)
-                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .diskCacheStrategy(DiskCacheStrategy.NONE)
                         .into(ivInfoUserImagefvbi);
 
             }

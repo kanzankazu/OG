@@ -1,4 +1,4 @@
-package com.gandsoft.openguide.activity.main.fragments;
+package com.gandsoft.openguide.view.main.fragments;
 
 public interface WalletViewHook {
 }

@@ -1,6 +1,4 @@
-package com.gandsoft.openguide.activity.main.adapter;
-
-import android.util.Log;
+package com.gandsoft.openguide.view.main.adapter;
 
 import java.util.ArrayList;
 import java.util.List;
