@@ -1,6 +1,7 @@
 package com.gandsoft.openguide.API.APIresponse.HomeContent;
 
 public class HomeContentPostCommentGetResponseModel {
+    public int number;
     public String id;
     public String account_id;
     public String total_comment;
@@ -9,6 +10,41 @@ public class HomeContentPostCommentGetResponseModel {
     public String role_name;
     public String post_time;
     public String post_content;
+    public String eventId;
+    public String postId;
+    public String userId;
+
+    public int getNumber() {
+        return number;
+    }
+
+    public void setNumber(int number) {
+        this.number = number;
+    }
+
+    public String getEventId() {
+        return eventId;
+    }
+
+    public void setEventId(String eventId) {
+        this.eventId = eventId;
+    }
+
+    public String getPostId() {
+        return postId;
+    }
+
+    public void setPostId(String postId) {
+        this.postId = postId;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
 
     public String getId() {
         return id;

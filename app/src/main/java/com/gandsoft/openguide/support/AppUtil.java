@@ -4,18 +4,36 @@ import android.app.Activity;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 
 import com.gandsoft.openguide.ISeasonConfig;
-import com.gandsoft.openguide.activity.LoginActivity;
-import com.gandsoft.openguide.activity.services.MyService;
+import com.gandsoft.openguide.view.LoginActivity;
+import com.gandsoft.openguide.view.services.MyService;
 import com.gandsoft.openguide.database.SQLiteHelper;
 import com.google.firebase.auth.FirebaseAuth;
 
 public class AppUtil {
+
+    public static void signOutUserOtherDevice(Activity activity, SQLiteHelper db, Class<?> targetClass, @Nullable String accountId, boolean showSnackBar) {
+        new AlertDialog.Builder(activity)
+                .setTitle("Informasi")
+                .setMessage("Akun anda digunakan oleh perangkat lain, anda akan logout otomatis.")
+                .setCancelable(false)
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        AppUtil.signOutFull(activity, db, showSnackBar, accountId);
+                        ServiceUtil.stopSevice(activity, targetClass);
+                        NotifUtil.clearNotificationAll(activity);
+                    }
+                })
+                .show();
+    }
 
     public static void signOutFull(Activity activity, SQLiteHelper db, boolean showSnackBar, @Nullable String accountId) {
         FirebaseAuth mAuth = FirebaseAuth.getInstance();

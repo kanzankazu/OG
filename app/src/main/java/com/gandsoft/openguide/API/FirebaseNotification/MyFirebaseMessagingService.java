@@ -29,8 +29,7 @@ import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import com.gandsoft.openguide.R;
-import com.gandsoft.openguide.activity.ChangeEventActivity;
-import com.gandsoft.openguide.activity.main.BaseHomeActivity;
+import com.gandsoft.openguide.view.main.BaseHomeActivity;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 

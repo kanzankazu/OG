@@ -28,6 +28,8 @@ import java.io.OutputStream;
 
 public class PictureUtil {
 
+    static String PATH_GANDSOFT = "/.Gandsoft/";
+
     public static Intent getCropperIntent(Context mContext, Uri imageUri, @Nullable Integer sizex, @Nullable Integer sizey) {
         Intent CropIntent = null;
 
@@ -90,14 +92,14 @@ public class PictureUtil {
 
     @TargetApi(Build.VERSION_CODES.N)
     public static Uri getUriFromResult(Context context, int resultCode, Uri jink) {
-        InputStream in = null;
+        InputStream inputStream = null;
         Uri selectedImage = null;
         if (resultCode == Activity.RESULT_OK) {
 
             try {
                 Bitmap bitmap = MediaStore.Images.Media.getBitmap(context.getContentResolver(), jink);
-                in = context.getContentResolver().openInputStream(jink);
-                ExifInterface exifInterface = new ExifInterface(in);
+                inputStream = context.getContentResolver().openInputStream(jink);
+                ExifInterface exifInterface = new ExifInterface(inputStream);
 
                 int orientation = exifInterface.getAttributeInt(ExifInterface.TAG_ORIENTATION,
                         ExifInterface.ORIENTATION_UNDEFINED);
@@ -123,13 +125,14 @@ public class PictureUtil {
                 }
 
             } catch (IOException e) {
-                // Handle any errors
+                Log.e("Lihat", "getUriFromResult PictureUtil : " + e.getMessage());
                 return null;
             } finally {
-                if (in != null) {
+                if (inputStream != null) {
                     try {
-                        in.close();
-                    } catch (IOException ignored) {
+                        inputStream.close();
+                    } catch (IOException e) {
+                        Log.e("Lihat", "getUriFromResult PictureUtil : " + e.getMessage());
                     }
                 }
                 return selectedImage;
@@ -326,14 +329,14 @@ public class PictureUtil {
         Log.d("bes64 ", base64pic);*/
     }
 
-    public static void createDirectoryAndSaveFile(Bitmap imageToSave, String fileName) {
-        File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/.Gandsoft/" + "/" + fileName);
-        if (file.exists()) {
-            file.delete();
+    public static void createDirectoryAndSaveFile(Bitmap image, String idName) {
+        File storageDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + PATH_GANDSOFT + idName);
+        if (storageDir.exists()) {
+            storageDir.delete();
         }
         try {
-            FileOutputStream out = new FileOutputStream(file);
-            imageToSave.compress(Bitmap.CompressFormat.PNG, 100, out);
+            FileOutputStream out = new FileOutputStream(storageDir);
+            image.compress(Bitmap.CompressFormat.JPEG, 100, out);
             out.flush();
             out.close();
         } catch (Exception e) {
@@ -341,12 +344,10 @@ public class PictureUtil {
         }
     }
 
-    public static String saveImage(Bitmap image, int position, String id) {
-        /*Random r = new Random();
-        int i1 = r.nextInt(1000);*/
+    public static String saveImageLogoBackIcon(Bitmap image, String idName) {
         String savedImagePath = null;
-        String imageFileName = id + ".jpg";
-        File storageDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/.Gandsoft/" + id);
+        String imageFileName = idName + ".jpg";
+        File storageDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + PATH_GANDSOFT);
         boolean success = true;
         if (!storageDir.exists()) {
             success = storageDir.mkdirs();
@@ -355,15 +356,63 @@ public class PictureUtil {
             File imageFile = new File(storageDir, imageFileName);
             savedImagePath = imageFile.getAbsolutePath();
             try {
-                OutputStream fOut = new FileOutputStream(imageFile);
-                Bitmap storedata = PictureUtil.resizeImageBitmap(image, 500);
-                storedata.compress(Bitmap.CompressFormat.JPEG, 50, fOut);
+                OutputStream fOut = new FileOutputStream(imageFile, false);
+                Bitmap resizeImageBitmap = resizeImageBitmap(image, 360);
+                resizeImageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, fOut);
                 fOut.close();
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
-        Log.d("Lihat", "saveImage GalleryAdapter : " + savedImagePath);
+        Log.d("Lihat", "saveImageLogoBackIcon : " + savedImagePath);
+        return savedImagePath;
+    }
+
+    public static String saveImageStaticMaps(Bitmap image, String idName) {
+        String savedImagePath = null;
+        String imageFileName = idName + ".jpg";
+        File storageDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + PATH_GANDSOFT + "StaticMaps");
+        boolean success = true;
+        if (!storageDir.exists()) {
+            success = storageDir.mkdirs();
+        }
+        if (success) {
+            File imageFile = new File(storageDir, imageFileName);
+            savedImagePath = imageFile.getAbsolutePath();
+            try {
+                OutputStream fOut = new FileOutputStream(imageFile, false);
+                Bitmap resizeImageBitmap = resizeImageBitmap(image, 360);
+                resizeImageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, fOut);
+                fOut.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        Log.d("Lihat", "saveImageStaticMaps : " + savedImagePath);
+        return savedImagePath;
+    }
+
+    public static String saveImageWithFolder(Bitmap image, String idName, String folderName) {
+        String savedImagePath = null;
+        String imageFileName = idName + ".jpg";
+        File storageDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + PATH_GANDSOFT + folderName);
+        boolean success = true;
+        if (!storageDir.exists()) {
+            success = storageDir.mkdirs();
+        }
+        if (success) {
+            File imageFile = new File(storageDir, imageFileName);
+            savedImagePath = imageFile.getAbsolutePath();
+            try {
+                OutputStream fOut = new FileOutputStream(imageFile, false);
+                Bitmap storedata = PictureUtil.resizeImageBitmap(image, 360);
+                storedata.compress(Bitmap.CompressFormat.JPEG, 100, fOut);
+                fOut.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        Log.d("Lihat", "saveImageWithFolder : " + savedImagePath);
         return savedImagePath;
     }
 
@@ -378,17 +427,13 @@ public class PictureUtil {
         }
         if (success) {
             File imageFile = new File(imageDir, imageFileName);
-            if (!imageFile.exists()) {
-                try {
-                    OutputStream fileOutputStream = new FileOutputStream(imageFile);
-                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fileOutputStream);
-                    fileOutputStream.close();
-                    Snackbar.make(activity.findViewById(android.R.id.content), "Save Image Success", Snackbar.LENGTH_SHORT).show();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            } else {
-                Snackbar.make(activity.findViewById(android.R.id.content), "Image Exists", Snackbar.LENGTH_SHORT).show();
+            try {
+                OutputStream fileOutputStream = new FileOutputStream(imageFile, false);
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fileOutputStream);
+                fileOutputStream.close();
+                Snackbar.make(activity.findViewById(android.R.id.content), "Save Image Success", Snackbar.LENGTH_SHORT).show();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
             savedImagePath = imageFile.getAbsolutePath();
             Log.d("Lihat", "saveImageToPicture PictureUtil : " + savedImagePath);
@@ -398,12 +443,36 @@ public class PictureUtil {
     public static void deleteImageFile(String eventIds) {
         //db.deleleDataByKey(SQLiteHelper.TableGallery, SQLiteHelper.Key_Gallery_eventId, eventIds);
 
-        File dir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/.Gandsoft/" + eventIds);
+        File dir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + PATH_GANDSOFT + eventIds);
         if (dir.isDirectory()) {
             String[] children = dir.list();
             for (int i = 0; i < children.length; i++) {
                 new File(dir, children[i]).delete();
             }
         }
+    }
+
+    public static String saveImageHomeContentImage(Bitmap image, String idName, String eventId) {
+        String savedImagePath = null;
+        String imageFileName = idName + ".jpg";
+        File storageDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + PATH_GANDSOFT + eventId);
+        boolean success = true;
+        if (!storageDir.exists()) {
+            success = storageDir.mkdirs();
+        }
+        if (success) {
+            File imageFile = new File(storageDir, imageFileName);
+            savedImagePath = imageFile.getAbsolutePath();
+            try {
+                OutputStream fOut = new FileOutputStream(imageFile, false);
+                Bitmap resizeImageBitmap = resizeImageBitmap(image, 360);
+                resizeImageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, fOut);
+                fOut.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        Log.d("Lihat", "saveImageLogoBackIcon : " + savedImagePath);
+        return savedImagePath;
     }
 }

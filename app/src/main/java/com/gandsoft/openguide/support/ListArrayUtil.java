@@ -64,15 +64,15 @@ public class ListArrayUtil {
 
     public static String convertListStringToString1(ArrayList<String> stringList) {
         String[] myStringList = stringList.toArray(new String[stringList.size()]);
-        return TextUtils.join("‚‗‚", myStringList);
+        return TextUtils.join("‚=‚", myStringList);
     }
 
     public static ArrayList<String> convertStringToListString1(String s) {
-        return new ArrayList<String>(Arrays.asList(TextUtils.split(s, "‚‗‚")));
+        return new ArrayList<String>(Arrays.asList(TextUtils.split(s, "‚=‚")));
     }
 
     public static String[] convertStringToArrayString1(String s) {
-        return s.split("‚‗‚");
+        return s.split("‚=‚");
     }
 
     public static String strSeparator = "__,__";

@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".activity.infomenu.gSurroundingAreaActivity">
+    tools:context=".view.infomenu.gSurroundingAreaActivity">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appbar"

@@ -1,18 +1,11 @@
 package com.gandsoft.openguide.support;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
-import android.support.design.widget.Snackbar;
 import android.text.TextUtils;
 
 import com.gandsoft.openguide.App;
 import com.gandsoft.openguide.IConfig;
-import com.gandsoft.openguide.ISeasonConfig;
-import com.gandsoft.openguide.activity.LoginActivity;
-import com.gandsoft.openguide.database.SQLiteHelper;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
@@ -118,21 +111,21 @@ public class SessionUtil implements IConfig {
     public static void saveListString(String key, List<String> stringList) {
         checkForNullKey(key);
         String[] myStringList = stringList.toArray(new String[stringList.size()]);
-        pref.edit().putString(key, TextUtils.join("‚‗‚", myStringList)).apply();
+        pref.edit().putString(key, TextUtils.join("‚=‚", myStringList)).apply();
     }
 
     public static ArrayList<String> loadListString(String key) {
-        return new ArrayList<String>(Arrays.asList(TextUtils.split(pref.getString(key, ""), "‚‗‚")));
+        return new ArrayList<String>(Arrays.asList(TextUtils.split(pref.getString(key, ""), "‚=‚")));
     }
 
     public static void saveListInt(String key, ArrayList<Integer> intList) {
         checkForNullKey(key);
         Integer[] myIntList = intList.toArray(new Integer[intList.size()]);
-        pref.edit().putString(key, TextUtils.join("‚‗‚", myIntList)).apply();
+        pref.edit().putString(key, TextUtils.join("‚=‚", myIntList)).apply();
     }
 
     public static ArrayList<Integer> loadListInt(String key) {
-        String[] myList = TextUtils.split(pref.getString(key, ""), "‚‗‚");
+        String[] myList = TextUtils.split(pref.getString(key, ""), "‚=‚");
         ArrayList<String> arrayToList = new ArrayList<String>(Arrays.asList(myList));
         ArrayList<Integer> newList = new ArrayList<Integer>();
 

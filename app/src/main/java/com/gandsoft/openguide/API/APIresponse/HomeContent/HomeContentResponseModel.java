@@ -127,6 +127,7 @@ public class HomeContentResponseModel {
     }
 
     public void setKeterangan(String keterangan) {
+        this.caption = keterangan;
         this.keterangan = keterangan;
     }
 
@@ -136,6 +137,7 @@ public class HomeContentResponseModel {
 
     public void setCaption(String caption) {
         this.caption = caption;
+        this.keterangan = caption;
     }
 
     public int getNumber() {

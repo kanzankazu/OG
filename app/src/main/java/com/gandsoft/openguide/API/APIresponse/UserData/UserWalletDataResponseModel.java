@@ -13,6 +13,15 @@ public class UserWalletDataResponseModel  {
     public int number;
     public String accountId;
     public String eventId;
+    public String id_card_local;
+
+    public String getId_card_local() {
+        return id_card_local;
+    }
+
+    public void setId_card_local(String id_card_local) {
+        this.id_card_local = id_card_local;
+    }
 
     public int getNumber() {
         return number;

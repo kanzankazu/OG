@@ -18,11 +18,11 @@ import com.gandsoft.openguide.API.APIresponse.Event.EventScheduleListDateDataLis
 import com.gandsoft.openguide.API.APIresponse.Event.EventScheduleListExternalframe;
 import com.gandsoft.openguide.API.APIresponse.Event.EventSurroundingArea;
 import com.gandsoft.openguide.API.APIresponse.Event.EventTheEvent;
+import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentPostCommentGetResponseModel;
 import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentResponseModel;
 import com.gandsoft.openguide.API.APIresponse.UserData.GetListUserEventResponseModel;
 import com.gandsoft.openguide.API.APIresponse.UserData.UserListEventResponseModel;
 import com.gandsoft.openguide.API.APIresponse.UserData.UserWalletDataResponseModel;
-import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.support.SessionUtil;
 
 import java.io.File;
@@ -33,7 +33,7 @@ import java.util.List;
 public class SQLiteHelper extends SQLiteOpenHelper {
     // Databases information
     public static final String DB_NM = "openguides.db";
-    public static final int DB_VER = 2;
+    public static final int DB_VER = 8;
 
     public static String TableGlobalData = "tabGlobalData";
     public static String KEY_GlobalData_dbver = "dbver";
@@ -102,11 +102,14 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         db.execSQL(query_add_table_CommiteNote);
         db.execSQL(query_add_table_Gallery);
         db.execSQL(query_add_table_HomeContent);
+        db.execSQL(query_add_table_Comment);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 
+        SessionUtil.removeAllSharedPreferences();
+
         db.execSQL(query_delete_table_UserData);
         db.execSQL(query_delete_table_ListEvent);
         db.execSQL(query_delete_table_Wallet);
@@ -123,15 +126,17 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         db.execSQL(query_delete_table_CommiteNote);
         db.execSQL(query_delete_table_Gallery);
         db.execSQL(query_delete_table_HomeContent);
+        db.execSQL(query_delete_table_Comment);
 
         onCreate(db);
-
-        SessionUtil.deleteKeyPreferences(ISeasonConfig.KEY_EVENT_ID);
 
     }
 
     @Override
     public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+
+        SessionUtil.removeAllSharedPreferences();
+
         db.execSQL(query_delete_table_UserData);
         db.execSQL(query_delete_table_ListEvent);
         db.execSQL(query_delete_table_Wallet);
@@ -148,10 +153,10 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         db.execSQL(query_delete_table_CommiteNote);
         db.execSQL(query_delete_table_Gallery);
         db.execSQL(query_delete_table_HomeContent);
+        db.execSQL(query_delete_table_Comment);
 
         onCreate(db);
 
-        SessionUtil.deleteKeyPreferences(ISeasonConfig.KEY_EVENT_ID);
     }
 
     /*Version data*/
@@ -262,9 +267,9 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         return modelList;
     }
 
-    public UserListEventResponseModel getOneListEvent(String eventId) {
+    public UserListEventResponseModel getOneListEvent(String eventId, String accountId) {
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.query(TableListEvent, null, KEY_ListEvent_eventId + " = ? ", new String[]{eventId}, null, null, KEY_ListEvent_startDate + " DESC");
+        Cursor cursor = db.query(TableListEvent, null, KEY_ListEvent_eventId + " = ? AND " + KEY_ListEvent_accountId + " = ?", new String[]{eventId, accountId}, null, null, KEY_ListEvent_startDate + " DESC");
         if (cursor != null)
             cursor.moveToFirst();
 
@@ -454,6 +459,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     public static String KEY_Wallet_detail = "detail";
     public static String KEY_Wallet_bodyWallet = "bodyWallet";
     public static String KEY_Wallet_sort = "sort";
+    public static String KEY_Wallet_idCardLocal = "id_card_local";
     public static String KEY_Wallet_type = "type";
     private static final String query_add_table_Wallet = "CREATE TABLE IF NOT EXISTS " + TableWallet + "("
             + KEY_Wallet_No + " INTEGER PRIMARY KEY AUTOINCREMENT, "
@@ -463,6 +469,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
             + KEY_Wallet_bodyWallet + " BLOB, "
             + KEY_Wallet_notif + " TEXT, "
             + KEY_Wallet_detail + " TEXT, "
+            + KEY_Wallet_idCardLocal + " TEXT, "
             + KEY_Wallet_type + " TEXT) ";
     private static final String query_delete_table_Wallet = "DROP TABLE IF EXISTS " + TableWallet;
 
@@ -495,10 +502,10 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         db.close();
     }
 
-    public ArrayList<UserWalletDataResponseModel> getListWalletData(String eventId) {
+    public ArrayList<UserWalletDataResponseModel> getListWalletData(String eventId, String accountId) {
         ArrayList<UserWalletDataResponseModel> modelList = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.query(TableWallet, null, KEY_Wallet_eventId + " = ? ", new String[]{eventId}, KEY_Wallet_sort, null, KEY_Wallet_sort);
+        Cursor cursor = db.query(TableWallet, null, KEY_Wallet_eventId + " = ? AND " + KEY_Wallet_accountId + " = ?", new String[]{eventId, accountId}, null, null, KEY_Wallet_sort);
 
         if (cursor.moveToFirst()) {
             do {
@@ -511,6 +518,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
                 model.setNotif(cursor.getString(cursor.getColumnIndex(KEY_Wallet_notif)));
                 model.setDetail(cursor.getString(cursor.getColumnIndex(KEY_Wallet_detail)));
                 model.setType(cursor.getString(cursor.getColumnIndex(KEY_Wallet_type)));
+                model.setId_card_local(cursor.getString(cursor.getColumnIndex(KEY_Wallet_idCardLocal)));
                 modelList.add(model);
             } while (cursor.moveToNext());
         }
@@ -521,7 +529,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
 
     public UserWalletDataResponseModel getWalletDataIdCard(String eventId) {
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.query(TableWallet, null, KEY_Wallet_eventId + " = ? AND " + KEY_Wallet_type + " = 'idcard' ", new String[]{String.valueOf(eventId)}, KEY_Wallet_eventId, null, null);
+        Cursor cursor = db.query(TableWallet, null, KEY_Wallet_eventId + " = ? AND " + KEY_Wallet_type + " = 'idcard' ", new String[]{String.valueOf(eventId)}, KEY_Wallet_sort, null, KEY_Wallet_sort);
         if (cursor != null)
             cursor.moveToFirst();
 
@@ -532,6 +540,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         model.setBody_wallet(cursor.getString(cursor.getColumnIndex(KEY_Wallet_bodyWallet)));
         model.setNotif(cursor.getString(cursor.getColumnIndex(KEY_Wallet_notif)));
         model.setDetail(cursor.getString(cursor.getColumnIndex(KEY_Wallet_detail)));
+        model.setId_card_local(cursor.getString(cursor.getColumnIndex(KEY_Wallet_idCardLocal)));
         // return model
         return model;
     }
@@ -1043,6 +1052,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     public static String Key_Place_List_latitude = "latitude";
     public static String Key_Place_List_longitude = "longitude";
     public static String Key_Place_List_title = "title";
+    public static String Key_Place_List_staticMap = "static_map";
     public static String Key_Place_List_icon = "icon";
     private static final String query_add_table_PlaceList = "CREATE TABLE IF NOT EXISTS " + TablePlaceList + "("
             + Key_Place_List_No + " INTEGER PRIMARY KEY AUTOINCREMENT, "
@@ -1050,6 +1060,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
             + Key_Place_List_latitude + " TEXT, "
             + Key_Place_List_longitude + " TEXT, "
             + Key_Place_List_title + " TEXT, "
+            + Key_Place_List_staticMap + " TEXT, "
             + Key_Place_List_icon + " TEXT) ";
     private static final String query_delete_table_PlaceList = "DROP TABLE IF EXISTS " + TablePlaceList;
 
@@ -1076,10 +1087,18 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         db.close();
     }
 
+    public void savePlaceListStaticMaps(String eventId, String staticMaps) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(Key_Place_List_staticMap, staticMaps);
+        db.update(TablePlaceList, contentValues, Key_Place_List_EventId + " = ? ", new String[]{eventId});
+        db.close();
+    }
+
     public ArrayList<EventPlaceList> getPlaceList(String eventId) {
         ArrayList<EventPlaceList> modelList = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.query(TablePlaceList, null, Key_Place_List_EventId + " = ? ", new String[]{eventId}, Key_Place_List_EventId, null, Key_Place_List_No);
+        Cursor cursor = db.query(TablePlaceList, null, Key_Place_List_EventId + " = ? ", new String[]{eventId}, Key_Place_List_No, null, Key_Place_List_No);
 
         if (cursor.moveToFirst()) {
             do {
@@ -1090,6 +1109,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
                 model.setLongitude(cursor.getString(cursor.getColumnIndex(Key_Place_List_longitude)));
                 model.setTitle(cursor.getString(cursor.getColumnIndex(Key_Place_List_title)));
                 model.setIcon(cursor.getString(cursor.getColumnIndex(Key_Place_List_icon)));
+                model.setStaticMaps(cursor.getString(cursor.getColumnIndex(Key_Place_List_staticMap)));
                 modelList.add(model);
             } while (cursor.moveToNext());
         }
@@ -1512,9 +1532,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         contentValues.put(Key_HomeContent_jabatan, model.getJabatan());
         contentValues.put(Key_HomeContent_date_created, model.getDate_created());
         contentValues.put(Key_HomeContent_image_icon, model.getImage_icon());
-        //contentValues.put(Key_HomeContent_image_icon_local, model.getImage_icon_local());
         contentValues.put(Key_HomeContent_image_posted, model.getImage_posted());
-        //contentValues.put(Key_HomeContent_image_posted_local, model.getSubJudul());
         contentValues.put(Key_HomeContent_keterangan, model.getKeterangan());
         contentValues.put(Key_HomeContent_event, model.getNew_event());
         db.insert(TableHomeContent, null, contentValues);
@@ -1566,6 +1584,96 @@ public class SQLiteHelper extends SQLiteOpenHelper {
                 model.setImage_posted_local(cursor.getString(cursor.getColumnIndex(Key_HomeContent_image_posted_local)));
                 model.setKeterangan(cursor.getString(cursor.getColumnIndex(Key_HomeContent_keterangan)));
                 model.setNew_event(cursor.getString(cursor.getColumnIndex(Key_HomeContent_event)));
+                modelList.add(model);
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        return modelList;
+    }
+
+    /**/
+    public static String TableComment = "tabComment";
+    public static String Key_Comment_No = "number";
+    public static String Key_Comment_Id = "id";
+    public static String Key_Comment_Account_id = "account_id";
+    public static String Key_Comment_Total_comment = "total_comment";
+    public static String Key_Comment_Image_icon = "image_icon";
+    public static String Key_Comment_Full_name = "full_name";
+    public static String Key_Comment_Role_name = "role_name";
+    public static String Key_Comment_Post_time = "post_time";
+    public static String Key_Comment_Post_content = "post_content";
+    public static String Key_Comment_EventId = "eventId";
+    public static String Key_Comment_PostId = "postId";
+    public static String Key_Comment_UserId = "userId";
+    private static final String query_add_table_Comment = "CREATE TABLE IF NOT EXISTS " + TableComment + "("
+            + Key_Comment_No + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+            + Key_Comment_Id + " TEXT, "
+            + Key_Comment_Account_id + " TEXT, "
+            + Key_Comment_Total_comment + " INTEGER, "
+            + Key_Comment_Image_icon + " TEXT, "
+            + Key_Comment_Full_name + " TEXT, "
+            + Key_Comment_Role_name + " TEXT, "
+            + Key_Comment_Post_time + " TEXT, "
+            + Key_Comment_Post_content + " TEXT, "
+            + Key_Comment_EventId + " TEXT, "
+            + Key_Comment_PostId + " TEXT, "
+            + Key_Comment_UserId + " TEXT) ";
+    private static final String query_delete_table_Comment = "DROP TABLE IF EXISTS " + TableComment;
+
+    public void saveComment(HomeContentPostCommentGetResponseModel model, String eventId, String postId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(Key_Comment_Id, model.getId());
+        contentValues.put(Key_Comment_Account_id, model.getAccount_id());
+        contentValues.put(Key_Comment_Total_comment, model.getTotal_comment());
+        contentValues.put(Key_Comment_Image_icon, model.getImage_icon());
+        contentValues.put(Key_Comment_Full_name, model.getFull_name());
+        contentValues.put(Key_Comment_Role_name, model.getRole_name());
+        contentValues.put(Key_Comment_Post_time, model.getPost_time());
+        contentValues.put(Key_Comment_Post_content, model.getPost_content());
+        contentValues.put(Key_Comment_EventId, eventId);
+        contentValues.put(Key_Comment_PostId, postId);
+        db.insert(TableComment, null, contentValues);
+        db.close();
+    }
+
+    public void updateComment(HomeContentPostCommentGetResponseModel model, String eventId, String postId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(Key_Comment_Id, model.getId());
+        contentValues.put(Key_Comment_Account_id, model.getAccount_id());
+        contentValues.put(Key_Comment_Total_comment, model.getTotal_comment());
+        contentValues.put(Key_Comment_Image_icon, model.getImage_icon());
+        contentValues.put(Key_Comment_Full_name, model.getFull_name());
+        contentValues.put(Key_Comment_Role_name, model.getRole_name());
+        contentValues.put(Key_Comment_Post_time, model.getPost_time());
+        contentValues.put(Key_Comment_Post_content, model.getPost_content());
+        contentValues.put(Key_Comment_EventId, eventId);
+        contentValues.put(Key_Comment_PostId, postId);
+        db.update(TableComment, contentValues, Key_Comment_EventId + " = ? AND " + Key_Comment_PostId + " = ? AND " + Key_Comment_Id + " = ? ", new String[]{eventId, postId, model.getId()});
+        db.close();
+    }
+
+    public ArrayList<HomeContentPostCommentGetResponseModel> getComment(String eventId, String postId) {
+        ArrayList<HomeContentPostCommentGetResponseModel> modelList = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(TableHomeContent, null, Key_Comment_EventId + " = ? AND " + Key_Comment_PostId + " = ? ", new String[]{eventId, postId}, Key_Comment_Id, null, Key_Comment_No);
+
+        if (cursor.moveToFirst()) {
+            do {
+                HomeContentPostCommentGetResponseModel model = new HomeContentPostCommentGetResponseModel();
+                model.setNumber(cursor.getInt(cursor.getColumnIndex(Key_Comment_No)));
+                model.setId(cursor.getString(cursor.getColumnIndex(Key_Comment_Id)));
+                model.setAccount_id(cursor.getString(cursor.getColumnIndex(Key_Comment_Account_id)));
+                model.setTotal_comment(cursor.getString(cursor.getColumnIndex(Key_Comment_Total_comment)));
+                model.setImage_icon(cursor.getString(cursor.getColumnIndex(Key_Comment_Image_icon)));
+                model.setFull_name(cursor.getString(cursor.getColumnIndex(Key_Comment_Full_name)));
+                model.setRole_name(cursor.getString(cursor.getColumnIndex(Key_Comment_Role_name)));
+                model.setPost_time(cursor.getString(cursor.getColumnIndex(Key_Comment_Post_time)));
+                model.setPost_content(cursor.getString(cursor.getColumnIndex(Key_Comment_Post_content)));
+                model.setEventId(cursor.getString(cursor.getColumnIndex(Key_Comment_EventId)));
+                model.setPostId(cursor.getString(cursor.getColumnIndex(Key_Comment_PostId)));
                 modelList.add(model);
             } while (cursor.moveToNext());
         }
@@ -1690,9 +1798,9 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         }
     }
 
-    public boolean isDataTableKeyNull(String tableName, String targetKey) {
+    public boolean isDataTableKeyNull(String table, String key) {
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.query(tableName, null, targetKey + " IS NULL ", null, null, null, null);
+        Cursor cursor = db.query(table, null, key + " IS NULL ", null, null, null, null);
         if (cursor.getCount() == 0) {
             cursor.close();
             return true;
@@ -1714,9 +1822,9 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         }
     }
 
-    public boolean isDataTableValueNull(String tableName, String targetKey, String targetValue) {
+    public boolean isDataTableValueNull(String tableName, String key, String value) {
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.query(tableName, null, targetKey + " = ? ", new String[]{targetValue}, null, null, null);
+        Cursor cursor = db.query(tableName, null, key + " = ? ", new String[]{value}, null, null, null);
         if (cursor.getCount() == 0) {
             cursor.close();
             return true;
@@ -1738,12 +1846,12 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         }
     }
 
-    public boolean isDataTableValueMultipleNull2(String table, String key, String key2, String value) {
+    public boolean isDataTableValueMultipleNotNull(String table, String key, String key2, String value) {
         SQLiteDatabase db = this.getReadableDatabase();
         //String selectQuery = "SELECT * FROM " + tableName + " WHERE " + targetKey + " = '" + targetValue + "'";
         //Cursor cursor = db.rawQuery(selectQuery, null);
-        Cursor cursor = db.query(table, null, key + " = ? AND " + key2 + " IS NULL ", new String[]{value}, null, null, null);
-        if (cursor.getCount() == 0) {
+        Cursor cursor = db.query(table, null, key + " = ? AND " + key2 + " IS NOT NULL ", new String[]{value}, null, null, null);
+        if (cursor.getCount() != 0) {
             cursor.close();
             return true;
         } else {
@@ -1819,14 +1927,6 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         }
     }
 
-    public void saveImageUserToLocal(String imgCachePath, String accountId) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(KEY_UserData_imageUrl_local, imgCachePath);
-        db.update(TableUserData, contentValues, KEY_UserData_accountId + " = ? ", new String[]{accountId});
-        db.close();
-    }
-
     public void saveImageListEventToLocal(String backgroundCachePath, String logoCachePath, UserListEventResponseModel model1) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
@@ -1836,19 +1936,63 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         db.close();
     }
 
-    /*private boolean checkDataBase() {
-        SQLiteDatabase checkDB = null;
-        try {
-            checkDB = SQLiteDatabase.openDatabase(DB_FULL_PATH, null, SQLiteDatabase.OPEN_READONLY);
-            checkDB.close();
-        } catch (SQLiteException e) {
-            // database doesn't exist yet.
-        }
-        return checkDB != null;
-    }*/
-
     public boolean doesDatabaseExist(Context context, String dbName) {
         File dbFile = context.getDatabasePath(dbName);
         return dbFile.exists();
+    }
+
+    public void saveUserPicture(String pathImage, String accountId) {
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(KEY_UserData_imageUrl_local, pathImage);
+        db.update(TableUserData, contentValues, KEY_UserData_accountId + " = ? ", new String[]{accountId});
+        db.close();
+    }
+
+    public void saveEventLogoPicture(String pathLogo, String accountId, String eventId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(KEY_ListEvent_logo_local, pathLogo);
+        db.update(TableListEvent, contentValues, KEY_ListEvent_accountId + " = ? AND " + KEY_ListEvent_eventId + " = ? ", new String[]{accountId, eventId});
+        db.close();
+    }
+
+    public void saveEventBackgroundPicture(String pathBack, String accountId, String eventId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(KEY_ListEvent_background_local, pathBack);
+        db.update(TableListEvent, contentValues, KEY_ListEvent_accountId + " = ? AND " + KEY_ListEvent_eventId + " = ? ", new String[]{accountId, eventId});
+        db.close();
+    }
+
+    public void saveHomeContentImage(String imageCachePath, String accountId, String eventId, String id) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(Key_HomeContent_image_posted_local, imageCachePath);
+        db.update(TableHomeContent, contentValues, Key_HomeContent_EventId + " = ? AND " + Key_HomeContent_id + " = ? ", new String[]{eventId, id});
+        db.close();
+    }
+
+    public void saveHomeContentIcon(String imageCachePath, String accountId, String eventId, String id) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(Key_HomeContent_image_icon_local, imageCachePath);
+        db.update(TableHomeContent, contentValues, Key_HomeContent_EventId + " = ? AND " + Key_HomeContent_id + " = ? ", new String[]{eventId, id});
+        db.close();
+    }
+
+    public void deleteAllDataHomeContent(String eventId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(TableHomeContent, Key_HomeContent_EventId + " = ? ", new String[]{eventId});
+        db.close();
+    }
+
+    public void saveEventWalletIDPicture(String imageCachePath, String accountId, String eventId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(KEY_Wallet_idCardLocal, imageCachePath);
+        db.update(TableWallet, contentValues, KEY_Wallet_accountId + " = ? AND " + KEY_Wallet_eventId + " = ? ", new String[]{accountId, eventId});
+        db.close();
     }
 }

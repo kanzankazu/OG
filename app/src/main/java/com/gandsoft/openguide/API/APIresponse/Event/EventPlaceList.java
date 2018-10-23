@@ -1,8 +1,6 @@
 package com.gandsoft.openguide.API.APIresponse.Event;
 
-
-
-public class EventPlaceList  {
+public class EventPlaceList {
 
     public String latitude;
     public String longitude;
@@ -10,6 +8,7 @@ public class EventPlaceList  {
     public String icon;
 
     public int number;
+    public String staticMaps;
     public String eventId;
 
     public String getEventId() {
@@ -58,6 +57,14 @@ public class EventPlaceList  {
 
     public void setNumber(int number) {
         this.number = number;
+    }
+
+    public String getStaticMaps() {
+        return staticMaps;
+    }
+
+    public void setStaticMaps(String staticMaps) {
+        this.staticMaps = staticMaps;
     }
 
     /**/

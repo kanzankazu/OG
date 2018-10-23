@@ -17,7 +17,7 @@ public class HomeContentCommentModelParcelable implements Parcelable {
     public String image_posted;
     public String image_posted_local;
     public String keterangan;
-    public String event;
+    public String new_event;
 
     public int number;
     public String eventId;
@@ -25,7 +25,7 @@ public class HomeContentCommentModelParcelable implements Parcelable {
     public HomeContentCommentModelParcelable() {
     }
 
-    public HomeContentCommentModelParcelable(String id, String like, String account_id, String total_comment, int status_like, String image_icon, String username, String jabatan, String date_created, String image_posted, String keterangan, String event) {
+    public HomeContentCommentModelParcelable(String id, String like, String account_id, String total_comment, int status_like, String image_icon, String username, String jabatan, String date_created, String image_posted, String keterangan, String new_event) {
         this.id = id;
         this.like = like;
         this.account_id = account_id;
@@ -37,7 +37,7 @@ public class HomeContentCommentModelParcelable implements Parcelable {
         this.date_created = date_created;
         this.image_posted = image_posted;
         this.keterangan = keterangan;
-        this.event = event;
+        this.new_event = new_event;
     }
 
     public String getId() {
@@ -128,12 +128,12 @@ public class HomeContentCommentModelParcelable implements Parcelable {
         this.keterangan = keterangan;
     }
 
-    public String getEvent() {
-        return event;
+    public String getNew_event() {
+        return new_event;
     }
 
-    public void setEvent(String event) {
-        this.event = event;
+    public void setNew_event(String new_event) {
+        this.new_event = new_event;
     }
 
     public int getNumber() {
@@ -183,7 +183,7 @@ public class HomeContentCommentModelParcelable implements Parcelable {
         parcel.writeString(image_posted);
         parcel.writeString(image_posted_local);
         parcel.writeString(keterangan);
-        parcel.writeString(event);
+        parcel.writeString(new_event);
     }
 
     @Override
@@ -205,7 +205,7 @@ public class HomeContentCommentModelParcelable implements Parcelable {
         image_posted = in.readString();
         image_posted_local = in.readString();
         keterangan = in.readString();
-        event = in.readString();
+        new_event = in.readString();
     }
 
     public static final Creator CREATOR = new Creator() {

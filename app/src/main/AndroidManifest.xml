@@ -39,7 +39,7 @@
         <!-- [END firebase_service] -->
 
         <activity
-            android:name=".activity.SplashscreenActivity"
+            android:name=".view.SplashscreenActivity"
             android:configChanges="orientation|screenSize"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.FullScreen">
@@ -50,99 +50,99 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".activity.IntroActivity"
+            android:name=".view.IntroActivity"
             android:configChanges="orientation|screenSize"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.FullScreen" />
         <activity
-            android:name=".activity.LoginActivity"
+            android:name=".view.LoginActivity"
             android:configChanges="orientation|screenSize"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".activity.AccountActivity"
+            android:name=".view.AccountActivity"
             android:configChanges="orientation|screenSize"
             android:label="Account"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".activity.ChangeEventActivity"
+            android:name=".view.ChangeEventActivity"
             android:configChanges="orientation|screenSize"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".activity.main.BaseHomeActivity"
+            android:name=".view.main.BaseHomeActivity"
             android:configChanges="orientation|screenSize"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".activity.infomenu.aMapActivity"
+            android:name=".view.infomenu.aMapActivity"
             android:configChanges="orientation|screenSize"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".activity.infomenu.cInboxActivity"
+            android:name=".view.infomenu.cInboxActivity"
             android:configChanges="orientation|screenSize"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".activity.infomenu.dComitteContactActivity"
+            android:name=".view.infomenu.dComitteContactActivity"
             android:configChanges="orientation|screenSize"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".activity.infomenu.eEmergenciesActivity"
+            android:name=".view.infomenu.eEmergenciesActivity"
             android:configChanges="orientation|screenSize"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".activity.infomenu.fPracticalInfoActivity"
+            android:name=".view.infomenu.fPracticalInfoActivity"
             android:configChanges="orientation|screenSize"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".activity.infomenu.gSurroundingAreaActivity"
+            android:name=".view.infomenu.gSurroundingAreaActivity"
             android:configChanges="orientation|screenSize"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".activity.infomenu.hFeedbackActivity"
+            android:name=".view.infomenu.hFeedbackActivity"
             android:configChanges="orientation|screenSize"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".activity.infomenu.gallery2.GalleryDetailActivity"
+            android:name=".view.infomenu.gallery2.GalleryDetailActivity"
             android:configChanges="orientation|screenSize"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".activity.infomenu.gallery2.GalleryActivity"
+            android:name=".view.infomenu.gallery2.GalleryActivity"
             android:configChanges="orientation|screenSize"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".activity.infomenu.gallery.PicViewActivity"
+            android:name=".view.infomenu.gallery.PicViewActivity"
             android:configChanges="orientation|screenSize"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".activity.main.fragments.aHomeActivityInFragment.aHomePostCommentActivity"
+            android:name=".view.main.fragments.aHomeActivityInFragment.aHomePostCommentActivity"
             android:configChanges="orientation|screenSize"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".activity.main.fragments.aHomeActivityInFragment.aHomePostImageCaptionActivity"
+            android:name=".view.main.fragments.aHomeActivityInFragment.aHomePostImageCaptionActivity"
             android:configChanges="orientation|screenSize"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".activity.main.fragments.cScheduleQNAActivity"
+            android:name=".view.main.fragments.cScheduleQNAActivity"
             android:configChanges="orientation|screenSize"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
 
         <service
-            android:name=".activity.services.MyService"
+            android:name=".view.services.MyService"
             android:enabled="true"
             android:exported="true"/>
     </application>

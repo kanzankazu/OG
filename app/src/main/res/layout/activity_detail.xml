@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.gandsoft.openguide.activity.infomenu.gallery2.GalleryDetailActivity">
+    tools:context="com.gandsoft.openguide.view.infomenu.gallery2.GalleryDetailActivity">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/tb_gallery_detail"
@@ -18,9 +18,10 @@
         app:popupTheme="@style/AppTheme.PopupOverlay"
         app:titleTextColor="@color/colorPrimary" />
 
-    <com.gandsoft.openguide.activity.infomenu.gallery2.ImageViewTouchViewPager
+    <com.gandsoft.openguide.view.infomenu.gallery2.ImageViewTouchViewPager
         android:id="@+id/vp_gallery_detail"
         android:layout_width="match_parent"
+        android:background="@color/colorPrimary"
         android:layout_height="match_parent"
         android:layout_above="@+id/lldetailGallery"
         android:layout_below="@+id/tb_gallery_detail" />

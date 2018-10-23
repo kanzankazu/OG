@@ -105,4 +105,12 @@ public class InputValidUtil {
         filterArray[0] = new InputFilter.LengthFilter(length);
         editText.setFilters(filterArray);
     }
+
+    public static boolean isLinkUrl(String s) {
+        if (s.matches("(?i).*http://.*") || s.matches("(?i).*https://.*")) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 }
