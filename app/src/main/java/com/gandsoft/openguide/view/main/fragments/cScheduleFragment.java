@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.NestedScrollView;
@@ -20,12 +21,13 @@ import android.widget.LinearLayout;
 import com.gandsoft.openguide.API.APIresponse.Event.EventScheduleListDateDataList;
 import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
-import com.gandsoft.openguide.view.main.adapter.SchedulePagerAdapter;
-import com.gandsoft.openguide.view.main.adapter.ScheduleRecycleviewAdapter;
 import com.gandsoft.openguide.database.SQLiteHelper;
 import com.gandsoft.openguide.support.DateTimeUtil;
 import com.gandsoft.openguide.support.ListArrayUtil;
+import com.gandsoft.openguide.support.NetworkUtil;
 import com.gandsoft.openguide.support.SessionUtil;
+import com.gandsoft.openguide.view.main.adapter.SchedulePagerAdapter;
+import com.gandsoft.openguide.view.main.adapter.ScheduleRecycleviewAdapter;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -95,26 +97,16 @@ public class cScheduleFragment extends Fragment {
         adapter = new ScheduleRecycleviewAdapter(getActivity(), scheduleListPerDate, new ScheduleRecycleviewAdapter.ScheduleListener() {
             @Override
             public void onClickVote(String link) {
-                Intent intent = new Intent(getActivity(), cScheduleQNAActivity.class);
-                intent.putExtra(ISeasonConfig.INTENT_PARAM, link);
-                startActivityForResult(intent, REQ_CODE_QNA);
-
+                moveToQNALink(link);
             }
 
             @Override
             public void onClickQNA(String link) {
-                Intent intent = new Intent(getActivity(), cScheduleQNAActivity.class);
-                intent.putExtra(ISeasonConfig.INTENT_PARAM, link);
-                startActivityForResult(intent, REQ_CODE_QNA);
-                //finish();
+                moveToQNALink(link);
             }
 
             @Override
             public void onClickExternal(String link) {
-                /*Intent intent = new Intent(getActivity(), cScheduleQNAActivity.class);
-                intent.putExtra(ISeasonConfig.INTENT_PARAM, link);
-                startActivityForResult(intent, REQ_CODE_QNA);*/
-
                 Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(link));
                 startActivity(browserIntent);
 
@@ -126,54 +118,6 @@ public class cScheduleFragment extends Fragment {
         checkDate(scheduleDates);
 
         adapter.notifyDataSetChanged();
-
-    }
-
-    private void checkDate(ArrayList<String> scheduleDates) {
-        //code here
-        String currentDate = DateTimeUtil.dateToString(DateTimeUtil.currentDate(), new SimpleDateFormat("EEEE dd MMMM yyyy"));
-        Log.d("Lihat", "checkDate cScheduleFragment : " + currentDate);
-        Log.d("Lihat", "checkDate cScheduleFragment : " + scheduleDates);
-
-        if (ListArrayUtil.isListContainString(scheduleDates, currentDate)) {
-            Log.d("Lihat", "checkDate cScheduleFragment : " + ListArrayUtil.isListContainString(scheduleDates, currentDate));
-            int posCurrDate = ListArrayUtil.getPosStringInList(scheduleDates, currentDate);
-            ArrayList<String> scheduleTimes = db.getScheduleListTime(group_code, scheduleDates.get(posCurrDate));
-            Log.d("Lihat", "checkDate cScheduleFragment : " + scheduleTimes);
-            //code here
-            new Handler().postDelayed(new Runnable() {
-                public void run() {
-                    //code here
-                    pagerBig.setCurrentItem(posCurrDate);
-                    //code here
-                    for (int i = 0; i < scheduleTimes.size(); i++) {
-                        String time = scheduleTimes.get(i);
-                        if (time.contains("-")) {
-                            String[] split = time.split("-");
-                            if (DateTimeUtil.isBetween2Time(split[0], split[1])) {
-                                int finalI = i;
-                                new Handler().postDelayed(new Runnable() {
-                                    public void run() {
-                                        //code here
-                                        int measuredHeight = pagerBig.getMeasuredHeight();
-                                        int measuredHeight1 = llScheduleDotsfvbi.getMeasuredHeight();
-                                        int measuredHeight2 = 0;
-                                        for (int i2 = 0; i2 < finalI - 1; i2++) {
-                                            measuredHeight2 = measuredHeight2 + recyclerView.getChildAt(i2).getMeasuredHeight();
-                                        }
-                                        int heightTotal = measuredHeight + measuredHeight1 + measuredHeight2;
-                                        infoNSVInfofvbi.smoothScrollTo(0, heightTotal);
-
-                                        Log.d("Lihat", "checkDate cScheduleFragment : " + finalI);
-                                    }
-                                }, 1000);
-                            }
-                        }
-                    }
-                }
-            }, 1000);
-
-        }
 
     }
 
@@ -250,6 +194,64 @@ public class cScheduleFragment extends Fragment {
 
             }
         });
+    }
+
+    private void checkDate(ArrayList<String> scheduleDates) {
+        //code here
+        String currentDate = DateTimeUtil.dateToString(DateTimeUtil.currentDate(), new SimpleDateFormat("EEEE dd MMMM yyyy"));
+        Log.d("Lihat", "checkDate cScheduleFragment : " + currentDate);
+        Log.d("Lihat", "checkDate cScheduleFragment : " + scheduleDates);
+
+        if (ListArrayUtil.isListContainString(scheduleDates, currentDate)) {
+            Log.d("Lihat", "checkDate cScheduleFragment : " + ListArrayUtil.isListContainString(scheduleDates, currentDate));
+            int posCurrDate = ListArrayUtil.getPosStringInList(scheduleDates, currentDate);
+            ArrayList<String> scheduleTimes = db.getScheduleListTime(group_code, scheduleDates.get(posCurrDate));
+            Log.d("Lihat", "checkDate cScheduleFragment : " + scheduleTimes);
+            //code here
+            new Handler().postDelayed(new Runnable() {
+                public void run() {
+                    //code here
+                    pagerBig.setCurrentItem(posCurrDate);
+                    //code here
+                    for (int i = 0; i < scheduleTimes.size(); i++) {
+                        String time = scheduleTimes.get(i);
+                        if (time.contains("-")) {
+                            String[] split = time.split("-");
+                            if (DateTimeUtil.isBetween2Time(split[0], split[1])) {
+                                int finalI = i;
+                                new Handler().postDelayed(new Runnable() {
+                                    public void run() {
+                                        //code here
+                                        int measuredHeight = pagerBig.getMeasuredHeight();
+                                        int measuredHeight1 = llScheduleDotsfvbi.getMeasuredHeight();
+                                        int measuredHeight2 = 0;
+                                        for (int i2 = 0; i2 < finalI - 1; i2++) {
+                                            measuredHeight2 = measuredHeight2 + recyclerView.getChildAt(i2).getMeasuredHeight();
+                                        }
+                                        int heightTotal = measuredHeight + measuredHeight1 + measuredHeight2;
+                                        infoNSVInfofvbi.smoothScrollTo(0, heightTotal);
+
+                                        Log.d("Lihat", "checkDate cScheduleFragment : " + finalI);
+                                    }
+                                }, 1000);
+                            }
+                        }
+                    }
+                }
+            }, 1000);
+
+        }
+
+    }
+
+    private void moveToQNALink(String link) {
+        if (NetworkUtil.isConnected(getActivity())) {
+            Intent intent = new Intent(getActivity(), cScheduleQNAActivity.class);
+            intent.putExtra(ISeasonConfig.INTENT_PARAM, link);
+            startActivityForResult(intent, REQ_CODE_QNA);
+        } else {
+            Snackbar.make(getActivity().findViewById(android.R.id.content), "Check you connection", Snackbar.LENGTH_SHORT).show();
+        }
     }
 
     private void addBottomDots() {

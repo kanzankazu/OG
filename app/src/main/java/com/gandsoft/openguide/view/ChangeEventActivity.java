@@ -4,6 +4,7 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -16,6 +17,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -72,6 +74,7 @@ import com.gandsoft.openguide.view.services.MyService;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -165,29 +168,60 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         switch (requestCode) {
             case RP_ACCESS: //private final int = 1
+                Log.d("Lihat", "onRequestPermissionsResult ChangeEventActivity grantResults.length : " + grantResults.length);
+                Log.d("Lihat", "onRequestPermissionsResult ChangeEventActivity permissions.length : " + permissions.length);
                 boolean isPerpermissionForAllGranted = false;
+                ArrayList<String> listStat = new ArrayList<>();
                 if (grantResults.length > 0 && permissions.length == grantResults.length) {
                     for (int i = 0; i < permissions.length; i++) {
                         if (grantResults[i] == PackageManager.PERMISSION_GRANTED) {
                             isPerpermissionForAllGranted = true;
+                            listStat.add("1");
                         } else {
                             isPerpermissionForAllGranted = false;
+                            listStat.add("0");
                         }
                     }
-                    Log.e("value", "Permission Granted, Now you can use local drive .");
                 } else {
                     isPerpermissionForAllGranted = true;
-                    Log.e("value", "Permission Denied, You cannot use local drive .");
                 }
 
-                if (!isPerpermissionForAllGranted) {
+                int frequency0 = Collections.frequency(listStat, "0");
+                int frequency1 = Collections.frequency(listStat, "1");
+
+                if (frequency1 != grantResults.length) {
+                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+                    alertDialogBuilder.setMessage("you denied some permission, you must give all permission to next proccess?");
+                    alertDialogBuilder.setCancelable(false);
+                    alertDialogBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface arg0, int arg1) {
+                            initPermission();
+                        }
+                    });
+                    alertDialogBuilder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface arg0, int arg1) {
+                            finish();
+                            Snackbar.make(findViewById(android.R.id.content), "Izin tidak di berikan", Snackbar.LENGTH_LONG).show();
+                        }
+                    });
+                    AlertDialog alertDialog = alertDialogBuilder.create();
+                    alertDialog.show();
+                } else {
+                    initComponent();
+                    initContent();
+                    initListener();
+                }
+
+                /*if (!isPerpermissionForAllGranted) {
                     finish();
                     Snackbar.make(findViewById(android.R.id.content), "Izin tidak di berikan", Snackbar.LENGTH_LONG).show();
                 } else {
                     initComponent();
                     initContent();
                     initListener();
-                }
+                }*/
                 break;
         }
     }
@@ -269,7 +303,7 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
             } else {
                 Snackbar.make(findViewById(android.R.id.content), "Show event data", Snackbar.LENGTH_SHORT).show();
                 updateRecycleView(db.getAllListEvent(accountid));
-                updateUserInfo(db.getUserData(accountid));
+                updateUserInfo(db.getOneUserData(accountid));
 
                 getAPIUserDataDo(accountid);
             }
@@ -291,7 +325,6 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
             }
             isRefresh = false;
             //updateUserInfo(db.getUserData(accountid));
-            //
             //getAPIUserDataDo(accountid);
 
             initContent();
@@ -360,7 +393,7 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
                             }
 
                             if (i == (getListUserEventResponseModels.size() - 1)) {
-                                updateUserInfo(db.getUserData(accountid));
+                                updateUserInfo(db.getOneUserData(accountid));
                                 updateRecycleView(db.getAllListEvent(accountId));
                             }
                         }
@@ -372,7 +405,8 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
                 @Override
                 public void onFailure(Call<List<GetListUserEventResponseModel>> call, Throwable t) {
                     progressDialog.dismiss();
-                    Snackbar.make(findViewById(android.R.id.content), "Tidak Dapat terhubung dengan server", Snackbar.LENGTH_LONG).setAction("Reload", new View.OnClickListener() {
+                    Log.d("Lihat", "onFailure ChangeEventActivity : " + t.getMessage());
+                    Snackbar.make(findViewById(android.R.id.content), "Tidak Dapat terhubung dengan server", Snackbar.LENGTH_INDEFINITE).setAction("Reload", new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
                             getAPIUserDataValidation();
@@ -380,7 +414,7 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
                     }).show();
                     if (!db.isDataTableValueMultipleNull(TableUserData, SQLiteHelper.KEY_UserData_accountId, SQLiteHelper.KEY_UserData_phoneNumber, accountId, accountId)) {
                         updateRecycleView(db.getAllListEvent(accountId));
-                        updateUserInfo(db.getUserData(accountId));
+                        updateUserInfo(db.getOneUserData(accountId));
                     }
                 }
             });
@@ -627,38 +661,31 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
         adapterOnGoing.replaceData(models);
     }
 
-    private void updateUserInfo(List<GetListUserEventResponseModel> models) {
-        if (models.size() == 1) {
-            for (int i = 0; i < models.size(); i++) {
-                GetListUserEventResponseModel model = models.get(i);
-                ceTVUserNamefvbi.setText(model.getFull_name());
-                ceTVUserIdfvbi.setText(model.getAccount_id());
+    private void updateUserInfo(GetListUserEventResponseModel model) {
+        ceTVUserNamefvbi.setText(model.getFull_name());
+        ceTVUserIdfvbi.setText(model.getAccount_id());
 
-                String imageUrlPath;
-                if (NetworkUtil.isConnected(getApplicationContext())) {
-                    imageUrlPath = model.getImage_url();
-                } else {
-                    imageUrlPath = model.getImage_url_local();
-                }
-                Glide.with(getApplicationContext())
-                        .load(InputValidUtil.isLinkUrl(imageUrlPath) ? imageUrlPath : new File(imageUrlPath))
-                        .asBitmap()
-                        .placeholder(R.drawable.template_account_og)
-                        .error(R.drawable.template_account_og)
-                        .skipMemoryCache(false)
-                        .diskCacheStrategy(DiskCacheStrategy.NONE)
-                        .into(new SimpleTarget<Bitmap>() {
-                            @Override
-                            public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
-                                ceIVUserPicfvbi.setImageBitmap(resource);
-                                if (NetworkUtil.isConnected(getApplicationContext())) {
-                                    String imageCachePath = PictureUtil.saveImageLogoBackIcon(resource, "user_image" + accountid);
-                                    db.saveUserPicture(imageCachePath, accountid);
-                                }
-                            }
-                        });
-            }
-        }
+        String s = AppUtil.validationStringImageIcon(ChangeEventActivity.this, model.getImage_url(), model.getImage_url_local(), false);
+        Log.d("Lihat", "updateUserInfo ChangeEventActivity : " + s);
+        Log.d("Lihat", "updateUserInfo ChangeEventActivity : " + model.getImage_url());
+        Log.d("Lihat", "updateUserInfo ChangeEventActivity : " + model.getImage_url_local());
+        Glide.with(getApplicationContext())
+                .load(InputValidUtil.isLinkUrl(s) ? s : new File(s))
+                .asBitmap()
+                .placeholder(R.drawable.loading)
+                .error(R.drawable.template_account_og)
+                .skipMemoryCache(false)
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .into(new SimpleTarget<Bitmap>() {
+                    @Override
+                    public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+                        ceIVUserPicfvbi.setImageBitmap(resource);
+                        if (NetworkUtil.isConnected(getApplicationContext())) {
+                            String imageCachePath = PictureUtil.saveImageLogoBackIcon(getApplicationContext(), resource, "user_image" + accountid);
+                            db.saveUserPicture(imageCachePath, accountid);
+                        }
+                    }
+                });
     }
 
     @SuppressLint("NewApi")
@@ -688,7 +715,7 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
     }
 
     private void customText(TextView view) {
-        SpannableStringBuilder spanTxt = new SpannableStringBuilder("To create an new_event, please contact our phone number: ");
+        SpannableStringBuilder spanTxt = new SpannableStringBuilder("To create an event, please contact our phone number: ");
 
         spanTxt.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.colorPrimary)), 10, spanTxt.length(), 0);
         spanTxt.append("+62 21 53661536");
@@ -727,7 +754,14 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQ_CODE_ACCOUNT && resultCode == RESULT_OK) {
-            recreate();
+            new Handler().postDelayed(new Runnable() {
+                public void run() {
+                    //code here
+                    isRefresh = true;
+                    getAPIUserDataValidation();
+                }
+            }, 500);
+
         }
     }
 }

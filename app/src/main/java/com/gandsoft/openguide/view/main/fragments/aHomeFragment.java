@@ -52,9 +52,6 @@ import com.gandsoft.openguide.API.APIresponse.UserData.UserWalletDataResponseMod
 import com.gandsoft.openguide.IConfig;
 import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
-import com.gandsoft.openguide.view.main.adapter.HomeContentAdapter;
-import com.gandsoft.openguide.view.main.fragments.aHomeActivityInFragment.aHomePostCommentActivity;
-import com.gandsoft.openguide.view.main.fragments.aHomeActivityInFragment.aHomePostImageCaptionActivity;
 import com.gandsoft.openguide.database.SQLiteHelper;
 import com.gandsoft.openguide.support.DateTimeUtil;
 import com.gandsoft.openguide.support.InputValidUtil;
@@ -62,6 +59,9 @@ import com.gandsoft.openguide.support.NetworkUtil;
 import com.gandsoft.openguide.support.PictureUtil;
 import com.gandsoft.openguide.support.SessionUtil;
 import com.gandsoft.openguide.support.SystemUtil;
+import com.gandsoft.openguide.view.main.adapter.HomeContentAdapter;
+import com.gandsoft.openguide.view.main.fragments.aHomeActivityInFragment.aHomePostCommentActivity;
+import com.gandsoft.openguide.view.main.fragments.aHomeActivityInFragment.aHomePostImageCaptionActivity;
 
 import org.sufficientlysecure.htmltextview.HtmlTextView;
 
@@ -269,20 +269,24 @@ public class aHomeFragment extends Fragment {
                     //Log.i(TAG, "TOP SCROLL");
                 }
                 if (scrollY == (v.getChildAt(0).getMeasuredHeight() - v.getMeasuredHeight())) {
-                    if (!last_data) {
+                    if (NetworkUtil.isConnected(getActivity())) {
+                        if (!last_data) {
 
-                        llLoadMode2fvbi.setVisibility(View.VISIBLE);
+                            llLoadMode2fvbi.setVisibility(View.VISIBLE);
 
-                        new Handler().postDelayed(new Runnable() {
-                            public void run() {
-                                //code here
-                                homeNSVHomefvbi.setNestedScrollingEnabled(false);
-                                callHomeContentAPILoadMore();
-                            }
-                        }, 500);
+                            new Handler().postDelayed(new Runnable() {
+                                public void run() {
+                                    //code here
+                                    homeNSVHomefvbi.setNestedScrollingEnabled(false);
+                                    callHomeContentAPILoadMore();
+                                }
+                            }, 500);
 
+                        } else {
+                            Snackbar.make(getActivity().findViewById(android.R.id.content), "no more data", Snackbar.LENGTH_LONG).show();
+                        }
                     } else {
-                        Snackbar.make(getActivity().findViewById(android.R.id.content), "Sudah tidak ada data", Snackbar.LENGTH_LONG).show();
+                        Snackbar.make(getActivity().findViewById(android.R.id.content), "Check you connection", Snackbar.LENGTH_SHORT).show();
                     }
                 }
 
@@ -381,7 +385,7 @@ public class aHomeFragment extends Fragment {
                         public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
                             homeIVEventfvbi.setImageBitmap(resource);
                             if (NetworkUtil.isConnected(getActivity())) {
-                                String imageCachePath = PictureUtil.saveImageLogoBackIcon(resource, eventId + "_Logo_image");
+                                String imageCachePath = PictureUtil.saveImageLogoBackIcon(getActivity(), resource, eventId + "_Logo_image");
                                 db.saveEventLogoPicture(imageCachePath, accountId, eventId);
                             }
                         }
@@ -398,7 +402,7 @@ public class aHomeFragment extends Fragment {
                         public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
                             homeIVEventBackgroundfvbi.setImageBitmap(resource);
                             if (NetworkUtil.isConnected(getActivity())) {
-                                String imageCachePath = PictureUtil.saveImageLogoBackIcon(resource, eventId + "_Background_image");
+                                String imageCachePath = PictureUtil.saveImageLogoBackIcon(getActivity(), resource, eventId + "_Background_image");
                                 db.saveEventBackgroundPicture(imageCachePath, accountId, eventId);
                             }
                         }
@@ -522,6 +526,17 @@ public class aHomeFragment extends Fragment {
                     homeLLLoadingfvbi.setVisibility(View.GONE);
                     if (response.isSuccessful()) {
                         List<HomeContentResponseModel> models = response.body();
+                        db.deleteAllDataHomeContent(eventId);
+                        for (int i1 = 0; i1 < models.size(); i1++) {
+                            HomeContentResponseModel responseModel = models.get(i1);
+                            db.saveHomeContent(responseModel, eventId);
+                            /*if (db.isDataTableValueMultipleNull(SQLiteHelper.TableHomeContent, SQLiteHelper.Key_HomeContent_EventId, SQLiteHelper.Key_HomeContent_id, eventId, responseModel.getId())) {
+                                db.saveHomeContent(responseModel, eventId);
+                            } else {
+                                db.saveHomeContent(responseModel, eventId);
+                            }*/
+                        }
+
                         adapter.setData(models);
                         if (models.size() == 10) {
                             last_data = false;
@@ -533,21 +548,6 @@ public class aHomeFragment extends Fragment {
                             last_id = "";
                             last_date = "";
                             first_id = "";
-                        }
-                        for (int i1 = 0; i1 < models.size(); i1++) {
-                            HomeContentResponseModel responseModel = models.get(i1);
-                            if (db.isDataTableValueMultipleNull(SQLiteHelper.TableHomeContent, SQLiteHelper.Key_HomeContent_EventId, SQLiteHelper.Key_HomeContent_id, eventId, responseModel.getId())) {
-                                db.saveHomeContent(responseModel, eventId);
-                            } else {
-                                db.deleteAllDataHomeContent(eventId);
-                                PictureUtil.deleteImageFile(eventId);
-                                new Handler().postDelayed(new Runnable() {
-                                    public void run() {
-                                        //code here
-                                        db.saveHomeContent(responseModel, eventId);
-                                    }
-                                }, 1000);
-                            }
                         }
                     } else {
                         Snackbar.make(getActivity().findViewById(android.R.id.content), "Failed Connection To Server", Snackbar.LENGTH_LONG).show();
@@ -570,19 +570,18 @@ public class aHomeFragment extends Fragment {
                 }
             });
         } else {
-            ArrayList<HomeContentResponseModel> homeContent = db.getHomeContent(eventId);
-            adapter.setData(homeContent);
-
-            if (homeContent.size() == 10) {
+            ArrayList<HomeContentResponseModel> homeContent = db.getHomeContent10(eventId);
+            if (homeContent.size() != 0) {
+                adapter.setData(homeContent);
                 last_data = false;
                 last_id = homeContent.get(homeContent.size() - 1).getId();
                 last_date = homeContent.get(homeContent.size() - 1).getDate_created();
                 first_id = homeContent.get(0).getId();
+
+                Log.d("Lihat", "callHomeContentAPI aHomeFragment : " + homeContent.size());
+
             } else {
-                last_data = true;
-                last_id = "";
-                last_date = "";
-                first_id = "";
+                Snackbar.make(getActivity().findViewById(android.R.id.content), "No data", Snackbar.LENGTH_SHORT).show();
             }
         }
     }
@@ -605,6 +604,15 @@ public class aHomeFragment extends Fragment {
                     homeNSVHomefvbi.setNestedScrollingEnabled(true);
                     if (response.isSuccessful()) {
                         List<HomeContentResponseModel> models = response.body();
+                        for (int i1 = 0; i1 < models.size(); i1++) {
+                            HomeContentResponseModel responseModel = models.get(i1);
+                            if (db.isDataTableValueMultipleNull(SQLiteHelper.TableHomeContent, SQLiteHelper.Key_HomeContent_EventId, SQLiteHelper.Key_HomeContent_id, eventId, responseModel.getId())) {
+                                db.saveHomeContent(responseModel, eventId);
+                            } else {
+                                db.updateHomeContent(responseModel, eventId);
+                            }
+                        }
+
                         adapter.addDatas(models);
                         if (models.size() == 10) {
                             last_data = false;
@@ -617,14 +625,6 @@ public class aHomeFragment extends Fragment {
                             last_date = "";
                             first_id = "";
                         }
-                    /*for (int i1 = 0; i1 < models.size(); i1++) {
-                        HomeContentResponseModel responseModel = models.get(i1);
-                        if (db.isDataTableValueMultipleNull(SQLiteHelper.TableHomeContent, SQLiteHelper.Key_HomeContent_EventId, SQLiteHelper.Key_HomeContent_id, eventId, responseModel.getId())) {
-                            db.saveHomeContent(responseModel, eventId);
-                        } else {
-                            db.updateHomeContent(responseModel, eventId);
-                        }
-                    }*/
                     } else {
                         homeNSVHomefvbi.setNestedScrollingEnabled(true);
                         Snackbar.make(getActivity().findViewById(android.R.id.content), "Failed Connection To Server", Snackbar.LENGTH_LONG).show();
@@ -654,58 +654,54 @@ public class aHomeFragment extends Fragment {
     }
 
     private void callPostCaption() {
-        if (NetworkUtil.isConnected(getActivity())) {
-            HomeContentPostCaptionSetRequestModel requestModel = new HomeContentPostCaptionSetRequestModel();
-            requestModel.setId_event(eventId);
-            requestModel.setAccount_id(accountId);
-            requestModel.setCaptions(homeETWritePostCreatefvbi.getText().toString());
-            requestModel.setDbver("3");
-            requestModel.setGmt_date(formattedDateGMT);
-            requestModel.setDate_post(formattedDate);
+        HomeContentPostCaptionSetRequestModel requestModel = new HomeContentPostCaptionSetRequestModel();
+        requestModel.setId_event(eventId);
+        requestModel.setAccount_id(accountId);
+        requestModel.setCaptions(homeETWritePostCreatefvbi.getText().toString());
+        requestModel.setDbver("3");
+        requestModel.setGmt_date(formattedDateGMT);
+        requestModel.setDate_post(formattedDate);
 
-            ProgressDialog progressDialog = new ProgressDialog(getContext());
-            progressDialog.setCancelable(false);
-            progressDialog.setMessage("Please Wait...");
-            progressDialog.setTitle("Upload data baru..");
-            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            // show it
-            progressDialog.show();
+        ProgressDialog progressDialog = new ProgressDialog(getContext());
+        progressDialog.setCancelable(false);
+        progressDialog.setMessage("Please Wait...");
+        progressDialog.setTitle("Upload data baru..");
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        // show it
+        progressDialog.show();
 
-            API.doHomeContentPostCaptionRet(requestModel).enqueue(new Callback<List<LocalBaseResponseModel>>() {
-                @Override
-                public void onResponse(Call<List<LocalBaseResponseModel>> call, Response<List<LocalBaseResponseModel>> response) {
-                    progressDialog.dismiss();
-                    if (response.isSuccessful()) {
-                        List<LocalBaseResponseModel> s = response.body();
-                        if (s.size() == 1) {
-                            for (int i = 0; i < s.size(); i++) {
-                                LocalBaseResponseModel model = s.get(i);
-                                if (model.getStatus().equalsIgnoreCase("ok")) {
-                                    Snackbar.make(getActivity().findViewById(android.R.id.content), "Post Terkirim", Snackbar.LENGTH_LONG).show();
-                                    callHomeContentAPI();
-                                    updateUi();//onresponse callPostCaption
-                                    homeETWritePostCreatefvbi.setText("");
-                                    SystemUtil.hideKeyBoard(getActivity());
-                                } else {
-                                    Snackbar.make(getActivity().findViewById(android.R.id.content), "Post Bad Response", Snackbar.LENGTH_LONG).show();
-                                }
+        API.doHomeContentPostCaptionRet(requestModel).enqueue(new Callback<List<LocalBaseResponseModel>>() {
+            @Override
+            public void onResponse(Call<List<LocalBaseResponseModel>> call, Response<List<LocalBaseResponseModel>> response) {
+                progressDialog.dismiss();
+                if (response.isSuccessful()) {
+                    List<LocalBaseResponseModel> s = response.body();
+                    if (s.size() == 1) {
+                        for (int i = 0; i < s.size(); i++) {
+                            LocalBaseResponseModel model = s.get(i);
+                            if (model.getStatus().equalsIgnoreCase("ok")) {
+                                Snackbar.make(getActivity().findViewById(android.R.id.content), "Post Terkirim", Snackbar.LENGTH_LONG).show();
+                                callHomeContentAPI();
+                                updateUi();//onresponse callPostCaption
+                                homeETWritePostCreatefvbi.setText("");
+                                SystemUtil.hideKeyBoard(getActivity());
+                            } else {
+                                Snackbar.make(getActivity().findViewById(android.R.id.content), "Post Bad Response", Snackbar.LENGTH_LONG).show();
                             }
-                        } else {
-                            Snackbar.make(getActivity().findViewById(android.R.id.content), "Post Data Tidak Sesuai", Snackbar.LENGTH_LONG).show();
                         }
                     } else {
-                        Snackbar.make(getActivity().findViewById(android.R.id.content), response.message(), Snackbar.LENGTH_LONG).show();
+                        Snackbar.make(getActivity().findViewById(android.R.id.content), "Post Data Tidak Sesuai", Snackbar.LENGTH_LONG).show();
                     }
+                } else {
+                    Snackbar.make(getActivity().findViewById(android.R.id.content), response.message(), Snackbar.LENGTH_LONG).show();
                 }
+            }
 
-                @Override
-                public void onFailure(Call<List<LocalBaseResponseModel>> call, Throwable t) {
-                    Snackbar.make(getActivity().findViewById(android.R.id.content), t.getMessage(), Snackbar.LENGTH_LONG).show();
-                }
-            });
-        } else {
-            Snackbar.make(getActivity().findViewById(android.R.id.content), "Check you connection", Snackbar.LENGTH_SHORT).show();
-        }
+            @Override
+            public void onFailure(Call<List<LocalBaseResponseModel>> call, Throwable t) {
+                Snackbar.make(getActivity().findViewById(android.R.id.content), t.getMessage(), Snackbar.LENGTH_LONG).show();
+            }
+        });
 
     }
 
@@ -860,7 +856,7 @@ public class aHomeFragment extends Fragment {
     }
 
     private void moveToAHomeComment(HomeContentResponseModel model, int position) {
-        if (NetworkUtil.isConnected(getActivity())) {
+        if(NetworkUtil.isConnected(getActivity())){
             ArrayList<HomeContentCommentModelParcelable> dataParam = new ArrayList<>();
             HomeContentCommentModelParcelable mode = new HomeContentCommentModelParcelable();
             mode.setId(model.getId());
@@ -887,10 +883,9 @@ public class aHomeFragment extends Fragment {
             intent.putParcelableArrayListExtra(ISeasonConfig.INTENT_PARAM, dataParam);
             intent.putExtra(ISeasonConfig.INTENT_PARAM2, position);
             startActivityForResult(intent, REQ_CODE_COMMENT);
-        } else {
+        }else {
             Snackbar.make(getActivity().findViewById(android.R.id.content), "Check you connection", Snackbar.LENGTH_SHORT).show();
         }
-
     }
 
     private void addSingleTopAdapter(String imgUrl, String contentPic, String uniqueId, String eventId, String accountId, boolean isNew) {
@@ -970,7 +965,7 @@ public class aHomeFragment extends Fragment {
         } else if (requestCode == REQ_CODE_TAKE_PHOTO_INTENT_ID_STANDART && resultCode == Activity.RESULT_OK) {
             String imageurl = PictureUtil.getImagePathFromUri(getActivity(), imageUri);
             moveToAHomePostImage(imageurl);
-        } else if (requestCode == REQ_CODE_COMMENT && resultCode == Activity.RESULT_OK) {
+        } else if (requestCode == REQ_CODE_COMMENT && resultCode == Activity.RESULT_OK && NetworkUtil.isConnected(getActivity())) {
             int position = data.getIntExtra(ISeasonConfig.INTENT_PARAM, 0);
             String totalComment = data.getStringExtra(ISeasonConfig.INTENT_PARAM2);
             adapter.changeTotalComment(position, totalComment);

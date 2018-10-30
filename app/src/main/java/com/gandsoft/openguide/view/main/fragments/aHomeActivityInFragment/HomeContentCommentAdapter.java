@@ -1,7 +1,9 @@
 package com.gandsoft.openguide.view.main.fragments.aHomeActivityInFragment;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,11 +14,17 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.SimpleTarget;
 import com.gandsoft.openguide.API.APIresponse.Event.EventTheEvent;
 import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentPostCommentGetResponseModel;
 import com.gandsoft.openguide.API.APIresponse.UserData.UserListEventResponseModel;
 import com.gandsoft.openguide.R;
+import com.gandsoft.openguide.database.SQLiteHelper;
+import com.gandsoft.openguide.support.AppUtil;
 import com.gandsoft.openguide.support.DateTimeUtil;
+import com.gandsoft.openguide.support.NetworkUtil;
+import com.gandsoft.openguide.support.PictureUtil;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -82,13 +90,24 @@ class HomeContentCommentAdapter extends RecyclerView.Adapter<HomeContentCommentA
             }
         }, 0, 1000);*/
 
+        AppUtil.validationStringImageIcon(activity, model.getImage_icon(), model.getImage_icon_local(), true);
         Glide.with(activity)
                 .load(model.getImage_icon())
+                .asBitmap()
                 .placeholder(R.drawable.template_account_og)
                 .skipMemoryCache(false)
                 .diskCacheStrategy(DiskCacheStrategy.NONE)
                 .error(R.drawable.template_account_og)
-                .into(holder.ivRVCommentIconfvbi);
+                .into(new SimpleTarget<Bitmap>() {
+                    @Override
+                    public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+                        holder.ivRVCommentIconfvbi.setImageBitmap(resource);
+                        if (NetworkUtil.isConnected(activity)) {
+                            String imageCachePath = PictureUtil.saveImageHomeContentIcon(activity, resource, model.getAccount_id() + "_icon_comment", eventId);
+                            holder.db.saveCommentIcon(imageCachePath, accountId, eventId, model.getId());
+                        }
+                    }
+                });
 
         if ((Integer.parseInt(theEventModel.getDeletepost_status()) == 1 && model.getAccount_id().equalsIgnoreCase(accountId)) || oneListEventModel.getRole_name().equalsIgnoreCase("ADMIN")) {
             holder.llRVCommentRemovefvbi.setVisibility(View.VISIBLE);
@@ -97,7 +116,11 @@ class HomeContentCommentAdapter extends RecyclerView.Adapter<HomeContentCommentA
         holder.llRVCommentRemovefvbi.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mlistener.onDelete(model.getId(), position);
+                if (NetworkUtil.isConnected(activity)) {
+                    mlistener.onDelete(model.getId(), position);
+                } else {
+                    Snackbar.make(activity.findViewById(android.R.id.content), "Check you connection", Snackbar.LENGTH_SHORT).show();
+                }
             }
         });
     }
@@ -113,6 +136,7 @@ class HomeContentCommentAdapter extends RecyclerView.Adapter<HomeContentCommentA
         private final TextView tvRVCommentContentfvbi;
         private final LinearLayout llRVCommentRemovefvbi;
         private final ImageView ivRVCommentIconfvbi;
+        SQLiteHelper db = new SQLiteHelper(itemView.getContext());
 
         public ViewHolder(View itemView) {
             super(itemView);

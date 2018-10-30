@@ -43,10 +43,13 @@ import com.gandsoft.openguide.IConfig;
 import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
 import com.gandsoft.openguide.database.SQLiteHelper;
-import com.gandsoft.openguide.support.PictureUtil;
+import com.gandsoft.openguide.support.AppUtil;
+import com.gandsoft.openguide.support.InputValidUtil;
+import com.gandsoft.openguide.support.NetworkUtil;
 import com.gandsoft.openguide.support.SessionUtil;
 import com.gandsoft.openguide.support.SystemUtil;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -150,17 +153,12 @@ public class aHomePostCommentActivity extends AppCompatActivity {
             tvCommentTsKeteranganfvbi.setVisibility(View.GONE);
         }
 
-        Glide.with(getApplicationContext())
-                .load(model.getImage_icon())
-                .asBitmap()
-                .thumbnail(0.1f)
-                .skipMemoryCache(false)
-                .diskCacheStrategy(DiskCacheStrategy.NONE)
-                .into(ivCommentTsIconfvbi);
+        String stringImagePosted = AppUtil.validationStringImageIcon(aHomePostCommentActivity.this, model.getImage_posted(), model.getImage_posted_local(), false);
+        String stringImageIcon = AppUtil.validationStringImageIcon(aHomePostCommentActivity.this, model.getImage_icon(), model.getImage_icon_local(), true);
 
         if (!TextUtils.isEmpty(model.getImage_posted())) {
             Glide.with(getApplicationContext())
-                    .load(model.getImage_posted())
+                    .load(InputValidUtil.isLinkUrl(stringImagePosted) ? stringImagePosted : new File(stringImagePosted))
                     .asBitmap()
                     .thumbnail(0.1f)
                     .skipMemoryCache(false)
@@ -168,18 +166,52 @@ public class aHomePostCommentActivity extends AppCompatActivity {
                     .into(new SimpleTarget<Bitmap>() {
                         @Override
                         public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
-                            Bitmap resizeImageBitmap = PictureUtil.resizeImageBitmap(resource, 1080);
-                            ivCommentTsImagefvbi.setImageBitmap(resizeImageBitmap);
+                            ivCommentTsImagefvbi.setImageBitmap(resource);
+                            //String imageCachePath = PictureUtil.saveImageHomeContentImage(aHomePostCommentActivity.this, resource, model.getId() + "_image", eventId);
+                            //db.saveHomeContentImage(imageCachePath, accountId, eventId, model.getId());
                         }
                     });
         } else {
             ivCommentTsImagefvbi.setVisibility(View.GONE);
         }
+        Glide.with(getApplicationContext())
+                .load(InputValidUtil.isLinkUrl(stringImageIcon) ? stringImageIcon : new File(stringImageIcon))
+                .asBitmap()
+                .thumbnail(0.1f)
+                .skipMemoryCache(false)
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .into(new SimpleTarget<Bitmap>() {
+                    @Override
+                    public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+                        ivCommentTsIconfvbi.setImageBitmap(resource);
+                        /*if (NetworkUtil.isConnected(getApplicationContext())) {
+                            String imageCachePath = PictureUtil.saveImageHomeContentIcon(aHomePostCommentActivity.this, resource, model.getAccount_id() + "_icon", eventId);
+                            db.saveHomeContentIcon(imageCachePath, accountId, eventId, model.getId());
+                        }*/
+                    }
+                });
 
         adapter = new HomeContentCommentAdapter(this, menuUi, db.getTheEvent(eventId), db.getOneListEvent(eventId, accountId), accountId, eventId, new HomeContentCommentAdapter.HomeContentCommentListener() {
             @Override
             public void onDelete(String commentId, int position) {
-                callDeleteComment(commentId, position);
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(aHomePostCommentActivity.this);
+                alertDialogBuilder.setMessage("Are you sure to delete this post ?");
+                alertDialogBuilder.setCancelable(true);
+                alertDialogBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface arg0, int arg1) {
+                        callDeleteComment(commentId, position);
+                    }
+                });
+                alertDialogBuilder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface arg0, int arg1) {
+
+                    }
+                });
+                AlertDialog alertDialog = alertDialogBuilder.create();
+                alertDialog.show();
+
             }
         });
         rvCommentfvbi.setNestedScrollingEnabled(false);
@@ -193,8 +225,15 @@ public class aHomePostCommentActivity extends AppCompatActivity {
         ivCommentPostfvbi.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                callSetComment();
+                if (NetworkUtil.isConnected(getApplicationContext())) {
+                    if (!InputValidUtil.isEmptyField(etCommentPostfvbi)) {
+                        callSetComment();
+                    } else {
+                        InputValidUtil.errorET(etCommentPostfvbi, "This Empty");
+                    }
+                } else {
+                    Snackbar.make(findViewById(android.R.id.content), "Check you connection", Snackbar.LENGTH_SHORT).show();
+                }
 
             }
         });
@@ -231,7 +270,7 @@ public class aHomePostCommentActivity extends AppCompatActivity {
                         }, 500);
 
                     } else {
-                        Snackbar.make(findViewById(android.R.id.content), "Sudah tidak ada data", Snackbar.LENGTH_SHORT).show();
+                        Snackbar.make(findViewById(android.R.id.content), "no more data", Snackbar.LENGTH_SHORT).show();
                     }
                 }
 
@@ -257,111 +296,138 @@ public class aHomePostCommentActivity extends AppCompatActivity {
         if (srlCommentfvbi.isRefreshing()) {
             srlCommentfvbi.setRefreshing(false);
         }
+        if (NetworkUtil.isConnected(getApplicationContext())) {
+            ProgressDialog progressDialog = ProgressDialog.show(aHomePostCommentActivity.this, "Loading...", "Please Wait..", false, false);
 
-        ProgressDialog progressDialog = ProgressDialog.show(aHomePostCommentActivity.this, "Loading...", "Please Wait..", false, false);
+            HomeContentPostCommentGetRequestModel rm = new HomeContentPostCommentGetRequestModel();
+            rm.setEvent_id(eventId);
+            rm.setPost_id(model.getId());
+            rm.setAccount_id(accountId);
+            rm.setId_comment("");
+            rm.setDbver(String.valueOf(IConfig.DB_Version));
 
-        HomeContentPostCommentGetRequestModel rm = new HomeContentPostCommentGetRequestModel();
-        rm.setEvent_id(eventId);
-        rm.setPost_id(model.getId());
-        rm.setAccount_id(accountId);
-        rm.setId_comment("");
-        rm.setDbver(String.valueOf(IConfig.DB_Version));
-
-        API.dohomeContentPostCommentGetRet(rm).enqueue(new Callback<List<HomeContentPostCommentGetResponseModel>>() {
-            @Override
-            public void onResponse(Call<List<HomeContentPostCommentGetResponseModel>> call, Response<List<HomeContentPostCommentGetResponseModel>> response) {
-                progressDialog.dismiss();
-                if (response.isSuccessful()) {
-                    List<HomeContentPostCommentGetResponseModel> models = response.body();
-                    adapter.setData(models);
-                    if (models.size() == 10) {
-                        last_data = false;
-                        last_id = models.get(models.size() - 1).getId();
-                        Log.d("Lihat", "onResponse aHomePostCommentActivity : " + last_id);
-                        first_id = models.get(0).getId();
-                        Log.d("Lihat", "onResponse aHomePostCommentActivity : " + first_id);
-                    } else {
-                        last_data = true;
-                        last_id = "";
-                        last_date = "";
-                        first_id = "";
-                    }
-
-                    if (models.size() != 0) {
+            API.dohomeContentPostCommentGetRet(rm).enqueue(new Callback<List<HomeContentPostCommentGetResponseModel>>() {
+                @Override
+                public void onResponse(Call<List<HomeContentPostCommentGetResponseModel>> call, Response<List<HomeContentPostCommentGetResponseModel>> response) {
+                    progressDialog.dismiss();
+                    if (response.isSuccessful()) {
+                        List<HomeContentPostCommentGetResponseModel> models = response.body();
+                        adapter.setData(models);
+                        db.deleteAllDataComment(eventId, model.getId());
                         for (int i = 0; i < models.size(); i++) {
-                            HomeContentPostCommentGetResponseModel w = models.get(i);
-                            total_comment = w.getTotal_comment();
+                            HomeContentPostCommentGetResponseModel responseModel = models.get(i);
+                            db.saveComment(responseModel, eventId, model.getId());
+                            /*if (db.isDataTableValueMultipleNull(SQLiteHelper.TableComment, SQLiteHelper.Key_Comment_EventId, SQLiteHelper.Key_Comment_Id, eventId, responseModel.getId())) {
+                                db.saveComment(responseModel, eventId, model.getId());
+                            } else {
+                                db.saveComment(responseModel, eventId, model.getId());
+                                //db.updateComment(responseModel, eventId, model.getId());
+                            }*/
+                        }
+
+                        if (models.size() == 10) {
+                            last_data = false;
+                            last_id = models.get(models.size() - 1).getId();
+                            first_id = models.get(0).getId();
+                        } else {
+                            last_data = true;
+                            last_id = "";
+                            last_date = "";
+                            first_id = "";
+                        }
+
+                        if (models.size() != 0) {
+                            for (int i = 0; i < models.size(); i++) {
+                                HomeContentPostCommentGetResponseModel w = models.get(i);
+                                total_comment = w.getTotal_comment();
+                            }
+                        } else {
+                            total_comment = "0";
                         }
                     } else {
-                        total_comment = "0";
+                        Log.d("Lihat", "onFailure aHomePostCommentActivity : " + response.message());
+                        Snackbar.make(findViewById(android.R.id.content), "Failed Connection To Server", Snackbar.LENGTH_LONG).show();
                     }
-                } else {
-                    Log.d("Lihat", "onFailure aHomePostCommentActivity : " + response.message());
-                    Snackbar.make(findViewById(android.R.id.content), "Failed Connection To Server", Snackbar.LENGTH_LONG).show();
                 }
-            }
 
-            @Override
-            public void onFailure(Call<List<HomeContentPostCommentGetResponseModel>> call, Throwable t) {
-                progressDialog.dismiss();
-                //Crashlytics.logException(new Exception(t.getMessage()));
-                Log.d("Lihat", "onFailure aHomePostCommentActivity : " + t.getMessage());
-                Snackbar.make(findViewById(android.R.id.content), "Failed Connection To Server", Snackbar.LENGTH_SHORT).show();
+                @Override
+                public void onFailure(Call<List<HomeContentPostCommentGetResponseModel>> call, Throwable t) {
+                    progressDialog.dismiss();
+                    //Crashlytics.logException(new Exception(t.getMessage()));
+                    Log.d("Lihat", "onFailure aHomePostCommentActivity : " + t.getMessage());
+                    Snackbar.make(findViewById(android.R.id.content), "Failed Connection To Server", Snackbar.LENGTH_SHORT).show();
+                }
+            });
+        } else {
+            ArrayList<HomeContentPostCommentGetResponseModel> comments = db.getComment10(eventId, model.getId());
+            if (comments.size() != 0) {
+                adapter.setData(comments);
+                last_data = false;
+                last_id = models.get(models.size() - 1).getId();
+                first_id = models.get(0).getId();
+            } else {
+                Snackbar.make(findViewById(android.R.id.content), "No data", Snackbar.LENGTH_SHORT).show();
             }
-        });
+        }
+
     }
 
     private void callGetCommentListMore() {
-        HomeContentPostCommentGetRequestModel rm = new HomeContentPostCommentGetRequestModel();
-        rm.setEvent_id(eventId);
-        rm.setPost_id(model.getId());
-        rm.setAccount_id(accountId);
-        rm.setId_comment(last_id);
-        rm.setDbver(String.valueOf(IConfig.DB_Version));
+        if (NetworkUtil.isConnected(getApplicationContext())) {
+            HomeContentPostCommentGetRequestModel rm = new HomeContentPostCommentGetRequestModel();
+            rm.setEvent_id(eventId);
+            rm.setPost_id(model.getId());
+            rm.setAccount_id(accountId);
+            rm.setId_comment(last_id);
+            rm.setDbver(String.valueOf(IConfig.DB_Version));
 
-        API.dohomeContentPostCommentGetRet(rm).enqueue(new Callback<List<HomeContentPostCommentGetResponseModel>>() {
-            @Override
-            public void onResponse(Call<List<HomeContentPostCommentGetResponseModel>> call, Response<List<HomeContentPostCommentGetResponseModel>> response) {
-                llLoadModecommentfvbi.setVisibility(View.GONE);
-                if (response.isSuccessful()) {
-                    List<HomeContentPostCommentGetResponseModel> q = response.body();
-                    adapter.addDatas(q);
-                    if (q.size() == 10) {
-                        last_data = false;
-                        last_id = q.get(q.size() - 1).getId();
-                        first_id = q.get(0).getId();
-                    } else {
-                        last_data = true;
-                        last_id = "";
-                        last_date = "";
-                        first_id = "";
-                    }
-                    if (q.size() != 0) {
-                        for (int i = 0; i < q.size(); i++) {
-                            HomeContentPostCommentGetResponseModel w = q.get(i);
-                            total_comment = w.getTotal_comment();
+            API.dohomeContentPostCommentGetRet(rm).enqueue(new Callback<List<HomeContentPostCommentGetResponseModel>>() {
+                @Override
+                public void onResponse(Call<List<HomeContentPostCommentGetResponseModel>> call, Response<List<HomeContentPostCommentGetResponseModel>> response) {
+                    llLoadModecommentfvbi.setVisibility(View.GONE);
+                    if (response.isSuccessful()) {
+                        List<HomeContentPostCommentGetResponseModel> q = response.body();
+                        adapter.addDatas(q);
+                        if (q.size() == 10) {
+                            last_data = false;
+                            last_id = q.get(q.size() - 1).getId();
+                            first_id = q.get(0).getId();
+                        } else {
+                            last_data = true;
+                            last_id = "";
+                            last_date = "";
+                            first_id = "";
+                        }
+                        if (q.size() != 0) {
+                            for (int i = 0; i < q.size(); i++) {
+                                HomeContentPostCommentGetResponseModel w = q.get(i);
+                                total_comment = w.getTotal_comment();
+                            }
+                        } else {
+                            total_comment = "0";
                         }
                     } else {
-                        total_comment = "0";
+                        Log.d("Lihat", "onFailure aHomePostCommentActivity : " + response.message());
+                        Snackbar.make(findViewById(android.R.id.content), "Failed Connection To Server", Snackbar.LENGTH_LONG).show();
                     }
-                } else {
-                    Log.d("Lihat", "onFailure aHomePostCommentActivity : " + response.message());
-                    Snackbar.make(findViewById(android.R.id.content), "Failed Connection To Server", Snackbar.LENGTH_LONG).show();
                 }
-            }
 
-            @Override
-            public void onFailure(Call<List<HomeContentPostCommentGetResponseModel>> call, Throwable t) {
-                llLoadModecommentfvbi.setVisibility(View.GONE);
-                //Crashlytics.logException(new Exception(t.getMessage()));
-                Log.d("Lihat", "onFailure aHomePostCommentActivity : " + t.getMessage());
-                Snackbar.make(findViewById(android.R.id.content), "Failed Connection To Server", Snackbar.LENGTH_SHORT).show();
-            }
-        });
+                @Override
+                public void onFailure(Call<List<HomeContentPostCommentGetResponseModel>> call, Throwable t) {
+                    llLoadModecommentfvbi.setVisibility(View.GONE);
+                    //Crashlytics.logException(new Exception(t.getMessage()));
+                    Log.d("Lihat", "onFailure aHomePostCommentActivity : " + t.getMessage());
+                    Snackbar.make(findViewById(android.R.id.content), "Failed Connection To Server", Snackbar.LENGTH_SHORT).show();
+                }
+            });
+        } else {
+            llLoadModecommentfvbi.setVisibility(View.GONE);
+            Snackbar.make(findViewById(android.R.id.content), "Check you connection", Snackbar.LENGTH_SHORT).show();
+        }
+
     }
 
     private void callSetComment() {
-
         SystemUtil.hideKeyBoard(this);
 
         /*Calendar c = Calendar.getInstance();
@@ -402,16 +468,16 @@ public class aHomePostCommentActivity extends AppCompatActivity {
                     for (int i1 = 0; i1 < models.size(); i1++) {
                         HomeContentPostCommentSetResponseModel q = models.get(i1);
 
-                        /*HomeContentPostCommentGetResponseModel mo = new HomeContentPostCommentGetResponseModel();
-                        mo.setId(q.getId());
-                        mo.setAccount_id(q.getAccount_id());
-                        mo.setTotal_comment(q.getTotal_comment());
-                        mo.setImage_icon(q.getImage_icon());
-                        mo.setFull_name(q.getFull_name());
-                        mo.setRole_name(q.getRole_name());
-                        mo.setPost_time(q.getPost_time());
-                        mo.setPost_content(q.getPost_content());
-                        adapter.addDataFirst(mo);*/
+                    /*HomeContentPostCommentGetResponseModel mo = new HomeContentPostCommentGetResponseModel();
+                    mo.setId(q.getId());
+                    mo.setAccount_id(q.getAccount_id());
+                    mo.setTotal_comment(q.getTotal_comment());
+                    mo.setImage_icon(q.getImage_icon());
+                    mo.setFull_name(q.getFull_name());
+                    mo.setRole_name(q.getRole_name());
+                    mo.setPost_time(q.getPost_time());
+                    mo.setPost_content(q.getPost_content());
+                    adapter.addDataFirst(mo);*/
                     }
                 }
             }
@@ -422,50 +488,56 @@ public class aHomePostCommentActivity extends AppCompatActivity {
                 Log.d("Lihat", "onFailure aHomePostCommentActivity : " + t.getMessage());
             }
         });
+
     }
 
     private void callDeleteComment(String commentId, int position) {
         Log.d("Lihat", "callDeleteComment aHomePostCommentActivity : " + commentId);
         Log.d("Lihat", "callDeleteComment aHomePostCommentActivity : " + position);
 
-        ProgressDialog progressDialog = ProgressDialog.show(aHomePostCommentActivity.this, "Loading...", "Please Wait..", false, false);
+        if (NetworkUtil.isConnected(getApplicationContext())) {
+            ProgressDialog progressDialog = ProgressDialog.show(aHomePostCommentActivity.this, "Loading...", "Please Wait..", false, false);
 
-        HomeContentPostCommentDeleteRequestModel rm = new HomeContentPostCommentDeleteRequestModel();
-        rm.setEvent_id(eventId);
-        rm.setPost_id(model.getId());
-        rm.setAccount_id(accountId);
-        rm.setId_comment(commentId);
-        rm.setDbver(String.valueOf(IConfig.DB_Version));
+            HomeContentPostCommentDeleteRequestModel rm = new HomeContentPostCommentDeleteRequestModel();
+            rm.setEvent_id(eventId);
+            rm.setPost_id(model.getId());
+            rm.setAccount_id(accountId);
+            rm.setId_comment(commentId);
+            rm.setDbver(String.valueOf(IConfig.DB_Version));
 
-        API.dohomeContentPostCommentDeleteRet(rm).enqueue(new Callback<List<HomeContentPostCommentDeleteResponseModel>>() {
-            @Override
-            public void onResponse(Call<List<HomeContentPostCommentDeleteResponseModel>> call, Response<List<HomeContentPostCommentDeleteResponseModel>> response) {
-                progressDialog.dismiss();
-                if (response.isSuccessful()) {
-                    List<HomeContentPostCommentDeleteResponseModel> modeld = response.body();
-                    for (int i = 0; i < modeld.size(); i++) {
-                        HomeContentPostCommentDeleteResponseModel q = modeld.get(i);
-                        if (q.getStatus().equalsIgnoreCase(ISeasonConfig.SUCCESS)) {
-                            //adapter.removeAt(position);
-                            callGetCommentList();
-                            Snackbar.make(findViewById(android.R.id.content), q.getStatus(), Snackbar.LENGTH_LONG).show();
-                        } else {
-                            Snackbar.make(findViewById(android.R.id.content), q.getStatus(), Snackbar.LENGTH_LONG).show();
+            API.dohomeContentPostCommentDeleteRet(rm).enqueue(new Callback<List<HomeContentPostCommentDeleteResponseModel>>() {
+                @Override
+                public void onResponse(Call<List<HomeContentPostCommentDeleteResponseModel>> call, Response<List<HomeContentPostCommentDeleteResponseModel>> response) {
+                    progressDialog.dismiss();
+                    if (response.isSuccessful()) {
+                        List<HomeContentPostCommentDeleteResponseModel> modeld = response.body();
+                        for (int i = 0; i < modeld.size(); i++) {
+                            HomeContentPostCommentDeleteResponseModel q = modeld.get(i);
+                            if (q.getStatus().equalsIgnoreCase(ISeasonConfig.SUCCESS)) {
+                                //adapter.removeAt(position);
+                                callGetCommentList();
+                                Snackbar.make(findViewById(android.R.id.content), q.getStatus(), Snackbar.LENGTH_LONG).show();
+                            } else {
+                                Snackbar.make(findViewById(android.R.id.content), q.getStatus(), Snackbar.LENGTH_LONG).show();
+                            }
                         }
+                    } else {
+                        Log.d("Lihat", "onFailure aHomePostCommentActivity : " + response.message());
+                        Snackbar.make(findViewById(android.R.id.content), "Failed Connection To Server", Snackbar.LENGTH_LONG).show();
                     }
-                } else {
-                    Log.d("Lihat", "onFailure aHomePostCommentActivity : " + response.message());
-                    Snackbar.make(findViewById(android.R.id.content), "Failed Connection To Server", Snackbar.LENGTH_LONG).show();
                 }
-            }
 
-            @Override
-            public void onFailure(Call<List<HomeContentPostCommentDeleteResponseModel>> call, Throwable t) {
-                progressDialog.dismiss();
-                Log.d("Lihat", "onFailure aHomePostCommentActivity : " + t.getMessage());
-                Snackbar.make(findViewById(android.R.id.content), "Failed Connection To Server", Snackbar.LENGTH_SHORT).show();
-            }
-        });
+                @Override
+                public void onFailure(Call<List<HomeContentPostCommentDeleteResponseModel>> call, Throwable t) {
+                    progressDialog.dismiss();
+                    Log.d("Lihat", "onFailure aHomePostCommentActivity : " + t.getMessage());
+                    Snackbar.make(findViewById(android.R.id.content), "Failed Connection To Server", Snackbar.LENGTH_SHORT).show();
+                }
+            });
+        } else {
+            Snackbar.make(findViewById(android.R.id.content), "Check you connection", Snackbar.LENGTH_SHORT).show();
+        }
+
     }
 
     @Override

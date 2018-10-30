@@ -42,9 +42,6 @@ import com.gandsoft.openguide.API.APIresponse.VerificationStatusLoginAppUserResp
 import com.gandsoft.openguide.IConfig;
 import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
-import com.gandsoft.openguide.view.ChangeEventActivity;
-import com.gandsoft.openguide.view.infomenu.cInboxActivity;
-import com.gandsoft.openguide.view.services.MyService;
 import com.gandsoft.openguide.database.SQLiteHelper;
 import com.gandsoft.openguide.support.AppUtil;
 import com.gandsoft.openguide.support.DateTimeUtil;
@@ -56,6 +53,9 @@ import com.gandsoft.openguide.support.PictureUtil;
 import com.gandsoft.openguide.support.ServiceUtil;
 import com.gandsoft.openguide.support.SessionUtil;
 import com.gandsoft.openguide.support.SystemUtil;
+import com.gandsoft.openguide.view.ChangeEventActivity;
+import com.gandsoft.openguide.view.infomenu.cInboxActivity;
+import com.gandsoft.openguide.view.services.MyService;
 import com.google.firebase.auth.FirebaseAuth;
 
 import org.jsoup.Jsoup;
@@ -70,10 +70,6 @@ import java.util.TimerTask;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-
-import static com.gandsoft.openguide.database.SQLiteHelper.Key_Place_List_EventId;
-import static com.gandsoft.openguide.database.SQLiteHelper.Key_Place_List_staticMap;
-import static com.gandsoft.openguide.database.SQLiteHelper.TablePlaceList;
 
 public class BaseHomeActivity extends AppCompatActivity {
     private static final int REQ_CODE_INBOX = 123;
@@ -150,7 +146,7 @@ public class BaseHomeActivity extends AppCompatActivity {
 
     }
 
-    private void initContent() {
+    public void initContent() {
         if (!db.isFirstIn(eventId)) {
             showFirstDialogEvent();
         }
@@ -228,7 +224,7 @@ public class BaseHomeActivity extends AppCompatActivity {
 
         mPagerAdapter = new SlidePagerAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
         mPager.setAdapter(mPagerAdapter);
-        mPager.setOffscreenPageLimit(4);
+        mPager.setOffscreenPageLimit(5);
         mPager.setCurrentItem(0);
     }
 
@@ -360,8 +356,7 @@ public class BaseHomeActivity extends AppCompatActivity {
 
     private void initStaticMaps() {
         ArrayList<EventPlaceList> placeLists = db.getPlaceList(eventId);
-
-        if (!db.isDataTableValueMultipleNotNull(TablePlaceList, Key_Place_List_EventId, Key_Place_List_staticMap, eventId)) {
+        if (!AppUtil.validationStringLocalExist(placeLists.get(0).getStaticMaps())) {
             Double longitude = 0.0;
             Double latitude = 0.0;
             Double count = 0.0;
@@ -402,7 +397,7 @@ public class BaseHomeActivity extends AppCompatActivity {
                     .into(new SimpleTarget<Bitmap>() {
                         @Override
                         public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
-                            String address = PictureUtil.saveImageStaticMaps(resource, "staticMaps" + eventId);
+                            String address = PictureUtil.saveImageStaticMaps(getApplicationContext(), resource, "staticMaps" + eventId);
                             db.savePlaceListStaticMaps(eventId, address);
                         }
                     });
@@ -492,5 +487,9 @@ public class BaseHomeActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         mHomeWatcher.stopWatch();
+    }
+
+    public void updateInbox() {
+        setupBadge();
     }
 }

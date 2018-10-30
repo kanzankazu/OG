@@ -6,6 +6,7 @@ public class HomeContentPostCommentGetResponseModel {
     public String account_id;
     public String total_comment;
     public String image_icon;
+    public String image_icon_local;
     public String full_name;
     public String role_name;
     public String post_time;
@@ -76,6 +77,14 @@ public class HomeContentPostCommentGetResponseModel {
 
     public void setImage_icon(String image_icon) {
         this.image_icon = image_icon;
+    }
+
+    public String getImage_icon_local() {
+        return image_icon_local;
+    }
+
+    public void setImage_icon_local(String image_icon_local) {
+        this.image_icon_local = image_icon_local;
     }
 
     public String getFull_name() {

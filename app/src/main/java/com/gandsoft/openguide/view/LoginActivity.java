@@ -197,6 +197,7 @@ public class LoginActivity extends LocalBaseActivity {
         cvLoginSubmitfvbi.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                SystemUtil.hideKeyBoard(LoginActivity.this);
                 initPhoneNumberValidationInput();//click
             }
         });
@@ -574,13 +575,12 @@ public class LoginActivity extends LocalBaseActivity {
 
     private void snackBar(String success, Boolean reloadAction) {
         if (reloadAction) {
-            Snackbar.make(findViewById(android.R.id.content), success, Snackbar.LENGTH_INDEFINITE)
-                    .setAction("RELOAD", new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            initPhoneNumberValidationInput();//reload
-                        }
-                    })
+            Snackbar.make(findViewById(android.R.id.content), success, Snackbar.LENGTH_INDEFINITE).setAction("Reload", new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    initPhoneNumberValidationInput();//reload
+                }
+            })
                     .show();
         } else {
             Snackbar.make(findViewById(android.R.id.content), success, Snackbar.LENGTH_LONG).show();

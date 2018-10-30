@@ -12,9 +12,9 @@ import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 
 import com.gandsoft.openguide.ISeasonConfig;
+import com.gandsoft.openguide.database.SQLiteHelper;
 import com.gandsoft.openguide.view.LoginActivity;
 import com.gandsoft.openguide.view.services.MyService;
-import com.gandsoft.openguide.database.SQLiteHelper;
 import com.google.firebase.auth.FirebaseAuth;
 
 public class AppUtil {
@@ -73,5 +73,25 @@ public class AppUtil {
         Intent notificationIntent = new Intent(context, context.getClass());
         PendingIntent test = PendingIntent.getActivity(context, idNotif, notificationIntent, PendingIntent.FLAG_NO_CREATE);
         return test != null;
+    }
+
+    public static String validationStringImageIcon(Activity context, String s1Url, String s2Path, boolean isPreferUrl) {
+        if (isPreferUrl) {
+            return NetworkUtil.isConnected(context) ? s1Url : TextUtils.isEmpty(s2Path) ? s1Url : !PictureUtil.isFileExists(s2Path) ? s1Url : s2Path;
+        } else {
+            return TextUtils.isEmpty(s2Path) ? s1Url : PictureUtil.isFileExists(s2Path) ? s2Path : s1Url;
+        }
+    }
+
+    public static Boolean validationStringLocalExist(String s2Path) {
+        if (!TextUtils.isEmpty(s2Path)) {
+            if (PictureUtil.isFileExists(s2Path)) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
     }
 }

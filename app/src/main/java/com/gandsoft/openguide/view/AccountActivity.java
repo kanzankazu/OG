@@ -204,7 +204,7 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
         ibAccCamerafvbi.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 // Munculkan alert dialog apabila user ingin keluar aplikasi
-                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getParent());
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(AccountActivity.this);
                 alertDialogBuilder.setMessage("Select to get image?");
                 alertDialogBuilder.setPositiveButton("Camera",
                         new DialogInterface.OnClickListener() {
@@ -331,7 +331,7 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
 
     private void signOut(boolean isDialog) {
         if (isDialog) {
-            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(AccountActivity.this);
             alertDialogBuilder.setMessage("ARE YOU SURE WANNA SIGN-OUT?");
             alertDialogBuilder.setCancelable(false);
             alertDialogBuilder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
@@ -360,7 +360,7 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
 
     private void quitNotSave() {
         // Munculkan alert dialog apabila user ingin keluar aplikasi
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(AccountActivity.this);
         alertDialogBuilder.setMessage("Discard All of Changes?");
         alertDialogBuilder.setCancelable(true);
         alertDialogBuilder.setPositiveButton("YES",
@@ -402,13 +402,13 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
     private void saveClick() {
         if (isNewUser) {
             if (cbAccAggrementfvbi.isChecked()) {
-                updateData();
+                updateData();//click new user
             } else {
                 Snackbar.make(findViewById(android.R.id.content), "Checked Egreement First!!", Snackbar.LENGTH_SHORT).show();
                 cbAccAggrementfvbi.requestFocus();
             }
         } else {
-            updateData();
+            updateData();//click old user
         }
     }
 
@@ -459,7 +459,6 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
                         } else {
                             Snackbar.make(findViewById(android.R.id.content), "Data Tidak Sesuai", Snackbar.LENGTH_SHORT).show();
                         }
-                        returnToBackActivity();
                     } else {
                         Snackbar.make(findViewById(android.R.id.content), response.message(), Snackbar.LENGTH_SHORT).show();
                     }
@@ -468,10 +467,10 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
                 @Override
                 public void onFailure(Call<List<UserUpdateResponseModel>> call, Throwable t) {
                     Log.d("Lihat", "onFailure AccountActivity : " + t.getMessage());
-                    Snackbar.make(findViewById(android.R.id.content), "Failed to connect server", Snackbar.LENGTH_INDEFINITE).setAction("TRY AGAIN", new View.OnClickListener() {
+                    Snackbar.make(findViewById(android.R.id.content), "Failed to connect server", Snackbar.LENGTH_INDEFINITE).setAction("Reload", new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            updateData();
+                            updateData();//onfailure
                         }
                     }).show();
                 }

@@ -29,6 +29,7 @@ import com.gandsoft.openguide.API.APIresponse.UserData.UserListEventResponseMode
 import com.gandsoft.openguide.IConfig;
 import com.gandsoft.openguide.R;
 import com.gandsoft.openguide.database.SQLiteHelper;
+import com.gandsoft.openguide.support.AppUtil;
 import com.gandsoft.openguide.support.InputValidUtil;
 import com.gandsoft.openguide.support.NetworkUtil;
 import com.gandsoft.openguide.support.PictureUtil;
@@ -95,17 +96,15 @@ public class HomeContentAdapter extends RecyclerView.Adapter<HomeContentAdapter.
             holder.tvRVHomeContentKeterangan.setVisibility(View.GONE);
         }
 
-        String image_icon;
-        String image_posted;
-        if (NetworkUtil.isConnected(activity)) {
-            image_icon = model.getImage_icon();
-            image_posted = model.getImage_posted();
-        } else {
-            image_icon = model.getImage_icon_local();
-            image_posted = model.getImage_posted_local();
-        }
-
-        if (!TextUtils.isEmpty(image_posted)) {
+        String image_posted = AppUtil.validationStringImageIcon(activity, model.getImage_posted(), model.getImage_posted_local(), false);
+        Log.d("Lihat", "onBindViewHolder HomeContentAdapter : " + image_posted);
+        Log.d("Lihat", "onBindViewHolder HomeContentAdapter : " + model.getImage_posted());
+        Log.d("Lihat", "onBindViewHolder HomeContentAdapter : " + model.getImage_posted_local());
+        String image_icon = AppUtil.validationStringImageIcon(activity, model.getImage_icon(), model.getImage_icon_local(), true);
+        Log.d("Lihat", "onBindViewHolder HomeContentAdapter : " + image_icon);
+        Log.d("Lihat", "onBindViewHolder HomeContentAdapter : " + model.getImage_icon());
+        Log.d("Lihat", "onBindViewHolder HomeContentAdapter : " + model.getImage_icon_local());
+        if (!TextUtils.isEmpty(model.getImage_posted())) {
             holder.ivRVHomeContentImage.setVisibility(View.VISIBLE);
             Glide.with(activity)
                     .load(InputValidUtil.isLinkUrl(image_posted) ? image_posted : new File(image_posted))
@@ -118,37 +117,30 @@ public class HomeContentAdapter extends RecyclerView.Adapter<HomeContentAdapter.
                         @Override
                         public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
                             holder.ivRVHomeContentImage.setImageBitmap(resource);
-                            if (NetworkUtil.isConnected(activity) && getItemCount() <= 10) {
-                                String imageCachePath = PictureUtil.saveImageHomeContentImage(resource, model.getId() + "_image", eventId);
-                                holder.db.saveHomeContentImage(imageCachePath, accountId, eventId, model.getId());
-                            }
+                            String imageCachePath = PictureUtil.saveImageHomeContentImage(activity, resource, model.getId() + "_image", eventId);
+                            holder.db.saveHomeContentImage(imageCachePath, accountId, eventId, model.getId());
                         }
                     });
         } else {
             holder.ivRVHomeContentImage.setVisibility(View.GONE);
         }
-
-        if (!TextUtils.isEmpty(image_icon)) {
-            Glide.with(activity)
-                    .load(InputValidUtil.isLinkUrl(image_icon) ? image_icon : new File(image_icon))
-                    .asBitmap()
-                    .placeholder(R.drawable.template_account_og)
-                    .skipMemoryCache(false)
-                    .diskCacheStrategy(DiskCacheStrategy.NONE)
-                    .error(R.drawable.template_account_og)
-                    .into(new SimpleTarget<Bitmap>() {
-                        @Override
-                        public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
-                            holder.ivRVRVHomeContentIcon.setImageBitmap(resource);
-                            if (NetworkUtil.isConnected(activity) && getItemCount() <= 10) {
-                                String imageCachePath = PictureUtil.saveImageHomeContentImage(resource, model.getAccount_id() + "_icon", eventId);
-                                holder.db.saveHomeContentIcon(imageCachePath, accountId, eventId, model.getId());
-                            }
+        Glide.with(activity)
+                .load(InputValidUtil.isLinkUrl(image_icon) ? image_icon : new File(image_icon))
+                .asBitmap()
+                .placeholder(R.drawable.template_account_og)
+                .skipMemoryCache(false)
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .error(R.drawable.template_account_og)
+                .into(new SimpleTarget<Bitmap>() {
+                    @Override
+                    public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+                        holder.ivRVRVHomeContentIcon.setImageBitmap(resource);
+                        if (NetworkUtil.isConnected(activity)) {
+                            String imageCachePath = PictureUtil.saveImageHomeContentIcon(activity, resource, model.getAccount_id() + "_icon_home", eventId);
+                            holder.db.saveHomeContentIcon(imageCachePath, accountId, eventId, model.getId());
                         }
-                    });
-        } else {
-            holder.ivRVRVHomeContentIcon.setVisibility(View.INVISIBLE);
-        }
+                    }
+                });
 
         if (model.getStatus_like() != 0) {
             holder.ivRVHomeContentLike.setImageResource(R.drawable.ic_love_fill);
@@ -177,19 +169,7 @@ public class HomeContentAdapter extends RecyclerView.Adapter<HomeContentAdapter.
             public void onClick(View view) {
                 if (NetworkUtil.isConnected(activity)) {
                     int like = Integer.parseInt(model.getLike());
-                    if (model.getStatus_like() == 0) {
-                        holder.tvRVHomeContentLike.setText(String.valueOf(like + 1));
-                        holder.ivRVHomeContentLike.setImageResource(R.drawable.ic_love_fill);
-                        model.setStatus_like(1);
-                        model.setLike(String.valueOf(like + 1));
-                        postLike(model.getLike(), holder, model);
-                    } else {
-                        holder.tvRVHomeContentLike.setText(String.valueOf(like - 1));
-                        holder.ivRVHomeContentLike.setImageResource(R.drawable.ic_love_empty);
-                        model.setStatus_like(0);
-                        model.setLike(String.valueOf(like - 1));
-                        postLike(model.getLike(), holder, model);
-                    }
+                    postLike(model.getLike(), holder, model, like);
                 } else {
                     Snackbar.make(activity.findViewById(android.R.id.content), "Check you connection", Snackbar.LENGTH_SHORT).show();
                 }
@@ -218,7 +198,7 @@ public class HomeContentAdapter extends RecyclerView.Adapter<HomeContentAdapter.
         }
     }
 
-    public void postLike(String likes, ViewHolder holder, HomeContentResponseModel model) {
+    public void postLike(String likes, ViewHolder holder, HomeContentResponseModel model, int like) {
         HomeContentPostLikeRequestModel requestModel = new HomeContentPostLikeRequestModel();
         requestModel.setAccount_id(accountId);
         requestModel.setEvent_id(eventId);
@@ -238,16 +218,34 @@ public class HomeContentAdapter extends RecyclerView.Adapter<HomeContentAdapter.
                     List<LocalBaseResponseModel> s = response.body();
                     if (s.size() == 1) {
                         for (int i = 0; i < s.size(); i++) {
-                            LocalBaseResponseModel model = s.get(i);
-                            if (model.getStatus().equalsIgnoreCase("ok")) {
+                            LocalBaseResponseModel responseModel = s.get(i);
+                            if (responseModel.getStatus().equalsIgnoreCase("ok")) {
                                 Log.d("Status ok", "ok");
-
+                                if (model.getStatus_like() == 0) {
+                                    holder.tvRVHomeContentLike.setText(String.valueOf(like + 1));
+                                    holder.ivRVHomeContentLike.setImageResource(R.drawable.ic_love_fill);
+                                    model.setStatus_like(1);
+                                    model.setLike(String.valueOf(like + 1));
+                                } else {
+                                    holder.tvRVHomeContentLike.setText(String.valueOf(like - 1));
+                                    holder.ivRVHomeContentLike.setImageResource(R.drawable.ic_love_empty);
+                                    model.setStatus_like(0);
+                                    model.setLike(String.valueOf(like - 1));
+                                }
                             } else {
+                                Log.d("Lihat", "onResponse HomeContentAdapter : " + responseModel.getMessage());
+                                Log.d("Lihat", "onResponse HomeContentAdapter : " + responseModel.getStatus());
                             }
                         }
                     } else {
+                        Log.d("Lihat", "onResponse HomeContentAdapter : " + response.message());
+                        //Snackbar.make(findViewById(android.R.id.content), "Failed Connection To Server", Snackbar.LENGTH_LONG).show();
+                        //Crashlytics.logException(new Exception(response.message()));
                     }
                 } else {
+                    Log.d("Lihat", "onResponse HomeContentAdapter : " + response.message());
+                    //Snackbar.make(findViewById(android.R.id.content), "Failed Connection To Server", Snackbar.LENGTH_LONG).show();
+                    //Crashlytics.logException(new Exception(response.message()));
                 }
             }
 
@@ -255,7 +253,13 @@ public class HomeContentAdapter extends RecyclerView.Adapter<HomeContentAdapter.
             public void onFailure(Call<List<LocalBaseResponseModel>> call, Throwable t) {
                 //progressDialog.dismiss();
                 Log.d("Lihat", "onFailure HomeContentAdapter : " + t.getMessage());
-                //Snackbar.make(findViewById(android.R.id.content), "Failed Connection To Server", Snackbar.LENGTH_SHORT).show();
+                Snackbar.make(activity.findViewById(android.R.id.content), "Failed Connection To Server", Snackbar.LENGTH_SHORT).show();
+                /*Snackbar.make(findViewById(android.R.id.content), "Failed Connection To Server", Snackbar.LENGTH_SHORT).setAction("Reload", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+
+                    }
+                }).show();*/
                 //Crashlytics.logException(new Exception(t.getMessage()));
             }
         });
@@ -351,12 +355,13 @@ public class HomeContentAdapter extends RecyclerView.Adapter<HomeContentAdapter.
 
     public void changeTotalComment(int position, String totalComment) {
         Log.d("Lihat", "changeTotalComment HomeContentAdapter : " + totalComment);
-        if (totalComment.equalsIgnoreCase("0")) {
-            models.get(position).setTotal_comment("0");
-        } else {
-            models.get(position).setTotal_comment(totalComment);
+        if (!TextUtils.isEmpty(totalComment)) {
+            if (totalComment.equalsIgnoreCase("0")) {
+                models.get(position).setTotal_comment("0");
+            } else {
+                models.get(position).setTotal_comment(totalComment);
+            }
+            notifyItemChanged(position);
         }
-        notifyItemChanged(position);
     }
-
 }

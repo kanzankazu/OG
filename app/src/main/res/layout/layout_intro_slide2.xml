@@ -37,7 +37,7 @@
             android:layout_marginTop="20dp"
             android:paddingLeft="@dimen/slide_padding"
             android:paddingRight="@dimen/slide_padding"
-            android:text="Like a personalized tour guide in your pocket, instantly organized all your new_event plans in one."
+            android:text="Like a personalized tour guide in your pocket, instantly organized all your event plans in one."
             android:textAlignment="center"
             android:textColor="@android:color/white"
             android:textSize="@dimen/slide_desc" />

@@ -18,6 +18,7 @@ import com.bumptech.glide.request.target.SimpleTarget;
 import com.gandsoft.openguide.API.APIresponse.UserData.UserListEventResponseModel;
 import com.gandsoft.openguide.R;
 import com.gandsoft.openguide.database.SQLiteHelper;
+import com.gandsoft.openguide.support.AppUtil;
 import com.gandsoft.openguide.support.InputValidUtil;
 import com.gandsoft.openguide.support.NetworkUtil;
 import com.gandsoft.openguide.support.PictureUtil;
@@ -55,19 +56,13 @@ public class ChangeEventPastAdapter extends RecyclerView.Adapter<ChangeEventPast
         UserListEventResponseModel model = models.get(position);
         if (model.getStatus().equalsIgnoreCase("PAST EVENT")) {
 
-            String imageUrlPathLogo;
-            String imageUrlPathBack;
-            if (NetworkUtil.isConnected((Activity) parent)) {
-                imageUrlPathBack = model.getBackground();
-                imageUrlPathLogo = model.getLogo();
-            } else {
-                imageUrlPathBack = model.getBackground_local();
-                imageUrlPathLogo = model.getLogo_local();
-
-            }
+            String imageUrlPathBack = AppUtil.validationStringImageIcon((Activity) parent, model.getBackground(), model.getBackground_local(), true);
+            String imageUrlPathLogo = AppUtil.validationStringImageIcon((Activity) parent, model.getLogo(), model.getLogo_local(), true);
             Glide.with((Activity) parent)
                     .load(InputValidUtil.isLinkUrl(imageUrlPathBack) ? imageUrlPathBack : new File(imageUrlPathBack))
                     .asBitmap()
+                    .placeholder(R.drawable.template_account_og)
+                    .error(R.drawable.template_account_og)
                     .skipMemoryCache(false)
                     .diskCacheStrategy(DiskCacheStrategy.NONE)
                     .into(new SimpleTarget<Bitmap>() {
@@ -75,7 +70,7 @@ public class ChangeEventPastAdapter extends RecyclerView.Adapter<ChangeEventPast
                         public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
                             holder.ivListChangeEventBackgroundfvbi.setImageBitmap(resource);
                             if (NetworkUtil.isConnected((Activity) parent)) {
-                                String imageCachePath = PictureUtil.saveImageLogoBackIcon(resource, model.getEvent_id() + "_Background_image");
+                                String imageCachePath = PictureUtil.saveImageLogoBackIcon((Activity) parent, resource, model.getEvent_id() + "_Background_image");
                                 holder.db.saveEventBackgroundPicture(imageCachePath, accountid, model.getEvent_id());
                             }
 
@@ -84,14 +79,16 @@ public class ChangeEventPastAdapter extends RecyclerView.Adapter<ChangeEventPast
             Glide.with((Activity) parent)
                     .load(InputValidUtil.isLinkUrl(imageUrlPathLogo) ? imageUrlPathLogo : new File(imageUrlPathLogo))
                     .asBitmap()
+                    .placeholder(R.drawable.gallery_potrait)
+                    .error(R.drawable.template_account_og)
                     .skipMemoryCache(false)
                     .diskCacheStrategy(DiskCacheStrategy.NONE)
                     .into(new SimpleTarget<Bitmap>() {
                         @Override
                         public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
                             holder.ivListChangeEventLogofvbi.setImageBitmap(resource);
-                            if (NetworkUtil.isConnected((Activity)parent)){
-                                String imageCachePath = PictureUtil.saveImageLogoBackIcon(resource, model.getEvent_id() + "_Logo_image");
+                            if (NetworkUtil.isConnected((Activity) parent)) {
+                                String imageCachePath = PictureUtil.saveImageLogoBackIcon((Activity) parent, resource, model.getEvent_id() + "_Logo_image");
                                 holder.db.saveEventLogoPicture(imageCachePath, accountid, model.getEvent_id());
                             }
 

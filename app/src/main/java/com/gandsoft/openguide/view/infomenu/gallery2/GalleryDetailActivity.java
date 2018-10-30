@@ -4,9 +4,11 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -26,11 +28,15 @@ import com.gandsoft.openguide.API.APIresponse.LocalBaseResponseModel;
 import com.gandsoft.openguide.IConfig;
 import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
-import com.gandsoft.openguide.view.main.fragments.aHomeActivityInFragment.aHomePostCommentActivity;
 import com.gandsoft.openguide.database.SQLiteHelper;
+import com.gandsoft.openguide.support.AppUtil;
+import com.gandsoft.openguide.support.InputValidUtil;
+import com.gandsoft.openguide.support.NetworkUtil;
 import com.gandsoft.openguide.support.PictureUtil;
 import com.gandsoft.openguide.support.SessionUtil;
+import com.gandsoft.openguide.view.main.fragments.aHomeActivityInFragment.aHomePostCommentActivity;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -110,7 +116,7 @@ public class GalleryDetailActivity extends AppCompatActivity {
         ArrayList<String> imageList = new ArrayList<>();
         for (int i = 0; i < models.size(); i++) {
             GalleryImageModel q = models.get(i);
-            imageList.add(q.getImage_posted());
+            imageList.add(NetworkUtil.isConnected(getApplicationContext()) ? q.getImage_posted() : TextUtils.isEmpty(q.getImage_posted_local()) ? q.getImage_posted() : !PictureUtil.isFileExists(q.getImage_posted_local()) ? q.getImage_posted() : q.getImage_posted_local());
         }
 
         mGalleryDetailPagerAdapter = new GalleryDetailPagerAdapter(imageList, mViewPager);
@@ -141,16 +147,19 @@ public class GalleryDetailActivity extends AppCompatActivity {
         ibDetailGalleryDownloadFilefvbi.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Glide.with(getApplicationContext())
-                        .load(model.getImage_posted())
-                        .asBitmap()
-                        .into(new SimpleTarget<Bitmap>() {
-                            @Override
-                            public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
-                                PictureUtil.saveImageToPicture(GalleryDetailActivity.this, resource, db.getOneListEvent(eventId, accountId).getTitle(), model.getId());
-                            }
-                        });
-
+                if (NetworkUtil.isConnected(getApplicationContext())) {
+                    Glide.with(getApplicationContext())
+                            .load(model.getImage_posted())
+                            .asBitmap()
+                            .into(new SimpleTarget<Bitmap>() {
+                                @Override
+                                public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+                                    PictureUtil.saveImageToPicture(GalleryDetailActivity.this, resource, db.getOneListEvent(eventId, accountId).getTitle(), model.getId());
+                                }
+                            });
+                } else {
+                    Snackbar.make(findViewById(android.R.id.content), "Check you connection", Snackbar.LENGTH_SHORT).show();
+                }
             }
         });
 
@@ -169,9 +178,11 @@ public class GalleryDetailActivity extends AppCompatActivity {
         tvDetailGalleryLikefvbi.setText(model.getLike());
         tvDetailGalleryUsernamefvbi.setText(model.getUsername());
         tvDetailGalleryCaptionfvbi.setText(model.getCaption());
+        String s = AppUtil.validationStringImageIcon(GalleryDetailActivity.this, model.getImage_icon(), model.getImage_icon_local(), false);
         Glide.with(getApplicationContext())
-                .load(model.getImage_icon())
+                .load(InputValidUtil.isLinkUrl(s) ? s : new File(s))
                 .asBitmap()
+                .placeholder(R.drawable.template_account_og)
                 .into(new SimpleTarget<Bitmap>() {
                     @Override
                     public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
@@ -179,6 +190,7 @@ public class GalleryDetailActivity extends AppCompatActivity {
                         ivDetailGalleryIconfvbi.setImageBitmap(bitmap);
                     }
                 });
+
         if (model.getStatus_like() != 0) {
             ivDetailGalleryLikefvbi.setImageResource(R.drawable.ic_love_fill);
         } else {
@@ -194,19 +206,11 @@ public class GalleryDetailActivity extends AppCompatActivity {
         llDetailGalleryLikefvbi.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                int iLike = Integer.parseInt(model.getLike());
-                if (model.getStatus_like() == 0) {
-                    tvDetailGalleryLikefvbi.setText(String.valueOf(iLike + 1));
-                    ivDetailGalleryLikefvbi.setImageResource(R.drawable.ic_love_fill);
-                    model.setStatus_like(1);
-                    model.setLike(String.valueOf(iLike + 1));
-                    postLike(model.getLike(), model);
+                if (NetworkUtil.isConnected(getApplicationContext())) {
+                    int iLike = Integer.parseInt(model.getLike());
+                    postLike(model.getLike(), model, iLike);
                 } else {
-                    tvDetailGalleryLikefvbi.setText(String.valueOf(iLike - 1));
-                    ivDetailGalleryLikefvbi.setImageResource(R.drawable.ic_love_empty);
-                    model.setStatus_like(0);
-                    model.setLike(String.valueOf(iLike - 1));
-                    postLike(model.getLike(), model);
+                    Snackbar.make(findViewById(android.R.id.content), "Check you connection", Snackbar.LENGTH_SHORT).show();
                 }
             }
         });
@@ -220,29 +224,39 @@ public class GalleryDetailActivity extends AppCompatActivity {
     }
 
     private void moveToAHomeComment(GalleryImageModel model, int position) {
-        ArrayList<HomeContentCommentModelParcelable> dataParam = new ArrayList<>();
-        HomeContentCommentModelParcelable mode = new HomeContentCommentModelParcelable();
-        mode.setId(model.getId());
-        mode.setLike(model.getLike());
-        mode.setAccount_id(model.getAccount_id());
-        mode.setTotal_comment(model.getTotal_comment());
-        mode.setStatus_like(model.getStatus_like());
-        mode.setUsername(model.getUsername());
-        mode.setImage_icon(model.getImage_icon());
-        mode.setImage_posted(model.getImage_posted());
-        if (dataParam.size() > 0) {
-            dataParam.clear();
-            dataParam.add(mode);
+        if (NetworkUtil.isConnected(getApplicationContext())) {
+            ArrayList<HomeContentCommentModelParcelable> dataParam = new ArrayList<>();
+            HomeContentCommentModelParcelable mode = new HomeContentCommentModelParcelable();
+            mode.setId(model.getId());
+            mode.setLike(model.getLike());
+            mode.setAccount_id(model.getAccount_id());
+            mode.setTotal_comment(model.getTotal_comment());
+            mode.setStatus_like(model.getStatus_like());
+            mode.setUsername(model.getUsername());
+            //mode.setJabatan(model.getJabatan());
+            //mode.setDate_created(model.getDate_created());
+            mode.setImage_icon(model.getImage_icon());
+            mode.setImage_icon_local(model.getImage_icon_local());
+            mode.setImage_posted(model.getImage_posted());
+            mode.setImage_posted_local(model.getImage_posted_local());
+            //mode.setKeterangan(model.getKeterangan());
+            //mode.setNew_event(model.getNew_event());
+            if (dataParam.size() > 0) {
+                dataParam.clear();
+                dataParam.add(mode);
+            } else {
+                dataParam.add(mode);
+            }
+            Intent intent = new Intent(this, aHomePostCommentActivity.class);
+            intent.putParcelableArrayListExtra(ISeasonConfig.INTENT_PARAM, dataParam);
+            intent.putExtra(ISeasonConfig.INTENT_PARAM2, position);
+            startActivityForResult(intent, REQ_CODE_COMMENT);
         } else {
-            dataParam.add(mode);
+            Snackbar.make(findViewById(android.R.id.content), "Check you connection", Snackbar.LENGTH_SHORT).show();
         }
-        Intent intent = new Intent(this, aHomePostCommentActivity.class);
-        intent.putParcelableArrayListExtra(ISeasonConfig.INTENT_PARAM, dataParam);
-        intent.putExtra(ISeasonConfig.INTENT_PARAM2, position);
-        startActivityForResult(intent, REQ_CODE_COMMENT);
     }
 
-    public void postLike(String likes, GalleryImageModel model) {
+    public void postLike(String likes, GalleryImageModel model, int iLike) {
         HomeContentPostLikeRequestModel requestModel = new HomeContentPostLikeRequestModel();
         requestModel.setAccount_id(accountId);
         requestModel.setEvent_id(eventId);
@@ -262,24 +276,52 @@ public class GalleryDetailActivity extends AppCompatActivity {
                     List<LocalBaseResponseModel> s = response.body();
                     if (s.size() == 1) {
                         for (int i = 0; i < s.size(); i++) {
-                            LocalBaseResponseModel model = s.get(i);
-                            if (model.getStatus().equalsIgnoreCase("ok")) {
+                            LocalBaseResponseModel responseModel = s.get(i);
+                            if (responseModel.getStatus().equalsIgnoreCase("ok")) {
                                 Log.d("Status ok", "ok");
-
+                                if (model.getStatus_like() == 0) {
+                                    tvDetailGalleryLikefvbi.setText(String.valueOf(iLike + 1));
+                                    ivDetailGalleryLikefvbi.setImageResource(R.drawable.ic_love_fill);
+                                    model.setStatus_like(1);
+                                    model.setLike(String.valueOf(iLike + 1));
+                                } else {
+                                    tvDetailGalleryLikefvbi.setText(String.valueOf(iLike - 1));
+                                    ivDetailGalleryLikefvbi.setImageResource(R.drawable.ic_love_empty);
+                                    model.setStatus_like(0);
+                                    model.setLike(String.valueOf(iLike - 1));
+                                }
                             } else {
+                                Log.d("Lihat", "onResponse GalleryDetailActivity : " + responseModel.getStatus());
+                                Log.d("Lihat", "onResponse GalleryDetailActivity : " + responseModel.getMessage());
                             }
                         }
                     } else {
+                        Log.d("Lihat", "onResponse HomeContentAdapter : " + response.message());
+                        //Snackbar.make(findViewById(android.R.id.content), "Failed Connection To Server", Snackbar.LENGTH_LONG).show();
+                        //Crashlytics.logException(new Exception(response.message()));
                     }
                 } else {
+                    Log.d("Lihat", "onResponse HomeContentAdapter : " + response.message());
+                    //Snackbar.make(findViewById(android.R.id.content), "Failed Connection To Server", Snackbar.LENGTH_LONG).show();
+                    //Crashlytics.logException(new Exception(response.message()));
                 }
             }
 
             @Override
             public void onFailure(Call<List<LocalBaseResponseModel>> call, Throwable t) {
-                Log.d("tmassage", String.valueOf(t));
+                //progressDialog.dismiss();
+                Log.d("Lihat", "onFailure GalleryDetailActivity : " + t.getMessage());
+                Snackbar.make(findViewById(android.R.id.content), "Failed Connection To Server", Snackbar.LENGTH_SHORT).show();
+                /*Snackbar.make(findViewById(android.R.id.content), "Failed Connection To Server", Snackbar.LENGTH_SHORT).setAction("Reload", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+
+                    }
+                }).show();*/
+                //Crashlytics.logException(new Exception(t.getMessage()));
             }
         });
+
     }
 
     @Override

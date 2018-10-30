@@ -94,7 +94,7 @@ public class dAboutFragment extends Fragment {
                     public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
                         ivAboutLogofvbi.setImageBitmap(resource);
                         if (NetworkUtil.isConnected(getActivity())) {
-                            String imageCachePath = PictureUtil.saveImageLogoBackIcon(resource, eventId + "_Logo_image");
+                            String imageCachePath = PictureUtil.saveImageLogoBackIcon(getActivity(), resource, eventId + "_Logo_image");
                             db.saveEventLogoPicture(imageCachePath, accountId, eventId);
                         }
                     }
@@ -111,7 +111,7 @@ public class dAboutFragment extends Fragment {
                     public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
                         ivAboutBackgroundfvbi.setImageBitmap(resource);
                         if (NetworkUtil.isConnected(getActivity())) {
-                            String imageCachePath = PictureUtil.saveImageLogoBackIcon(resource, eventId + "_Background_image");
+                            String imageCachePath = PictureUtil.saveImageLogoBackIcon(getActivity(), resource, eventId + "_Background_image");
                             db.saveEventBackgroundPicture(imageCachePath, accountId, eventId);
                         }
                     }

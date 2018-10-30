@@ -4,7 +4,9 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -17,9 +19,18 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.SimpleTarget;
 import com.gandsoft.openguide.API.APIresponse.UserData.GetListUserEventResponseModel;
 import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
+import com.gandsoft.openguide.database.SQLiteHelper;
+import com.gandsoft.openguide.support.AppUtil;
+import com.gandsoft.openguide.support.InputValidUtil;
+import com.gandsoft.openguide.support.ListArrayUtil;
+import com.gandsoft.openguide.support.NetworkUtil;
+import com.gandsoft.openguide.support.PictureUtil;
+import com.gandsoft.openguide.support.SessionUtil;
 import com.gandsoft.openguide.view.AccountActivity;
 import com.gandsoft.openguide.view.ChangeEventActivity;
 import com.gandsoft.openguide.view.infomenu.aMapActivity;
@@ -33,11 +44,8 @@ import com.gandsoft.openguide.view.infomenu.hFeedbackActivity;
 import com.gandsoft.openguide.view.main.BaseHomeActivity;
 import com.gandsoft.openguide.view.main.adapter.InfoListViewAdapter;
 import com.gandsoft.openguide.view.main.adapter.InfoListviewModel;
-import com.gandsoft.openguide.database.SQLiteHelper;
-import com.gandsoft.openguide.support.AppUtil;
-import com.gandsoft.openguide.support.ListArrayUtil;
-import com.gandsoft.openguide.support.SessionUtil;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -149,23 +157,33 @@ public class eInfoFragment extends Fragment implements InfoListViewAdapter.ListA
     }
 
     private void updateUi() {
-        ArrayList<GetListUserEventResponseModel> models = db.getUserData(accountId);
-        if (models != null) {
-            for (int i = 0; i < models.size(); i++) {
-                GetListUserEventResponseModel model = models.get(i);
-                tvInfoUserNamefvbi.setText(model.getFull_name());
-                tvInfoUserPhoneNumberfvbi.setText(model.getPhone_number());
+        GetListUserEventResponseModel model = db.getOneUserData(accountId);
+        tvInfoUserNamefvbi.setText(model.getFull_name());
+        tvInfoUserPhoneNumberfvbi.setText(model.getAccount_id());
 
-                Glide.with(getActivity().getApplicationContext())
-                        .load(model.getImage_url())
-                        .placeholder(R.drawable.template_account_og)
-                        .error(R.drawable.template_account_og)
-                        .skipMemoryCache(false)
-                        .diskCacheStrategy(DiskCacheStrategy.NONE)
-                        .into(ivInfoUserImagefvbi);
-
-            }
+        String imageUrlPath;
+        if (NetworkUtil.isConnected(getActivity())) {
+            imageUrlPath = model.getImage_url();
+        } else {
+            imageUrlPath = model.getImage_url_local();
         }
+        Glide.with(getActivity())
+                .load(InputValidUtil.isLinkUrl(imageUrlPath) ? imageUrlPath : new File(imageUrlPath))
+                .asBitmap()
+                .placeholder(R.drawable.template_account_og)
+                .error(R.drawable.template_account_og)
+                .skipMemoryCache(false)
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .into(new SimpleTarget<Bitmap>() {
+                    @Override
+                    public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+                        ivInfoUserImagefvbi.setImageBitmap(resource);
+                        if (NetworkUtil.isConnected(getActivity())) {
+                            String imageCachePath = PictureUtil.saveImageLogoBackIcon(getActivity(), resource, "user_image" + accountId);
+                            db.saveUserPicture(imageCachePath, accountId);
+                        }
+                    }
+                });
     }
 
     @Override
@@ -211,11 +229,16 @@ public class eInfoFragment extends Fragment implements InfoListViewAdapter.ListA
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (REQ_CODE_INBOX == requestCode && resultCode == getActivity().RESULT_OK) {
-            //int intExtra = data.getIntExtra(ISeasonConfig.INTENT_PARAM_BACK, 0);
-            //adapter.notifyDataSetChanged();
-            getActivity().recreate();
+            ((BaseHomeActivity) getActivity()).updateInbox();
+            adapter.notifyDataSetChanged();
         } else if (REQ_CODE_ACCOUNT == requestCode && resultCode == getActivity().RESULT_OK) {
-            getActivity().recreate();
+            new Handler().postDelayed(new Runnable() {
+                public void run() {
+                    if (NetworkUtil.isConnected(getActivity())){
+                        ((BaseHomeActivity) getActivity()).recreate();
+                    }
+                }
+            }, 500);
         }
     }
 }
