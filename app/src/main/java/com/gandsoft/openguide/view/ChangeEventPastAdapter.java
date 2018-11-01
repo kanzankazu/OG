@@ -3,6 +3,7 @@ package com.gandsoft.openguide.view;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.graphics.Bitmap;
+import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,10 +34,12 @@ public class ChangeEventPastAdapter extends RecyclerView.Adapter<ChangeEventPast
     private ChangeEventPastHook parent;
     private List<UserListEventResponseModel> models = new ArrayList<>();
     private final String accountid;
+    private boolean isLoading;
 
-    public ChangeEventPastAdapter(Activity parent, List<UserListEventResponseModel> items, String accountid) {
+    public ChangeEventPastAdapter(Activity parent, List<UserListEventResponseModel> items, String accountid, boolean isLoading) {
         this.models = items;
         this.accountid = accountid;
+        this.isLoading = isLoading;
         try {
             this.parent = (ChangeEventPastHook) parent;
         } catch (Exception e) {
@@ -58,42 +61,67 @@ public class ChangeEventPastAdapter extends RecyclerView.Adapter<ChangeEventPast
 
             String imageUrlPathBack = AppUtil.validationStringImageIcon((Activity) parent, model.getBackground(), model.getBackground_local(), true);
             String imageUrlPathLogo = AppUtil.validationStringImageIcon((Activity) parent, model.getLogo(), model.getLogo_local(), true);
-            Glide.with((Activity) parent)
-                    .load(InputValidUtil.isLinkUrl(imageUrlPathBack) ? imageUrlPathBack : new File(imageUrlPathBack))
-                    .asBitmap()
-                    .placeholder(R.drawable.template_account_og)
-                    .error(R.drawable.template_account_og)
-                    .skipMemoryCache(false)
-                    .diskCacheStrategy(DiskCacheStrategy.NONE)
-                    .into(new SimpleTarget<Bitmap>() {
-                        @Override
-                        public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
-                            holder.ivListChangeEventBackgroundfvbi.setImageBitmap(resource);
-                            if (NetworkUtil.isConnected((Activity) parent)) {
-                                String imageCachePath = PictureUtil.saveImageLogoBackIcon((Activity) parent, resource, model.getEvent_id() + "_Background_image");
-                                holder.db.saveEventBackgroundPicture(imageCachePath, accountid, model.getEvent_id());
-                            }
 
-                        }
-                    });
             Glide.with((Activity) parent)
-                    .load(InputValidUtil.isLinkUrl(imageUrlPathLogo) ? imageUrlPathLogo : new File(imageUrlPathLogo))
-                    .asBitmap()
-                    .placeholder(R.drawable.gallery_potrait)
-                    .error(R.drawable.template_account_og)
-                    .skipMemoryCache(false)
+                    .load(R.drawable.load)
+                    .asGif()
+                    .crossFade()
                     .diskCacheStrategy(DiskCacheStrategy.NONE)
-                    .into(new SimpleTarget<Bitmap>() {
-                        @Override
-                        public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
-                            holder.ivListChangeEventLogofvbi.setImageBitmap(resource);
-                            if (NetworkUtil.isConnected((Activity) parent)) {
-                                String imageCachePath = PictureUtil.saveImageLogoBackIcon((Activity) parent, resource, model.getEvent_id() + "_Logo_image");
-                                holder.db.saveEventLogoPicture(imageCachePath, accountid, model.getEvent_id());
-                            }
+                    .skipMemoryCache(false)
+                    .dontAnimate()
+                    .into(holder.ivListChangeEventBackgroundfvbi);
+            Glide.with((Activity) parent)
+                    .load(R.drawable.load)
+                    .asGif()
+                    .crossFade()
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .skipMemoryCache(false)
+                    .dontAnimate()
+                    .into(holder.ivListChangeEventLogofvbi);
 
-                        }
-                    });
+            new Handler().postDelayed(new Runnable() {
+                public void run() {
+                    //code here
+                    Glide.with((Activity) parent)
+                            .load(InputValidUtil.isLinkUrl(imageUrlPathBack) ? imageUrlPathBack : new File(imageUrlPathBack))
+                            .asBitmap()
+                            .placeholder(R.drawable.load)
+                            .error(R.drawable.template_account_og)
+                            .diskCacheStrategy(DiskCacheStrategy.NONE)
+                            .skipMemoryCache(false)
+                            .dontAnimate()
+                            .into(new SimpleTarget<Bitmap>() {
+                                @Override
+                                public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+                                    holder.ivListChangeEventBackgroundfvbi.setImageBitmap(resource);
+                                    if (NetworkUtil.isConnected((Activity) parent)) {
+                                        String imageCachePath = PictureUtil.saveImageLogoBackIcon((Activity) parent, resource, model.getEvent_id() + "_Background_image");
+                                        holder.db.saveEventBackgroundPicture(imageCachePath, accountid, model.getEvent_id());
+                                    }
+
+                                }
+                            });
+                    Glide.with((Activity) parent)
+                            .load(InputValidUtil.isLinkUrl(imageUrlPathLogo) ? imageUrlPathLogo : new File(imageUrlPathLogo))
+                            .asBitmap()
+                            .placeholder(R.drawable.load)
+                            .error(R.drawable.template_account_og)
+                            .diskCacheStrategy(DiskCacheStrategy.NONE)
+                            .skipMemoryCache(false)
+                            .dontAnimate()
+                            .into(new SimpleTarget<Bitmap>() {
+                                @Override
+                                public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+                                    holder.ivListChangeEventLogofvbi.setImageBitmap(resource);
+                                    if (NetworkUtil.isConnected((Activity) parent)) {
+                                        String imageCachePath = PictureUtil.saveImageLogoBackIcon((Activity) parent, resource, model.getEvent_id() + "_Logo_image");
+                                        holder.db.saveEventLogoPicture(imageCachePath, accountid, model.getEvent_id());
+                                    }
+
+                                }
+                            });
+                }
+            }, 500);
 
             holder.tvListChangeEventTitlefvbi.setText(model.getTitle());
             holder.tvListChangeEventDatefvbi.setText(model.getDate());
@@ -144,6 +172,7 @@ public class ChangeEventPastAdapter extends RecyclerView.Adapter<ChangeEventPast
     }
 
     public void replaceData(List<UserListEventResponseModel> datas) {
+        this.isLoading = isLoading;
         if (models.size() > 0) {
             models.clear();
             List<UserListEventResponseModel> ds = new ArrayList<>();
@@ -152,7 +181,7 @@ public class ChangeEventPastAdapter extends RecyclerView.Adapter<ChangeEventPast
                     ds.add(d);
                 }
             }
-            models = ds;
+            models.addAll(ds);
         } else {
             setData(datas);
         }

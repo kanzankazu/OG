@@ -371,7 +371,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         db.close();
     }
 
-    public ArrayList<GetListUserEventResponseModel> getUserData(String accountid) {
+    public ArrayList<GetListUserEventResponseModel> getAllUserData(String accountid) {
         ArrayList<GetListUserEventResponseModel> modelList = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.query(TableUserData, null, KEY_UserData_accountId + " = ? ", new String[]{accountid}, KEY_UserData_accountId, null, null);
@@ -502,7 +502,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         db.close();
     }
 
-    public ArrayList<UserWalletDataResponseModel> getListWalletData(String eventId, String accountId) {
+    public ArrayList<UserWalletDataResponseModel> getAllWalletData(String eventId, String accountId) {
         ArrayList<UserWalletDataResponseModel> modelList = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.query(TableWallet, null, KEY_Wallet_eventId + " = ? AND " + KEY_Wallet_accountId + " = ?", new String[]{eventId, accountId}, null, null, KEY_Wallet_sort);

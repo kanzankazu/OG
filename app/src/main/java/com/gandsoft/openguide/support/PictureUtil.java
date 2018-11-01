@@ -239,10 +239,10 @@ public class PictureUtil {
         File fdelete = new File(source_);
         if (fdelete.exists()) {
             if (fdelete.delete()) {
-                System.out.println("file Deleted :" + source_);
+                Log.d("Lihat", "removeImageFromPathFile PictureUtil : " + "file Deleted :" + source_);
                 return true;
             } else {
-                System.out.println("file not Deleted :" + source_);
+                Log.d("Lihat", "removeImageFromPathFile PictureUtil : " + "file not Deleted :" + source_);
                 return false;
             }
         }

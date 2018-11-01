@@ -56,7 +56,7 @@ public class GalleryDetailActivity extends AppCompatActivity {
 
     Toolbar toolbar;
 
-    private ImageViewTouchViewPager mViewPager;
+    private ViewPager mViewPager;
     private ScaleImageView zivDetailGalleryfvbi;
     private LinearLayout llDetailGalleryCommentfvbi, llDetailGalleryLikefvbi;
     private TextView tvDetailGalleryCommentfvbi, tvDetailGalleryClosefvbi, tvDetailGalleryLikefvbi, tvDetailGalleryUsernamefvbi, tvDetailGalleryCaptionfvbi;
@@ -82,7 +82,7 @@ public class GalleryDetailActivity extends AppCompatActivity {
 
     private void initComponent() {
         toolbar = (Toolbar) findViewById(R.id.tb_gallery_detail);
-        mViewPager = (ImageViewTouchViewPager) findViewById(R.id.vp_gallery_detail);
+        mViewPager = (ViewPager) findViewById(R.id.vp_gallery_detail);
 
         llDetailGalleryCommentfvbi = (LinearLayout) findViewById(R.id.llDetailGalleryComment);
         llDetailGalleryLikefvbi = (LinearLayout) findViewById(R.id.llDetailGalleryLike);
@@ -119,7 +119,7 @@ public class GalleryDetailActivity extends AppCompatActivity {
             imageList.add(NetworkUtil.isConnected(getApplicationContext()) ? q.getImage_posted() : TextUtils.isEmpty(q.getImage_posted_local()) ? q.getImage_posted() : !PictureUtil.isFileExists(q.getImage_posted_local()) ? q.getImage_posted() : q.getImage_posted_local());
         }
 
-        mGalleryDetailPagerAdapter = new GalleryDetailPagerAdapter(imageList, mViewPager);
+        mGalleryDetailPagerAdapter = new GalleryDetailPagerAdapter(GalleryDetailActivity.this, imageList, mViewPager);
         mViewPager.setPageTransformer(true, new DepthPageTransformer());
         mViewPager.setAdapter(mGalleryDetailPagerAdapter);
         mViewPager.setOffscreenPageLimit(0);

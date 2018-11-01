@@ -51,7 +51,7 @@ public class bWalletFragment extends Fragment {
             listWalletData = new ArrayList<>();
             Snackbar.make(getActivity().findViewById(android.R.id.content), "Empty Data", Snackbar.LENGTH_SHORT).show();
         } else {
-            listWalletData = db.getListWalletData(eventId, accountId);
+            listWalletData = db.getAllWalletData(eventId, accountId);
         }
 
         adapter = new WalletViewAdapter(getActivity(), getActivity(), listWalletData, eventId);

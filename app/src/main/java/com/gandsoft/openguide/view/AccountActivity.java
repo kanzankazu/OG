@@ -91,18 +91,17 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
     private CheckBox cbAccAggrementfvbi;
     private ImageButton ibAccClosefvbi, ibAccCamerafvbi, ibCalendarfvbi;
     private ImageView ivWrapPicfvbi;
+    private LinearLayout llWrapPicfvbi;
 
     private boolean isNewUser = false;
     private String accountId, eventId;
-    private String base64pic = "";
 
     private Spinner mySpinner;
     private Calendar myCalendar;
 
-    private Uri imageUri;
     private String imageFilePath;
-    private File imageFile;
-    private Uri imageFileUri;
+    private Uri imageUri;
+    private Bitmap bitmapCrop;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -168,6 +167,7 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
         cbAccAggrementfvbi = (CheckBox) findViewById(R.id.cbAccAggrement);
 
         ivWrapPicfvbi = (ImageView) findViewById(R.id.ivWrapPic);
+        llWrapPicfvbi = (LinearLayout) findViewById(R.id.llWrapPic);
 
         mySpinner = (Spinner) findViewById(R.id.spinGender);
     }
@@ -189,7 +189,7 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
         if (db.isDataTableValueNull(SQLiteHelper.TableUserData, SQLiteHelper.KEY_UserData_accountId, accountId)) {
             Snackbar.make(findViewById(android.R.id.content), "data kosong", Snackbar.LENGTH_SHORT).show();
         } else {
-            updateData(db.getUserData(accountId));
+            updateData(db.getAllUserData(accountId));
         }
 
         myCalendar = Calendar.getInstance();
@@ -203,7 +203,45 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
     private void initListener() {
         ibAccCamerafvbi.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                // Munculkan alert dialog apabila user ingin keluar aplikasi
+                llWrapPicfvbi.setVisibility(View.GONE);
+
+                getImageCamera();
+
+            }
+        });
+
+        llAccGenderfvbi.setOnClickListener(this);
+
+        DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+                myCalendar.set(Calendar.YEAR, year);
+                myCalendar.set(Calendar.MONTH, monthOfYear);
+                myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                updateLabel();
+            }
+
+        };
+        ibCalendarfvbi.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new DatePickerDialog(AccountActivity.this,
+                        date,
+                        myCalendar.get(Calendar.YEAR),
+                        myCalendar.get(Calendar.MONTH),
+                        myCalendar.get(Calendar.DAY_OF_MONTH))
+                        .show();
+            }
+
+        });
+
+        llAccSavefvbi.setOnClickListener(this);
+        tvSignOutSkipfvbi.setOnClickListener(this);
+        ibAccClosefvbi.setOnClickListener(this);
+    }
+
+    private void getImageCamera() {
+        /*// Munculkan alert dialog apabila user ingin keluar aplikasi
                 AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(AccountActivity.this);
                 alertDialogBuilder.setMessage("Select to get image?");
                 alertDialogBuilder.setPositiveButton("Camera",
@@ -247,52 +285,31 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
                         });
                 // Tampilkan alert dialog
                 AlertDialog alertDialog = alertDialogBuilder.create();
-                alertDialog.show();
+                alertDialog.show();*/
 
-                /*ContentValues values = new ContentValues();
-                values.put(MediaStore.Images.Media.TITLE, "New Picture");
-                values.put(MediaStore.Images.Media.DESCRIPTION, "From your Camera");
-                imageUri = getContentResolver().insert(
-                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
-                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
-                    intent.putExtra("android.intent.extras.LENS_FACING_FRONT", 1);
-                } else {
-                    intent.putExtra("android.intent.extras.CAMERA_FACING", 1);
-                }
-                startActivityForResult(intent, REQ_COD_CAMERA);*/
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
+            imageFilePath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/picture.jpg";
+            File imageFile = new File(imageFilePath);
+            Uri imageFileUri = Uri.fromFile(imageFile);
+            Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+            cameraIntent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, imageFileUri);
+            startActivityForResult(cameraIntent, REQ_COD_CAMERA_KITKAT);
+        } else {
+
+            ContentValues values = new ContentValues();
+            values.put(MediaStore.Images.Media.TITLE, "New Picture");
+            values.put(MediaStore.Images.Media.DESCRIPTION, "From your Camera");
+            imageUri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+                intent.putExtra("android.intent.extras.LENS_FACING_FRONT", 1);
+            } else {
+                intent.putExtra("android.intent.extras.CAMERA_FACING", 1);
             }
-        });
+            startActivityForResult(intent, REQ_COD_CAMERA);
+        }
 
-        llAccGenderfvbi.setOnClickListener(this);
-
-        DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
-            @Override
-            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                myCalendar.set(Calendar.YEAR, year);
-                myCalendar.set(Calendar.MONTH, monthOfYear);
-                myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-                updateLabel();
-            }
-
-        };
-        ibCalendarfvbi.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                new DatePickerDialog(getApplicationContext(),
-                        date,
-                        myCalendar.get(Calendar.YEAR),
-                        myCalendar.get(Calendar.MONTH),
-                        myCalendar.get(Calendar.DAY_OF_MONTH))
-                        .show();
-            }
-
-        });
-
-        llAccSavefvbi.setOnClickListener(this);
-        tvSignOutSkipfvbi.setOnClickListener(this);
-        ibAccClosefvbi.setOnClickListener(this);
     }
 
     private void updateData(ArrayList<GetListUserEventResponseModel> models) {
@@ -416,6 +433,7 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
         if (NetworkUtil.isConnected(getApplicationContext())) {
             UserUpdateRequestModel requestModel = new UserUpdateRequestModel();
             requestModel.setAccounsId(accountId);
+            String base64pic = PictureUtil.bitmapToBase64(bitmapCrop, Bitmap.CompressFormat.JPEG, 100);
             if (base64pic.isEmpty()) {
                 requestModel.setFileImageB641("");
             } else {
@@ -466,7 +484,7 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
 
                 @Override
                 public void onFailure(Call<List<UserUpdateResponseModel>> call, Throwable t) {
-                    Log.d("Lihat", "onFailure AccountActivity : " + t.getMessage());
+                    Log.e("Lihat", "onFailure AccountActivity : " + t.getMessage());
                     Snackbar.make(findViewById(android.R.id.content), "Failed to connect server", Snackbar.LENGTH_INDEFINITE).setAction("Reload", new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
@@ -531,30 +549,33 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == Activity.RESULT_OK && requestCode == REQ_COD_CAMERA) {
 
-            String imageurl = PictureUtil.getImagePathFromUri(this, imageUri);
+            imageFilePath = PictureUtil.getImagePathFromUri(this, imageUri);
             Glide.with(getApplicationContext())
-                    .load(new File(imageurl))
+                    .load(new File(imageFilePath))
                     .asBitmap()
+                    .placeholder(R.drawable.load)
+                    .error(R.drawable.template_account_og)
                     .diskCacheStrategy(DiskCacheStrategy.NONE)
                     .skipMemoryCache(false)
                     .into(new SimpleTarget<Bitmap>() {
                         @Override
                         public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
-                            Bitmap resizeImage = PictureUtil.resizeImageBitmap(resource, 1080);
-                            Uri uri = PictureUtil.getImageUriFromBitmap(getApplicationContext(), resizeImage);
+                            Bitmap resizeImage = PictureUtil.resizeImageBitmap(resource, 720);
+                            Uri uri = PictureUtil.getImageUriFromBitmap(getApplicationContext(), resource);
+                            imageFilePath = PictureUtil.getImagePathFromUri(AccountActivity.this, uri);
+                            Log.d("Lihat", "onResourceReady AccountActivity : " + imageFilePath);
 
                             Intent cropperIntent = PictureUtil.getCropperIntent(getApplicationContext(), uri, 720, 720);
                             startActivityForResult(cropperIntent, REQ_COD_CROP);
-
                         }
                     });
         } else if (resultCode == Activity.RESULT_OK && requestCode == REQ_COD_CAMERA_KITKAT) {
             BitmapFactory.Options bmpFactoryOptions = new BitmapFactory.Options();
             bmpFactoryOptions.inJustDecodeBounds = false;
 
-            Bitmap bitmap = BitmapFactory.decodeFile(imageFilePath, bmpFactoryOptions);
-            Bitmap resizeImageBitmap = PictureUtil.resizeImageBitmap(bitmap, 720);
-            Uri imageUriFromBitmap = PictureUtil.getImageUriFromBitmap(getApplicationContext(), resizeImageBitmap);
+            Bitmap resource = BitmapFactory.decodeFile(imageFilePath, bmpFactoryOptions);
+            Bitmap resizeImageBitmap = PictureUtil.resizeImageBitmap(resource, 720);
+            Uri imageUriFromBitmap = PictureUtil.getImageUriFromBitmap(getApplicationContext(), resource);
 
             Intent cropperIntent = PictureUtil.getCropperIntent(getApplicationContext(), imageUriFromBitmap, 720, 720);
             startActivityForResult(cropperIntent, REQ_COD_CROP);
@@ -563,9 +584,9 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
             Uri selectedImageUri = data.getData();
             if (Build.VERSION.SDK_INT < 19) {
                 String selectedImagePath = PictureUtil.getImagePathFromUri2(AccountActivity.this, selectedImageUri);
-                Bitmap bitmap = BitmapFactory.decodeFile(selectedImagePath);
 
-                Bitmap storedata = PictureUtil.resizeImageBitmap(bitmap, 720);
+                Bitmap resource = BitmapFactory.decodeFile(selectedImagePath);
+                Bitmap resizeImageBitmap = PictureUtil.resizeImageBitmap(resource, 720);
 
                 Intent cropperIntent = PictureUtil.getCropperIntent(getApplicationContext(), selectedImageUri, 720, 720);
                 startActivityForResult(cropperIntent, REQ_COD_CROP);
@@ -583,18 +604,18 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
                     startActivityForResult(cropperIntent, REQ_COD_CROP);
 
                 } catch (IOException e) {
-                    Log.d("Lihat", "onActivityResult AccountActivity : " + e.getMessage());
+                    Log.e("Lihat", "onActivityResult AccountActivity : " + e.getMessage());
                 }
             }
         } else if (requestCode == REQ_COD_CROP && resultCode == Activity.RESULT_OK) {
+            if (PictureUtil.isFileExists(imageFilePath)) {
+                PictureUtil.removeImageFromPathFile(imageFilePath);
+            }
+
+            llWrapPicfvbi.setVisibility(View.VISIBLE);
             Bundle bundle = data.getExtras();
-            Bitmap bitmap = (Bitmap) bundle.getParcelable("data");
-            Bitmap resizeImageBitmap = PictureUtil.resizeImageBitmap(bitmap, 360);
-            ivWrapPicfvbi.setImageBitmap(resizeImageBitmap);
-            base64pic = PictureUtil.bitmapToBase64(resizeImageBitmap, Bitmap.CompressFormat.JPEG, 100);
-
-            //ivWrapPicfvbi.setImageBitmap(((Bitmap) bundle.getParcelable("data")));
-
+            bitmapCrop = (Bitmap) bundle.getParcelable("data");
+            ivWrapPicfvbi.setImageBitmap(bitmapCrop);
         }
     }
 

@@ -1,7 +1,11 @@
 package com.gandsoft.openguide.view.infomenu.gallery2;
 
+import android.app.Activity;
 import android.graphics.Bitmap;
+import android.os.Handler;
 import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -11,6 +15,7 @@ import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.gandsoft.openguide.support.InputValidUtil;
 import com.gandsoft.openguide.support.PictureUtil;
+import com.github.chrisbanes.photoview.PhotoView;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -18,17 +23,20 @@ import java.util.ArrayList;
 import static com.gandsoft.openguide.App.getContext;
 
 public class GalleryDetailPagerAdapter extends PagerAdapter {
-    ArrayList<String> imageList;
-    private ImageViewTouchViewPager mViewPager;
+    private Activity _activity;
+    ArrayList<String> _imagePaths;
+    private ViewPager _mViewPager;
+    private LayoutInflater inflater;
 
-    GalleryDetailPagerAdapter(ArrayList<String> imageList, ImageViewTouchViewPager mViewPager) {
-        this.imageList = imageList;
-        this.mViewPager = mViewPager;
+    GalleryDetailPagerAdapter(Activity activity, ArrayList<String> _imagePaths, ViewPager mViewPager) {
+        this._activity = activity;
+        this._imagePaths = _imagePaths;
+        this._mViewPager = mViewPager;
     }
 
     @Override
     public int getCount() {
-        return (null != imageList) ? imageList.size() : 0;
+        return this._imagePaths.size();
     }
 
     @Override
@@ -39,18 +47,23 @@ public class GalleryDetailPagerAdapter extends PagerAdapter {
     @Override
     public View instantiateItem(ViewGroup container, int position) {
 
-        ScaleImageView photoView = new ScaleImageView(container.getContext());
+        /*inflater = (LayoutInflater) _activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View viewLayout = inflater.inflate(R.layout.layout_fullscreen_image, container, false);*/
+
+        PhotoView photoView = new PhotoView(container.getContext());
+//        TouchImageView photoView = new TouchImageView(container.getContext());
         Glide.with(getContext())
-                .load(InputValidUtil.isLinkUrl(imageList.get(position)) ? imageList.get(position) : new File(imageList.get(position)))
+                .load(InputValidUtil.isLinkUrl(_imagePaths.get(position)) ? _imagePaths.get(position) : new File(_imagePaths.get(position)))
                 .asBitmap()
                 .fitCenter()
                 .into(new SimpleTarget<Bitmap>() {
                     @Override
                     public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
-                        photoView.setImageBitmap(PictureUtil.resizeImageBitmap(resource, 720));
+                        photoView.setImageBitmap(PictureUtil.resizeImageBitmap(resource, 1080));
                     }
                 });
         container.addView(photoView, LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+
         return photoView;
     }
 
@@ -58,38 +71,4 @@ public class GalleryDetailPagerAdapter extends PagerAdapter {
     public void destroyItem(ViewGroup container, int position, Object object) {
         container.removeView((View) object);
     }
-
-    /*public ArrayList<GalleryImageModel> data = new ArrayList<>();
-
-    public GalleryDetailPagerAdapter(FragmentManager fm, ArrayList<GalleryImageModel> data) {
-        super(fm);
-        this.data = data;
-    }
-
-    @Override
-    public Fragment getItem(int position) {
-
-        return GalleryDetailPagerFragment.newInstance(position,
-                data.get(position).getId(),
-                data.get(position).getLike(),
-                data.get(position).getAccount_id(),
-                data.get(position).getTotal_comment(),
-                data.get(position).getStatus_like(),
-                data.get(position).getUsername(),
-                data.get(position).getCaption(),
-                data.get(position).getImage_posted(),
-                data.get(position).getImage_icon(),
-                data.get(position).getImage_postedLocal(),
-                data.get(position).getImage_icon_local());
-    }
-
-    @Override
-    public int getCount() {
-        return data.size();
-    }
-
-    @Override
-    public CharSequence getPageTitle(int position) {
-        return data.get(position).getUsername();
-    }*/
 }

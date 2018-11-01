@@ -238,7 +238,7 @@ public class eInfoFragment extends Fragment implements InfoListViewAdapter.ListA
                         ((BaseHomeActivity) getActivity()).recreate();
                     }
                 }
-            }, 500);
+            }, 2000);
         }
     }
 }

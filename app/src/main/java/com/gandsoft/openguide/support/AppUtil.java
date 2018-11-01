@@ -77,9 +77,9 @@ public class AppUtil {
 
     public static String validationStringImageIcon(Activity context, String s1Url, String s2Path, boolean isPreferUrl) {
         if (isPreferUrl) {
-            return NetworkUtil.isConnected(context) ? s1Url : TextUtils.isEmpty(s2Path) ? s1Url : !PictureUtil.isFileExists(s2Path) ? s1Url : s2Path;
+            return NetworkUtil.isConnected(context) ? s1Url : !validationStringLocalExist(s2Path) ? s1Url : s2Path;
         } else {
-            return TextUtils.isEmpty(s2Path) ? s1Url : PictureUtil.isFileExists(s2Path) ? s2Path : s1Url;
+            return !validationStringLocalExist(s2Path) ? s1Url : s2Path;
         }
     }
 

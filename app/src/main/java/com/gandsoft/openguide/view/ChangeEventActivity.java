@@ -66,9 +66,9 @@ import com.gandsoft.openguide.support.AppUtil;
 import com.gandsoft.openguide.support.DeviceDetailUtil;
 import com.gandsoft.openguide.support.InputValidUtil;
 import com.gandsoft.openguide.support.NetworkUtil;
-import com.gandsoft.openguide.support.NotifUtil;
 import com.gandsoft.openguide.support.PictureUtil;
 import com.gandsoft.openguide.support.SessionUtil;
+import com.gandsoft.openguide.support.SystemUtil;
 import com.gandsoft.openguide.view.main.BaseHomeActivity;
 import com.gandsoft.openguide.view.services.MyService;
 
@@ -102,8 +102,7 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
     private List<UserListEventResponseModel> menuUi = new ArrayList<>();
     private ChangeEventOnGoingAdapter adapterOnGoing;
     private ChangeEventPastAdapter adapterPast;
-    private boolean isRefresh;
-    private boolean isMove;
+    private ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -241,11 +240,6 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
     }
 
     private void initContent() {
-        initRecycleView();
-        getAPIUserDataValidation();
-        customText(ceTVInfofvbi);
-
-        //getversion
         try {
             appVersionName = getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
             appVersionCode = String.valueOf(getPackageManager().getPackageInfo(getPackageName(), 0).versionCode);
@@ -256,7 +250,20 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
         appPkg = this.getBaseContext().getPackageName();
         ceTVVersionAppfvbi.setText(getString(R.string.app_name) + " - v " + appVersionName + "." + appVersionCode + "" + "\n Powered by Gandsoft");
 
-        getAPIVerivyUser();
+        initRecycleView();
+        getAPIUserDataValidation();
+        customText(ceTVInfofvbi);
+    }
+
+    private void initRecycleView() {
+        adapterOnGoing = new ChangeEventOnGoingAdapter(this, menuUi, accountid, false);
+        adapterPast = new ChangeEventPastAdapter(this, menuUi, accountid, false);
+        ceRVOngoingEventfvbi.setNestedScrollingEnabled(false);
+        ceRVPastEventfvbi.setNestedScrollingEnabled(false);
+        ceRVOngoingEventfvbi.setAdapter(adapterOnGoing);
+        ceRVPastEventfvbi.setAdapter(adapterPast);
+        ceRVOngoingEventfvbi.setLayoutManager(new LinearLayoutManager(this));
+        ceRVPastEventfvbi.setLayoutManager(new LinearLayoutManager(this));
     }
 
     private void initListener() {
@@ -265,7 +272,6 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
         srlChangeEventActivityfvbi.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                isRefresh = true;
                 getAPIUserDataValidation();
             }
         });
@@ -273,61 +279,33 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
         ceIVUserPicfvbi.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d("Lihat", "onClick ChangeEventActivity DeviceDetailUtil.getAllDataPhone: " + DeviceDetailUtil.getAllDataPhone(ChangeEventActivity.this));
-                Log.d("Lihat", "onClick ChangeEventActivity DeviceDetailUtil.getAllDataPhone2: " + DeviceDetailUtil.getAllDataPhone2(ChangeEventActivity.this));
-
-                Log.d("Lihat", "onClick ChangeEventActivity NetworkUtil.isNetworkAvailable : " + NetworkUtil.isNetworkAvailable(ChangeEventActivity.this));
-                Log.d("Lihat", "onClick ChangeEventActivity NetworkUtil.isOnline1 : " + NetworkUtil.isOnline1());
-                Log.d("Lihat", "onClick ChangeEventActivity NetworkUtil.isOnline2 : " + NetworkUtil.isOnline2());
-                Log.d("Lihat", "onClick ChangeEventActivity NetworkUtil.isInternetConnect : " + NetworkUtil.isInternetConnect(ChangeEventActivity.this));
-
                 if (NetworkUtil.isConnectedIsOnline(ChangeEventActivity.this)) {
-                    getAPIVerivyUser();
+                    getAPICheckStatusLoginUser();
                 }
-
-                NotifUtil.lll(ChangeEventActivity.this, ChangeEventActivity.class);
             }
         });
     }
 
     private void getAPIUserDataValidation() {
-        if (!isRefresh) {
-            if (srlChangeEventActivityfvbi.isRefreshing()) {
-                srlChangeEventActivityfvbi.setRefreshing(false);
-            }
+        if (srlChangeEventActivityfvbi.isRefreshing()) {
+            srlChangeEventActivityfvbi.setRefreshing(false);
+        }
 
-            if (db.isDataTableValueMultipleNull(TableUserData, SQLiteHelper.KEY_UserData_accountId, SQLiteHelper.KEY_UserData_phoneNumber, accountid, accountid)) {
-                Snackbar.make(findViewById(android.R.id.content), "Event data empty", Snackbar.LENGTH_SHORT).show();
-
-                getAPIUserDataDo(accountid);
-            } else {
-                Snackbar.make(findViewById(android.R.id.content), "Show event data", Snackbar.LENGTH_SHORT).show();
-                updateRecycleView(db.getAllListEvent(accountid));
-                updateUserInfo(db.getOneUserData(accountid));
-
-                getAPIUserDataDo(accountid);
-            }
-
-
-            /*if (db.isDataTableValueMultipleNull(SQLiteHelper.TableUserData, SQLiteHelper.KEY_UserData_accountId, SQLiteHelper.KEY_UserData_phoneNumber, accountid, accountid)) {
-                Snackbar.make(findViewById(android.R.id.content), "Data Kosong, bersiap mengmbil data", Snackbar.LENGTH_LONG).show();
-                if (NetworkUtil.isConnected(this)) {
-                    getAPIUserDataDo(accountid);
-                }
-            } else {
-                updateRecycleView(db.getAllListEvent(accountid));
-                updateUserInfo(db.getUserData(accountid));
-                Snackbar.make(findViewById(android.R.id.content), "Show event data Offline", Snackbar.LENGTH_LONG).show();
-            }*/
+        if (db.getAllUserData(accountid).size() == 0) {
+            progressDialog = SystemUtil.showProgress(ChangeEventActivity.this, "Get data from server", "Please Wait...");
+            getAPIUserDataDo(accountid);
         } else {
-            if (srlChangeEventActivityfvbi.isRefreshing()) {
-                srlChangeEventActivityfvbi.setRefreshing(false);
-            }
-            isRefresh = false;
-            //updateUserInfo(db.getUserData(accountid));
-            //getAPIUserDataDo(accountid);
+            getAPIUserDataDoLocal(accountid);
 
-            initContent();
+            if (NetworkUtil.isConnected(getApplicationContext())) {
+                new Handler().postDelayed(new Runnable() {
+                    public void run() {
+                        //code here
+                        progressDialog = SystemUtil.showProgress(ChangeEventActivity.this, "Get data from server", "Please Wait...");
+                        getAPIUserDataDo(accountid);
+                    }
+                }, 1000);
+            }
 
         }
 
@@ -340,24 +318,17 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
             requestModel.setDbver(IConfig.DB_Version);
 
             requestModel.setVersion_data(IConfig.DB_Version);
-        /*if (db.isDataTableKeyNull(SQLiteHelper.TableUserData, SQLiteHelper.KEY_UserData_versionData)) {
-            requestModel.setVersion_data(IConfig.DB_Version);
-        } else {
-            requestModel.setVersion_data(db.getVersionDataIdUser(accountId));
-        }*/
-
-            ProgressDialog progressDialog = new ProgressDialog(this);
-            progressDialog.setCancelable(false);
-            progressDialog.setMessage("Please Wait...");
-            progressDialog.setTitle("Get data from server");
-            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            progressDialog.show();
+            /*if (db.isDataTableKeyNull(SQLiteHelper.TableUserData, SQLiteHelper.KEY_UserData_versionData)) {
+                requestModel.setVersion_data(IConfig.DB_Version);
+            } else {
+                requestModel.setVersion_data(db.getVersionDataIdUser(accountId));
+            }*/
 
             //code here
             API.doGetListUserEventRet(requestModel).enqueue(new Callback<List<GetListUserEventResponseModel>>() {
                 @Override
                 public void onResponse(Call<List<GetListUserEventResponseModel>> call, Response<List<GetListUserEventResponseModel>> response) {
-                    progressDialog.dismiss();
+                    SystemUtil.hideProgress(progressDialog, 0);
                     if (response.isSuccessful()) {
                         List<GetListUserEventResponseModel> getListUserEventResponseModels = response.body();
                         for (int i = 0; i < getListUserEventResponseModels.size(); i++) {
@@ -391,12 +362,8 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
                             } else {
                                 Snackbar.make(findViewById(android.R.id.content), model.getVersion_data(), Snackbar.LENGTH_LONG).show();
                             }
-
-                            if (i == (getListUserEventResponseModels.size() - 1)) {
-                                updateUserInfo(db.getOneUserData(accountid));
-                                updateRecycleView(db.getAllListEvent(accountId));
-                            }
                         }
+                        getAPIUserDataDoLocal(accountId);
                     } else {
                         Snackbar.make(findViewById(android.R.id.content), response.message(), Snackbar.LENGTH_LONG).show();
                     }
@@ -404,7 +371,7 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
 
                 @Override
                 public void onFailure(Call<List<GetListUserEventResponseModel>> call, Throwable t) {
-                    progressDialog.dismiss();
+                    SystemUtil.hideProgress(progressDialog, 0);
                     Log.d("Lihat", "onFailure ChangeEventActivity : " + t.getMessage());
                     Snackbar.make(findViewById(android.R.id.content), "Tidak Dapat terhubung dengan server", Snackbar.LENGTH_INDEFINITE).setAction("Reload", new View.OnClickListener() {
                         @Override
@@ -412,24 +379,30 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
                             getAPIUserDataValidation();
                         }
                     }).show();
-                    if (!db.isDataTableValueMultipleNull(TableUserData, SQLiteHelper.KEY_UserData_accountId, SQLiteHelper.KEY_UserData_phoneNumber, accountId, accountId)) {
-                        updateRecycleView(db.getAllListEvent(accountId));
-                        updateUserInfo(db.getOneUserData(accountId));
+                    if (!db.isDataTableValueMultipleNull(TableUserData, KEY_UserData_accountId, SQLiteHelper.KEY_UserData_phoneNumber, accountId, accountId)) {
+                        getAPIUserDataDoLocal(accountId);
                     }
                 }
             });
         } else {
+            progressDialog.dismiss();
             Snackbar.make(findViewById(android.R.id.content), "Check you connection", Snackbar.LENGTH_SHORT).show();
         }
 
     }
 
-    private void getAPIEventDataValid(String eventId) {
+    private void getAPIUserDataDoLocal(String accountId) {
+        updateUserInfo(db.getOneUserData(accountId));
+        updateRecycleView(db.getAllListEvent(accountId));
+    }
+
+    private void getAPITheEventDataValid(String eventId) {
 
         if (db.isDataTableValueNull(SQLiteHelper.TableTheEvent, SQLiteHelper.Key_The_Event_EventId, eventId)) {
             Snackbar.make(findViewById(android.R.id.content), "Event data empty", Snackbar.LENGTH_SHORT).show();
             if (NetworkUtil.isConnected(this)) {
-                getAPIEventDataDo(eventId, accountid);
+                progressDialog = SystemUtil.showProgress(ChangeEventActivity.this, "Please Wait...", "Get data from server");
+                getAPITheEventDataDo(eventId, accountid, false);
             }
         } else {
             Snackbar.make(findViewById(android.R.id.content), "Show event data", Snackbar.LENGTH_SHORT).show();
@@ -441,7 +414,7 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
         }
     }
 
-    private void getAPIEventDataDo(String eventId, String accountId) {
+    private void getAPITheEventDataDo(String eventId, String accountId, boolean isLoading) {
         EventDataRequestModel requestModel = new EventDataRequestModel();
         requestModel.setDbver("3");
         requestModel.setId_event(eventId);
@@ -454,18 +427,10 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
             requestModel.setVersion_data(db.getVersionDataIdEvent(event_Id));
         }*/
 
-        ProgressDialog progressDialog = new ProgressDialog(this);
-        progressDialog.setCancelable(false);
-        progressDialog.setMessage("Please Wait...");
-        progressDialog.setTitle("Get data from server");
-        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        // show it
-        progressDialog.show();
-
         API.doEventDataRet(requestModel).enqueue(new Callback<List<EventDataResponseModel>>() {
             @Override
             public void onResponse(Call<List<EventDataResponseModel>> call, Response<List<EventDataResponseModel>> response) {
-                progressDialog.dismiss();
+                SystemUtil.hideProgress(progressDialog, 0);
                 if (response.isSuccessful()) {
                     List<EventDataResponseModel> eventDataResponseModels = response.body();
                     for (int i = 0; i < eventDataResponseModels.size(); i++) {
@@ -582,14 +547,14 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
                         }
                     }
                 } else {
-                    Log.d("Lihat", "onFailure ChangeEventActivity : " + response.message());
+                    Log.d("Lihat", "onResponse ChangeEventActivity : " + response.message());
                     Snackbar.make(findViewById(android.R.id.content), "Failed Connection To Server", Snackbar.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<List<EventDataResponseModel>> call, Throwable t) {
-                progressDialog.dismiss();
+                SystemUtil.hideProgress(progressDialog, 0);
                 Log.d("Lihat", "onFailure ChangeEventActivity : " + t.getMessage());
                 Snackbar.make(findViewById(android.R.id.content), "Failed Connection To Server", Snackbar.LENGTH_SHORT).show();
                 /*Snackbar.make(findViewById(android.R.id.content), "Failed Connection To Server", Snackbar.LENGTH_SHORT).setAction("Reload", new View.OnClickListener() {
@@ -604,7 +569,7 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
         });
     }
 
-    private void getAPIVerivyUser() {
+    private void getAPICheckStatusLoginUser() {
         VerificationStatusLoginAppUserRequestModel requestModel = new VerificationStatusLoginAppUserRequestModel();
         requestModel.setAccount_id(accountid);
         requestModel.setDevice_app(DeviceDetailUtil.getAllDataPhone2(ChangeEventActivity.this));
@@ -613,7 +578,6 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
         API.doVerificationStatusLoginAppUserRet(requestModel).enqueue(new Callback<List<VerificationStatusLoginAppUserResponseModel>>() {
             @Override
             public void onResponse(Call<List<VerificationStatusLoginAppUserResponseModel>> call, Response<List<VerificationStatusLoginAppUserResponseModel>> response) {
-                //progressDialog.dismiss();
                 if (response.isSuccessful()) {
                     List<VerificationStatusLoginAppUserResponseModel> model = response.body();
                     if (model.size() == 0) {
@@ -628,7 +592,6 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
 
             @Override
             public void onFailure(Call<List<VerificationStatusLoginAppUserResponseModel>> call, Throwable t) {
-                //progressDialog.dismiss();
                 Log.d("Lihat", "onFailure ChangeEventActivity : " + t.getMessage());
                 //Snackbar.make(findViewById(android.R.id.content), "Failed Connection To Server", Snackbar.LENGTH_SHORT).show();
                 //Crashlytics.logException(new Exception(t.getMessage()));
@@ -636,15 +599,45 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
         });
     }
 
-    private void initRecycleView() {
-        adapterOnGoing = new ChangeEventOnGoingAdapter(this, menuUi, accountid);
-        adapterPast = new ChangeEventPastAdapter(this, menuUi, accountid);
-        ceRVOngoingEventfvbi.setNestedScrollingEnabled(false);
-        ceRVPastEventfvbi.setNestedScrollingEnabled(false);
-        ceRVOngoingEventfvbi.setAdapter(adapterOnGoing);
-        ceRVPastEventfvbi.setAdapter(adapterPast);
-        ceRVOngoingEventfvbi.setLayoutManager(new LinearLayoutManager(this));
-        ceRVPastEventfvbi.setLayoutManager(new LinearLayoutManager(this));
+    private void updateUserInfo(GetListUserEventResponseModel model) {
+        ceTVUserNamefvbi.setText(model.getFull_name());
+        ceTVUserIdfvbi.setText(model.getAccount_id());
+
+        String stringImageIcon = AppUtil.validationStringImageIcon(ChangeEventActivity.this, model.getImage_url(), model.getImage_url_local(), true);
+
+        Glide.with(this)
+                .load(R.drawable.load)
+                .asGif()
+                .crossFade()
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .skipMemoryCache(false)
+                .into(ceIVUserPicfvbi);
+
+        new Handler().postDelayed(new Runnable() {
+            public void run() {
+                //code here
+                Glide.with(getApplicationContext())
+                        .load(InputValidUtil.isLinkUrl(stringImageIcon) ? stringImageIcon : new File(stringImageIcon))
+                        .asBitmap()
+                        .error(R.drawable.template_account_og)
+                        .diskCacheStrategy(DiskCacheStrategy.NONE)
+                        .skipMemoryCache(false)
+                        .dontAnimate()
+                        .into(new SimpleTarget<Bitmap>() {
+                            @Override
+                            public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+                                ceIVUserPicfvbi.setImageBitmap(resource);
+                                if (NetworkUtil.isConnected(getApplicationContext())) {
+                                    String imageCachePath = PictureUtil.saveImageLogoBackIcon(getApplicationContext(), resource, "user_image" + accountid);
+                                    db.saveUserPicture(imageCachePath, accountid);
+                                }
+                            }
+                        });
+            }
+        }, 500);
+
+
+
     }
 
     private void updateRecycleView(List<UserListEventResponseModel> models) {
@@ -657,35 +650,14 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
                 ceLLOngoingEventfvbi.setVisibility(View.VISIBLE);
             }
         }
-        adapterPast.replaceData(models);
-        adapterOnGoing.replaceData(models);
-    }
 
-    private void updateUserInfo(GetListUserEventResponseModel model) {
-        ceTVUserNamefvbi.setText(model.getFull_name());
-        ceTVUserIdfvbi.setText(model.getAccount_id());
-
-        String s = AppUtil.validationStringImageIcon(ChangeEventActivity.this, model.getImage_url(), model.getImage_url_local(), false);
-        Log.d("Lihat", "updateUserInfo ChangeEventActivity : " + s);
-        Log.d("Lihat", "updateUserInfo ChangeEventActivity : " + model.getImage_url());
-        Log.d("Lihat", "updateUserInfo ChangeEventActivity : " + model.getImage_url_local());
-        Glide.with(getApplicationContext())
-                .load(InputValidUtil.isLinkUrl(s) ? s : new File(s))
-                .asBitmap()
-                .placeholder(R.drawable.loading)
-                .error(R.drawable.template_account_og)
-                .skipMemoryCache(false)
-                .diskCacheStrategy(DiskCacheStrategy.NONE)
-                .into(new SimpleTarget<Bitmap>() {
-                    @Override
-                    public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
-                        ceIVUserPicfvbi.setImageBitmap(resource);
-                        if (NetworkUtil.isConnected(getApplicationContext())) {
-                            String imageCachePath = PictureUtil.saveImageLogoBackIcon(getApplicationContext(), resource, "user_image" + accountid);
-                            db.saveUserPicture(imageCachePath, accountid);
-                        }
-                    }
-                });
+        new Handler().postDelayed(new Runnable() {
+            public void run() {
+                //code here
+                adapterPast.replaceData(models);
+                adapterOnGoing.replaceData(models);
+            }
+        }, 500);
     }
 
     @SuppressLint("NewApi")
@@ -711,7 +683,7 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
 
     @Override
     public void gotoEvent(String eventId) {
-        getAPIEventDataValid(eventId);
+        getAPITheEventDataValid(eventId);
     }
 
     private void customText(TextView view) {
@@ -754,14 +726,7 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQ_CODE_ACCOUNT && resultCode == RESULT_OK) {
-            new Handler().postDelayed(new Runnable() {
-                public void run() {
-                    //code here
-                    isRefresh = true;
-                    getAPIUserDataValidation();
-                }
-            }, 500);
-
+            getAPIUserDataValidation();
         }
     }
 }

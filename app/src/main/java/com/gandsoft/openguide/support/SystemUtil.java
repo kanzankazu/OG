@@ -2,13 +2,17 @@ package com.gandsoft.openguide.support;
 
 import android.app.Activity;
 import android.app.ActivityManager;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.Paint;
+import android.os.Handler;
+import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.text.InputFilter;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -177,6 +181,30 @@ public class SystemUtil {
         }
 
         return temp;
+
+    }
+
+    public static ProgressDialog showProgress(Context context, @Nullable String message, @Nullable String title) {
+        ProgressDialog progressDialog = new ProgressDialog(context);
+        progressDialog.setCancelable(false);
+        if (!TextUtils.isEmpty(message)) {
+            progressDialog.setMessage(message);
+        }
+        if (!TextUtils.isEmpty(title)) {
+            progressDialog.setTitle(title);
+        }
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressDialog.show();
+        return progressDialog;
+    }
+
+    public static void hideProgress(ProgressDialog progressDialog, @Nullable int delay) {
+        new Handler().postDelayed(new Runnable() {
+            public void run() {
+                //code here
+                progressDialog.dismiss();
+            }
+        }, delay == 0 ? 2000 : delay);
 
     }
 
