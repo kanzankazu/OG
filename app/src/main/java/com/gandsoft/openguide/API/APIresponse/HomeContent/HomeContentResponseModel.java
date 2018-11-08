@@ -1,6 +1,10 @@
 package com.gandsoft.openguide.API.APIresponse.HomeContent;
 
 public class HomeContentResponseModel {
+    public int number;
+    public String event_Id;
+    public String new_event;
+    public boolean is_new;
     private String id;
     private String like;
     private String account_id;
@@ -12,16 +16,9 @@ public class HomeContentResponseModel {
     private String image_posted;
     private String image_posted_local;
     private String caption;
-
     private String keterangan;
     private String date_created;
     private String jabatan;
-
-    public int number;
-    public String event_Id;
-
-    public String new_event;
-    public boolean is_new;
 
     public HomeContentResponseModel() {
     }

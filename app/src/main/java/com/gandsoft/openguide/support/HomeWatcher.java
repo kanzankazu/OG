@@ -35,6 +35,12 @@ public class HomeWatcher {
         }
     }
 
+    public interface OnHomePressedListener {
+        public void onHomePressed();
+
+        public void onHomeLongPressed();
+    }
+
     class InnerReceiver extends BroadcastReceiver {
         final String SYSTEM_DIALOG_REASON_KEY = "reason";
         final String SYSTEM_DIALOG_REASON_GLOBAL_ACTIONS = "globalactions";
@@ -58,11 +64,5 @@ public class HomeWatcher {
                 }
             }
         }
-    }
-
-    public interface OnHomePressedListener {
-        public void onHomePressed();
-
-        public void onHomeLongPressed();
     }
 }

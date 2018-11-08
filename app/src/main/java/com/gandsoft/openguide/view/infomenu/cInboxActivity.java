@@ -15,9 +15,9 @@ import android.view.MenuItem;
 import com.gandsoft.openguide.API.APIresponse.Event.EventCommitteeNote;
 import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
-import com.gandsoft.openguide.view.infomenu.adapter.InboxRecViewAdapter;
 import com.gandsoft.openguide.database.SQLiteHelper;
 import com.gandsoft.openguide.support.SessionUtil;
+import com.gandsoft.openguide.view.infomenu.adapter.InboxRecViewAdapter;
 
 import java.util.ArrayList;
 
@@ -42,7 +42,6 @@ public class cInboxActivity extends AppCompatActivity {
         initContent();
         initListener();
     }
-
 
     public void initCheck() {
         if (SessionUtil.checkIfExist(ISeasonConfig.KEY_ACCOUNT_ID)) {
@@ -91,7 +90,7 @@ public class cInboxActivity extends AppCompatActivity {
     public void onBackPressed() {
         Intent intent = new Intent();
         setResult(Activity.RESULT_OK, intent);
-        intent.putExtra(ISeasonConfig.INTENT_PARAM_BACK,db.getCommiteHasBeenOpened(eventId));
+        intent.putExtra(ISeasonConfig.INTENT_PARAM_BACK, db.getCommiteHasBeenOpened(eventId));
         finish();
     }
 }

@@ -1,8 +1,6 @@
 package com.gandsoft.openguide.API.APIresponse.Event;
 
-
-
-public class EventScheduleListDateDataList  {
+public class EventScheduleListDateDataList {
     public String id;
     public String waktu;
     public String schedule_title;

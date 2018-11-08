@@ -1,11 +1,10 @@
 package com.gandsoft.openguide.API.APIresponse.Event;
 
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class EventDataResponseModel  {
+public class EventDataResponseModel {
 
     public String status;
     public String event_id;

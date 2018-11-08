@@ -1,11 +1,7 @@
 package com.gandsoft.openguide.support;
 
 import android.annotation.SuppressLint;
-import android.text.InputFilter;
-import android.text.InputType;
 import android.text.TextUtils;
-import android.view.View;
-import android.widget.EditText;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,6 +10,7 @@ import java.util.stream.Collectors;
 
 public class ListArrayUtil {
 
+    public static String strSeparator = "__,__";
 
     //int
     public static Integer[] convertListIntegertToIntegerArray(List<Integer> result) {
@@ -74,8 +71,6 @@ public class ListArrayUtil {
     public static String[] convertStringToArrayString1(String s) {
         return s.split("‚=‚");
     }
-
-    public static String strSeparator = "__,__";
 
     public static String convertStringArrayToString2(String[] array) {
         String str = "";
@@ -176,6 +171,5 @@ public class ListArrayUtil {
         }
         return integers;
     }
-
 
 }

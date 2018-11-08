@@ -19,10 +19,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class bWalletFragment extends Fragment {
-    private RecyclerView rvWalletfvbi;
     SQLiteHelper db;
-    private String accountId, eventId;
     WalletViewAdapter adapter;
+    private RecyclerView rvWalletfvbi;
+    private String accountId, eventId;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {

@@ -75,98 +75,6 @@ public class LoadMoreRecyclerView extends RecyclerView {
         this.mIsLoadingMore = loadingMore;
     }
 
-    public interface LoadMoreListener {
-        void onLoadMore();
-    }
-
-    public class AutoLoadAdapter extends Adapter<ViewHolder> {
-
-        private Adapter mInternalAdapter;
-
-        private boolean mIsHeaderEnable;
-        private int mHeaderResId;
-
-        public AutoLoadAdapter(Adapter adapter) {
-            mInternalAdapter = adapter;
-            mIsHeaderEnable = false;
-        }
-
-        @Override
-        public int getItemViewType(int position) {
-            int headerPosition = 0;
-            int footerPosition = getItemCount() - 1;
-
-            if (headerPosition == position && mIsHeaderEnable && mHeaderResId > 0) {
-                return TYPE_HEADER;
-            }
-            if (footerPosition == position && mIsFooterEnable) {
-                return TYPE_FOOTER;
-            }
-            if (getLayoutManager() instanceof LinearLayoutManager) {
-                return TYPE_LIST;
-            } else if (getLayoutManager() instanceof StaggeredGridLayoutManager) {
-                return TYPE_STAGGER;
-            } else {
-                return TYPE_NORMAL;
-            }
-        }
-
-        @Override
-        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            if (viewType == TYPE_HEADER) {
-                return new HeaderViewHolder(LayoutInflater.from(parent.getContext()).inflate(mHeaderResId, parent, false));
-            }
-            if (viewType == TYPE_FOOTER) {
-                return new FooterViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_home_foot_loading, parent, false));
-            } else { // type normal
-                return mInternalAdapter.onCreateViewHolder(parent, viewType);
-            }
-        }
-
-        public class FooterViewHolder extends ViewHolder {
-
-            public FooterViewHolder(View itemView) {
-                super(itemView);
-            }
-        }
-
-        public class HeaderViewHolder extends ViewHolder {
-            public HeaderViewHolder(View itemView) {
-                super(itemView);
-            }
-        }
-
-        @Override
-        public void onBindViewHolder(ViewHolder holder, int position) {
-            int type = getItemViewType(position);
-            if (type != TYPE_FOOTER && type != TYPE_HEADER) {
-                mInternalAdapter.onBindViewHolder(holder, position);
-            }
-        }
-
-        /**
-         * 需要计算上加载更多和添加的头部俩个
-         *
-         * @return
-         */
-        @Override
-        public int getItemCount() {
-            int count = mInternalAdapter.getItemCount();
-            if (mIsFooterEnable) count++;
-            if (mIsHeaderEnable) count++;
-
-            return count;
-        }
-
-        public void setHeaderEnable(boolean enable) {
-            mIsHeaderEnable = enable;
-        }
-
-        public void addHeaderView(int resId) {
-            mHeaderResId = resId;
-        }
-    }
-
     @Override
     public void setAdapter(Adapter adapter) {
         if (adapter != null) {
@@ -309,5 +217,97 @@ public class LoadMoreRecyclerView extends RecyclerView {
         setAutoLoadMoreEnable(hasMore);
         getAdapter().notifyItemRemoved(itemCount);
         mIsLoadingMore = false;
+    }
+
+    public interface LoadMoreListener {
+        void onLoadMore();
+    }
+
+    public class AutoLoadAdapter extends Adapter<ViewHolder> {
+
+        private Adapter mInternalAdapter;
+
+        private boolean mIsHeaderEnable;
+        private int mHeaderResId;
+
+        public AutoLoadAdapter(Adapter adapter) {
+            mInternalAdapter = adapter;
+            mIsHeaderEnable = false;
+        }
+
+        @Override
+        public int getItemViewType(int position) {
+            int headerPosition = 0;
+            int footerPosition = getItemCount() - 1;
+
+            if (headerPosition == position && mIsHeaderEnable && mHeaderResId > 0) {
+                return TYPE_HEADER;
+            }
+            if (footerPosition == position && mIsFooterEnable) {
+                return TYPE_FOOTER;
+            }
+            if (getLayoutManager() instanceof LinearLayoutManager) {
+                return TYPE_LIST;
+            } else if (getLayoutManager() instanceof StaggeredGridLayoutManager) {
+                return TYPE_STAGGER;
+            } else {
+                return TYPE_NORMAL;
+            }
+        }
+
+        @Override
+        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            if (viewType == TYPE_HEADER) {
+                return new HeaderViewHolder(LayoutInflater.from(parent.getContext()).inflate(mHeaderResId, parent, false));
+            }
+            if (viewType == TYPE_FOOTER) {
+                return new FooterViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_home_foot_loading, parent, false));
+            } else { // type normal
+                return mInternalAdapter.onCreateViewHolder(parent, viewType);
+            }
+        }
+
+        @Override
+        public void onBindViewHolder(ViewHolder holder, int position) {
+            int type = getItemViewType(position);
+            if (type != TYPE_FOOTER && type != TYPE_HEADER) {
+                mInternalAdapter.onBindViewHolder(holder, position);
+            }
+        }
+
+        /**
+         * 需要计算上加载更多和添加的头部俩个
+         *
+         * @return
+         */
+        @Override
+        public int getItemCount() {
+            int count = mInternalAdapter.getItemCount();
+            if (mIsFooterEnable) count++;
+            if (mIsHeaderEnable) count++;
+
+            return count;
+        }
+
+        public void setHeaderEnable(boolean enable) {
+            mIsHeaderEnable = enable;
+        }
+
+        public void addHeaderView(int resId) {
+            mHeaderResId = resId;
+        }
+
+        public class FooterViewHolder extends ViewHolder {
+
+            public FooterViewHolder(View itemView) {
+                super(itemView);
+            }
+        }
+
+        public class HeaderViewHolder extends ViewHolder {
+            public HeaderViewHolder(View itemView) {
+                super(itemView);
+            }
+        }
     }
 }

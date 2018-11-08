@@ -93,7 +93,7 @@
                         android:adjustViewBounds="true"
                         android:scaleType="fitCenter"
                         android:visibility="visible"
-                        android:src="@drawable/gallery_potrait"/>
+                        android:src="@drawable/template_account_og"/>
 
                     <org.sufficientlysecure.htmltextview.HtmlTextView
                         android:id="@+id/tvCommentTsKeterangan"

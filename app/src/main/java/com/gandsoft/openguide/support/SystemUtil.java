@@ -184,7 +184,7 @@ public class SystemUtil {
 
     }
 
-    public static ProgressDialog showProgress(Context context, @Nullable String message, @Nullable String title) {
+    public static ProgressDialog showProgress(Context context, @Nullable String message, @Nullable String title, boolean cancelable) {
         ProgressDialog progressDialog = new ProgressDialog(context);
         progressDialog.setCancelable(false);
         if (!TextUtils.isEmpty(message)) {
@@ -206,6 +206,10 @@ public class SystemUtil {
             }
         }, delay == 0 ? 2000 : delay);
 
+    }
+
+    public static boolean isProgressShown(ProgressDialog progressDialog) {
+        return progressDialog.isShowing();
     }
 
 }

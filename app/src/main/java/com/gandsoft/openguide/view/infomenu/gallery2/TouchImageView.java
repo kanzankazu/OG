@@ -13,25 +13,22 @@ import android.widget.ImageView;
 
 public class TouchImageView extends ImageView {
 
-    Matrix matrix;
-
     // We can be in one of these 3 states
     static final int NONE = 0;
     static final int DRAG = 1;
     static final int ZOOM = 2;
+    static final int CLICK = 3;
+    protected float origWidth, origHeight;
+    Matrix matrix;
     int mode = NONE;
-
     // Remember some things for zooming
     PointF last = new PointF();
     PointF start = new PointF();
     float minScale = 1f;
     float maxScale = 3f;
     float[] m;
-
     int viewWidth, viewHeight;
-    static final int CLICK = 3;
     float saveScale = 1f;
-    protected float origWidth, origHeight;
     int oldMeasuredWidth, oldMeasuredHeight;
 
     ScaleGestureDetector mScaleDetector;
@@ -108,40 +105,6 @@ public class TouchImageView extends ImageView {
 
     public void setMaxZoom(float x) {
         maxScale = x;
-    }
-
-    private class ScaleListener extends
-            ScaleGestureDetector.SimpleOnScaleGestureListener {
-        @Override
-        public boolean onScaleBegin(ScaleGestureDetector detector) {
-            mode = ZOOM;
-            return true;
-        }
-
-        @Override
-        public boolean onScale(ScaleGestureDetector detector) {
-            float mScaleFactor = detector.getScaleFactor();
-            float origScale = saveScale;
-            saveScale *= mScaleFactor;
-            if (saveScale > maxScale) {
-                saveScale = maxScale;
-                mScaleFactor = maxScale / origScale;
-            } else if (saveScale < minScale) {
-                saveScale = minScale;
-                mScaleFactor = minScale / origScale;
-            }
-
-            if (origWidth * saveScale <= viewWidth
-                    || origHeight * saveScale <= viewHeight)
-                matrix.postScale(mScaleFactor, mScaleFactor, viewWidth / 2,
-                        viewHeight / 2);
-            else
-                matrix.postScale(mScaleFactor, mScaleFactor,
-                        detector.getFocusX(), detector.getFocusY());
-
-            fixTrans();
-            return true;
-        }
     }
 
     void fixTrans() {
@@ -230,5 +193,39 @@ public class TouchImageView extends ImageView {
             setImageMatrix(matrix);
         }
         fixTrans();
+    }
+
+    private class ScaleListener extends
+            ScaleGestureDetector.SimpleOnScaleGestureListener {
+        @Override
+        public boolean onScaleBegin(ScaleGestureDetector detector) {
+            mode = ZOOM;
+            return true;
+        }
+
+        @Override
+        public boolean onScale(ScaleGestureDetector detector) {
+            float mScaleFactor = detector.getScaleFactor();
+            float origScale = saveScale;
+            saveScale *= mScaleFactor;
+            if (saveScale > maxScale) {
+                saveScale = maxScale;
+                mScaleFactor = maxScale / origScale;
+            } else if (saveScale < minScale) {
+                saveScale = minScale;
+                mScaleFactor = minScale / origScale;
+            }
+
+            if (origWidth * saveScale <= viewWidth
+                    || origHeight * saveScale <= viewHeight)
+                matrix.postScale(mScaleFactor, mScaleFactor, viewWidth / 2,
+                        viewHeight / 2);
+            else
+                matrix.postScale(mScaleFactor, mScaleFactor,
+                        detector.getFocusX(), detector.getFocusY());
+
+            fixTrans();
+            return true;
+        }
     }
 }

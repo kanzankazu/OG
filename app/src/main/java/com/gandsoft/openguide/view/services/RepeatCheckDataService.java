@@ -43,7 +43,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MyService extends Service {
+public class RepeatCheckDataService extends Service {
 
     SQLiteHelper db = new SQLiteHelper(this);
 
@@ -88,9 +88,9 @@ public class MyService extends Service {
             @Override
             public void run() {
                 if (NetworkUtil.isConnected(getApplicationContext())) {
-                    Log.d("Lihat", "run MyService : " + eventId + "," + accountId);
-                    Log.d("Lihat", "run MyService : " + "connected" + count);
-                    Log.d("Lihat", "run MyService : " + count++);
+                    Log.d("Lihat", "run RepeatCheckDataService : " + eventId + "," + accountId);
+                    Log.d("Lihat", "run RepeatCheckDataService : " + "connected" + count);
+                    Log.d("Lihat", "run RepeatCheckDataService : " + count++);
 
                     getAPIUserDataDo(accountId);
                     getAPIEventDataDo(eventId, accountId);
@@ -110,7 +110,7 @@ public class MyService extends Service {
         } else {
             requestModel.setVersion_data(db.getVersionDataIdUser(accountId));
         }
-        Log.d("Lihat", "getAPIUserDataDo MyService : " + db.getVersionDataIdUser(accountId));
+        Log.d("Lihat", "getAPIUserDataDo RepeatCheckDataService : " + db.getVersionDataIdUser(accountId));
 
         API.doGetListUserEventRet(requestModel).enqueue(new Callback<List<GetListUserEventResponseModel>>() {
             @Override
@@ -120,7 +120,7 @@ public class MyService extends Service {
                     for (int i = 0; i < getListUserEventResponseModels.size(); i++) {
                         GetListUserEventResponseModel model = getListUserEventResponseModels.get(i);
                         if (!model.getVersion_data().equalsIgnoreCase("last version")) {//jika bukan lastversion
-                            Log.d("Lihat", "onResponse MyService getAPIUserDataDo: " + "ok");
+                            Log.d("Lihat", "onResponse RepeatCheckDataService getAPIUserDataDo: " + "ok");
                             if (db.isDataTableValueNull(SQLiteHelper.TableUserData, SQLiteHelper.KEY_UserData_accountId, accountId)) {
                                 db.saveUserData(model, accountId);
                             } else {
@@ -147,17 +147,17 @@ public class MyService extends Service {
                                 }
                             }
                         } else {
-                            Log.d("Lihat", "onResponse MyService : " + model.getVersion_data());
+                            Log.d("Lihat", "onResponse RepeatCheckDataService : " + model.getVersion_data());
                         }
                     }
                 } else {
-                    Log.d("Lihat", "onResponse MyService : " + response.message());
+                    Log.d("Lihat", "onResponse RepeatCheckDataService : " + response.message());
                 }
             }
 
             @Override
             public void onFailure(Call<List<GetListUserEventResponseModel>> call, Throwable t) {
-                Log.d("Lihat", "onFailure MyService : " + t.getMessage());
+                Log.d("Lihat", "onFailure RepeatCheckDataService : " + t.getMessage());
             }
         });
     }
@@ -175,7 +175,7 @@ public class MyService extends Service {
             requestModel.setVersion_data(db.getVersionDataIdEvent(eventId));
         }
 
-        Log.d("Lihat", "getAPIEventDataDo MyService : " + db.getVersionDataIdEvent(eventId));
+        Log.d("Lihat", "getAPIEventDataDo RepeatCheckDataService : " + db.getVersionDataIdEvent(eventId));
 
         API.doEventDataRet(requestModel).enqueue(new Callback<List<EventDataResponseModel>>() {
             @Override
@@ -287,17 +287,17 @@ public class MyService extends Service {
                                 }
                             }
                         } else {
-                            Log.d("Lihat", "onResponse MyService getAPIEventDataDo: " + "skip");
+                            Log.d("Lihat", "onResponse RepeatCheckDataService getAPIEventDataDo: " + "skip");
                         }
                     }
                 } else {
-                    Log.d("Lihat", "onResponse MyService : " + response.message());
+                    Log.d("Lihat", "onResponse RepeatCheckDataService : " + response.message());
                 }
             }
 
             @Override
             public void onFailure(Call<List<EventDataResponseModel>> call, Throwable t) {
-                Log.d("Lihat", "onFailure MyService : " + t.getMessage());
+                Log.d("Lihat", "onFailure RepeatCheckDataService : " + t.getMessage());
             }
         });
     }
@@ -305,7 +305,7 @@ public class MyService extends Service {
     private void getAPICheckUser() {
         VerificationStatusLoginAppUserRequestModel requestModel = new VerificationStatusLoginAppUserRequestModel();
         requestModel.setAccount_id(accountId);
-        requestModel.setDevice_app(DeviceDetailUtil.getAllDataPhone2(MyService.this));
+        requestModel.setDevice_app(DeviceDetailUtil.getAllDataPhone2(RepeatCheckDataService.this));
         requestModel.setDbver(String.valueOf(IConfig.DB_Version));
 
         API.doVerificationStatusLoginAppUserRet(new VerificationStatusLoginAppUserRequestModel(accountId, DeviceDetailUtil.getAllDataPhone2(this), String.valueOf(IConfig.DB_Version))).enqueue(new Callback<List<VerificationStatusLoginAppUserResponseModel>>() {
@@ -329,7 +329,7 @@ public class MyService extends Service {
             @Override
             public void onFailure(Call<List<VerificationStatusLoginAppUserResponseModel>> call, Throwable t) {
                 //progressDialog.dismiss();
-                Log.d("Lihat", "onFailure MyService : " + t.getMessage());
+                Log.d("Lihat", "onFailure RepeatCheckDataService : " + t.getMessage());
                 //Snackbar.make(findViewById(android.R.id.content), "Failed Connection To Server", Snackbar.LENGTH_SHORT).show();
                 //Crashlytics.logException(new Exception(t.getMessage()));
             }
@@ -339,7 +339,7 @@ public class MyService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Log.d("Lihat", "onDestroy MyService : " + "destroy");
+        Log.d("Lihat", "onDestroy RepeatCheckDataService : " + "destroy");
         timer.cancel();
     }
 }

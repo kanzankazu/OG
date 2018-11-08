@@ -49,19 +49,19 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.gandsoft.openguide.database.SQLiteHelper.Key_Area_EventId;
+import static com.gandsoft.openguide.database.SQLiteHelper.Key_Contact_List_EventId;
+import static com.gandsoft.openguide.database.SQLiteHelper.Key_Emergencie_EventId;
+import static com.gandsoft.openguide.database.SQLiteHelper.TableArea;
+import static com.gandsoft.openguide.database.SQLiteHelper.TableContactList;
+import static com.gandsoft.openguide.database.SQLiteHelper.TableEmergencie;
+
 public class eInfoFragment extends Fragment implements InfoListViewAdapter.ListAdapterListener {
     private static final int REQ_CODE_INBOX = 123;
     private static final int REQ_CODE_ACCOUNT = 1234;
     private static final int ID_NOTIF = 0;
-    private RecyclerView rvMenufvbi;
-    private ImageView ivInfoUserImagefvbi;
-    private TextView tvInfoFullNamefvbi, tvInfoUserNamefvbi, tvInfoUserPhoneNumberfvbi;
-    private Button button;
     Button bMyPro;
     InfoListViewAdapter adapter;
-
-    private String accountId, eventId;
-    private int version_data_event;
     SQLiteHelper db;
     String infoMenu[] = {
             "Map",
@@ -85,6 +85,12 @@ public class eInfoFragment extends Fragment implements InfoListViewAdapter.ListA
             R.drawable.ic_option_feedback,
             R.drawable.ic_option_event_change
     };
+    private RecyclerView rvMenufvbi;
+    private ImageView ivInfoUserImagefvbi;
+    private TextView tvInfoFullNamefvbi, tvInfoUserNamefvbi, tvInfoUserPhoneNumberfvbi;
+    private Button button;
+    private String accountId, eventId;
+    private int version_data_event;
     private List<InfoListviewModel> listviewModels = new ArrayList<>();
     private NotificationManager notificationManager;
 
@@ -118,9 +124,16 @@ public class eInfoFragment extends Fragment implements InfoListViewAdapter.ListA
     private void initContent() {
         updateUi();
 
-        boolean isEmergencyNull = db.isDataTableValueNull(SQLiteHelper.TableEmergencie, SQLiteHelper.Key_Emergencie_EventId, eventId);
-        boolean isSurroundAreaNull = db.isDataTableValueNull(SQLiteHelper.TableArea, SQLiteHelper.Key_Area_EventId, eventId);
+        boolean isContactListNull = db.isDataTableValueNull(TableContactList, Key_Contact_List_EventId, eventId);
+        boolean isEmergencyNull = db.isDataTableValueNull(TableEmergencie, Key_Emergencie_EventId, eventId);
+        boolean isSurroundAreaNull = db.isDataTableValueNull(TableArea, Key_Area_EventId, eventId);
+
         List<Integer> s = new ArrayList<>();
+        if (isContactListNull) {
+            ArrayList<String> list = ListArrayUtil.convertStringArrayToListString(infoMenu);
+            int comitee_contact = ListArrayUtil.getPosStringInList(list, "Comitee Contact");
+            s.add(comitee_contact);
+        }
         if (isEmergencyNull) {
             ArrayList<String> list = ListArrayUtil.convertStringArrayToListString(infoMenu);
             int emergencies = ListArrayUtil.getPosStringInList(list, "Emergencies");
@@ -170,10 +183,11 @@ public class eInfoFragment extends Fragment implements InfoListViewAdapter.ListA
         Glide.with(getActivity())
                 .load(InputValidUtil.isLinkUrl(imageUrlPath) ? imageUrlPath : new File(imageUrlPath))
                 .asBitmap()
-                .placeholder(R.drawable.template_account_og)
                 .error(R.drawable.template_account_og)
-                .skipMemoryCache(false)
+                .placeholder(R.drawable.ic_action_name)
                 .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .skipMemoryCache(false)
+                .dontAnimate()
                 .into(new SimpleTarget<Bitmap>() {
                     @Override
                     public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
@@ -234,7 +248,7 @@ public class eInfoFragment extends Fragment implements InfoListViewAdapter.ListA
         } else if (REQ_CODE_ACCOUNT == requestCode && resultCode == getActivity().RESULT_OK) {
             new Handler().postDelayed(new Runnable() {
                 public void run() {
-                    if (NetworkUtil.isConnected(getActivity())){
+                    if (NetworkUtil.isConnected(getActivity())) {
                         ((BaseHomeActivity) getActivity()).recreate();
                     }
                 }

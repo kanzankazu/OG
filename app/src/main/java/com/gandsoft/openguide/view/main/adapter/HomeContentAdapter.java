@@ -97,22 +97,17 @@ public class HomeContentAdapter extends RecyclerView.Adapter<HomeContentAdapter.
         }
 
         String image_posted = AppUtil.validationStringImageIcon(activity, model.getImage_posted(), model.getImage_posted_local(), false);
-        Log.d("Lihat", "onBindViewHolder HomeContentAdapter : " + image_posted);
-        Log.d("Lihat", "onBindViewHolder HomeContentAdapter : " + model.getImage_posted());
-        Log.d("Lihat", "onBindViewHolder HomeContentAdapter : " + model.getImage_posted_local());
         String image_icon = AppUtil.validationStringImageIcon(activity, model.getImage_icon(), model.getImage_icon_local(), true);
-        Log.d("Lihat", "onBindViewHolder HomeContentAdapter : " + image_icon);
-        Log.d("Lihat", "onBindViewHolder HomeContentAdapter : " + model.getImage_icon());
-        Log.d("Lihat", "onBindViewHolder HomeContentAdapter : " + model.getImage_icon_local());
         if (!TextUtils.isEmpty(model.getImage_posted())) {
             holder.ivRVHomeContentImage.setVisibility(View.VISIBLE);
             Glide.with(activity)
                     .load(InputValidUtil.isLinkUrl(image_posted) ? image_posted : new File(image_posted))
                     .asBitmap()
-                    .skipMemoryCache(false)
-                    .diskCacheStrategy(DiskCacheStrategy.NONE)
-                    .thumbnail(0.1f)
                     .error(R.drawable.template_account_og)
+                    .placeholder(R.drawable.ic_action_name)
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .skipMemoryCache(false)
+                    .dontAnimate()
                     .into(new SimpleTarget<Bitmap>() {
                         @Override
                         public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
@@ -127,10 +122,11 @@ public class HomeContentAdapter extends RecyclerView.Adapter<HomeContentAdapter.
         Glide.with(activity)
                 .load(InputValidUtil.isLinkUrl(image_icon) ? image_icon : new File(image_icon))
                 .asBitmap()
-                .placeholder(R.drawable.template_account_og)
-                .skipMemoryCache(false)
-                .diskCacheStrategy(DiskCacheStrategy.NONE)
                 .error(R.drawable.template_account_og)
+                .placeholder(R.drawable.ic_action_name)
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .skipMemoryCache(false)
+                .dontAnimate()
                 .into(new SimpleTarget<Bitmap>() {
                     @Override
                     public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
@@ -265,48 +261,6 @@ public class HomeContentAdapter extends RecyclerView.Adapter<HomeContentAdapter.
         });
     }
 
-    class ViewHolder extends RecyclerView.ViewHolder {
-
-        private final TextView tvRVHomeContentUsername;
-
-        private final HtmlTextView tvRVHomeContentKeterangan;
-
-        private final TextView tvRVHomeContentComment;
-        private final TextView tvRVHomeContentLike;
-        private final TextView tvRVHomeContentTime;
-        private final ImageView ivRVHomeContentImage;
-        private final ImageView ivRVHomeContentLike;
-        private final ImageView ivRVRVHomeContentIcon;
-        private final LinearLayout llRVHomeContentLike;
-        private final LinearLayout llRVHomeContentComment;
-        private final LinearLayout llRVHomeContentRemove;
-        private final RelativeLayout rlRVHomeContent;
-        SQLiteHelper db = new SQLiteHelper(itemView.getContext());
-
-        public ViewHolder(View itemView) {
-            super(itemView);
-            tvRVHomeContentUsername = (TextView) itemView.findViewById(R.id.tvRVHomeContentUsername);
-            tvRVHomeContentKeterangan = (HtmlTextView) itemView.findViewById(R.id.tvRVHomeContentKeterangan);
-            tvRVHomeContentComment = (TextView) itemView.findViewById(R.id.tvRVHomeContentComment);
-            tvRVHomeContentLike = (TextView) itemView.findViewById(R.id.tvRVHomeContentLike);
-            tvRVHomeContentTime = (TextView) itemView.findViewById(R.id.tvRVHomeContentTime);
-            ivRVHomeContentImage = (ImageView) itemView.findViewById(R.id.ivRVHomeContentImage);
-            ivRVHomeContentLike = (ImageView) itemView.findViewById(R.id.ivRVHomeContentLike);
-            ivRVRVHomeContentIcon = (ImageView) itemView.findViewById(R.id.ivRVRVHomeContentIcon);
-            llRVHomeContentLike = (LinearLayout) itemView.findViewById(R.id.llRVHomeContentLike);
-            llRVHomeContentComment = (LinearLayout) itemView.findViewById(R.id.llRVHomeContentComment);
-            llRVHomeContentRemove = (LinearLayout) itemView.findViewById(R.id.llRVHomeContentRemove);
-            rlRVHomeContent = (RelativeLayout) itemView.findViewById(R.id.rlRVHomeContent);
-        }
-
-    }
-
-    public interface HomeContentListener {
-        void onCommentClick(HomeContentResponseModel homeContentResponseModel, int position);
-
-        void onDeletePostClick(String id, int position);
-    }
-
     public void setData(List<HomeContentResponseModel> datas) {
         if (datas.size() > 0) {
             models.clear();
@@ -363,5 +317,47 @@ public class HomeContentAdapter extends RecyclerView.Adapter<HomeContentAdapter.
             }
             notifyItemChanged(position);
         }
+    }
+
+    public interface HomeContentListener {
+        void onCommentClick(HomeContentResponseModel homeContentResponseModel, int position);
+
+        void onDeletePostClick(String id, int position);
+    }
+
+    class ViewHolder extends RecyclerView.ViewHolder {
+
+        private final TextView tvRVHomeContentUsername;
+
+        private final HtmlTextView tvRVHomeContentKeterangan;
+
+        private final TextView tvRVHomeContentComment;
+        private final TextView tvRVHomeContentLike;
+        private final TextView tvRVHomeContentTime;
+        private final ImageView ivRVHomeContentImage;
+        private final ImageView ivRVHomeContentLike;
+        private final ImageView ivRVRVHomeContentIcon;
+        private final LinearLayout llRVHomeContentLike;
+        private final LinearLayout llRVHomeContentComment;
+        private final LinearLayout llRVHomeContentRemove;
+        private final RelativeLayout rlRVHomeContent;
+        SQLiteHelper db = new SQLiteHelper(itemView.getContext());
+
+        public ViewHolder(View itemView) {
+            super(itemView);
+            tvRVHomeContentUsername = (TextView) itemView.findViewById(R.id.tvRVHomeContentUsername);
+            tvRVHomeContentKeterangan = (HtmlTextView) itemView.findViewById(R.id.tvRVHomeContentKeterangan);
+            tvRVHomeContentComment = (TextView) itemView.findViewById(R.id.tvRVHomeContentComment);
+            tvRVHomeContentLike = (TextView) itemView.findViewById(R.id.tvRVHomeContentLike);
+            tvRVHomeContentTime = (TextView) itemView.findViewById(R.id.tvRVHomeContentTime);
+            ivRVHomeContentImage = (ImageView) itemView.findViewById(R.id.ivRVHomeContentImage);
+            ivRVHomeContentLike = (ImageView) itemView.findViewById(R.id.ivRVHomeContentLike);
+            ivRVRVHomeContentIcon = (ImageView) itemView.findViewById(R.id.ivRVRVHomeContentIcon);
+            llRVHomeContentLike = (LinearLayout) itemView.findViewById(R.id.llRVHomeContentLike);
+            llRVHomeContentComment = (LinearLayout) itemView.findViewById(R.id.llRVHomeContentComment);
+            llRVHomeContentRemove = (LinearLayout) itemView.findViewById(R.id.llRVHomeContentRemove);
+            rlRVHomeContent = (RelativeLayout) itemView.findViewById(R.id.rlRVHomeContent);
+        }
+
     }
 }

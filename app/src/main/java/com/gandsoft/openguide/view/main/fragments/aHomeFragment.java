@@ -1,11 +1,18 @@
 package com.gandsoft.openguide.view.main.fragments;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.location.GpsSatellite;
+import android.location.GpsStatus;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -30,18 +37,21 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.gandsoft.openguide.API.API;
+import com.gandsoft.openguide.API.APIrequest.GetCheckDistanceLocationRequestModel;
 import com.gandsoft.openguide.API.APIrequest.HomeContent.HomeContentCheckinRequestModel;
 import com.gandsoft.openguide.API.APIrequest.HomeContent.HomeContentPostCaptionDeleteRequestModel;
 import com.gandsoft.openguide.API.APIrequest.HomeContent.HomeContentPostCaptionSetRequestModel;
 import com.gandsoft.openguide.API.APIrequest.HomeContent.HomeContentPostImageCaptionRequestModel;
 import com.gandsoft.openguide.API.APIrequest.HomeContent.HomeContentRequestModel;
 import com.gandsoft.openguide.API.APIresponse.Event.EventTheEvent;
+import com.gandsoft.openguide.API.APIresponse.GetCheckDistanceLocationResponseModel;
 import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentCommentModelParcelable;
 import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentPostCaptionDeleteResponseModel;
 import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentResponseModel;
@@ -53,12 +63,15 @@ import com.gandsoft.openguide.IConfig;
 import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
 import com.gandsoft.openguide.database.SQLiteHelper;
+import com.gandsoft.openguide.presenter.widget.CustomScrollView;
+import com.gandsoft.openguide.support.AppUtil;
 import com.gandsoft.openguide.support.DateTimeUtil;
 import com.gandsoft.openguide.support.InputValidUtil;
 import com.gandsoft.openguide.support.NetworkUtil;
 import com.gandsoft.openguide.support.PictureUtil;
 import com.gandsoft.openguide.support.SessionUtil;
 import com.gandsoft.openguide.support.SystemUtil;
+import com.gandsoft.openguide.view.main.BaseHomeActivity;
 import com.gandsoft.openguide.view.main.adapter.HomeContentAdapter;
 import com.gandsoft.openguide.view.main.fragments.aHomeActivityInFragment.aHomePostCommentActivity;
 import com.gandsoft.openguide.view.main.fragments.aHomeActivityInFragment.aHomePostImageCaptionActivity;
@@ -70,6 +83,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 
@@ -78,16 +92,19 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 import static android.app.Activity.RESULT_OK;
+import static android.content.Context.LOCATION_SERVICE;
+import static android.support.v4.content.PermissionChecker.checkSelfPermission;
 
 public class aHomeFragment extends Fragment {
     private static final int REQ_CODE_COMMENT = 13;
     private static final int REQ_CODE_TAKE_PHOTO_INTENT_ID_STANDART = 1;
     private static final int REQ_CODE_POST_IMAGE = 12;
+    private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 10;
+    private static final long MIN_TIME_BW_UPDATES = 1000 * 30;
     SQLiteHelper db;
-
     private View view;
     private SwipeRefreshLayout homeSRLHomefvbi;
-    private NestedScrollView homeNSVHomefvbi;
+    private CustomScrollView homeNSVHomefvbi;
     private RecyclerView recyclerView;
     private LinearLayout homeLLWriteSomethingfvbi;
     private LinearLayout llLoadMode2fvbi;
@@ -104,13 +121,11 @@ public class aHomeFragment extends Fragment {
     private Button homeBTapCheckInfvbi;
     private WebView homeWVTitleEventfvbi;
     private FloatingActionButton homeFABHomeUpfvbi;
-
     private UserWalletDataResponseModel walletData;
     private EventTheEvent theEventModel = null;
     private UserListEventResponseModel oneListEventModel = null;
     private GetListUserEventResponseModel userData = null;
     private HomeContentAdapter adapter;
-
     private List<HomeContentResponseModel> menuUi = new ArrayList<>();
     private String accountId, eventId;
     private String isKondisi = "up";
@@ -125,6 +140,15 @@ public class aHomeFragment extends Fragment {
     private boolean isNew;
     private String newPostImgPath;
     private boolean newPostImgExists;
+    private double mylat, mylng;
+    private LocationManager locationManager;
+    private boolean isLocationFound;
+    private boolean isGPSEnabled;
+    private boolean isNetworkEnabled;
+    private Location location;
+    private GpsStatus gpsStatus;
+    private boolean isTesting;
+    private boolean isNoMoreShow = false;
 
     public aHomeFragment() {
     }
@@ -149,7 +173,7 @@ public class aHomeFragment extends Fragment {
         homeLLLoadingfvbi = (LinearLayout) view.findViewById(R.id.homeLLLoading);
         homeFABHomeUpfvbi = (FloatingActionButton) view.findViewById(R.id.homeFABHomeUp);
         homeSRLHomefvbi = (SwipeRefreshLayout) view.findViewById(R.id.homeSRLHome);
-        homeNSVHomefvbi = (NestedScrollView) view.findViewById(R.id.homeNSVHome);
+        homeNSVHomefvbi = (CustomScrollView) view.findViewById(R.id.homeNSVHome);
         homeIVEventfvbi = (ImageView) view.findViewById(R.id.homeIVEvent);
         homeIVEventBackgroundfvbi = (ImageView) view.findViewById(R.id.homeIVEventBackground);
         homeIVShareSomethingfvbi = (ImageView) view.findViewById(R.id.homeIVShareSomething);
@@ -167,11 +191,13 @@ public class aHomeFragment extends Fragment {
     }
 
     private void initContent(ViewGroup container) {
+        locationManager = (LocationManager) getActivity().getSystemService(LOCATION_SERVICE);
+
         theEventModel = db.getTheEvent(eventId);
         userData = db.getOneUserData(accountId);
         oneListEventModel = db.getOneListEvent(eventId, accountId);
 
-        updateUi();//init content
+        updateEventInfo();//init content
 
         checkTheCheckIn();
 
@@ -216,6 +242,9 @@ public class aHomeFragment extends Fragment {
         SimpleDateFormat dfGMT = new SimpleDateFormat("z");
         formattedDateGMT = dfGMT.format(c.getTime()).substring(3, 6);
 
+        if (!isLocationFound) {
+            getGpsLocation();
+        }
     }
 
     private void initListener(View view) {
@@ -273,6 +302,7 @@ public class aHomeFragment extends Fragment {
                         if (!last_data) {
 
                             llLoadMode2fvbi.setVisibility(View.VISIBLE);
+                            homeNSVHomefvbi.setEnableScrolling(false);
 
                             new Handler().postDelayed(new Runnable() {
                                 public void run() {
@@ -283,7 +313,10 @@ public class aHomeFragment extends Fragment {
                             }, 500);
 
                         } else {
-                            Snackbar.make(getActivity().findViewById(android.R.id.content), "no more data", Snackbar.LENGTH_LONG).show();
+                            if (!isNoMoreShow) {
+                                Snackbar.make(getActivity().findViewById(android.R.id.content), "no more data", Snackbar.LENGTH_SHORT).show();
+                                isNoMoreShow = true;
+                            }
                         }
                     } else {
                         Snackbar.make(getActivity().findViewById(android.R.id.content), "Check you connection", Snackbar.LENGTH_SHORT).show();
@@ -308,13 +341,38 @@ public class aHomeFragment extends Fragment {
         homeBTapCheckInfvbi.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                callCheckIn();
+                if (NetworkUtil.isConnected(getActivity())) {
+                    if (mylat != 0.0 || mylng != 0.0) {
+                        callCheckDistanceCheckin(false);//
+                    } else {
+                        Log.e("Lihat", "onClick aHomeFragment : " + "Lokasi Anda Tidak Terdeteksi");
+                        //Snackbar.make(getActivity().findViewById(android.R.id.content), "Lokasi Anda Tidak Terdeteksi", Snackbar.LENGTH_SHORT).show();
+                    }
+                } else {
+                    Toast.makeText(getActivity(), "Check you connection", Toast.LENGTH_SHORT).show();// Set your own toast  message
+                }
             }
         });
         homeFABHomeUpfvbi.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 homeNSVHomefvbi.smoothScrollTo(0, 0);
+            }
+        });
+
+        //testAPI
+        homeIVEventfvbi.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (NetworkUtil.isConnected(getActivity())) {
+                    if (mylat != 0.0 || mylng != 0.0) {
+                        callCheckDistanceCheckin(true);//
+                    } else {
+                        Snackbar.make(getActivity().findViewById(android.R.id.content), "Lokasi Anda Tidak Terdeteksi", Snackbar.LENGTH_SHORT).show();
+                    }
+                } else {
+                    Toast.makeText(getActivity(), "jaringan internet tidak tersedia", Toast.LENGTH_SHORT).show();// Set your own toast  message
+                }
             }
         });
     }
@@ -349,10 +407,10 @@ public class aHomeFragment extends Fragment {
         startActivityForResult(intent, REQ_CODE_TAKE_PHOTO_INTENT_ID_STANDART);
     }
 
-    private void updateUi() {
-        Log.d("Lihat", "updateUi aHomeFragment getAddpost_status : " + theEventModel.getAddpost_status());
-        Log.d("Lihat", "updateUi aHomeFragment getDeletepost_status : " + theEventModel.getDeletepost_status());
-        Log.d("Lihat", "updateUi aHomeFragment getCommentpost_status : " + theEventModel.getCommentpost_status());
+    private void updateEventInfo() {
+        Log.d("Lihat", "updateEventInfo aHomeFragment getAddpost_status : " + theEventModel.getAddpost_status());
+        Log.d("Lihat", "updateEventInfo aHomeFragment getDeletepost_status : " + theEventModel.getDeletepost_status());
+        Log.d("Lihat", "updateEventInfo aHomeFragment getCommentpost_status : " + theEventModel.getCommentpost_status());
         if (theEventModel != null) {
             homeHtmlTVTitleEventfvbi.setHtml(theEventModel.getEvent_name());
             homeTVTitleEventfvbi.setText(Html.fromHtml(theEventModel.getEvent_name()));
@@ -362,24 +420,17 @@ public class aHomeFragment extends Fragment {
                     "" + Html.fromHtml(theEventModel.getWeather()) + "");
 
             UserListEventResponseModel oneListEvent = db.getOneListEvent(eventId, accountId);
-            String logo;
-            String background;
-            if (NetworkUtil.isConnected(getActivity())) {
-                logo = oneListEvent.getLogo();
-                background = oneListEvent.getBackground();
-            } else {
-                logo = oneListEvent.getLogo_local();
-                background = oneListEvent.getBackground_local();
-
-            }
+            String logo = AppUtil.validationStringImageIcon(getActivity(), oneListEvent.getLogo(), oneListEvent.getLogo_local(), true);
+            String background = AppUtil.validationStringImageIcon(getActivity(), oneListEvent.getBackground(), oneListEvent.getBackground_local(), true);
 
             Glide.with(getActivity())
                     .load(InputValidUtil.isLinkUrl(logo) ? logo : new File(logo))
                     .asBitmap()
-                    .placeholder(R.drawable.template_account_og)
-                    .skipMemoryCache(false)
-                    .diskCacheStrategy(DiskCacheStrategy.NONE)
                     .error(R.drawable.template_account_og)
+                    .placeholder(R.drawable.ic_action_name)
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .skipMemoryCache(false)
+                    .dontAnimate()
                     .into(new SimpleTarget<Bitmap>() {
                         @Override
                         public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
@@ -393,10 +444,11 @@ public class aHomeFragment extends Fragment {
             Glide.with(getActivity())
                     .load(InputValidUtil.isLinkUrl(background) ? background : new File(background))
                     .asBitmap()
-                    .placeholder(R.drawable.template_account_og)
-                    .skipMemoryCache(false)
-                    .diskCacheStrategy(DiskCacheStrategy.NONE)
                     .error(R.drawable.template_account_og)
+                    .placeholder(R.drawable.ic_action_name)
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .skipMemoryCache(false)
+                    .dontAnimate()
                     .into(new SimpleTarget<Bitmap>() {
                         @Override
                         public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
@@ -499,10 +551,113 @@ public class aHomeFragment extends Fragment {
         }
     }
 
+    private void callCheckDistanceCheckin(boolean isTesting) {
+        GetCheckDistanceLocationRequestModel requestModel = new GetCheckDistanceLocationRequestModel();
+        requestModel.setEvent_id(eventId);
+        requestModel.setAccount_id(accountId);
+        requestModel.setMy_latitude(String.valueOf(mylat));
+        requestModel.setMy_longtitude(String.valueOf(mylng));
+        requestModel.setDbver(String.valueOf(IConfig.DB_Version));
+
+        API.doGetCheckDistanceLocationRet(requestModel).enqueue(new Callback<List<GetCheckDistanceLocationResponseModel>>() {
+            @Override
+            public void onResponse(Call<List<GetCheckDistanceLocationResponseModel>> call, Response<List<GetCheckDistanceLocationResponseModel>> response) {
+                if (!isTesting) {
+                    //progressDialog.dismiss();
+                    if (response.isSuccessful()) {
+                        List<GetCheckDistanceLocationResponseModel> mods = response.body();
+                        if (mods.size() == 1) {
+                            for (int i = 0; i < mods.size(); i++) {
+                                GetCheckDistanceLocationResponseModel mod1 = mods.get(i);
+                                if (mod1.getStatus().equalsIgnoreCase(ISeasonConfig.SUCCESS) && mod1.getIsrange()) {
+                                    callCheckIn();
+                                }
+                            }
+                        } else {
+                            Log.d("Lihat", "onResponse aHomeFragment : " + response.message());
+                            //Snackbar.make(findViewById(android.R.id.content), "error data", Snackbar.LENGTH_LONG).show();
+                            //Crashlytics.logException(new Exception(response.message()));
+                        }
+                    } else {
+                        Log.d("Lihat", "onResponse aHomeFragment : " + response.message());
+                        //Snackbar.make(findViewById(android.R.id.content), "Failed Connection To Server", Snackbar.LENGTH_LONG).show();
+                        //Crashlytics.logException(new Exception(response.message()));
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<GetCheckDistanceLocationResponseModel>> call, Throwable t) {
+                //progressDialog.dismiss();
+                Log.d("Lihat", "onFailure aHomeFragment : " + t.getMessage());
+                Snackbar.make(getActivity().findViewById(android.R.id.content), "Failed Connection To Server", Snackbar.LENGTH_SHORT).show();
+                /*Snackbar.make(findViewById(android.R.id.content), "Failed Connection To Server", Snackbar.LENGTH_SHORT).setAction("Reload", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+
+                    }
+                }).show();*/
+                //Crashlytics.logException(new Exception(t.getMessage()));
+            }
+        });
+    }
+
+    private void callCheckIn() {
+        if (NetworkUtil.isConnected(getActivity())) {
+            HomeContentCheckinRequestModel requestModel = new HomeContentCheckinRequestModel();
+            requestModel.setId_event(eventId);
+            requestModel.setPhonenumber(accountId);
+            requestModel.setDbver("3");
+            //requestModel.setDate_gmt(formattedDateGMT);
+            requestModel.setDate_gmt("+07");
+            requestModel.setDate_post(formattedDate);
+
+            ProgressDialog progressDialog = new ProgressDialog(getContext());
+            progressDialog.setCancelable(false);
+            progressDialog.setMessage("Please Wait...");
+            progressDialog.setTitle("Upload data baru..");
+            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            // show it
+            progressDialog.show();
+
+            API.doHomeContentCheckinRet(requestModel).enqueue(new Callback<List<LocalBaseResponseModel>>() {
+                @Override
+                public void onResponse(Call<List<LocalBaseResponseModel>> call, Response<List<LocalBaseResponseModel>> response) {
+                    progressDialog.dismiss();
+                    if (response.isSuccessful()) {
+                        List<LocalBaseResponseModel> s = response.body();
+                        if (s.size() == 1) {
+                            for (int i = 0; i < s.size(); i++) {
+                                LocalBaseResponseModel model = s.get(i);
+                                if (model.getStatus().equalsIgnoreCase("ok")) {
+                                    Snackbar.make(getActivity().findViewById(android.R.id.content), "Tersimpan", Snackbar.LENGTH_LONG).show();
+                                } else {
+                                    Snackbar.make(getActivity().findViewById(android.R.id.content), "Bad Response", Snackbar.LENGTH_LONG).show();
+                                }
+                            }
+                        } else {
+                            Snackbar.make(getActivity().findViewById(android.R.id.content), "Data Tidak Sesuai", Snackbar.LENGTH_LONG).show();
+                        }
+                    } else {
+                        Snackbar.make(getActivity().findViewById(android.R.id.content), response.message(), Snackbar.LENGTH_LONG).show();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<List<LocalBaseResponseModel>> call, Throwable t) {
+                    Snackbar.make(getActivity().findViewById(android.R.id.content), t.getMessage(), Snackbar.LENGTH_LONG).show();
+                }
+            });
+        } else {
+            Snackbar.make(getActivity().findViewById(android.R.id.content), "Check Your Connection", Snackbar.LENGTH_SHORT).show();
+        }
+
+    }
+
     private void callHomeContentAPI() {
         if (NetworkUtil.isConnected(getActivity())) {
             if (newPostImgExists) {
-                PictureUtil.removeImageFromPathFile(newPostImgPath);
+                PictureUtil.removeImageFromPathFile2(getActivity(), new File(newPostImgPath));
                 newPostImgExists = false;
             }
 
@@ -510,6 +665,7 @@ public class aHomeFragment extends Fragment {
             db.deleleDataByKey(SQLiteHelper.TableHomeContent, SQLiteHelper.Key_HomeContent_EventId, eventId);
 
             homeLLLoadingfvbi.setVisibility(View.VISIBLE);
+            homeNSVHomefvbi.setEnableScrolling(false);
 
             HomeContentRequestModel model = new HomeContentRequestModel();
             model.setPhonenumber(accountId);
@@ -523,7 +679,15 @@ public class aHomeFragment extends Fragment {
             API.doHomeContentDataRet(model).enqueue(new Callback<List<HomeContentResponseModel>>() {
                 @Override
                 public void onResponse(Call<List<HomeContentResponseModel>> call, Response<List<HomeContentResponseModel>> response) {
-                    homeLLLoadingfvbi.setVisibility(View.GONE);
+
+                    new Handler().postDelayed(new Runnable() {
+                        public void run() {
+                            //code here
+                            homeLLLoadingfvbi.setVisibility(View.GONE);
+                            homeNSVHomefvbi.setEnableScrolling(true);
+                        }
+                    }, 3000);
+
                     if (response.isSuccessful()) {
                         List<HomeContentResponseModel> models = response.body();
                         db.deleteAllDataHomeContent(eventId);
@@ -556,7 +720,15 @@ public class aHomeFragment extends Fragment {
 
                 @Override
                 public void onFailure(Call<List<HomeContentResponseModel>> call, Throwable t) {
-                    homeLLLoadingfvbi.setVisibility(View.GONE);
+
+                    new Handler().postDelayed(new Runnable() {
+                        public void run() {
+                            //code here
+                            homeLLLoadingfvbi.setVisibility(View.GONE);
+                            homeNSVHomefvbi.setEnableScrolling(true);
+                        }
+                    }, 3000);
+
                     //progressDialog.dismiss();
                     Log.d("Lihat", "onFailure aHomeFragment : " + t.getMessage());
                     Snackbar.make(getActivity().findViewById(android.R.id.content), "Failed Connection To Server", Snackbar.LENGTH_SHORT).show();
@@ -600,8 +772,14 @@ public class aHomeFragment extends Fragment {
             API.doHomeContentDataRet(model).enqueue(new Callback<List<HomeContentResponseModel>>() {
                 @Override
                 public void onResponse(Call<List<HomeContentResponseModel>> call, Response<List<HomeContentResponseModel>> response) {
-                    llLoadMode2fvbi.setVisibility(View.GONE);
-                    homeNSVHomefvbi.setNestedScrollingEnabled(true);
+
+                    new Handler().postDelayed(new Runnable() {
+                        public void run() {
+                            llLoadMode2fvbi.setVisibility(View.GONE);
+                            homeNSVHomefvbi.setEnableScrolling(true);
+                        }
+                    }, 3000);
+
                     if (response.isSuccessful()) {
                         List<HomeContentResponseModel> models = response.body();
                         for (int i1 = 0; i1 < models.size(); i1++) {
@@ -633,7 +811,14 @@ public class aHomeFragment extends Fragment {
 
                 @Override
                 public void onFailure(Call<List<HomeContentResponseModel>> call, Throwable t) {
-                    llLoadMode2fvbi.setVisibility(View.GONE);
+
+                    new Handler().postDelayed(new Runnable() {
+                        public void run() {
+                            llLoadMode2fvbi.setVisibility(View.GONE);
+                            homeNSVHomefvbi.setEnableScrolling(true);
+                        }
+                    }, 3000);
+
                     //progressDialog.dismiss();
                     Log.d("Lihat", "onFailure aHomeFragment : " + t.getMessage());
                     Snackbar.make(getActivity().findViewById(android.R.id.content), "Failed Connection To Server", Snackbar.LENGTH_SHORT).show();
@@ -648,6 +833,7 @@ public class aHomeFragment extends Fragment {
             });
         } else {
             llLoadMode2fvbi.setVisibility(View.GONE);
+            homeNSVHomefvbi.setEnableScrolling(true);
             Snackbar.make(getActivity().findViewById(android.R.id.content), "Check you connection", Snackbar.LENGTH_SHORT).show();
         }
 
@@ -682,7 +868,7 @@ public class aHomeFragment extends Fragment {
                             if (model.getStatus().equalsIgnoreCase("ok")) {
                                 Snackbar.make(getActivity().findViewById(android.R.id.content), "Post Terkirim", Snackbar.LENGTH_LONG).show();
                                 callHomeContentAPI();
-                                updateUi();//onresponse callPostCaption
+                                updateEventInfo();//onresponse callPostCaption
                                 homeETWritePostCreatefvbi.setText("");
                                 SystemUtil.hideKeyBoard(getActivity());
                             } else {
@@ -797,56 +983,30 @@ public class aHomeFragment extends Fragment {
         });
     }
 
-    private void callCheckIn() {
-        if (NetworkUtil.isConnected(getActivity())) {
-            HomeContentCheckinRequestModel requestModel = new HomeContentCheckinRequestModel();
-            requestModel.setId_event(eventId);
-            requestModel.setPhonenumber(accountId);
-            requestModel.setDbver("3");
-            //requestModel.setDate_gmt(formattedDateGMT);
-            requestModel.setDate_gmt("+07");
-            requestModel.setDate_post(formattedDate);
+    private void addSingleTopAdapter(String imgUrl, String contentPic, String uniqueId, String eventId, String accountId, boolean isNew) {
 
-            ProgressDialog progressDialog = new ProgressDialog(getContext());
-            progressDialog.setCancelable(false);
-            progressDialog.setMessage("Please Wait...");
-            progressDialog.setTitle("Upload data baru..");
-            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            // show it
-            progressDialog.show();
-
-            API.doHomeContentCheckinRet(requestModel).enqueue(new Callback<List<LocalBaseResponseModel>>() {
-                @Override
-                public void onResponse(Call<List<LocalBaseResponseModel>> call, Response<List<LocalBaseResponseModel>> response) {
-                    progressDialog.dismiss();
-                    if (response.isSuccessful()) {
-                        List<LocalBaseResponseModel> s = response.body();
-                        if (s.size() == 1) {
-                            for (int i = 0; i < s.size(); i++) {
-                                LocalBaseResponseModel model = s.get(i);
-                                if (model.getStatus().equalsIgnoreCase("ok")) {
-                                    Snackbar.make(getActivity().findViewById(android.R.id.content), "Tersimpan", Snackbar.LENGTH_LONG).show();
-                                } else {
-                                    Snackbar.make(getActivity().findViewById(android.R.id.content), "Bad Response", Snackbar.LENGTH_LONG).show();
-                                }
-                            }
-                        } else {
-                            Snackbar.make(getActivity().findViewById(android.R.id.content), "Data Tidak Sesuai", Snackbar.LENGTH_LONG).show();
-                        }
-                    } else {
-                        Snackbar.make(getActivity().findViewById(android.R.id.content), response.message(), Snackbar.LENGTH_LONG).show();
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<List<LocalBaseResponseModel>> call, Throwable t) {
-                    Snackbar.make(getActivity().findViewById(android.R.id.content), t.getMessage(), Snackbar.LENGTH_LONG).show();
-                }
-            });
+        HomeContentResponseModel model = new HomeContentResponseModel();
+        model.setId(uniqueId);
+        model.setLike("0");
+        model.setAccount_id(accountId);
+        model.setTotal_comment("0");
+        model.setStatus_like(0);
+        model.setUsername(userData.getFull_name());
+        model.setJabatan("");
+        model.setDate_created(formattedDate);
+        model.setImage_icon(userData.getImage_url());
+        model.setImage_icon_local("");
+        model.setImage_posted(imgUrl);
+        model.setImage_posted_local("");
+        if (!TextUtils.isEmpty(contentPic)) {
+            model.setKeterangan(contentPic);
         } else {
-            Snackbar.make(getActivity().findViewById(android.R.id.content), "Check Your Connection", Snackbar.LENGTH_SHORT).show();
+            model.setKeterangan("");
         }
+        model.setNew_event("");
+        model.setIs_new(true);
 
+        adapter.addDataFirst(model);
     }
 
     private void moveToAHomePostImage(String imageurl) {
@@ -856,7 +1016,7 @@ public class aHomeFragment extends Fragment {
     }
 
     private void moveToAHomeComment(HomeContentResponseModel model, int position) {
-        if(NetworkUtil.isConnected(getActivity())){
+        if (NetworkUtil.isConnected(getActivity())) {
             ArrayList<HomeContentCommentModelParcelable> dataParam = new ArrayList<>();
             HomeContentCommentModelParcelable mode = new HomeContentCommentModelParcelable();
             mode.setId(model.getId());
@@ -883,35 +1043,9 @@ public class aHomeFragment extends Fragment {
             intent.putParcelableArrayListExtra(ISeasonConfig.INTENT_PARAM, dataParam);
             intent.putExtra(ISeasonConfig.INTENT_PARAM2, position);
             startActivityForResult(intent, REQ_CODE_COMMENT);
-        }else {
+        } else {
             Snackbar.make(getActivity().findViewById(android.R.id.content), "Check you connection", Snackbar.LENGTH_SHORT).show();
         }
-    }
-
-    private void addSingleTopAdapter(String imgUrl, String contentPic, String uniqueId, String eventId, String accountId, boolean isNew) {
-
-        HomeContentResponseModel model = new HomeContentResponseModel();
-        model.setId(uniqueId);
-        model.setLike("0");
-        model.setAccount_id(accountId);
-        model.setTotal_comment("0");
-        model.setStatus_like(0);
-        model.setUsername(userData.getFull_name());
-        model.setJabatan("");
-        model.setDate_created(formattedDate);
-        model.setImage_icon(userData.getImage_url());
-        model.setImage_icon_local("");
-        model.setImage_posted(imgUrl);
-        model.setImage_posted_local("");
-        if (!TextUtils.isEmpty(contentPic)) {
-            model.setKeterangan(contentPic);
-        } else {
-            model.setKeterangan("");
-        }
-        model.setNew_event("");
-        model.setIs_new(true);
-
-        adapter.addDataFirst(model);
     }
 
     @Override
@@ -950,8 +1084,11 @@ public class aHomeFragment extends Fragment {
                     Glide.with(getActivity())
                             .load(new File(newPostImgPath))
                             .asBitmap()
-                            .skipMemoryCache(false)
+                            .error(R.drawable.template_account_og)
+                            .placeholder(R.drawable.ic_action_name)
                             .diskCacheStrategy(DiskCacheStrategy.NONE)
+                            .skipMemoryCache(false)
+                            .dontAnimate()
                             .into(new SimpleTarget<Bitmap>() {
                                 @Override
                                 public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
@@ -972,6 +1109,91 @@ public class aHomeFragment extends Fragment {
         }
     }
 
+    private void getGpsLocation() {
+        LocationListener clubbing = new LocationListener() {
+            @Override
+            public void onLocationChanged(Location location) {
+
+                mylat = location.getLatitude();
+                mylng = location.getLongitude();
+                locationManager.removeUpdates(this);
+                //etDataKoordinatNamaJalan.setText(GeocoderUtil.getAddressFromlatlng(SearchActivity.this, mylat, mylng));
+                //Toast.makeText(SearchActivity.this, R.string.gps_found, Toast.LENGTH_LONG).show();
+
+                isLocationFound = true;
+                int i = 1;
+
+                if (gpsStatus != null) {
+                    Iterable<GpsSatellite> satellites = gpsStatus.getSatellites();
+                    Iterator<GpsSatellite> sat = satellites.iterator();
+                    i--;
+                    while (sat.hasNext()) {
+                        sat.next();
+                        i++;
+                    }
+                }
+                //tvDataKoordinatSat.setText("Sat : " + i);
+            }
+
+            @Override
+            public void onStatusChanged(String s, int i, Bundle bundle) {
+
+            }
+
+            @Override
+            public void onProviderEnabled(String s) {
+
+            }
+
+            @Override
+            public void onProviderDisabled(String s) {
+                //startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+            }
+        };
+
+        if (checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+            isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+
+            if (!isGPSEnabled && !isNetworkEnabled) {
+                Toast.makeText(getActivity(), "no network provider is enabled", Toast.LENGTH_SHORT).show();
+                isLocationFound = true;
+            } else {
+                if (isNetworkEnabled) {
+                    locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, MIN_TIME_BW_UPDATES, MIN_DISTANCE_CHANGE_FOR_UPDATES, clubbing);
+                    Log.d("Network", "Network");
+                    if (locationManager != null) {
+                        location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+                        if (location != null) {
+                            mylat = location.getLatitude();
+                            mylng = location.getLongitude();
+                        } else {
+                            Toast.makeText(getActivity(), "Can't Reach GPS", Toast.LENGTH_SHORT).show();
+                        }
+                    } else {
+                        Toast.makeText(getActivity(), "Can't Reach GPS", Toast.LENGTH_SHORT).show();
+                    }
+                }
+                // if GPS Enabled get lat/long using GPS Services
+                if (isGPSEnabled) {
+                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_TIME_BW_UPDATES, MIN_DISTANCE_CHANGE_FOR_UPDATES, clubbing);
+                    Log.d("GPS Enabled", "GPS Enabled");
+                    if (locationManager != null) {
+                        location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                        if (location != null) {
+                            mylat = location.getLatitude();
+                            mylng = location.getLongitude();
+                        } else {
+                            Toast.makeText(getActivity(), "Can't Reach GPS", Toast.LENGTH_SHORT).show();
+                        }
+                    } else {
+                        Toast.makeText(getActivity(), "Can't Reach GPS", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+            gpsStatus = locationManager.getGpsStatus(null);
+        }
+    }
 }
 
 

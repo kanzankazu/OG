@@ -1,7 +1,7 @@
 package com.gandsoft.openguide.API.APIrequest.HomeContent;
 
 public class HomeContentCheckinRequestModel {
-    String phonenumber,id_event,date_post,date_gmt,dbver;
+    String phonenumber, id_event, date_post, date_gmt, dbver;
 
     public String getPhonenumber() {
         return phonenumber;

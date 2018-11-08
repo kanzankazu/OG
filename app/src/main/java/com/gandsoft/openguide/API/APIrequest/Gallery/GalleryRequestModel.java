@@ -9,7 +9,7 @@ public class GalleryRequestModel {
     public String lastid;
     public String firstid;
 
-    public GalleryRequestModel( String phonenumber, String dbver, String id_event) {
+    public GalleryRequestModel(String phonenumber, String dbver, String id_event) {
         this.phonenumber = phonenumber;
         this.dbver = dbver;
         this.id_event = id_event;
@@ -53,6 +53,7 @@ public class GalleryRequestModel {
     public void setId_event(String id_event) {
         this.id_event = id_event;
     }
+
     public String getKondisi() {
         return kondisi;
     }
@@ -60,7 +61,6 @@ public class GalleryRequestModel {
     public void setKondisi(String kondisi) {
         this.kondisi = kondisi;
     }
-
 
     public String getLastid() {
         return lastid;

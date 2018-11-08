@@ -32,7 +32,7 @@
         android:layout_below="@id/appbar"
         android:layout_gravity="center"
         android:scaleType="fitCenter"
-        app:srcCompat="@drawable/gallery_potrait" />
+        app:srcCompat="@drawable/template_account_og" />
 
     <View
         android:layout_width="match_parent"

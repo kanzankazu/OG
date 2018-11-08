@@ -1,9 +1,9 @@
 package com.gandsoft.openguide.view.infomenu;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -21,15 +21,12 @@ import java.util.ArrayList;
 
 public class eEmergenciesActivity extends AppCompatActivity {
     SQLiteHelper db = new SQLiteHelper(this);
-
-    private String accountId,eventId;
+    ArrayList<String> headerItems = new ArrayList<>();
+    ArrayList<Object> childItems = new ArrayList<Object>();
+    private String accountId, eventId;
     private Toolbar toolbar;
     private ActionBar ab;
     private ExpandableListView explvEmergenciesfvbi;
-
-    ArrayList<String> headerItems = new ArrayList<>();
-    ArrayList<Object> childItems = new ArrayList<Object>();
-
     private int lastExpandedPosition = -1;
 
     @Override

@@ -4,13 +4,13 @@ import android.app.Activity;
 import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentResponseModel;
@@ -30,13 +30,15 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
     private final Activity activity;
     private final String eventId;
     private String accountId;
+    private GalleryAdapterListener galleryAdapterListener;
     private List<HomeContentResponseModel> models = new ArrayList<>();
 
-    public GalleryAdapter(Activity activity, List<HomeContentResponseModel> models, String eventId, String accountId) {
+    public GalleryAdapter(Activity activity, List<HomeContentResponseModel> models, String eventId, String accountId, GalleryAdapterListener galleryAdapterListener) {
         this.activity = activity;
         this.models = models;
         this.eventId = eventId;
         this.accountId = accountId;
+        this.galleryAdapterListener = galleryAdapterListener;
     }
 
     @NonNull
@@ -50,31 +52,42 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
     public void onBindViewHolder(@NonNull GalleryAdapter.ViewHolder holder, int position) {
         HomeContentResponseModel model = models.get(position);
 
-        Log.d("Lihat", "onBindViewHolder GalleryAdapter : " + model.getId());
-        Log.d("Lihat", "onBindViewHolder GalleryAdapter : " + model.getUsername());
-        Log.d("Lihat", "onBindViewHolder GalleryAdapter : " + model.getImage_icon());
-        Log.d("Lihat", "onBindViewHolder GalleryAdapter : " + model.getImage_icon_local());
-
         String image_icon = AppUtil.validationStringImageIcon(activity, model.getImage_icon(), model.getImage_icon_local(), true);
         String image_posted = AppUtil.validationStringImageIcon(activity, model.getImage_posted(), model.getImage_posted_local(), false);
+
         Glide.with(activity)
                 .load(InputValidUtil.isLinkUrl(image_posted) ? image_posted : new File(image_posted))
                 .asBitmap()
-                .placeholder(R.drawable.template_account_og)
                 .error(R.drawable.template_account_og)
+                .placeholder(R.drawable.ic_action_name)
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .skipMemoryCache(true)
+                .dontAnimate()
                 .into(new SimpleTarget<Bitmap>() {
                     @Override
                     public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
-                        holder.mImg.setImageBitmap(resource);
-                        String imageCachePath = PictureUtil.saveImageHomeContentImage(activity, resource, model.getId() + "_image", eventId);
-                        holder.db.saveGalleryImage(imageCachePath, accountId, eventId, model.getId());
+                        if (InputValidUtil.isLinkUrl(image_posted)) {
+                            Bitmap resizeImageBitmap = PictureUtil.resizeImageBitmap(resource, 360);
+                            holder.mImg.setImageBitmap(resizeImageBitmap);
+                        } else {
+                            holder.mImg.setImageBitmap(resource);
+                        }
+
+                        if (NetworkUtil.isConnected(activity) && getItemCount() < 18) {
+                            String imageCachePath = PictureUtil.saveImageHomeContentImage(activity, resource, model.getId() + "_image", eventId);
+                            holder.db.saveGalleryImage(imageCachePath, accountId, eventId, model.getId());
+                        }
                     }
                 });
+
         Glide.with(activity)
                 .load(InputValidUtil.isLinkUrl(image_icon) ? image_icon : new File(image_icon))
                 .asBitmap()
-                .placeholder(R.drawable.template_account_og)
                 .error(R.drawable.template_account_og)
+                .placeholder(R.drawable.ic_action_name)
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .skipMemoryCache(true)
+                .dontAnimate()
                 .into(new SimpleTarget<Bitmap>() {
                     @Override
                     public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
@@ -84,21 +97,18 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
                         }
                     }
                 });
+
+        holder.mImg.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                galleryAdapterListener.onDetailClick(position);
+            }
+        });
     }
 
     @Override
     public int getItemCount() {
         return models.size();
-    }
-
-    public class ViewHolder extends RecyclerView.ViewHolder {
-        private final ImageView mImg;
-        SQLiteHelper db = new SQLiteHelper(itemView.getContext());
-
-        public ViewHolder(View itemView) {
-            super(itemView);
-            mImg = (ImageView) itemView.findViewById(R.id.item_img);
-        }
     }
 
     public void setData(List<HomeContentResponseModel> datas) {
@@ -116,4 +126,17 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
         notifyItemRangeInserted(models.size(), datas.size());
     }
 
+    public interface GalleryAdapterListener {
+        void onDetailClick(int position);
+    }
+
+    public class ViewHolder extends RecyclerView.ViewHolder {
+        private final ImageView mImg;
+        SQLiteHelper db = new SQLiteHelper(itemView.getContext());
+
+        public ViewHolder(View itemView) {
+            super(itemView);
+            mImg = (ImageView) itemView.findViewById(R.id.item_img);
+        }
+    }
 }

@@ -34,7 +34,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
 
-            <android.support.v4.widget.NestedScrollView
+            <com.gandsoft.openguide.presenter.widget.CustomScrollView
                 android:id="@+id/homeNSVHome"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
@@ -60,7 +60,7 @@
                             android:adjustViewBounds="true"
                             android:alpha="0.09"
                             android:scaleType="fitXY"
-                            android:src="@drawable/gallery"
+                            android:src="@mipmap/ic_launcher"
                             android:translationZ="1dp" />
 
                         <LinearLayout
@@ -239,7 +239,7 @@
                         tools:listitem="@layout/layout_list_home_adapter" />
 
                 </LinearLayout>
-            </android.support.v4.widget.NestedScrollView>
+            </com.gandsoft.openguide.presenter.widget.CustomScrollView>
 
         </android.support.v4.widget.SwipeRefreshLayout>
 

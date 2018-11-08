@@ -4,6 +4,16 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 public class HomeContentCommentModelParcelable implements Parcelable {
+    public static final Creator CREATOR = new Creator() {
+        public HomeContentCommentModelParcelable createFromParcel(Parcel in) {
+            return new HomeContentCommentModelParcelable(in);
+        }
+
+        @Override
+        public HomeContentCommentModelParcelable[] newArray(int i) {
+            return new HomeContentCommentModelParcelable[i];
+        }
+    };
     public String id;
     public String like;
     public String account_id;
@@ -18,7 +28,6 @@ public class HomeContentCommentModelParcelable implements Parcelable {
     public String image_posted_local;
     public String keterangan;
     public String new_event;
-
     public int number;
     public String eventId;
 
@@ -38,6 +47,23 @@ public class HomeContentCommentModelParcelable implements Parcelable {
         this.image_posted = image_posted;
         this.keterangan = keterangan;
         this.new_event = new_event;
+    }
+
+    public HomeContentCommentModelParcelable(Parcel in) {
+        id = in.readString();
+        like = in.readString();
+        account_id = in.readString();
+        total_comment = in.readString();
+        status_like = in.readInt();
+        username = in.readString();
+        jabatan = in.readString();
+        date_created = in.readString();
+        image_icon = in.readString();
+        image_icon_local = in.readString();
+        image_posted = in.readString();
+        image_posted_local = in.readString();
+        keterangan = in.readString();
+        new_event = in.readString();
     }
 
     public String getId() {
@@ -190,32 +216,4 @@ public class HomeContentCommentModelParcelable implements Parcelable {
     public int describeContents() {
         return 0;
     }
-
-    public HomeContentCommentModelParcelable(Parcel in) {
-        id = in.readString();
-        like = in.readString();
-        account_id = in.readString();
-        total_comment = in.readString();
-        status_like = in.readInt();
-        username = in.readString();
-        jabatan = in.readString();
-        date_created = in.readString();
-        image_icon = in.readString();
-        image_icon_local = in.readString();
-        image_posted = in.readString();
-        image_posted_local = in.readString();
-        keterangan = in.readString();
-        new_event = in.readString();
-    }
-
-    public static final Creator CREATOR = new Creator() {
-        public HomeContentCommentModelParcelable createFromParcel(Parcel in) {
-            return new HomeContentCommentModelParcelable(in);
-        }
-
-        @Override
-        public HomeContentCommentModelParcelable[] newArray(int i) {
-            return new HomeContentCommentModelParcelable[i];
-        }
-    };
 }

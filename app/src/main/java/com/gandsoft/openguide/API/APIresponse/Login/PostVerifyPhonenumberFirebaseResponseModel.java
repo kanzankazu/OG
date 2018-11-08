@@ -1,11 +1,5 @@
 package com.gandsoft.openguide.API.APIresponse.Login;
 
-
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
-
-
-
 public class PostVerifyPhonenumberFirebaseResponseModel {
 
     private String status;

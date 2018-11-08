@@ -1,8 +1,6 @@
 package com.gandsoft.openguide.API.APIresponse.UserData;
 
-
-
-public class UserWalletDataResponseModel  {
+public class UserWalletDataResponseModel {
 
     public String sort;
     public String type;

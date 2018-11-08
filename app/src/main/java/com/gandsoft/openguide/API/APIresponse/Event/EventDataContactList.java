@@ -1,8 +1,6 @@
 package com.gandsoft.openguide.API.APIresponse.Event;
 
-
-
-public class EventDataContactList  {
+public class EventDataContactList {
     public String icon;
     public String icon_local;
     public String telephone;

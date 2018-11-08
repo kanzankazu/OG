@@ -26,8 +26,10 @@ import com.gandsoft.openguide.IConfig;
 import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
 import com.gandsoft.openguide.database.SQLiteHelper;
+import com.gandsoft.openguide.presenter.widget.CustomScrollView;
 import com.gandsoft.openguide.support.NetworkUtil;
 import com.gandsoft.openguide.support.SessionUtil;
+import com.gandsoft.openguide.support.SystemUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,7 +43,7 @@ public class GalleryActivity extends AppCompatActivity {
 
     private GalleryAdapter rvGalleryAdapter;
     private RecyclerView rvGalleryfvbi;
-    private NestedScrollView nsvGalleryfvbi;
+    private CustomScrollView nsvGalleryfvbi;
     private SwipeRefreshLayout srlGalleryfvbi;
     private LinearLayout llLoadModeGalleryfvbi;
 
@@ -55,6 +57,7 @@ public class GalleryActivity extends AppCompatActivity {
     private String first_id = "";
     private String last_date = "";
     private boolean last_data = false;
+    private boolean isNoMoreShow = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,7 +81,7 @@ public class GalleryActivity extends AppCompatActivity {
 
     private void initComponent() {
         rvGalleryfvbi = (RecyclerView) findViewById(R.id.rvGallery);
-        nsvGalleryfvbi = (NestedScrollView) findViewById(R.id.nsvGallery);
+        nsvGalleryfvbi = (CustomScrollView) findViewById(R.id.nsvGallery);
         srlGalleryfvbi = (SwipeRefreshLayout) findViewById(R.id.srlGallery);
         llLoadModeGalleryfvbi = (LinearLayout) findViewById(R.id.llLoadModeGallery);
     }
@@ -87,23 +90,25 @@ public class GalleryActivity extends AppCompatActivity {
 
         initToolbar("Gallery");
 
-        rvGalleryAdapter = new GalleryAdapter(GalleryActivity.this, menuUi, eventId, accountId);
+        rvGalleryAdapter = new GalleryAdapter(GalleryActivity.this, menuUi, eventId, accountId, new GalleryAdapter.GalleryAdapterListener() {
+            @Override
+            public void onDetailClick(int position) {
+                moveToGalleryDetail(position);
+            }
+        });
+        //rvGalleryAdapter.setHasStableIds(true);
         rvGalleryfvbi.setNestedScrollingEnabled(false);
         rvGalleryfvbi.setAdapter(rvGalleryAdapter);
         //rvGalleryfvbi.setHasFixedSize(true);
+        //rvGalleryfvbi.setItemViewCacheSize(50);
+        //rvGalleryfvbi.setDrawingCacheEnabled(true);
+        //rvGalleryfvbi.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
         rvGalleryfvbi.setLayoutManager(new GridLayoutManager(this, 3));
 
         getGalleryData();
     }
 
     private void initListener() {
-        rvGalleryfvbi.addOnItemTouchListener(new GalleryRecyclerItemClickListener(this, new GalleryRecyclerItemClickListener.OnItemClickListener() {
-            @Override
-            public void onItemClick(View view, int position) {
-                moveToGalleryDetail(position);
-            }
-        }));
-
         srlGalleryfvbi.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -127,6 +132,7 @@ public class GalleryActivity extends AppCompatActivity {
                     if (NetworkUtil.isConnected(getApplicationContext())) {
                         if (!last_data) {
                             llLoadModeGalleryfvbi.setVisibility(View.VISIBLE);
+                            nsvGalleryfvbi.setEnableScrolling(false);
 
                             new Handler().postDelayed(new Runnable() {
                                 public void run() {
@@ -142,7 +148,10 @@ public class GalleryActivity extends AppCompatActivity {
                                 }
                             }, 2000);
                         } else {
-                            Snackbar.make(findViewById(android.R.id.content), "no more data", Snackbar.LENGTH_LONG).show();
+                            if (!isNoMoreShow) {
+                                Snackbar.make(findViewById(android.R.id.content), "no more data", Snackbar.LENGTH_SHORT).show();
+                                isNoMoreShow = true;
+                            }
                         }
                     } else {
                         Snackbar.make(findViewById(android.R.id.content), "Check you connection", Snackbar.LENGTH_SHORT).show();
@@ -197,17 +206,12 @@ public class GalleryActivity extends AppCompatActivity {
             requestModel.setLastid("");
             requestModel.setFirstid("");
 
-            ProgressDialog progressDialog = new ProgressDialog(this);
-            progressDialog.setCancelable(false);
-            progressDialog.setMessage("Please Wait...");
-            progressDialog.setTitle("Get data from server");
-            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            progressDialog.show();
+            ProgressDialog progressDialog = SystemUtil.showProgress(GalleryActivity.this, "Get data from server", "Please Wait...", false);
 
             API.doGalleryRet(requestModel).enqueue(new Callback<List<HomeContentResponseModel>>() {
                 @Override
                 public void onResponse(Call<List<HomeContentResponseModel>> call, Response<List<HomeContentResponseModel>> response) {
-                    progressDialog.dismiss();
+                    SystemUtil.hideProgress(progressDialog, 2000);
                     if (response.isSuccessful()) {
                         List<HomeContentResponseModel> models = response.body();
                         db.deleteAllDataGallery(eventId);
@@ -253,7 +257,7 @@ public class GalleryActivity extends AppCompatActivity {
 
                 @Override
                 public void onFailure(Call<List<HomeContentResponseModel>> call, Throwable t) {
-                    progressDialog.dismiss();
+                    SystemUtil.hideProgress(progressDialog, 2000);
                     Snackbar.make(findViewById(android.R.id.content), t.getMessage(), Snackbar.LENGTH_LONG).show();
                 }
             });
@@ -303,7 +307,13 @@ public class GalleryActivity extends AppCompatActivity {
             API.doGalleryRet(requestModel).enqueue(new Callback<List<HomeContentResponseModel>>() {
                 @Override
                 public void onResponse(Call<List<HomeContentResponseModel>> call, Response<List<HomeContentResponseModel>> response) {
-                    llLoadModeGalleryfvbi.setVisibility(View.GONE);
+                    new Handler().postDelayed(new Runnable() {
+                        public void run() {
+                            //code here
+                            llLoadModeGalleryfvbi.setVisibility(View.GONE);
+                            nsvGalleryfvbi.setEnableScrolling(true);
+                        }
+                    }, 2000);
                     if (response.isSuccessful()) {
                         List<HomeContentResponseModel> models = response.body();
                         for (int i = 0; i < models.size(); i++) {
@@ -349,11 +359,13 @@ public class GalleryActivity extends AppCompatActivity {
                 @Override
                 public void onFailure(Call<List<HomeContentResponseModel>> call, Throwable t) {
                     llLoadModeGalleryfvbi.setVisibility(View.GONE);
+                    nsvGalleryfvbi.setEnableScrolling(true);
                     Snackbar.make(findViewById(android.R.id.content), t.getMessage(), Snackbar.LENGTH_LONG).show();
                 }
             });
         } else {
             llLoadModeGalleryfvbi.setVisibility(View.GONE);
+            nsvGalleryfvbi.setEnableScrolling(true);
             Snackbar.make(findViewById(android.R.id.content), "Check you connection", Snackbar.LENGTH_SHORT).show();
         }
     }

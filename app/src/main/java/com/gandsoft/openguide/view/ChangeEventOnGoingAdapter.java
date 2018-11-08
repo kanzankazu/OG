@@ -3,9 +3,8 @@ package com.gandsoft.openguide.view;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.os.Handler;
-import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,15 +30,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 class ChangeEventOnGoingAdapter extends RecyclerView.Adapter<ChangeEventOnGoingAdapter.ViewHolder> {
+
+    private final String accountid;
     private ChangeEventPastHook parent;
     private List<UserListEventResponseModel> models = new ArrayList<>();
-    private final String accountid;
-    private boolean isLoading;
+    private boolean isPreferUrl;
 
-    public ChangeEventOnGoingAdapter(Context parent, List<UserListEventResponseModel> items, String accountid, boolean isLoading) {
+    public ChangeEventOnGoingAdapter(Context parent, List<UserListEventResponseModel> items, String accountid) {
         this.models = items;
         this.accountid = accountid;
-        this.isLoading = isLoading;
         try {
             this.parent = (ChangeEventPastHook) parent;
         } catch (Exception e) {
@@ -47,7 +46,6 @@ class ChangeEventOnGoingAdapter extends RecyclerView.Adapter<ChangeEventOnGoingA
         }
     }
 
-    @NonNull
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_list_change_event, parent, false);
@@ -59,69 +57,49 @@ class ChangeEventOnGoingAdapter extends RecyclerView.Adapter<ChangeEventOnGoingA
         UserListEventResponseModel model = models.get(position);
         if (model.getStatus().equalsIgnoreCase("ONGOING EVENT")) {
 
-            String imageUrlPathBack = AppUtil.validationStringImageIcon((Activity) parent, model.getBackground(), model.getBackground_local(), true);
-            String imageUrlPathLogo = AppUtil.validationStringImageIcon((Activity) parent, model.getLogo(), model.getLogo_local(), true);
+            String imageUrlPathBack = AppUtil.validationStringImageIcon((Activity) parent, model.getBackground(), model.getBackground_local(), isPreferUrl);
+            String imageUrlPathLogo = AppUtil.validationStringImageIcon((Activity) parent, model.getLogo(), model.getLogo_local(), isPreferUrl);
+            Log.d("Lihat", "onBindViewHolder ChangeEventOnGoingAdapter : " + isPreferUrl);
 
+            //code here
             Glide.with((Activity) parent)
-                    .load(R.drawable.load)
-                    .asGif()
-                    .crossFade()
+                    .load(InputValidUtil.isLinkUrl(imageUrlPathBack) ? imageUrlPathBack : new File(imageUrlPathBack))
+                    .asBitmap()
+                    .error(R.drawable.template_account_og)
+                    .placeholder(R.drawable.ic_action_name)
                     .diskCacheStrategy(DiskCacheStrategy.NONE)
                     .skipMemoryCache(false)
                     .dontAnimate()
-                    .into(holder.ivListChangeEventBackgroundfvbi);
+                    .into(new SimpleTarget<Bitmap>() {
+                        @Override
+                        public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+                            holder.ivListChangeEventBackgroundfvbi.setImageBitmap(resource);
+                            if (NetworkUtil.isConnected((Activity) parent) && isPreferUrl) {
+                                String imageCachePath = PictureUtil.saveImageLogoBackIcon((Activity) parent, resource, model.getEvent_id() + "_Background_image");
+                                holder.db.saveEventBackgroundPicture(imageCachePath, accountid, model.getEvent_id());
+                            }
+
+                        }
+                    });
             Glide.with((Activity) parent)
-                    .load(R.drawable.load)
-                    .asGif()
-                    .crossFade()
+                    .load(InputValidUtil.isLinkUrl(imageUrlPathLogo) ? imageUrlPathLogo : new File(imageUrlPathLogo))
+                    .asBitmap()
+                    .error(R.drawable.template_account_og)
+                    .placeholder(R.drawable.ic_action_name)
                     .diskCacheStrategy(DiskCacheStrategy.NONE)
                     .skipMemoryCache(false)
                     .dontAnimate()
-                    .into(holder.ivListChangeEventLogofvbi);
+                    .into(new SimpleTarget<Bitmap>() {
+                        @Override
+                        public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+                            holder.ivListChangeEventLogofvbi.setImageBitmap(resource);
+                            if (NetworkUtil.isConnected((Activity) parent) && isPreferUrl) {
+                                String imageCachePath = PictureUtil.saveImageLogoBackIcon((Activity) parent, resource, model.getEvent_id() + "_Logo_image");
+                                holder.db.saveEventLogoPicture(imageCachePath, accountid, model.getEvent_id());
+                            }
 
-            new Handler().postDelayed(new Runnable() {
-                public void run() {
-                    //code here
-                    Glide.with((Activity) parent)
-                            .load(InputValidUtil.isLinkUrl(imageUrlPathBack) ? imageUrlPathBack : new File(imageUrlPathBack))
-                            .asBitmap()
-                            .placeholder(R.drawable.load)
-                            .error(R.drawable.template_account_og)
-                            .diskCacheStrategy(DiskCacheStrategy.NONE)
-                            .skipMemoryCache(false)
-                            .dontAnimate()
-                            .into(new SimpleTarget<Bitmap>() {
-                                @Override
-                                public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
-                                    holder.ivListChangeEventBackgroundfvbi.setImageBitmap(resource);
-                                    if (NetworkUtil.isConnected((Activity) parent)) {
-                                        String imageCachePath = PictureUtil.saveImageLogoBackIcon((Activity) parent, resource, model.getEvent_id() + "_Background_image");
-                                        holder.db.saveEventBackgroundPicture(imageCachePath, accountid, model.getEvent_id());
-                                    }
-
-                                }
-                            });
-                    Glide.with((Activity) parent)
-                            .load(InputValidUtil.isLinkUrl(imageUrlPathLogo) ? imageUrlPathLogo : new File(imageUrlPathLogo))
-                            .asBitmap()
-                            .placeholder(R.drawable.load)
-                            .error(R.drawable.template_account_og)
-                            .diskCacheStrategy(DiskCacheStrategy.NONE)
-                            .skipMemoryCache(false)
-                            .dontAnimate()
-                            .into(new SimpleTarget<Bitmap>() {
-                                @Override
-                                public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
-                                    holder.ivListChangeEventLogofvbi.setImageBitmap(resource);
-                                    if (NetworkUtil.isConnected((Activity) parent)) {
-                                        String imageCachePath = PictureUtil.saveImageLogoBackIcon((Activity) parent, resource, model.getEvent_id() + "_Logo_image");
-                                        holder.db.saveEventLogoPicture(imageCachePath, accountid, model.getEvent_id());
-                                    }
-
-                                }
-                            });
-                }
-            }, 500);
+                        }
+                    });
 
             holder.tvListChangeEventTitlefvbi.setText(model.getTitle());
             holder.tvListChangeEventDatefvbi.setText(model.getDate());
@@ -137,6 +115,42 @@ class ChangeEventOnGoingAdapter extends RecyclerView.Adapter<ChangeEventOnGoingA
     @Override
     public int getItemCount() {
         return models.size();
+    }
+
+    public void setData(List<UserListEventResponseModel> datas, boolean isPreferUrl) {
+        this.isPreferUrl = isPreferUrl;
+        /*datas = datas;
+        notifyDataSetChanged();*/
+        List<UserListEventResponseModel> ds = new ArrayList<>();
+        for (UserListEventResponseModel d : datas) {
+            if (d.getStatus().equalsIgnoreCase("ONGOING EVENT")) {
+                ds.add(d);
+            }
+        }
+        models = ds;
+        notifyDataSetChanged();
+    }
+
+    public void replaceData(List<UserListEventResponseModel> datas, boolean isPreferUrl) {
+        if (models.size() > 0) {
+            this.isPreferUrl = isPreferUrl;
+            models.clear();
+            List<UserListEventResponseModel> ds = new ArrayList<>();
+            for (UserListEventResponseModel d : datas) {
+                if (d.getStatus().equalsIgnoreCase("ONGOING EVENT")) {
+                    ds.add(d);
+                }
+            }
+            models.addAll(ds);
+        } else {
+            setData(datas, isPreferUrl);
+        }
+        notifyDataSetChanged();
+    }
+
+    public void addDatas(List<UserListEventResponseModel> datas, boolean isPreferUrl) {
+        models.addAll(datas);
+        notifyItemRangeInserted(models.size(), datas.size());
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
@@ -155,40 +169,5 @@ class ChangeEventOnGoingAdapter extends RecyclerView.Adapter<ChangeEventOnGoingA
             tvListChangeEventTitlefvbi = (TextView) itemView.findViewById(R.id.tvListChangeEventTitle);
             tvListChangeEventDatefvbi = (TextView) itemView.findViewById(R.id.tvListChangeEventDate);
         }
-    }
-
-    public void setData(List<UserListEventResponseModel> datas) {
-        /*datas = datas;
-        notifyDataSetChanged();*/
-        List<UserListEventResponseModel> ds = new ArrayList<>();
-        for (UserListEventResponseModel d : datas) {
-            if (d.getStatus().equalsIgnoreCase("ONGOING EVENT")) {
-                ds.add(d);
-            }
-        }
-        models = ds;
-        notifyDataSetChanged();
-    }
-
-    public void replaceData(List<UserListEventResponseModel> datas) {
-        this.isLoading = isLoading;
-        if (models.size() > 0) {
-            models.clear();
-            List<UserListEventResponseModel> ds = new ArrayList<>();
-            for (UserListEventResponseModel d : datas) {
-                if (d.getStatus().equalsIgnoreCase("ONGOING EVENT")) {
-                    ds.add(d);
-                }
-            }
-            models.addAll(ds);
-        } else {
-            setData(datas);
-        }
-        notifyDataSetChanged();
-    }
-
-    public void addDatas(List<UserListEventResponseModel> datas) {
-        models.addAll(datas);
-        notifyItemRangeInserted(models.size(), datas.size());
     }
 }

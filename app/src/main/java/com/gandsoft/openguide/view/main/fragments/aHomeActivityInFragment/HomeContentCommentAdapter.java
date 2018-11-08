@@ -2,6 +2,7 @@ package com.gandsoft.openguide.view.main.fragments.aHomeActivityInFragment;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
@@ -21,7 +22,6 @@ import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentPostComment
 import com.gandsoft.openguide.API.APIresponse.UserData.UserListEventResponseModel;
 import com.gandsoft.openguide.R;
 import com.gandsoft.openguide.database.SQLiteHelper;
-import com.gandsoft.openguide.support.AppUtil;
 import com.gandsoft.openguide.support.DateTimeUtil;
 import com.gandsoft.openguide.support.NetworkUtil;
 import com.gandsoft.openguide.support.PictureUtil;
@@ -33,11 +33,11 @@ import java.util.List;
 class HomeContentCommentAdapter extends RecyclerView.Adapter<HomeContentCommentAdapter.ViewHolder> {
 
     private final Activity activity;
-    private List<HomeContentPostCommentGetResponseModel> models = new ArrayList<>();
     private final EventTheEvent theEventModel;
     private final UserListEventResponseModel oneListEventModel;
     private final String accountId;
     private final String eventId;
+    private List<HomeContentPostCommentGetResponseModel> models = new ArrayList<>();
     private HomeContentCommentListener mlistener;
 
     public HomeContentCommentAdapter(Activity activity, List<HomeContentPostCommentGetResponseModel> models, EventTheEvent theEventModel, UserListEventResponseModel oneListEventModel, String accountId, String eventId, HomeContentCommentListener mlistener) {
@@ -66,48 +66,37 @@ class HomeContentCommentAdapter extends RecyclerView.Adapter<HomeContentCommentA
         holder.tvRVCommentContentfvbi.setText(model.getPost_content());
         holder.tvRVCommentTimefvbi.setText(DateTimeUtil.getTimeAgo(DateTimeUtil.stringToDate(model.getPost_time(), new SimpleDateFormat("yyyy/MM/dd HH:mm:ss"))));
 
-        /*Timer timer = new Timer();
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                activity.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-
-                        //contoh diff date
-                        *//*SimpleDateFormat format = new SimpleDateFormat("hh:mm:ss aa");
-                        Date date1 = format.parse("08:00:12 pm");
-                        Date date2 = format.parse("05:30:12 pm");
-                        long mills = date1.getTime() - date2.getTime();
-                        Log.v("Data1", ""+date1.getTime());
-                        Log.v("Data2", ""+date2.getTime());
-                        int hours = (int) (mills/(1000 * 60 * 60));
-                        int mins = (int) (mills/(1000*60)) % 60;
-                        String diff = hours + ":" + mins; // updated value every1 second
-                        txtCurrentTime.setText(diff);*//*
-                    }
-                });
-            }
-        }, 0, 1000);*/
-
-        AppUtil.validationStringImageIcon(activity, model.getImage_icon(), model.getImage_icon_local(), true);
         Glide.with(activity)
-                .load(model.getImage_icon())
-                .asBitmap()
-                .placeholder(R.drawable.template_account_og)
-                .skipMemoryCache(false)
+                .load(R.drawable.load)
+                .asGif()
+                .crossFade()
                 .diskCacheStrategy(DiskCacheStrategy.NONE)
-                .error(R.drawable.template_account_og)
-                .into(new SimpleTarget<Bitmap>() {
-                    @Override
-                    public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
-                        holder.ivRVCommentIconfvbi.setImageBitmap(resource);
-                        if (NetworkUtil.isConnected(activity)) {
-                            String imageCachePath = PictureUtil.saveImageHomeContentIcon(activity, resource, model.getAccount_id() + "_icon_comment", eventId);
-                            holder.db.saveCommentIcon(imageCachePath, accountId, eventId, model.getId());
-                        }
-                    }
-                });
+                .skipMemoryCache(false)
+                .dontAnimate()
+                .into(holder.ivRVCommentIconfvbi);
+
+        new Handler().postDelayed(new Runnable() {
+            public void run() {
+                Glide.with(activity)
+                        .load(model.getImage_icon())
+                        .asBitmap()
+                        .error(R.drawable.template_account_og)
+                        .placeholder(R.drawable.ic_action_name)
+                        .diskCacheStrategy(DiskCacheStrategy.NONE)
+                        .skipMemoryCache(false)
+                        .dontAnimate()
+                        .into(new SimpleTarget<Bitmap>() {
+                            @Override
+                            public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+                                holder.ivRVCommentIconfvbi.setImageBitmap(resource);
+                                if (NetworkUtil.isConnected(activity)) {
+                                    String imageCachePath = PictureUtil.saveImageHomeContentIcon(activity, resource, model.getAccount_id() + "_icon_comment", eventId);
+                                    holder.db.saveCommentIcon(imageCachePath, accountId, eventId, model.getId());
+                                }
+                            }
+                        });
+            }
+        }, 2000);
 
         if ((Integer.parseInt(theEventModel.getDeletepost_status()) == 1 && model.getAccount_id().equalsIgnoreCase(accountId)) || oneListEventModel.getRole_name().equalsIgnoreCase("ADMIN")) {
             holder.llRVCommentRemovefvbi.setVisibility(View.VISIBLE);
@@ -128,24 +117,6 @@ class HomeContentCommentAdapter extends RecyclerView.Adapter<HomeContentCommentA
     @Override
     public int getItemCount() {
         return models.size();
-    }
-
-    public class ViewHolder extends RecyclerView.ViewHolder {
-        private final TextView tvRVCommentUsernamefvbi;
-        private final TextView tvRVCommentTimefvbi;
-        private final TextView tvRVCommentContentfvbi;
-        private final LinearLayout llRVCommentRemovefvbi;
-        private final ImageView ivRVCommentIconfvbi;
-        SQLiteHelper db = new SQLiteHelper(itemView.getContext());
-
-        public ViewHolder(View itemView) {
-            super(itemView);
-            tvRVCommentUsernamefvbi = (TextView) itemView.findViewById(R.id.tvRVCommentUsername);
-            tvRVCommentContentfvbi = (TextView) itemView.findViewById(R.id.tvRVCommentContent);
-            tvRVCommentTimefvbi = (TextView) itemView.findViewById(R.id.tvRVCommentTime);
-            llRVCommentRemovefvbi = (LinearLayout) itemView.findViewById(R.id.llRVCommentRemove);
-            ivRVCommentIconfvbi = (ImageView) itemView.findViewById(R.id.ivRVCommentIcon);
-        }
     }
 
     public void setData(List<HomeContentPostCommentGetResponseModel> datas) {
@@ -191,5 +162,23 @@ class HomeContentCommentAdapter extends RecyclerView.Adapter<HomeContentCommentA
 
     interface HomeContentCommentListener {
         void onDelete(String commentId, int position);
+    }
+
+    public class ViewHolder extends RecyclerView.ViewHolder {
+        private final TextView tvRVCommentUsernamefvbi;
+        private final TextView tvRVCommentTimefvbi;
+        private final TextView tvRVCommentContentfvbi;
+        private final LinearLayout llRVCommentRemovefvbi;
+        private final ImageView ivRVCommentIconfvbi;
+        SQLiteHelper db = new SQLiteHelper(itemView.getContext());
+
+        public ViewHolder(View itemView) {
+            super(itemView);
+            tvRVCommentUsernamefvbi = (TextView) itemView.findViewById(R.id.tvRVCommentUsername);
+            tvRVCommentContentfvbi = (TextView) itemView.findViewById(R.id.tvRVCommentContent);
+            tvRVCommentTimefvbi = (TextView) itemView.findViewById(R.id.tvRVCommentTime);
+            llRVCommentRemovefvbi = (LinearLayout) itemView.findViewById(R.id.llRVCommentRemove);
+            ivRVCommentIconfvbi = (ImageView) itemView.findViewById(R.id.ivRVCommentIcon);
+        }
     }
 }

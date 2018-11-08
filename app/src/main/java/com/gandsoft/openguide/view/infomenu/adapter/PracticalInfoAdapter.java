@@ -95,7 +95,7 @@ public class PracticalInfoAdapter extends BaseExpandableListAdapter {
 
         HtmlTextView textView = (HtmlTextView) convertView.findViewById(R.id.tvPracticalInfoChild);
 
-        textView.setHtml(child.get(childPosition),new HtmlHttpImageGetter(textView));
+        textView.setHtml(child.get(childPosition), new HtmlHttpImageGetter(textView));
 
         return convertView;
     }

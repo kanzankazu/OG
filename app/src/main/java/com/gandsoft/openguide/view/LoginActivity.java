@@ -56,13 +56,11 @@ import retrofit2.Response;
 
 public class LoginActivity extends LocalBaseActivity {
 
-    SQLiteHelper db = new SQLiteHelper(this);
-
     private static final int UI_LOGIN = 0;
     private static final int UI_VERIFY = 1;
     private static final String TAG = "Lihat LoginActivity";
     private static final int API_CALLER_LOGIN = 1010;
-
+    SQLiteHelper db = new SQLiteHelper(this);
     /**/
     private CountryCodePicker ccpLoginfvbi;
     /*UI*/
@@ -536,8 +534,8 @@ public class LoginActivity extends LocalBaseActivity {
     private void moveToChangeEvent() {
         SessionUtil.setStringPreferences(ISeasonConfig.KEY_ACCOUNT_ID, phoneNumberSavedwoPlus);//old
         SessionUtil.setBoolPreferences(ISeasonConfig.KEY_IS_HAS_LOGIN, true);//old
-        startActivity(ChangeEventActivity.getActIntent(LoginActivity.this)
-        );
+        Intent intent = new Intent(LoginActivity.this, ChangeEventActivity.class);
+        startActivity(intent);
         finish();
     }
 
@@ -575,7 +573,7 @@ public class LoginActivity extends LocalBaseActivity {
 
     private void snackBar(String success, Boolean reloadAction) {
         if (reloadAction) {
-            Snackbar.make(findViewById(android.R.id.content), success, Snackbar.LENGTH_INDEFINITE).setAction("Reload", new View.OnClickListener() {
+            Snackbar.make(findViewById(android.R.id.content), success, Snackbar.LENGTH_LONG).setAction("Reload", new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     initPhoneNumberValidationInput();//reload

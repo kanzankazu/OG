@@ -1,8 +1,6 @@
 package com.gandsoft.openguide.API.APIresponse.Event;
 
-
-
-public class EventImportanInfo  {
+public class EventImportanInfo {
     public String title;
     public String info;
 

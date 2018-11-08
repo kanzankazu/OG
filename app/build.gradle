@@ -93,6 +93,7 @@ dependencies {
     implementation 'it.sephiroth.android.library.imagezoom:imagezoom:2.3.0'
     implementation 'com.soundcloud.android:android-crop:1.0.1@aar'
     implementation 'com.github.chrisbanes:PhotoView:2.0.0'
+    implementation 'com.soundcloud.android:android-crop:1.0.1@aar'
 
     // your app's other dependencies
     implementation 'com.facebook.fresco:fresco:1.10.0'

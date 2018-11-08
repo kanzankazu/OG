@@ -3,6 +3,7 @@ package com.gandsoft.openguide.support;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -249,6 +250,23 @@ public class PictureUtil {
         return false;
     }
 
+    public static boolean removeImageFromPathFile2(final Context context, final File file) {
+        final String where = MediaStore.MediaColumns.DATA + "=?";
+        final String[] selectionArgs = new String[]{
+                file.getAbsolutePath()
+        };
+        final ContentResolver contentResolver = context.getContentResolver();
+        final Uri filesUri = MediaStore.Files.getContentUri("external");
+
+        contentResolver.delete(filesUri, where, selectionArgs);
+
+        if (file.exists()) {
+
+            contentResolver.delete(filesUri, where, selectionArgs);
+        }
+        return !file.exists();
+    }
+
     public static Bitmap flipHorizontalImage(Bitmap src) {
         // create new matrix for transformation
         Matrix matrix = new Matrix();
@@ -390,7 +408,6 @@ public class PictureUtil {
                 e.printStackTrace();
             }
         }
-        Log.d("Lihat", "saveImageLogoBackIcon PictureUtil : " + savedImagePath);
         return savedImagePath;
     }
 
@@ -417,7 +434,6 @@ public class PictureUtil {
                 }
             }
         }
-        Log.d("Lihat", "saveImageHomeContentImage PictureUtil : " + savedImagePath);
         return savedImagePath;
     }
 
@@ -441,7 +457,6 @@ public class PictureUtil {
                 e.printStackTrace();
             }
         }
-        Log.d("Lihat", "saveImageHomeContentIcon PictureUtil : " + savedImagePath);
         return savedImagePath;
     }
 
@@ -473,8 +488,8 @@ public class PictureUtil {
         String savedImagePath;
         String replace = title.replace(" ", "");
         String imageFileName = replace + "_" + id + ".jpg";
-        //File imageDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)/* + "/Openguide/" + id*/.toString());
-        File imageDir = new File(activity.getExternalFilesDir(Environment.DIRECTORY_PICTURES)/* + "/Openguide/" + id*/.toString());
+        File imageDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)/* + "/Openguide/" + id*/.toString());
+//        File imageDir = new File(activity.getExternalFilesDir(Environment.DIRECTORY_PICTURES)/* + "/Openguide/" + id*/.toString());
         boolean success = true;
         if (!imageDir.exists()) {
             success = imageDir.mkdirs();

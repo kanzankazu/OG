@@ -61,5 +61,4 @@ public class App extends BaseApp {
         Realm.setDefaultConfiguration(realmConfig);*/
     }
 
-
 }

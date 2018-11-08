@@ -21,7 +21,7 @@ public class SplashscreenActivity extends LocalBaseActivity {
         ShimmerLayout shimmerText = (ShimmerLayout) findViewById(R.id.shimmer_logo);
         shimmerText.startShimmerAnimation();
 
-        if (SessionUtil.checkIfExist(ISeasonConfig.KEY_EVENT_ID)) {
+        if (SessionUtil.checkIfExist(ISeasonConfig.KEY_ACCOUNT_ID)) {
             moveToChangeEvent();
         } else {
             initComponent();

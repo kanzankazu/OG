@@ -1,7 +1,7 @@
 package com.gandsoft.openguide.API.APIrequest.HomeContent;
 
 public class HomeContentPostLikeRequestModel {
-    String account_id,event_id,kondisi,id_content, val_like,status_like,dbver;
+    String account_id, event_id, kondisi, id_content, val_like, status_like, dbver;
 
     public String getAccount_id() {
         return account_id;

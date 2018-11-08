@@ -142,9 +142,16 @@
             android:theme="@style/AppTheme.NoActionBar" />
 
         <service
-            android:name=".view.services.MyService"
+            android:name=".view.services.RepeatCheckDataService"
             android:enabled="true"
-            android:exported="true"/>
+            android:exported="true" />
+        <service
+            android:name=".view.services.OnClearFromRecentService"
+            android:enabled="true"
+            android:exported="true"
+            android:stopWithTask="false" />
+
+        <activity android:name="com.soundcloud.android.crop.CropImageActivity" />
     </application>
 
 </manifest>

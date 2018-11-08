@@ -1,6 +1,5 @@
 package com.gandsoft.openguide.support;
 
-
 public class SettingsScreen {
 
     /*protected static void _showSettingScreen(String intentStr) {

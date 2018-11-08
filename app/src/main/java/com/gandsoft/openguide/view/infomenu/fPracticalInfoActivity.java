@@ -16,9 +16,9 @@ import android.widget.ExpandableListView;
 import com.gandsoft.openguide.API.APIresponse.Event.EventImportanInfo;
 import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
-import com.gandsoft.openguide.view.infomenu.adapter.PracticalInfoAdapter;
 import com.gandsoft.openguide.database.SQLiteHelper;
 import com.gandsoft.openguide.support.SessionUtil;
+import com.gandsoft.openguide.view.infomenu.adapter.PracticalInfoAdapter;
 
 import java.util.ArrayList;
 

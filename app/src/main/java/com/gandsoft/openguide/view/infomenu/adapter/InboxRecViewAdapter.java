@@ -23,11 +23,11 @@ import java.util.List;
 
 public class InboxRecViewAdapter extends RecyclerView.Adapter<InboxRecViewAdapter.ViewHolder> {
 
-    private Activity activity;
-    private List<EventCommitteeNote> models;
     private final String accountId;
     private final String eventId;
     private final SQLiteHelper db;
+    private Activity activity;
+    private List<EventCommitteeNote> models;
 
     public InboxRecViewAdapter(Activity activity, ArrayList<EventCommitteeNote> models, String accountId, String eventId, SQLiteHelper db) {
         this.activity = activity;
@@ -85,6 +85,22 @@ public class InboxRecViewAdapter extends RecyclerView.Adapter<InboxRecViewAdapte
         return models.size();
     }
 
+    public void setData(List<EventCommitteeNote> datas) {
+        models = datas;
+        notifyDataSetChanged();
+    }
+
+    public void replaceData(List<EventCommitteeNote> datas) {
+        models.clear();
+        models.addAll(datas);
+        notifyDataSetChanged();
+    }
+
+    public void addDatas(List<EventCommitteeNote> datas) {
+        models.addAll(datas);
+        notifyItemRangeInserted(models.size(), datas.size());
+    }
+
     public class ViewHolder extends RecyclerView.ViewHolder {
 
         private final TextView tvInboxTitlefvbi;
@@ -101,21 +117,5 @@ public class InboxRecViewAdapter extends RecyclerView.Adapter<InboxRecViewAdapte
             bInboxDetailfvbi = (Button) itemView.findViewById(R.id.bInboxDetail);
             llInboxNotefvbi = (LinearLayout) itemView.findViewById(R.id.llInboxNote);
         }
-    }
-
-    public void setData(List<EventCommitteeNote> datas) {
-        models = datas;
-        notifyDataSetChanged();
-    }
-
-    public void replaceData(List<EventCommitteeNote> datas) {
-        models.clear();
-        models.addAll(datas);
-        notifyDataSetChanged();
-    }
-
-    public void addDatas(List<EventCommitteeNote> datas) {
-        models.addAll(datas);
-        notifyItemRangeInserted(models.size(), datas.size());
     }
 }

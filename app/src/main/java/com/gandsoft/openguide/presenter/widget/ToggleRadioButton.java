@@ -5,7 +5,6 @@ import android.support.v7.widget.AppCompatRadioButton;
 import android.util.AttributeSet;
 import android.widget.RadioGroup;
 
-
 /**
  * Created by gleen on 21/02/18.
  */
@@ -30,19 +29,19 @@ public class ToggleRadioButton extends AppCompatRadioButton {
     }
 
     @Override
-    public void setTag(Object tag) {
-        super.setTag(tag);
-        if (tag instanceof String) {
-            tagid = (String) tag;
-        }
-    }
-
-    @Override
     public Object getTag() {
         if (tagid != null) {
             return tagid;
         } else {
             return super.getTag();
+        }
+    }
+
+    @Override
+    public void setTag(Object tag) {
+        super.setTag(tag);
+        if (tag instanceof String) {
+            tagid = (String) tag;
         }
     }
 

@@ -1,10 +1,9 @@
 package com.gandsoft.openguide.API.APIresponse.Event;
 
-
 import java.util.ArrayList;
 import java.util.List;
 
-public class EventScheduleListDate  {
+public class EventScheduleListDate {
     public String date;
     public List<EventScheduleListDateDataList> data = new ArrayList<>();
 

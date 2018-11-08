@@ -20,6 +20,7 @@ public class DateTimeUtil {
     public static final int HOURS_SELECT = 2;
     public static final int MINUTES_SELECT = 3;
     public static final int SECONDS_SELECT = 4;
+    public static Date MAX_DATE = new Date(Long.MAX_VALUE);
 
     public static String getAge(int year, int month, int day) {
         Calendar dob = Calendar.getInstance();
@@ -180,7 +181,7 @@ public class DateTimeUtil {
         return null;
     }
 
-    public static String dateToString(Date date,SimpleDateFormat dateFormat) {
+    public static String dateToString(Date date, SimpleDateFormat dateFormat) {
         //SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
         //Date date = new Date();
         return dateFormat.format(date);
@@ -216,7 +217,7 @@ public class DateTimeUtil {
         return getDates(date1, date2);
     }
 
-    public static boolean isBetween2Time(String start,String end) {
+    public static boolean isBetween2Time(String start, String end) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("HHmm", Locale.getDefault());
         String now = dateFormat.format(new Date());
         String qstart = start.replace(":", "");
@@ -224,7 +225,7 @@ public class DateTimeUtil {
         return Integer.valueOf(now) > Integer.valueOf(qstart) && Integer.valueOf(now) < Integer.valueOf(qend);
     }
 
-    public static boolean isBetween2Date(Date startDate,Date endDate){
+    public static boolean isBetween2Date(Date startDate, Date endDate) {
         return new Date().after(startDate) && new Date().before(endDate);
     }
 
@@ -311,12 +312,12 @@ public class DateTimeUtil {
     public static Date currentDate() {
         return Calendar.getInstance().getTime();
     }
+    //
 
     private static int getTimeDistanceInMinutes(long time) {
         long timeDistance = currentDate().getTime() - time;
         return Math.round((Math.abs(timeDistance) / 1000) / 60);
     }
-    //
 
     public static boolean isSameDay(Date date1, Date date2) {
         if (date1 == null || date2 == null) {
@@ -492,6 +493,4 @@ public class DateTimeUtil {
         if (d2 == null) return d1;
         return (d1.before(d2)) ? d1 : d2;
     }
-
-    public static Date MAX_DATE = new Date(Long.MAX_VALUE);
 }

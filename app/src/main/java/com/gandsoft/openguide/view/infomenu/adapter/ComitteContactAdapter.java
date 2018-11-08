@@ -94,6 +94,28 @@ public class ComitteContactAdapter extends RecyclerView.Adapter<ComitteContactAd
         return models.size();
     }
 
+    public void removeAt(int position) {
+        models.remove(position);
+        notifyItemRemoved(position);
+        notifyItemRangeChanged(0, models.size());
+    }
+
+    public void setData(List<EventDataContactList> datas) {
+        models = datas;
+        notifyDataSetChanged();
+    }
+
+    public void replaceData(List<EventDataContactList> datas) {
+        models.clear();
+        models.addAll(datas);
+        notifyDataSetChanged();
+    }
+
+    public void addDatas(List<EventDataContactList> datas) {
+        models.addAll(datas);
+        notifyItemRangeInserted(models.size(), datas.size());
+    }
+
     //View holder class, where all view components are defined
     class MyViewHolder extends RecyclerView.ViewHolder {
 
@@ -116,27 +138,5 @@ public class ComitteContactAdapter extends RecyclerView.Adapter<ComitteContactAd
 
         }
 
-    }
-
-    public void removeAt(int position) {
-        models.remove(position);
-        notifyItemRemoved(position);
-        notifyItemRangeChanged(0, models.size());
-    }
-
-    public void setData(List<EventDataContactList> datas) {
-        models = datas;
-        notifyDataSetChanged();
-    }
-
-    public void replaceData(List<EventDataContactList> datas) {
-        models.clear();
-        models.addAll(datas);
-        notifyDataSetChanged();
-    }
-
-    public void addDatas(List<EventDataContactList> datas) {
-        models.addAll(datas);
-        notifyItemRangeInserted(models.size(), datas.size());
     }
 }

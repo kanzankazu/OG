@@ -5,7 +5,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Build;
@@ -15,7 +14,6 @@ import android.telephony.SubscriptionInfo;
 import android.telephony.SubscriptionManager;
 import android.telephony.TelephonyManager;
 import android.util.Log;
-import android.widget.Toast;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -49,6 +47,10 @@ public class NetworkUtil {
     public static final int NETWORK_TYPE_HSPAP = 15; // Level 13
     public static final int NETWORK_TYPE_IDEN = 11; // Level 8
     public static final int NETWORK_TYPE_LTE = 13; // Level 11
+    private static final String IPV4_BASIC_PATTERN_STRING =
+            "(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}" + // initial 3 fields, 0-255 followed by .
+                    "([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])"; // final field, 0-255
+    private static final Pattern IPV4_PATTERN = Pattern.compile("^" + IPV4_BASIC_PATTERN_STRING + "$");
     private static int LoopCurrentIP;
     private final Context context;
 
@@ -107,6 +109,8 @@ public class NetworkUtil {
         return false;
     }
 
+    /*CHECK CONNECTION TYPE*/
+
     public static boolean isOnlineByPort() {
         try {
             int timeoutMs = 2000;
@@ -133,8 +137,6 @@ public class NetworkUtil {
             return false;
         }
     }
-
-    /*CHECK CONNECTION TYPE*/
 
     public static int getConnectionMainType(Context context) {
 
@@ -206,6 +208,8 @@ public class NetworkUtil {
         }
     }
 
+    /*GET SIGNAL STRENGHT*/
+
     public static String getNetworkType(final Context activity) {
         String networkStatus = "";
         final ConnectivityManager connMgr = (ConnectivityManager)
@@ -255,8 +259,6 @@ public class NetworkUtil {
         }
         return type;
     }
-
-    /*GET SIGNAL STRENGHT*/
 
     public static int checkNetworkStrengh(Context context) {
         ConnectivityManager cm = (ConnectivityManager) context.getSystemService(CONNECTIVITY_SERVICE);
@@ -342,6 +344,8 @@ public class NetworkUtil {
 
     }
 
+    /*ON OFF MOBILE DATA & WIFI*/
+
     public static int checkNetworkStatusInt(final Context context) {
         int networkStatus = 3;
         // Get connect mangaer
@@ -387,19 +391,6 @@ public class NetworkUtil {
         return networkStatus;
     }
 
-    /*ON OFF MOBILE DATA & WIFI*/
-
-    public static boolean isWifiEnabled(Context context) {
-        WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
-        return wifiManager.getWifiState() == WifiManager.WIFI_STATE_ENABLED;
-    }
-
-    public static boolean isWifiConnected(Context context) {
-        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(CONNECTIVITY_SERVICE);
-        NetworkInfo wifiInfo = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-        return wifiInfo.getState() == NetworkInfo.State.CONNECTED;
-    }
-
     /*public static void setWifiEnabled(Context context) {
         try {
             WifiManager wifi = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
@@ -431,6 +422,17 @@ public class NetworkUtil {
             e.printStackTrace();
         }
     }*/
+
+    public static boolean isWifiEnabled(Context context) {
+        WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+        return wifiManager.getWifiState() == WifiManager.WIFI_STATE_ENABLED;
+    }
+
+    public static boolean isWifiConnected(Context context) {
+        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(CONNECTIVITY_SERVICE);
+        NetworkInfo wifiInfo = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+        return wifiInfo.getState() == NetworkInfo.State.CONNECTED;
+    }
 
     public static boolean isMobileDataEnabled(Context context) {
         ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(CONNECTIVITY_SERVICE);
@@ -517,24 +519,6 @@ public class NetworkUtil {
             //
         }*/
 
-    }
-
-    @SuppressLint({"HardwareIds", "MissingPermission"})
-    public boolean isSimAvailable(Context context) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
-            SubscriptionManager sManager = (SubscriptionManager) context.getSystemService(Context.TELEPHONY_SUBSCRIPTION_SERVICE);
-            SubscriptionInfo infoSim1 = sManager.getActiveSubscriptionInfoForSimSlotIndex(0);
-            SubscriptionInfo infoSim2 = sManager.getActiveSubscriptionInfoForSimSlotIndex(1);
-            if (infoSim1 != null || infoSim2 != null) {
-                return true;
-            }
-        } else {
-            TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
-            if (telephonyManager.getSimSerialNumber() != null) {
-                return true;
-            }
-        }
-        return false;
     }
 
     private static boolean isMobileDataEnabledFromLollipop(Context context) {
@@ -628,6 +612,8 @@ public class NetworkUtil {
         }
     }
 
+    /*GET IP MAC*/
+
     public static boolean isAirplaneModeOn(Context context) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
             return Settings.System.getInt(context.getContentResolver(),
@@ -637,13 +623,6 @@ public class NetworkUtil {
                     Settings.Global.AIRPLANE_MODE_ON, 0) != 0;
         }
     }
-
-    /*GET IP MAC*/
-
-    private static final String IPV4_BASIC_PATTERN_STRING =
-            "(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}" + // initial 3 fields, 0-255 followed by .
-                    "([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])"; // final field, 0-255
-    private static final Pattern IPV4_PATTERN = Pattern.compile("^" + IPV4_BASIC_PATTERN_STRING + "$");
 
     public static boolean isIPv4Address(final String input) {
         return IPV4_PATTERN.matcher(input).matches();
@@ -750,6 +729,21 @@ public class NetworkUtil {
         return "";
     }
 
+    //The return is defined in RILConstants.java, e.g. RILConstants.NETWORK_MODE_WCDMA_PREF
+    public static int getPreferredNetwork(Context context) {
+        TelephonyManager mTelephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+        Method method = getHiddenMethod("getPreferredNetworkType", TelephonyManager.class, null);
+        int preferredNetwork = -1000;
+        try {
+            preferredNetwork = (int) method.invoke(mTelephonyManager);
+            //Log.i(TAG, "Preferred Network is ::: " + preferredNetwork);
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            e.printStackTrace();
+        }
+
+        return preferredNetwork;
+    }
+
     /*CHANGE PREFERENCE NETWORK*/
 
     /*// NETWORK_MODE_* See ril.h RIL_REQUEST_SET_PREFERRED_NETWORK_TYPE
@@ -777,21 +771,6 @@ public class NetworkUtil {
     int NETWORK_MODE_TDSCDMA_CDMA_EVDO_GSM_WCDMA     = 21;  // TD-SCDMA,EvDo,CDMA,GSM/WCDMA
     int NETWORK_MODE_LTE_TDSCDMA_CDMA_EVDO_GSM_WCDMA = 22;  // TD-SCDMA/LTE/GSM/WCDMA, CDMA, and EvDo*/
 
-    //The return is defined in RILConstants.java, e.g. RILConstants.NETWORK_MODE_WCDMA_PREF
-    public static int getPreferredNetwork(Context context) {
-        TelephonyManager mTelephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
-        Method method = getHiddenMethod("getPreferredNetworkType", TelephonyManager.class, null);
-        int preferredNetwork = -1000;
-        try {
-            preferredNetwork = (int) method.invoke(mTelephonyManager);
-            //Log.i(TAG, "Preferred Network is ::: " + preferredNetwork);
-        } catch (IllegalAccessException | InvocationTargetException e) {
-            e.printStackTrace();
-        }
-
-        return preferredNetwork;
-    }
-
     //The parameter must be based on RILConstants.java, e.g.: RILConstants.NETWORK_MODE_LTE_ONLY
     public static void setPreferredNetwork(Context context, int networkType) {
         try {
@@ -818,8 +797,6 @@ public class NetworkUtil {
 
         return method;
     }
-
-    /*get all ipString scan*/
 
     public static ArrayList<InetAddress> getConnectedDevices(String YourPhoneIPAddress) {
         ArrayList<InetAddress> ret = new ArrayList<InetAddress>();
@@ -851,21 +828,7 @@ public class NetworkUtil {
         return ret;
     }
 
-    public String getUIText22(Context context) {
-        SubscriptionManager subscriptionManager = null;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
-            subscriptionManager = (SubscriptionManager) context.getSystemService(Context.TELEPHONY_SUBSCRIPTION_SERVICE);
-            int nDataSubscriptionId = getDefaultDataSubscriptionId(subscriptionManager);
-            if (nDataSubscriptionId != SubscriptionManager.INVALID_SUBSCRIPTION_ID) {
-                SubscriptionInfo si = subscriptionManager.getActiveSubscriptionInfo(nDataSubscriptionId);
-                if (si != null) {
-                    return (si.getCarrierName().toString());
-                }
-            }
-        }
-
-        return "null";
-    }
+    /*get all ipString scan*/
 
     public static int getDefaultDataSubscriptionId(final SubscriptionManager subscriptionManager) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
@@ -894,6 +857,40 @@ public class NetworkUtil {
             e1.printStackTrace();
         }
         return (SubscriptionManager.INVALID_SUBSCRIPTION_ID);
+    }
+
+    @SuppressLint({"HardwareIds", "MissingPermission"})
+    public boolean isSimAvailable(Context context) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+            SubscriptionManager sManager = (SubscriptionManager) context.getSystemService(Context.TELEPHONY_SUBSCRIPTION_SERVICE);
+            SubscriptionInfo infoSim1 = sManager.getActiveSubscriptionInfoForSimSlotIndex(0);
+            SubscriptionInfo infoSim2 = sManager.getActiveSubscriptionInfoForSimSlotIndex(1);
+            if (infoSim1 != null || infoSim2 != null) {
+                return true;
+            }
+        } else {
+            TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+            if (telephonyManager.getSimSerialNumber() != null) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public String getUIText22(Context context) {
+        SubscriptionManager subscriptionManager = null;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+            subscriptionManager = (SubscriptionManager) context.getSystemService(Context.TELEPHONY_SUBSCRIPTION_SERVICE);
+            int nDataSubscriptionId = getDefaultDataSubscriptionId(subscriptionManager);
+            if (nDataSubscriptionId != SubscriptionManager.INVALID_SUBSCRIPTION_ID) {
+                SubscriptionInfo si = subscriptionManager.getActiveSubscriptionInfo(nDataSubscriptionId);
+                if (si != null) {
+                    return (si.getCarrierName().toString());
+                }
+            }
+        }
+
+        return "null";
     }
 
 }

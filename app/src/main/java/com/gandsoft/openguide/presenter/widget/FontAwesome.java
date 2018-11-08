@@ -3,10 +3,8 @@ package com.gandsoft.openguide.presenter.widget;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
-import android.widget.TextView;
 
 public class FontAwesome extends android.support.v7.widget.AppCompatTextView {
-
 
     public FontAwesome(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);

@@ -29,10 +29,6 @@ public class InfoListViewAdapter extends RecyclerView.Adapter<InfoListViewAdapte
     private Activity context;
     private ListAdapterListener mListener;
 
-    public interface ListAdapterListener { // create an interface
-        void click(String position); // create callback function
-    }
-
     public InfoListViewAdapter(Activity context, List<InfoListviewModel> items, ListAdapterListener mListener) {
         this.context = context;
         this.mListener = mListener;
@@ -98,30 +94,6 @@ public class InfoListViewAdapter extends RecyclerView.Adapter<InfoListViewAdapte
         return models.size();
     }
 
-    class ViewHolder extends RecyclerView.ViewHolder {
-
-        LinearLayout llListInfofvbi;
-        ImageView ivListInfofvbi;
-        TextView tvListInfofvbi;
-        ImageView ivListInfoAlert;
-
-        SQLiteHelper db;
-        String eventId, accountId;
-
-        public ViewHolder(View itemView) {
-
-            super(itemView);
-            db = new SQLiteHelper(itemView.getContext());
-            llListInfofvbi = (LinearLayout) itemView.findViewById(R.id.llListInfo);
-            ivListInfofvbi = (ImageView) itemView.findViewById(R.id.ivListInfo);
-            tvListInfofvbi = (TextView) itemView.findViewById(R.id.tvListInfo);
-            ivListInfoAlert = (ImageView) itemView.findViewById(R.id.ivListInfoAlert);
-            accountId = SessionUtil.getStringPreferences(ISeasonConfig.KEY_ACCOUNT_ID, null);
-            eventId = SessionUtil.getStringPreferences(ISeasonConfig.KEY_EVENT_ID, null);
-
-        }
-    }
-
     public void setData(List<InfoListviewModel> datas) {
         if (datas.size() > 0) {
             models.clear();
@@ -149,5 +121,33 @@ public class InfoListViewAdapter extends RecyclerView.Adapter<InfoListViewAdapte
             models.remove(anInt);
         }
         notifyDataSetChanged();
+    }
+
+    public interface ListAdapterListener { // create an interface
+        void click(String position); // create callback function
+    }
+
+    class ViewHolder extends RecyclerView.ViewHolder {
+
+        LinearLayout llListInfofvbi;
+        ImageView ivListInfofvbi;
+        TextView tvListInfofvbi;
+        ImageView ivListInfoAlert;
+
+        SQLiteHelper db;
+        String eventId, accountId;
+
+        public ViewHolder(View itemView) {
+
+            super(itemView);
+            db = new SQLiteHelper(itemView.getContext());
+            llListInfofvbi = (LinearLayout) itemView.findViewById(R.id.llListInfo);
+            ivListInfofvbi = (ImageView) itemView.findViewById(R.id.ivListInfo);
+            tvListInfofvbi = (TextView) itemView.findViewById(R.id.tvListInfo);
+            ivListInfoAlert = (ImageView) itemView.findViewById(R.id.ivListInfoAlert);
+            accountId = SessionUtil.getStringPreferences(ISeasonConfig.KEY_ACCOUNT_ID, null);
+            eventId = SessionUtil.getStringPreferences(ISeasonConfig.KEY_EVENT_ID, null);
+
+        }
     }
 }

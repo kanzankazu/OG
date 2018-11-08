@@ -31,7 +31,8 @@ public class GalleryResponseModel {
         this.number = number;
     }
 
-    public GalleryResponseModel(){}
+    public GalleryResponseModel() {
+    }
 
     public String getImage_postedLocal() {
         return image_postedLocal;

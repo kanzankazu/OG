@@ -1,8 +1,6 @@
 package com.gandsoft.openguide.API.APIresponse.Event;
 
-
-
-public class EventAbout  {
+public class EventAbout {
     public String background;
     public String logo;
     public String description;

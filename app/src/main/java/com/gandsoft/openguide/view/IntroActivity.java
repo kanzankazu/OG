@@ -30,6 +30,38 @@ public class IntroActivity extends LocalBaseActivity {
     private TextView[] dots;
     private int[] layouts;
     private Button btnSkip, btnNext;
+    ViewPager.OnPageChangeListener viewPagerPageChangeListener = new ViewPager.OnPageChangeListener() {
+
+        @Override
+        public void onPageSelected(int position) {
+            addBottomDots(position);
+
+            // changing the next button text 'NEXT' / 'GOT IT'
+            if (position == layouts.length - 1) {
+                // last page. make button text to GOT IT
+                btnNext.setText(getString(R.string.start));
+                btnSkip.setVisibility(View.INVISIBLE);
+            } else {
+                // still pages are left
+                btnNext.setText(getString(R.string.next));
+                btnSkip.setVisibility(View.VISIBLE);
+            }
+        }
+
+        @Override
+        public void onPageScrolled(int arg0, float arg1, int arg2) {
+
+        }
+
+        @Override
+        public void onPageScrollStateChanged(int arg0) {
+
+        }
+    };
+
+    public static Intent getActIntent(Activity activity) {
+        return new Intent(activity, IntroActivity.class);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -135,38 +167,10 @@ public class IntroActivity extends LocalBaseActivity {
     }
 
     private void moveToChangeEvent() {
-        startActivity(ChangeEventActivity.getActIntent(IntroActivity.this));
+        Intent intent = new Intent(IntroActivity.this, ChangeEventActivity.class);
+        startActivity(intent);
         finish();
     }
-
-    ViewPager.OnPageChangeListener viewPagerPageChangeListener = new ViewPager.OnPageChangeListener() {
-
-        @Override
-        public void onPageSelected(int position) {
-            addBottomDots(position);
-
-            // changing the next button text 'NEXT' / 'GOT IT'
-            if (position == layouts.length - 1) {
-                // last page. make button text to GOT IT
-                btnNext.setText(getString(R.string.start));
-                btnSkip.setVisibility(View.INVISIBLE);
-            } else {
-                // still pages are left
-                btnNext.setText(getString(R.string.next));
-                btnSkip.setVisibility(View.VISIBLE);
-            }
-        }
-
-        @Override
-        public void onPageScrolled(int arg0, float arg1, int arg2) {
-
-        }
-
-        @Override
-        public void onPageScrollStateChanged(int arg0) {
-
-        }
-    };
 
     /**
      * Making notification bar transparent
@@ -205,15 +209,10 @@ public class IntroActivity extends LocalBaseActivity {
             return view == obj;
         }
 
-
         @Override
         public void destroyItem(ViewGroup container, int position, Object object) {
             View view = (View) object;
             container.removeView(view);
         }
-    }
-
-    public static Intent getActIntent(Activity activity) {
-        return new Intent(activity, IntroActivity.class);
     }
 }

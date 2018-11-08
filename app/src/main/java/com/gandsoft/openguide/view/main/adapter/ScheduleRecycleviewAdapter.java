@@ -148,6 +148,42 @@ public class ScheduleRecycleviewAdapter extends RecyclerView.Adapter<ScheduleRec
         return models.size();
     }
 
+    public void removeAt(int position) {
+        models.remove(position);
+        notifyItemRemoved(position);
+        notifyItemRangeChanged(0, models.size());
+    }
+
+    public void setData(List<EventScheduleListDateDataList> datas) {
+        if (datas.size() > 0) {
+            models.clear();
+            models = datas;
+        } else {
+            models = datas;
+        }
+        notifyDataSetChanged();
+        notifyItemRangeChanged(0, models.size());
+    }
+
+    public void replaceData(List<EventScheduleListDateDataList> datas) {
+        models.clear();
+        models.addAll(datas);
+        notifyDataSetChanged();
+    }
+
+    public void addDatas(List<EventScheduleListDateDataList> datas) {
+        models.addAll(datas);
+        notifyItemRangeInserted(models.size(), datas.size());
+    }
+
+    public interface ScheduleListener {
+        void onClickVote(String link);
+
+        void onClickQNA(String link);
+
+        void onClickExternal(String link);
+    }
+
     //View holder class, where all view components are defined
     class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
@@ -185,42 +221,6 @@ public class ScheduleRecycleviewAdapter extends RecyclerView.Adapter<ScheduleRec
 
         }
 
-    }
-
-    public void removeAt(int position) {
-        models.remove(position);
-        notifyItemRemoved(position);
-        notifyItemRangeChanged(0, models.size());
-    }
-
-    public void setData(List<EventScheduleListDateDataList> datas) {
-        if (datas.size() > 0) {
-            models.clear();
-            models = datas;
-        } else {
-            models = datas;
-        }
-        notifyDataSetChanged();
-        notifyItemRangeChanged(0, models.size());
-    }
-
-    public void replaceData(List<EventScheduleListDateDataList> datas) {
-        models.clear();
-        models.addAll(datas);
-        notifyDataSetChanged();
-    }
-
-    public void addDatas(List<EventScheduleListDateDataList> datas) {
-        models.addAll(datas);
-        notifyItemRangeInserted(models.size(), datas.size());
-    }
-
-    public interface ScheduleListener {
-        void onClickVote(String link);
-
-        void onClickQNA(String link);
-
-        void onClickExternal(String link);
     }
 
     /*public void setReplaceData(List<EventScheduleListDateDataList> datas) {

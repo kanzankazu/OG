@@ -4,7 +4,6 @@ package com.gandsoft.openguide;
  * Created by glenn on 1/25/18.
  */
 
-
 public interface IConfig {
 
     String API_BASE_URL = "http://api.openguides.id:3000/";

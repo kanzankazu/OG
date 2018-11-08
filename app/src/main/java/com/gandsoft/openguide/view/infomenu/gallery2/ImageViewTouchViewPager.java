@@ -10,9 +10,8 @@ import it.sephiroth.android.library.imagezoom.ImageViewTouch;
 
 public class ImageViewTouchViewPager extends ViewPager {
 
-    private static final String TAG = "ImageViewTouchViewPager";
     public static final String VIEW_PAGER_OBJECT_TAG = "image#";
-
+    private static final String TAG = "ImageViewTouchViewPager";
     private int previousPosition;
 
     private OnPageSelectedListener onPageSelectedListener;
@@ -38,12 +37,6 @@ public class ImageViewTouchViewPager extends ViewPager {
         } else {
             return super.canScroll(v, checkV, dx, x, y);
         }
-    }
-
-    public interface OnPageSelectedListener {
-
-        public void onPageSelected(int position);
-
     }
 
     private void init() {
@@ -73,5 +66,11 @@ public class ImageViewTouchViewPager extends ViewPager {
                 }
             }
         });
+    }
+
+    public interface OnPageSelectedListener {
+
+        public void onPageSelected(int position);
+
     }
 }

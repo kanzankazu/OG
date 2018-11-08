@@ -14,7 +14,7 @@ import android.text.TextUtils;
 import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.database.SQLiteHelper;
 import com.gandsoft.openguide.view.LoginActivity;
-import com.gandsoft.openguide.view.services.MyService;
+import com.gandsoft.openguide.view.services.RepeatCheckDataService;
 import com.google.firebase.auth.FirebaseAuth;
 
 public class AppUtil {
@@ -28,7 +28,9 @@ public class AppUtil {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         AppUtil.signOutFull(activity, db, showSnackBar, accountId);
-                        ServiceUtil.stopSevice(activity, targetClass);
+                        if (ServiceUtil.isMyServiceRunning(activity, targetClass)) {
+                            ServiceUtil.stopSevice(activity, targetClass);
+                        }
                         NotifUtil.clearNotificationAll(activity);
                     }
                 })
@@ -44,8 +46,8 @@ public class AppUtil {
         activity.startActivity(new Intent(activity, LoginActivity.class));
         activity.finishAffinity();
         //SessionUtil.setBoolPreferences(ISeasonConfig.KEY_IS_HAS_LOGIN, false);
-        //SessionUtil.deleteKeyPreferences(ISeasonConfig.KEY_ACCOUNT_ID);
-        //SessionUtil.deleteKeyPreferences(ISeasonConfig.KEY_EVENT_ID);
+        //SessionUtil.removeKeyPreferences(ISeasonConfig.KEY_ACCOUNT_ID);
+        //SessionUtil.removeKeyPreferences(ISeasonConfig.KEY_EVENT_ID);
         SessionUtil.removeAllSharedPreferences();
 
         if (!TextUtils.isEmpty(accountId)) {
@@ -59,14 +61,14 @@ public class AppUtil {
         Intent intent9 = new Intent(activity, targetClass);
         activity.startActivity(intent9);
         activity.finish();
-        SessionUtil.deleteKeyPreferences(ISeasonConfig.KEY_EVENT_ID);
+        SessionUtil.removeKeyPreferences(ISeasonConfig.KEY_EVENT_ID);
 
         if (isNotificationVisible(activity, idNotif)) {
             //notificationManager.cancel(idNotif);
             notificationManager.cancelAll();
         }
 
-        activity.stopService(new Intent(activity, MyService.class));
+        activity.stopService(new Intent(activity, RepeatCheckDataService.class));
     }
 
     private static boolean isNotificationVisible(Context context, int idNotif) {

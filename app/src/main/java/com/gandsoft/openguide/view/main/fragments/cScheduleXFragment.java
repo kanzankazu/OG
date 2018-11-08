@@ -9,7 +9,9 @@ import android.view.ViewGroup;
 import com.gandsoft.openguide.R;
 
 public class cScheduleXFragment extends Fragment {
-    public cScheduleXFragment(){ }
+    public cScheduleXFragment() {
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_cx_fact, container, false);

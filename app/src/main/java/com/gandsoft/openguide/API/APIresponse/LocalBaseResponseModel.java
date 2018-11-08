@@ -1,7 +1,7 @@
 package com.gandsoft.openguide.API.APIresponse;
 
 public class LocalBaseResponseModel {
-    String status,message;
+    String status, message;
 
     public String getStatus() {
         return status;

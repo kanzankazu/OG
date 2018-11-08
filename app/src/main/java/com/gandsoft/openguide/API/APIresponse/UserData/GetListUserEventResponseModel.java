@@ -1,6 +1,5 @@
 package com.gandsoft.openguide.API.APIresponse.UserData;
 
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,8 +21,6 @@ public class GetListUserEventResponseModel {
     public String role_name;
     public String image_url_local;
     public List<UserListEventResponseModel> list_event = new ArrayList<>();
-
-
 
     public int getNumber() {
         return number;
@@ -348,6 +345,5 @@ public class GetListUserEventResponseModel {
     public void setListEvent(List<UserListEventResponseModel> listEvent) {
         this.listEvent = listEvent;
     }*/
-
 
 }

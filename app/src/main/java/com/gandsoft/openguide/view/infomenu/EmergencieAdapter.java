@@ -13,7 +13,7 @@ import com.gandsoft.openguide.R;
 
 import java.util.ArrayList;
 
-public class EmergencieAdapter extends BaseExpandableListAdapter{
+public class EmergencieAdapter extends BaseExpandableListAdapter {
 
     private ArrayList<String> headerItems = new ArrayList<>();
     private ArrayList<Object> childItems = new ArrayList<>();
@@ -64,8 +64,8 @@ public class EmergencieAdapter extends BaseExpandableListAdapter{
 
     @Override
     public View getGroupView(int i, boolean b, View view, ViewGroup viewGroup) {
-        if (view==null){
-            view = inflater.inflate(R.layout.layout_list_emergencie_header,null);
+        if (view == null) {
+            view = inflater.inflate(R.layout.layout_list_emergencie_header, null);
         }
 
         ImageView ivEmergencieHeaderfvbi = (ImageView) view.findViewById(R.id.ivEmergencieHeader);
@@ -85,8 +85,8 @@ public class EmergencieAdapter extends BaseExpandableListAdapter{
     @Override
     public View getChildView(int i, int i1, boolean b, View view, ViewGroup viewGroup) {
 
-        if (view==null){
-            view = inflater.inflate(R.layout.layout_list_emergencie_child,null);
+        if (view == null) {
+            view = inflater.inflate(R.layout.layout_list_emergencie_child, null);
         }
 
         TextView tvEmergencieChildfvbi = (TextView) view.findViewById(R.id.tvEmergencieChild);

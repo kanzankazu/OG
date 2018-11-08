@@ -37,6 +37,11 @@ public class CheckBoxReactiveFrameLayout extends FrameLayout {
         super(context, attrs, defStyleAttr, defStyleRes);
     }
 
+    @NonNull
+    private static String removeLast(String str) {
+        return str.substring(0, str.length() - 1);
+    }
+
     public void addChildRefID(String refID) {
         childList.add(refID);
     }
@@ -73,11 +78,6 @@ public class CheckBoxReactiveFrameLayout extends FrameLayout {
             tot++;
         }
         return returnArray.toArray(new Integer[returnArray.size()]);
-    }
-
-    @NonNull
-    private static String removeLast(String str) {
-        return str.substring(0, str.length() - 1);
     }
 
 }

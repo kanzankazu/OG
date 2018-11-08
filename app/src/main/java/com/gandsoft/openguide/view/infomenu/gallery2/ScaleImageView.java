@@ -10,30 +10,23 @@ import android.view.MotionEvent;
 import android.view.View;
 
 public class ScaleImageView extends android.support.v7.widget.AppCompatImageView implements View.OnTouchListener {
+    private final float[] mMatrixValues = new float[9];
+    String TAG = "ScaleImageView";
     private Context mContext;
     private float MAX_SCALE = 2f;
-
     private Matrix mMatrix;
-    private final float[] mMatrixValues = new float[9];
-
     // display width height.
     private int mWidth;
     private int mHeight;
-
     private int mIntrinsicWidth;
     private int mIntrinsicHeight;
-
     private float mScale;
     private float mMinScale;
-
     private float mPrevDistance;
     private boolean isScaling;
-
     private int mPrevMoveX;
     private int mPrevMoveY;
     private GestureDetector mDetector;
-
-    String TAG = "ScaleImageView";
 
     public ScaleImageView(Context context, AttributeSet attr) {
         super(context, attr);

@@ -273,7 +273,6 @@ public class hFeedbackActivity extends AppCompatActivity {
                 for (int i = 0; i < llfeedbackfvbi.getChildCount(); i++) {
                     View child = llfeedbackfvbi.getChildAt(i);
 
-
                     if (child instanceof LinearLayout) {
                         LinearLayout linearLayout = (LinearLayout) child;
 
@@ -369,7 +368,7 @@ public class hFeedbackActivity extends AppCompatActivity {
         /*INIT VALIDATE DATE*/
         Date currentDate = DateTimeUtil.currentDate();
 
-        String startDate = db.getOneListEvent(eventId,accountId).getStart_date();//"yyyyMMdd"
+        String startDate = db.getOneListEvent(eventId, accountId).getStart_date();//"yyyyMMdd"
         String startDateYearMonth = startDate.substring(0, 6);//"yyyyMM"
 
         String dateStartEnd = db.getOneListEvent(eventId, accountId).getDate();//"dd-dd mm yyyy"

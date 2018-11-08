@@ -41,6 +41,11 @@ public class CheckBoxReactiveLinearLayout extends LinearLayout {
         super(context, attrs, defStyleAttr, defStyleRes);
     }
 
+    @NonNull
+    private static String removeLast(String str) {
+        return str.substring(0, str.length() - 1);
+    }
+
     public void addChildRefID(String refID) {
         childList.add(refID);
     }
@@ -79,7 +84,6 @@ public class CheckBoxReactiveLinearLayout extends LinearLayout {
         return returnArray.toArray(new Integer[returnArray.size()]);
     }
 
-
     public List<Integer> getSelectedCheckboxIndexArrayList() {
         List<Integer> returnArray = new ArrayList<>();
         int tot = 0;
@@ -92,11 +96,6 @@ public class CheckBoxReactiveLinearLayout extends LinearLayout {
             tot++;
         }
         return returnArray;
-    }
-
-    @NonNull
-    private static String removeLast(String str) {
-        return str.substring(0, str.length() - 1);
     }
 
 }

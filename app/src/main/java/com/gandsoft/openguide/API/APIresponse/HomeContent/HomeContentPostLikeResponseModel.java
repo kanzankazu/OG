@@ -1,7 +1,7 @@
 package com.gandsoft.openguide.API.APIresponse.HomeContent;
 
 public class HomeContentPostLikeResponseModel {
-    private String status,value,id_content,status_like;
+    private String status, value, id_content, status_like;
 
     public String getStatus() {
         return status;

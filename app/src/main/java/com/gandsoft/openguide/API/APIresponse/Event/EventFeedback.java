@@ -1,7 +1,5 @@
 package com.gandsoft.openguide.API.APIresponse.Event;
 
-
-
 public class EventFeedback {
     public String judul;
     public String subJudul;

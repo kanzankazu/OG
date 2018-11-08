@@ -1,10 +1,9 @@
 package com.gandsoft.openguide.API.APIresponse.UserData;
 
-
 import java.util.ArrayList;
 import java.util.List;
 
-public class UserListEventResponseModel  {
+public class UserListEventResponseModel {
 
     public String event_id;
     public String background;
@@ -21,6 +20,7 @@ public class UserListEventResponseModel  {
     public String accountId;
     public String logo_local;
     public String background_local;
+    public List<UserWalletDataResponseModel> wallet_data = new ArrayList<>();
 
     public int getNumber() {
         return number;
@@ -53,8 +53,6 @@ public class UserListEventResponseModel  {
     public void setBackground_local(String background_local) {
         this.background_local = background_local;
     }
-
-    public List<UserWalletDataResponseModel> wallet_data = new ArrayList<>();
 
     public String getEvent_id() {
         return event_id;

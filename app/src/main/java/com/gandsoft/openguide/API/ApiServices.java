@@ -2,6 +2,7 @@ package com.gandsoft.openguide.API;
 
 import com.gandsoft.openguide.API.APIrequest.Event.EventDataRequestModel;
 import com.gandsoft.openguide.API.APIrequest.Gallery.GalleryRequestModel;
+import com.gandsoft.openguide.API.APIrequest.GetCheckDistanceLocationRequestModel;
 import com.gandsoft.openguide.API.APIrequest.HomeContent.HomeContentCheckinRequestModel;
 import com.gandsoft.openguide.API.APIrequest.HomeContent.HomeContentPostCaptionDeleteRequestModel;
 import com.gandsoft.openguide.API.APIrequest.HomeContent.HomeContentPostCaptionSetRequestModel;
@@ -19,6 +20,7 @@ import com.gandsoft.openguide.API.APIrequest.UserData.GetListUserEventRequestMod
 import com.gandsoft.openguide.API.APIrequest.UserUpdate.UserUpdateRequestModel;
 import com.gandsoft.openguide.API.APIrequest.VerificationStatusLoginAppUserRequestModel;
 import com.gandsoft.openguide.API.APIresponse.Event.EventDataResponseModel;
+import com.gandsoft.openguide.API.APIresponse.GetCheckDistanceLocationResponseModel;
 import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentPostCaptionDeleteResponseModel;
 import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentPostCommentDeleteResponseModel;
 import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentPostCommentGetResponseModel;
@@ -107,5 +109,8 @@ public interface ApiServices {
 
     @POST("post_feedback_the_event")
     Call<List<PostFeedbackTheEventResponseModel>> postFeedbackTheEventRet(@Body PostFeedbackTheEventRequestModel model);
+
+    @POST("get_check_distance_location")
+    Call<List<GetCheckDistanceLocationResponseModel>> getCheckDistanceLocationRet(@Body GetCheckDistanceLocationRequestModel model);
 
 }

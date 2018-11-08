@@ -1,12 +1,6 @@
 package com.gandsoft.openguide.API.APIresponse.UserUpdate;
 
-
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
-
-
-
-public class UserUpdateResponseModel  {
+public class UserUpdateResponseModel {
     String status;
     String version_data;
     String image_url;

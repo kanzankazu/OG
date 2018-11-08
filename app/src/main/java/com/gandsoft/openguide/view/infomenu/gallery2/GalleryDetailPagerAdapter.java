@@ -2,7 +2,6 @@ package com.gandsoft.openguide.view.infomenu.gallery2;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
-import android.os.Handler;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
@@ -23,8 +22,8 @@ import java.util.ArrayList;
 import static com.gandsoft.openguide.App.getContext;
 
 public class GalleryDetailPagerAdapter extends PagerAdapter {
-    private Activity _activity;
     ArrayList<String> _imagePaths;
+    private Activity _activity;
     private ViewPager _mViewPager;
     private LayoutInflater inflater;
 

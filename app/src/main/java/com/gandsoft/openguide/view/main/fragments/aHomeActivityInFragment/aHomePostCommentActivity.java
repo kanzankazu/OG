@@ -83,6 +83,7 @@ public class aHomePostCommentActivity extends AppCompatActivity {
     private String last_date;
     private String first_id;
     private String postId;
+    private boolean isNoMoreShow = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -140,6 +141,22 @@ public class aHomePostCommentActivity extends AppCompatActivity {
         model = models.get(0);
         postId = model.getId();
 
+        Glide.with(this)
+                .load(R.drawable.load)
+                .asGif()
+                .crossFade()
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .skipMemoryCache(false)
+                .dontAnimate()
+                .into(ivCommentTsIconfvbi);
+        Glide.with(this)
+                .load(R.drawable.load)
+                .asGif()
+                .crossFade()
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .skipMemoryCache(false)
+                .into(ivCommentTsImagefvbi);
+
         tvCommentTsUsernamefvbi.setText(model.getUsername());
         tvCommentTsTimefvbi.setText(model.getDate_created());
 
@@ -153,43 +170,52 @@ public class aHomePostCommentActivity extends AppCompatActivity {
             tvCommentTsKeteranganfvbi.setVisibility(View.GONE);
         }
 
-        String stringImagePosted = AppUtil.validationStringImageIcon(aHomePostCommentActivity.this, model.getImage_posted(), model.getImage_posted_local(), false);
-        String stringImageIcon = AppUtil.validationStringImageIcon(aHomePostCommentActivity.this, model.getImage_icon(), model.getImage_icon_local(), true);
+        new Handler().postDelayed(new Runnable() {
+            public void run() {
+                //code here
+                String stringImagePosted = AppUtil.validationStringImageIcon(aHomePostCommentActivity.this, model.getImage_posted(), model.getImage_posted_local(), false);
+                String stringImageIcon = AppUtil.validationStringImageIcon(aHomePostCommentActivity.this, model.getImage_icon(), model.getImage_icon_local(), true);
 
-        if (!TextUtils.isEmpty(model.getImage_posted())) {
-            Glide.with(getApplicationContext())
-                    .load(InputValidUtil.isLinkUrl(stringImagePosted) ? stringImagePosted : new File(stringImagePosted))
-                    .asBitmap()
-                    .thumbnail(0.1f)
-                    .skipMemoryCache(false)
-                    .diskCacheStrategy(DiskCacheStrategy.NONE)
-                    .into(new SimpleTarget<Bitmap>() {
-                        @Override
-                        public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
-                            ivCommentTsImagefvbi.setImageBitmap(resource);
-                            //String imageCachePath = PictureUtil.saveImageHomeContentImage(aHomePostCommentActivity.this, resource, model.getId() + "_image", eventId);
-                            //db.saveHomeContentImage(imageCachePath, accountId, eventId, model.getId());
-                        }
-                    });
-        } else {
-            ivCommentTsImagefvbi.setVisibility(View.GONE);
-        }
-        Glide.with(getApplicationContext())
-                .load(InputValidUtil.isLinkUrl(stringImageIcon) ? stringImageIcon : new File(stringImageIcon))
-                .asBitmap()
-                .thumbnail(0.1f)
-                .skipMemoryCache(false)
-                .diskCacheStrategy(DiskCacheStrategy.NONE)
-                .into(new SimpleTarget<Bitmap>() {
-                    @Override
-                    public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
-                        ivCommentTsIconfvbi.setImageBitmap(resource);
-                        /*if (NetworkUtil.isConnected(getApplicationContext())) {
+                if (!TextUtils.isEmpty(model.getImage_posted())) {
+                    Glide.with(getApplicationContext())
+                            .load(InputValidUtil.isLinkUrl(stringImagePosted) ? stringImagePosted : new File(stringImagePosted))
+                            .asBitmap()
+                            .error(R.drawable.template_account_og)
+                            .placeholder(R.drawable.ic_action_name)
+                            .diskCacheStrategy(DiskCacheStrategy.NONE)
+                            .skipMemoryCache(false)
+                            .dontAnimate()
+                            .into(new SimpleTarget<Bitmap>() {
+                                @Override
+                                public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+                                    ivCommentTsImagefvbi.setImageBitmap(resource);
+                                    //String imageCachePath = PictureUtil.saveImageHomeContentImage(aHomePostCommentActivity.this, resource, model.getId() + "_image", eventId);
+                                    //db.saveHomeContentImage(imageCachePath, accountId, eventId, model.getId());
+                                }
+                            });
+                } else {
+                    ivCommentTsImagefvbi.setVisibility(View.GONE);
+                }
+                Glide.with(getApplicationContext())
+                        .load(InputValidUtil.isLinkUrl(stringImageIcon) ? stringImageIcon : new File(stringImageIcon))
+                        .asBitmap()
+                        .error(R.drawable.template_account_og)
+                        .placeholder(R.drawable.ic_action_name)
+                        .diskCacheStrategy(DiskCacheStrategy.NONE)
+                        .skipMemoryCache(false)
+                        .dontAnimate()
+                        .into(new SimpleTarget<Bitmap>() {
+                            @Override
+                            public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+                                ivCommentTsIconfvbi.setImageBitmap(resource);
+                        /*if (NetworkUtil.isConnected(getApplicationContext())&& NetworkUtil.isOnline1()) {
                             String imageCachePath = PictureUtil.saveImageHomeContentIcon(aHomePostCommentActivity.this, resource, model.getAccount_id() + "_icon", eventId);
                             db.saveHomeContentIcon(imageCachePath, accountId, eventId, model.getId());
                         }*/
-                    }
-                });
+                            }
+                        });
+            }
+        }, 2000);
 
         adapter = new HomeContentCommentAdapter(this, menuUi, db.getTheEvent(eventId), db.getOneListEvent(eventId, accountId), accountId, eventId, new HomeContentCommentAdapter.HomeContentCommentListener() {
             @Override
@@ -270,7 +296,10 @@ public class aHomePostCommentActivity extends AppCompatActivity {
                         }, 500);
 
                     } else {
-                        Snackbar.make(findViewById(android.R.id.content), "no more data", Snackbar.LENGTH_SHORT).show();
+                        if (!isNoMoreShow) {
+                            Snackbar.make(findViewById(android.R.id.content), "no more data", Snackbar.LENGTH_SHORT).show();
+                            isNoMoreShow = true;
+                        }
                     }
                 }
 

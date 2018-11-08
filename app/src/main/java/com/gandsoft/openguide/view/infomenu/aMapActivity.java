@@ -32,11 +32,11 @@ import com.bumptech.glide.request.target.SimpleTarget;
 import com.gandsoft.openguide.API.APIresponse.Event.EventPlaceList;
 import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
-import com.gandsoft.openguide.view.LocalBaseActivity;
 import com.gandsoft.openguide.database.SQLiteHelper;
 import com.gandsoft.openguide.support.NetworkUtil;
 import com.gandsoft.openguide.support.PictureUtil;
 import com.gandsoft.openguide.support.SessionUtil;
+import com.gandsoft.openguide.view.LocalBaseActivity;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -62,16 +62,14 @@ import pl.tajchert.nammu.PermissionCallback;
 
 public class aMapActivity extends LocalBaseActivity implements OnMapReadyCallback {
     private static final int ACTION_MANAGE_OVERLAY_PERMISSION_REQUEST_CODE = 5469;
+    private static final int ALL_PERMISSION = 1;
     SQLiteHelper db = new SQLiteHelper(this);
-
     private CardView cvMapsMarkerTitlefvbi, cvMapsFocusEventfvbi;
     private TextView tvMapsMarkerTitlefvbi;
     private TextView tvMapsFocusEventfvbi;
     private RelativeLayout rlMapsOnlinefvbi;
     private RelativeLayout rlMapsOfflinefvbi;
     private ImageView ivMapsOfflinefvbi;
-
-    private static final int ALL_PERMISSION = 1;
     private GoogleMap mMap;
     private double mylat;
     private double mylng;

@@ -55,7 +55,8 @@ import com.gandsoft.openguide.support.SessionUtil;
 import com.gandsoft.openguide.support.SystemUtil;
 import com.gandsoft.openguide.view.ChangeEventActivity;
 import com.gandsoft.openguide.view.infomenu.cInboxActivity;
-import com.gandsoft.openguide.view.services.MyService;
+import com.gandsoft.openguide.view.services.OnClearFromRecentService;
+import com.gandsoft.openguide.view.services.RepeatCheckDataService;
 import com.google.firebase.auth.FirebaseAuth;
 
 import org.jsoup.Jsoup;
@@ -72,15 +73,15 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class BaseHomeActivity extends AppCompatActivity {
-    private static final int REQ_CODE_INBOX = 123;
-
     static final int NUM_ITEMS = 5;
-
+    private static final int REQ_CODE_INBOX = 123;
     SQLiteHelper db = new SQLiteHelper(this);
     HomeWatcher mHomeWatcher = new HomeWatcher(this);
 
     ViewPager mPager;
     SlidePagerAdapter mPagerAdapter;
+    ImageView imviewdial;
+    int a = 0;
     private TabLayout tabLayout;
     private ActionBar ab;
     private String[] titleTab = new String[]{"Home", "Wallet", "Schedule", "About the Event", "Important Information"};
@@ -89,8 +90,6 @@ public class BaseHomeActivity extends AppCompatActivity {
     private String accountId, eventId;
     private int version_data_event;
     private boolean doubleBackToExitPressedOnce;
-    ImageView imviewdial;
-    int a = 0;
     private NotificationManager notificationManager;
     private MenuItem menuItem;
     private TextView tvMenuItemBadge;
@@ -105,8 +104,11 @@ public class BaseHomeActivity extends AppCompatActivity {
 
         clearNotif();
 
-        if (!SystemUtil.isMyServiceRunning(BaseHomeActivity.this, MyService.class)) {
-            ServiceUtil.startService(BaseHomeActivity.this, MyService.class);
+        if (!SystemUtil.isMyServiceRunning(BaseHomeActivity.this, RepeatCheckDataService.class)) {
+            ServiceUtil.startService(BaseHomeActivity.this, RepeatCheckDataService.class);
+        }
+        if (!SystemUtil.isMyServiceRunning(BaseHomeActivity.this, OnClearFromRecentService.class)) {
+            ServiceUtil.startService(BaseHomeActivity.this, OnClearFromRecentService.class);
         }
 
         initSession();
@@ -146,7 +148,7 @@ public class BaseHomeActivity extends AppCompatActivity {
 
     }
 
-    public void initContent() {
+    private void initContent() {
         if (!db.isFirstIn(eventId)) {
             showFirstDialogEvent();
         }
@@ -174,7 +176,6 @@ public class BaseHomeActivity extends AppCompatActivity {
         getAPIVerivyUser();
 
         initLoopCheck();
-
     }
 
     private void initLoopCheck() {
@@ -185,7 +186,7 @@ public class BaseHomeActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         if (!db.isUserStillIn(accountId)) {
-                            AppUtil.signOutUserOtherDevice(BaseHomeActivity.this, db, MyService.class, accountId, true); //check eveery 30sec
+                            AppUtil.signOutUserOtherDevice(BaseHomeActivity.this, db, RepeatCheckDataService.class, accountId, true); //check eveery 30sec
                         }
                     }
                 });
@@ -221,6 +222,7 @@ public class BaseHomeActivity extends AppCompatActivity {
         tabLayout.getTabAt(3).getIcon().setColorFilter(tabIconColorUnSelect, PorterDuff.Mode.SRC_IN);
         tabLayout.getTabAt(4).getIcon().setColorFilter(tabIconColorUnSelect, PorterDuff.Mode.SRC_IN);*/
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
+        tabLayout.setEnabled(false);
 
         mPagerAdapter = new SlidePagerAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
         mPager.setAdapter(mPagerAdapter);
@@ -323,7 +325,7 @@ public class BaseHomeActivity extends AppCompatActivity {
                 if (response.isSuccessful()) {
                     List<VerificationStatusLoginAppUserResponseModel> model = response.body();
                     if (model.size() == 0) {
-                        AppUtil.signOutUserOtherDevice(BaseHomeActivity.this, db, MyService.class, accountId, true);
+                        AppUtil.signOutUserOtherDevice(BaseHomeActivity.this, db, RepeatCheckDataService.class, accountId, true);
                     }
                 } else {
                     Log.d("Lihat", "onFailure BaseHomeActivity : " + response.message());
@@ -347,7 +349,7 @@ public class BaseHomeActivity extends AppCompatActivity {
         String title = oneListEvent.getTitle();
         String date = oneListEvent.getDate();
 
-        Intent intent = new Intent(this, BaseHomeActivity.class);
+        Intent intent = new Intent(this, ChangeEventActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, ISeasonConfig.ID_NOTIF, intent, PendingIntent.FLAG_ONE_SHOT);
 
@@ -439,24 +441,6 @@ public class BaseHomeActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void setupBadge() {
-
-        ArrayList<EventCommitteeNote> commiteNote = db.getCommiteNote(eventId);
-        int noteIsOpen = db.getCommiteHasBeenOpened(eventId);
-        if (commiteNote.size() != 0) {
-            if (commiteNote.size() == noteIsOpen) {
-                tvMenuItemBadge.setVisibility(View.GONE);
-            } else {
-                tvMenuItemBadge.setVisibility(View.VISIBLE);
-                //menuItem.setVisible(true);
-            }
-        } else {
-            tvMenuItemBadge.setVisibility(View.GONE);
-            //menuItem.setVisible(false);
-        }
-
-    }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -487,6 +471,24 @@ public class BaseHomeActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         mHomeWatcher.stopWatch();
+    }
+
+    private void setupBadge() {
+
+        ArrayList<EventCommitteeNote> commiteNote = db.getCommiteNote(eventId);
+        int noteIsOpen = db.getCommiteHasBeenOpened(eventId);
+        if (commiteNote.size() != 0) {
+            if (commiteNote.size() == noteIsOpen) {
+                tvMenuItemBadge.setVisibility(View.GONE);
+            } else {
+                tvMenuItemBadge.setVisibility(View.VISIBLE);
+                //menuItem.setVisible(true);
+            }
+        } else {
+            tvMenuItemBadge.setVisibility(View.GONE);
+            //menuItem.setVisible(false);
+        }
+
     }
 
     public void updateInbox() {

@@ -260,6 +260,31 @@ class WalletViewAdapter extends RecyclerView.Adapter<WalletViewAdapter.ViewHolde
         }
     }
 
+    @Override
+    public int getItemCount() {
+        return models.size();
+    }
+
+    public void setData(List<UserWalletDataResponseModel> datas) {
+        models = datas;
+        notifyDataSetChanged();
+    }
+
+    public void replaceData(List<UserWalletDataResponseModel> datas) {
+        if (models.size() > 0) {
+            models.clear();
+            models.addAll(datas);
+        } else {
+            models = datas;
+        }
+        notifyDataSetChanged();
+    }
+
+    public void addDatas(List<UserWalletDataResponseModel> datas) {
+        models.addAll(datas);
+        notifyItemRangeInserted(models.size(), datas.size());
+    }
+
     public class ViewHolder extends RecyclerView.ViewHolder {
         private final TextView tvWalletTransportNotiffvbi, tvWalletTransportNamefvbi, tvWalletTransportTitleDeparturefvbi, tvWalletTransportAirportDeparturefvbi, tvWalletTransportDateDeparturefvbi, tvWalletTransportTimeDeparturefvbi, tvWalletTransportTitleArrivalfvbi, tvWalletTransportAirportArrivalfvbi, tvWalletTransportDateArrivalfvbi, tvWalletTransportTimeArrivalfvbi, tvWalletTransportDetailfvbi, tvWalletTransportFlightCodeTitlefvbi, tvWalletTransportFlightCodefvbi;
         private final Button bWalletTransportDetailfvbi;
@@ -304,30 +329,5 @@ class WalletViewAdapter extends RecyclerView.Adapter<WalletViewAdapter.ViewHolde
             tvWalletIdCardDetailfvbi = (TextView) itemView.findViewById(R.id.tvWalletIdCardDetail);
             cvWalletIdCardDetailfvbi = (CardView) itemView.findViewById(R.id.cvWalletIdCardDetail);
         }
-    }
-
-    @Override
-    public int getItemCount() {
-        return models.size();
-    }
-
-    public void setData(List<UserWalletDataResponseModel> datas) {
-        models = datas;
-        notifyDataSetChanged();
-    }
-
-    public void replaceData(List<UserWalletDataResponseModel> datas) {
-        if (models.size() > 0) {
-            models.clear();
-            models.addAll(datas);
-        } else {
-            models = datas;
-        }
-        notifyDataSetChanged();
-    }
-
-    public void addDatas(List<UserWalletDataResponseModel> datas) {
-        models.addAll(datas);
-        notifyItemRangeInserted(models.size(), datas.size());
     }
 }

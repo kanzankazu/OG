@@ -19,6 +19,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.gandsoft.openguide.API.API;
@@ -46,16 +47,12 @@ import retrofit2.Response;
 
 public class GalleryDetailActivity extends AppCompatActivity {
 
-    SQLiteHelper db = new SQLiteHelper(this);
-
     private static final int REQ_CODE_COMMENT = 123;
-    private GalleryDetailPagerAdapter mGalleryDetailPagerAdapter;
-
     public ArrayList<GalleryImageModel> models = new ArrayList<>();
+    SQLiteHelper db = new SQLiteHelper(this);
     int posData;
-
     Toolbar toolbar;
-
+    private GalleryDetailPagerAdapter mGalleryDetailPagerAdapter;
     private ViewPager mViewPager;
     private ScaleImageView zivDetailGalleryfvbi;
     private LinearLayout llDetailGalleryCommentfvbi, llDetailGalleryLikefvbi;
@@ -182,7 +179,11 @@ public class GalleryDetailActivity extends AppCompatActivity {
         Glide.with(getApplicationContext())
                 .load(InputValidUtil.isLinkUrl(s) ? s : new File(s))
                 .asBitmap()
-                .placeholder(R.drawable.template_account_og)
+                .error(R.drawable.template_account_og)
+                .placeholder(R.drawable.ic_action_name)
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .skipMemoryCache(false)
+                .dontAnimate()
                 .into(new SimpleTarget<Bitmap>() {
                     @Override
                     public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {

@@ -100,17 +100,17 @@ public class InputValidUtil {
         editText.requestFocus();
     }
 
-    public void setEditTextMaxLength(int length, EditText editText) {
-        InputFilter[] filterArray = new InputFilter[1];
-        filterArray[0] = new InputFilter.LengthFilter(length);
-        editText.setFilters(filterArray);
-    }
-
     public static boolean isLinkUrl(String s) {
         if (s.matches("(?i).*http://.*") || s.matches("(?i).*https://.*")) {
             return true;
         } else {
             return false;
         }
+    }
+
+    public void setEditTextMaxLength(int length, EditText editText) {
+        InputFilter[] filterArray = new InputFilter[1];
+        filterArray[0] = new InputFilter.LengthFilter(length);
+        editText.setFilters(filterArray);
     }
 }

@@ -1,10 +1,9 @@
 package com.gandsoft.openguide.API.APIresponse.Event;
 
-
 import java.util.ArrayList;
 import java.util.List;
 
-public class EventDataContact  {
+public class EventDataContact {
     public String title;
     public List<EventDataContactList> contact_list = new ArrayList<>();
 

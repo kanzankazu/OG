@@ -19,33 +19,10 @@ import static com.gandsoft.openguide.ISeasonConfig.ERROR_RETRIEVAL;
  */
 
 public class SessionUtil implements IConfig {
-    Context mContext;
     private static final int PRIVATE_MODE = 0;
-
     private static SharedPreferences pref = App.getContext().getSharedPreferences(PACKAGE_NAME, PRIVATE_MODE);
     private static SharedPreferences.Editor editor = pref.edit();
-
-    public boolean saveData(Object model, String key) {
-        if (pref == null) {
-            new SessionUtil();
-        }
-        try {
-            saveModelAsGson(key, model);
-        } catch (Exception e) {
-            //Log.e("save err: ", e.getMessage());
-            return false;
-        } finally {
-            return true;
-        }
-    }
-
-    private void saveModelAsGson(String key, Object model) {
-        pref.edit();
-        Gson gson = new Gson();
-        String json = gson.toJson(model);
-        editor.putString(key, json);
-        editor.commit();
-    }
+    Context mContext;
 
     public static String loadData(String key) {
         return pref.getString(key, ERROR_RETRIEVAL);
@@ -135,7 +112,7 @@ public class SessionUtil implements IConfig {
         return newList;
     }
 
-    public static void deleteKeyPreferences(String key) {
+    public static void removeKeyPreferences(String key) {
         pref.edit();
         editor.remove(key);
         editor.commit();
@@ -144,6 +121,28 @@ public class SessionUtil implements IConfig {
     public static void removeAllSharedPreferences() {
         pref.edit();
         editor.clear();
+        editor.commit();
+    }
+
+    public boolean saveData(Object model, String key) {
+        if (pref == null) {
+            new SessionUtil();
+        }
+        try {
+            saveModelAsGson(key, model);
+        } catch (Exception e) {
+            //Log.e("save err: ", e.getMessage());
+            return false;
+        } finally {
+            return true;
+        }
+    }
+
+    private void saveModelAsGson(String key, Object model) {
+        pref.edit();
+        Gson gson = new Gson();
+        String json = gson.toJson(model);
+        editor.putString(key, json);
         editor.commit();
     }
 

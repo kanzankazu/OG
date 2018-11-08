@@ -28,10 +28,9 @@ import java.io.File;
 import java.util.ArrayList;
 
 public class dAboutFragment extends Fragment {
+    SQLiteHelper db;
     private String accountId, eventId;
     private int version_data_event;
-    SQLiteHelper db;
-
     private View view;
     private ImageView ivAboutBackgroundfvbi;
     private ImageView ivAboutLogofvbi;
@@ -85,10 +84,11 @@ public class dAboutFragment extends Fragment {
         Glide.with(getActivity())
                 .load(InputValidUtil.isLinkUrl(logo) ? logo : new File(logo))
                 .asBitmap()
-                .placeholder(R.drawable.template_account_og)
-                .skipMemoryCache(false)
-                .diskCacheStrategy(DiskCacheStrategy.NONE)
                 .error(R.drawable.template_account_og)
+                .placeholder(R.drawable.ic_action_name)
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .skipMemoryCache(false)
+                .dontAnimate()
                 .into(new SimpleTarget<Bitmap>() {
                     @Override
                     public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
@@ -102,10 +102,11 @@ public class dAboutFragment extends Fragment {
         Glide.with(getActivity())
                 .load(InputValidUtil.isLinkUrl(background) ? background : new File(background))
                 .asBitmap()
-                .placeholder(R.drawable.template_account_og)
-                .skipMemoryCache(false)
-                .diskCacheStrategy(DiskCacheStrategy.NONE)
                 .error(R.drawable.template_account_og)
+                .placeholder(R.drawable.ic_action_name)
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .skipMemoryCache(false)
+                .dontAnimate()
                 .into(new SimpleTarget<Bitmap>() {
                     @Override
                     public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
