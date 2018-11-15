@@ -146,7 +146,7 @@
             android:enabled="true"
             android:exported="true" />
         <service
-            android:name=".view.services.OnClearFromRecentService"
+            android:name=".view.services.ClearTaskDetectService"
             android:enabled="true"
             android:exported="true"
             android:stopWithTask="false" />

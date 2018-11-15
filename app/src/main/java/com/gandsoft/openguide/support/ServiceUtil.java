@@ -8,13 +8,12 @@ import android.util.Log;
 
 public class ServiceUtil {
 
-    public static void startService(Activity activity, Class<?> targetClass) {
-        if (isMyServiceRunning(activity, targetClass))
-            activity.startService(new Intent(activity, targetClass));
+    public static void startService(Context context, Class<?> targetClass) {
+        context.startService(new Intent(context, targetClass));
     }
 
-    public static void stopSevice(Activity activity, Class<?> targetClass) {
-        activity.stopService(new Intent(activity, targetClass));
+    public static void stopSevice(Context context, Class<?> targetClass) {
+        context.stopService(new Intent(context, targetClass));
     }
 
     public static boolean isMyServiceRunning(Activity activity, Class<?> serviceClass) {

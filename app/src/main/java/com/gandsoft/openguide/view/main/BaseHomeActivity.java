@@ -56,7 +56,7 @@ import com.gandsoft.openguide.support.SessionUtil;
 import com.gandsoft.openguide.support.SystemUtil;
 import com.gandsoft.openguide.view.ChangeEventActivity;
 import com.gandsoft.openguide.view.infomenu.cInboxActivity;
-import com.gandsoft.openguide.view.services.OnClearFromRecentService;
+import com.gandsoft.openguide.view.services.ClearTaskDetectService;
 import com.gandsoft.openguide.view.services.RepeatCheckDataService;
 import com.google.firebase.auth.FirebaseAuth;
 
@@ -108,8 +108,8 @@ public class BaseHomeActivity extends AppCompatActivity {
         if (!SystemUtil.isMyServiceRunning(BaseHomeActivity.this, RepeatCheckDataService.class)) {
             ServiceUtil.startService(BaseHomeActivity.this, RepeatCheckDataService.class);
         }
-        if (!SystemUtil.isMyServiceRunning(BaseHomeActivity.this, OnClearFromRecentService.class)) {
-            ServiceUtil.startService(BaseHomeActivity.this, OnClearFromRecentService.class);
+        if (!SystemUtil.isMyServiceRunning(BaseHomeActivity.this, ClearTaskDetectService.class)) {
+            ServiceUtil.startService(BaseHomeActivity.this, ClearTaskDetectService.class);
         }
 
         initSession();

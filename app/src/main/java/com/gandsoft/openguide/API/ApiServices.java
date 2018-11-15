@@ -43,18 +43,6 @@ import retrofit2.http.POST;
 
 public interface ApiServices {
 
-    /*@POST("mail")
-    Call<ReportRespondModel> Report(@Body ReportRequestModel model);
-
-    @POST("appupdate")
-    Call<UpdateAppRespondModel> Update(@Body UpdateRequestModel model);
-
-    @GET("oui")
-    Call<OuiResponseModel> Oui();
-
-    @POST("verification_phonenumber_firebase")
-    Call<List<PostVerifyPhonenumberFirebaseResponseModel>> Login(@Body PostVerifyPhonenumberFirebaseRequestModel model);*/
-
     /**/
     @POST("verification_phonenumber_firebase")
     Call<List<PostVerifyPhonenumberFirebaseResponseModel>> postVerifyPhonenumberFirebaseRet(@Body PostVerifyPhonenumberFirebaseRequestModel model);

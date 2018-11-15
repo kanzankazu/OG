@@ -66,7 +66,7 @@ public class RepeatCheckDataService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
-        Toast.makeText(getApplicationContext(), "start service check data", Toast.LENGTH_SHORT).show();// Set your own toast  message
+        //Toast.makeText(getApplicationContext(), "start service check data", Toast.LENGTH_SHORT).show();// Set your own toast  message
 
         initParam(intent);
         initSession();
@@ -93,9 +93,9 @@ public class RepeatCheckDataService extends Service {
             @Override
             public void run() {
                 if (NetworkUtil.isConnected(getApplicationContext())) {
-                    Log.d("Lihat", "run RepeatCheckDataService : " + eventId + "," + accountId);
-                    Log.d("Lihat", "run RepeatCheckDataService : " + "connected" + count);
-                    Log.d("Lihat", "run RepeatCheckDataService : " + count++);
+                    //Log.d("Lihat", "run RepeatCheckDataService : " + eventId + "," + accountId);
+                    //Log.d("Lihat", "run RepeatCheckDataService : " + "connected" + count);
+                    //Log.d("Lihat", "run RepeatCheckDataService : " + count++);
 
                     getAPIUserDataDo(accountId);
                     getAPIEventDataDo(eventId, accountId);
@@ -115,7 +115,7 @@ public class RepeatCheckDataService extends Service {
         } else {
             requestModel.setVersion_data(db.getVersionDataIdUser(accountId));
         }
-        Log.d("Lihat", "getAPIUserDataDo RepeatCheckDataService : " + db.getVersionDataIdUser(accountId));
+        //Log.d("Lihat", "getAPIUserDataDo RepeatCheckDataService : " + db.getVersionDataIdUser(accountId));
 
         API.doGetListUserEventRet(requestModel).enqueue(new Callback<List<GetListUserEventResponseModel>>() {
             @Override
@@ -376,5 +376,6 @@ public class RepeatCheckDataService extends Service {
         super.onDestroy();
         Log.d("Lihat", "onDestroy RepeatCheckDataService : " + "destroy");
         timer.cancel();
+        stopSelf();
     }
 }

@@ -409,9 +409,6 @@ public class aHomeFragment extends Fragment {
     }
 
     private void updateEventInfo() {
-        Log.d("Lihat", "updateEventInfo aHomeFragment getAddpost_status : " + theEventModel.getAddpost_status());
-        Log.d("Lihat", "updateEventInfo aHomeFragment getDeletepost_status : " + theEventModel.getDeletepost_status());
-        Log.d("Lihat", "updateEventInfo aHomeFragment getCommentpost_status : " + theEventModel.getCommentpost_status());
         if (theEventModel != null) {
             homeHtmlTVTitleEventfvbi.setHtml(theEventModel.getEvent_name());
             homeTVTitleEventfvbi.setText(Html.fromHtml(theEventModel.getEvent_name()));

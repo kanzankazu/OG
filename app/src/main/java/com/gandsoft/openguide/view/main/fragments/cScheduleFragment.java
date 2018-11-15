@@ -200,14 +200,14 @@ public class cScheduleFragment extends Fragment {
     private void checkDate(ArrayList<String> scheduleDates) {
         //code here
         String currentDate = DateTimeUtil.dateToString(DateTimeUtil.currentDate(), new SimpleDateFormat("EEEE dd MMMM yyyy"));
-        Log.d("Lihat", "checkDate cScheduleFragment : " + currentDate);
-        Log.d("Lihat", "checkDate cScheduleFragment : " + scheduleDates);
+        //Log.d("Lihat", "checkDate cScheduleFragment : " + currentDate);
+        //Log.d("Lihat", "checkDate cScheduleFragment : " + scheduleDates);
 
         if (ListArrayUtil.isListContainString(scheduleDates, currentDate)) {
-            Log.d("Lihat", "checkDate cScheduleFragment : " + ListArrayUtil.isListContainString(scheduleDates, currentDate));
+            //Log.d("Lihat", "checkDate cScheduleFragment : " + ListArrayUtil.isListContainString(scheduleDates, currentDate));
             int posCurrDate = ListArrayUtil.getPosStringInList(scheduleDates, currentDate);
             ArrayList<String> scheduleTimes = db.getScheduleListTime(group_code, scheduleDates.get(posCurrDate));
-            Log.d("Lihat", "checkDate cScheduleFragment : " + scheduleTimes);
+            //Log.d("Lihat", "checkDate cScheduleFragment : " + scheduleTimes);
             //code here
             new Handler().postDelayed(new Runnable() {
                 public void run() {

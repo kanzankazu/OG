@@ -97,9 +97,9 @@ class WalletViewAdapter extends RecyclerView.Adapter<WalletViewAdapter.ViewHolde
                 ViewHolder1 holder1 = (ViewHolder1) holder;
                 Document doc1 = Jsoup.parse(model.getBody_wallet());
                 String imgUrl = doc1.select("img").first().absUrl("src");
-                Log.d("Lihat", "onBindViewHolder WalletViewAdapter : " + imgUrl);
+                //Log.d("Lihat", "onBindViewHolder WalletViewAdapter : " + imgUrl);
                 String imgUrl1 = doc1.select("img").first().attr("abs:src");
-                Log.d("Lihat", "onBindViewHolder WalletViewAdapter : " + imgUrl1);
+                //Log.d("Lihat", "onBindViewHolder WalletViewAdapter : " + imgUrl1);
                 String name = doc1.select("h1").text();
                 String accountId = doc1.select("h2").text();
                 Glide.with(activity)
@@ -164,13 +164,13 @@ class WalletViewAdapter extends RecyclerView.Adapter<WalletViewAdapter.ViewHolde
                 holder0.tvWalletTransportNamefvbi.setText(wallUserName);
 
                 String wallAsciiIcon = doc.select("b").get(0).text().replaceAll("\\*\\*([^;]+?);", "&$1;");
-                Log.d("Lihat", "onBindViewHolder WalletViewAdapter wallAsciiIcon: " + wallAsciiIcon);
+                //Log.d("Lihat", "onBindViewHolder WalletViewAdapter wallAsciiIcon: " + wallAsciiIcon);
                 int[] icon = new int[]{R.drawable.ic_car, R.drawable.ic_bus, R.drawable.ic_train, R.drawable.ic_boat, R.drawable.ic_airplane};
                 String[] asciiCode = new String[]{"&#xE531;", "&#xE530;", "&#xe570;", "&#xE532;", "&#xe904;",};
                 ArrayList<String> list = ListArrayUtil.convertStringArrayToListString(asciiCode);
-                Log.d("Lihat", "onBindViewHolder WalletViewAdapter : " + list);
+                //Log.d("Lihat", "onBindViewHolder WalletViewAdapter : " + list);
                 int posStringInList = ListArrayUtil.getPosStringInList(list, wallAsciiIcon);
-                Log.d("Lihat", "onBindViewHolder WalletViewAdapter : " + posStringInList);
+                //Log.d("Lihat", "onBindViewHolder WalletViewAdapter : " + posStringInList);
                 holder0.ivWalletTransportIconfvbi.setImageResource(icon[posStringInList]);
 
                 String dest = doc.select("dd").get(0).text();
