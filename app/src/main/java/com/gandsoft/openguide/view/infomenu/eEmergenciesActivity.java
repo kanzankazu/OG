@@ -15,12 +15,13 @@ import com.gandsoft.openguide.API.APIresponse.Event.EventEmergencies;
 import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
 import com.gandsoft.openguide.database.SQLiteHelper;
+import com.gandsoft.openguide.database.SQLiteHelperMethod;
 import com.gandsoft.openguide.support.SessionUtil;
 
 import java.util.ArrayList;
 
 public class eEmergenciesActivity extends AppCompatActivity {
-    SQLiteHelper db = new SQLiteHelper(this);
+    SQLiteHelperMethod db = new SQLiteHelperMethod(this);
     ArrayList<String> headerItems = new ArrayList<>();
     ArrayList<Object> childItems = new ArrayList<Object>();
     private String accountId, eventId;

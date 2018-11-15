@@ -11,23 +11,22 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.ExpandableListView;
 
-import com.gandsoft.openguide.API.APIresponse.Event.EventSurroundingArea;
+import com.gandsoft.openguide.API.APIresponse.Event.EventSurroundingAreaNew;
 import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
-import com.gandsoft.openguide.database.SQLiteHelper;
+import com.gandsoft.openguide.database.SQLiteHelperMethod;
 import com.gandsoft.openguide.support.SessionUtil;
 
 import java.util.ArrayList;
 
 public class gSurroundingAreaActivity extends AppCompatActivity {
-    SQLiteHelper db = new SQLiteHelper(this);
+    SQLiteHelperMethod db = new SQLiteHelperMethod(this);
 
     private String accountId, eventId;
     private ExpandableListView explvSurroundAreafvbi;
     private Toolbar toolbar;
     private ActionBar ab;
-    private ArrayList<String> headerItems = new ArrayList<>();
-    private ArrayList<Object> childItems = new ArrayList<>();
+    private ArrayList<EventSurroundingAreaNew> headerItems = new ArrayList<EventSurroundingAreaNew>();
 
     private int lastExpandedPosition = -1;
 
@@ -61,18 +60,18 @@ public class gSurroundingAreaActivity extends AppCompatActivity {
         ab = getSupportActionBar();
         ab.setTitle("Surrounding Area");
 
-        ArrayList<EventSurroundingArea> models = db.getSurroundingArea(eventId);
+        ArrayList<EventSurroundingAreaNew> models = db.getSurroundingAreaNew(eventId);
         if (models != null) {
             for (int i = 0; i < models.size(); i++) {
-                EventSurroundingArea model = models.get(i);
-                headerItems.add(model.getTitle());
-                ArrayList<String> child = new ArrayList<String>();
-                child.add(model.getDescription());
-                childItems.add(child);
+                EventSurroundingAreaNew model = models.get(i);
+                EventSurroundingAreaNew model2 = new EventSurroundingAreaNew();
+                model2.setTitle(model.getTitle());
+                model2.setDetail(db.getSurroundingAreaNewDetail(eventId, model.getTitle()));
+                headerItems.add(model2);
             }
         }
 
-        SurroundingAreaAdapter adapter = new SurroundingAreaAdapter(this, headerItems, childItems);
+        SurroundingAreaAdapter adapter = new SurroundingAreaAdapter(this, headerItems, eventId, accountId);
         adapter.setInflater((LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE), this);
         explvSurroundAreafvbi.setDividerHeight(2);
         explvSurroundAreafvbi.setGroupIndicator(null);
@@ -83,12 +82,19 @@ public class gSurroundingAreaActivity extends AppCompatActivity {
 
     private void initListener() {
         explvSurroundAreafvbi.setOnGroupExpandListener(new ExpandableListView.OnGroupExpandListener() {
+
+            int previousGroup = -1;
+
             @Override
             public void onGroupExpand(int groupPosition) {
-                if (lastExpandedPosition != -1 && groupPosition != lastExpandedPosition) {
+                /*if (lastExpandedPosition != -1 && groupPosition != lastExpandedPosition) {
                     explvSurroundAreafvbi.collapseGroup(lastExpandedPosition);
                 }
-                lastExpandedPosition = groupPosition;
+                lastExpandedPosition = groupPosition;*/
+
+                if(groupPosition != previousGroup)
+                    explvSurroundAreafvbi.collapseGroup(previousGroup);
+                previousGroup = groupPosition;
             }
         });
     }

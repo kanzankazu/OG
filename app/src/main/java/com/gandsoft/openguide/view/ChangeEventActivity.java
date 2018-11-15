@@ -46,11 +46,13 @@ import com.gandsoft.openguide.API.APIresponse.Event.EventDataContact;
 import com.gandsoft.openguide.API.APIresponse.Event.EventDataContactList;
 import com.gandsoft.openguide.API.APIresponse.Event.EventDataResponseModel;
 import com.gandsoft.openguide.API.APIresponse.Event.EventEmergencies;
-import com.gandsoft.openguide.API.APIresponse.Event.EventImportanInfo;
+import com.gandsoft.openguide.API.APIresponse.Event.EventImportanInfoNew;
+import com.gandsoft.openguide.API.APIresponse.Event.EventImportanInfoNewDetail;
 import com.gandsoft.openguide.API.APIresponse.Event.EventPlaceList;
 import com.gandsoft.openguide.API.APIresponse.Event.EventScheduleListDate;
 import com.gandsoft.openguide.API.APIresponse.Event.EventScheduleListDateDataList;
-import com.gandsoft.openguide.API.APIresponse.Event.EventSurroundingArea;
+import com.gandsoft.openguide.API.APIresponse.Event.EventSurroundingAreaNew;
+import com.gandsoft.openguide.API.APIresponse.Event.EventSurroundingAreaNewDetail;
 import com.gandsoft.openguide.API.APIresponse.Event.EventTheEvent;
 import com.gandsoft.openguide.API.APIresponse.UserData.GetListUserEventResponseModel;
 import com.gandsoft.openguide.API.APIresponse.UserData.UserListEventResponseModel;
@@ -60,6 +62,7 @@ import com.gandsoft.openguide.IConfig;
 import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
 import com.gandsoft.openguide.database.SQLiteHelper;
+import com.gandsoft.openguide.database.SQLiteHelperMethod;
 import com.gandsoft.openguide.support.AppUtil;
 import com.gandsoft.openguide.support.DateTimeUtil;
 import com.gandsoft.openguide.support.DeviceDetailUtil;
@@ -83,13 +86,12 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-import static com.gandsoft.openguide.database.SQLiteHelper.KEY_UserData_accountId;
-import static com.gandsoft.openguide.database.SQLiteHelper.TableUserData;
+import static com.gandsoft.openguide.database.SQLiteHelper.*;
 
 public class ChangeEventActivity extends AppCompatActivity implements ChangeEventPastHook {
     private static final int RP_ACCESS = 123;
     private static final int REQ_CODE_ACCOUNT = 1234;
-    SQLiteHelper db = new SQLiteHelper(this);
+    SQLiteHelperMethod db = new SQLiteHelperMethod(this);
 
     private ImageView ceIVUserPicfvbi;
     private TextView ceTVUserNamefvbi, ceTVUserIdfvbi, ceTVInfofvbi, ceTVVersionAppfvbi;
@@ -329,7 +331,7 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
             requestModel.setDbver(IConfig.DB_Version);
 
             requestModel.setVersion_data(IConfig.DB_Version);
-            /*if (db.isDataTableKeyNull(SQLiteHelper.TableUserData, SQLiteHelper.KEY_UserData_versionData)) {
+            /*if (db.isDataTableKeyNull(TableUserData, KEY_UserData_versionData)) {
                 requestModel.setVersion_data(IConfig.DB_Version);
             } else {
                 requestModel.setVersion_data(db.getVersionDataIdUser(accountId));
@@ -355,7 +357,7 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
                                 List<UserListEventResponseModel> userListEventResponseModels = model.getList_event();
                                 for (int j = 0; j < userListEventResponseModels.size(); j++) {
                                     UserListEventResponseModel model1 = userListEventResponseModels.get(j);
-                                    if (db.isDataTableValueMultipleNull(SQLiteHelper.TableListEvent, SQLiteHelper.KEY_ListEvent_eventId, SQLiteHelper.KEY_ListEvent_accountId, model1.getEvent_id(), accountId)) {
+                                    if (db.isDataTableValueMultipleNull(TableListEvent, KEY_ListEvent_eventId, KEY_ListEvent_accountId, model1.getEvent_id(), accountId)) {
                                         db.saveListEvent(model1, accountId);
                                     } else {
                                         db.updateListEvent(model1, accountId);
@@ -364,7 +366,7 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
                                     List<UserWalletDataResponseModel> userWalletDataResponseModels = model1.getWallet_data();
                                     for (int n = 0; n < userWalletDataResponseModels.size(); n++) {
                                         UserWalletDataResponseModel model2 = userWalletDataResponseModels.get(n);
-                                        if (db.isDataTableValueMultipleNull(SQLiteHelper.TableWallet, SQLiteHelper.KEY_Wallet_sort, SQLiteHelper.KEY_Wallet_eventId, model2.getSort(), model1.getEvent_id())) {
+                                        if (db.isDataTableValueMultipleNull(TableWallet, KEY_Wallet_sort, KEY_Wallet_eventId, model2.getSort(), model1.getEvent_id())) {
                                             db.saveWalletData(model2, accountId, model1.getEvent_id());
                                         } else {
                                             db.updateWalletData(model2, model1.getEvent_id());
@@ -392,7 +394,7 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
                             getAPIUserDataDoValid();
                         }
                     }).show();
-                    if (!db.isDataTableValueMultipleNull(TableUserData, KEY_UserData_accountId, SQLiteHelper.KEY_UserData_phoneNumber, accountId, accountId)) {
+                    if (!db.isDataTableValueMultipleNull(TableUserData, KEY_UserData_accountId, KEY_UserData_phoneNumber, accountId, accountId)) {
                         updateUserDataEvent(accountId, false);
                     }
                 }
@@ -461,8 +463,18 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
     }
 
     private void getAPITheEventDataValid(String eventId) {
+        if (NetworkUtil.isConnectedIsOnline(ChangeEventActivity.this)) {
+            progressDialog = SystemUtil.showProgress(ChangeEventActivity.this, "Get data from server", "Please Wait...", false);
+            getAPITheEventDataDo(eventId, accountid, false);
+        } else {
+            new Handler().postDelayed(new Runnable() {
+                public void run() {
+                    moveToHomeBase(eventId);//validation
+                }
+            }, 1000);
+        }
 
-        if (db.isDataTableValueNull(SQLiteHelper.TableTheEvent, SQLiteHelper.Key_The_Event_EventId, eventId)) {
+        /*if (db.isDataTableValueNull(TableTheEvent, Key_The_Event_EventId, eventId)) {
             Snackbar.make(findViewById(android.R.id.content), "Event data empty", Snackbar.LENGTH_SHORT).show();
             if (NetworkUtil.isConnected(this)) {
                 progressDialog = SystemUtil.showProgress(ChangeEventActivity.this, "Get data from server", "Please Wait...", false);
@@ -475,7 +487,7 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
                     moveToHomeBase(eventId);//validation
                 }
             }, 1000);
-        }
+        }*/
     }
 
     private void getAPITheEventDataDo(String eventId, String accountId, boolean isLoading) {
@@ -485,7 +497,7 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
         requestModel.setPass("");
         requestModel.setPhonenumber(accountId);
         requestModel.setVersion_data(IConfig.DB_Version);
-        /*if (db.isDataTableValueNull(SQLiteHelper.TableTheEvent, SQLiteHelper.Key_The_Event_EventId, event_Id)) {
+        /*if (db.isDataTableValueNull(TableTheEvent, Key_The_Event_EventId, event_Id)) {
             requestModel.setVersion_data(0);
         } else {
             requestModel.setVersion_data(db.getVersionDataIdEvent(event_Id));
@@ -503,7 +515,7 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
                         if (model.getStatus().equalsIgnoreCase("ok")) {//jika status ok
                             for (int i1 = 0; i1 < model.getThe_event().size(); i1++) {
                                 EventTheEvent theEvent = model.getThe_event().get(i1);
-                                if (db.isDataTableValueMultipleNull(SQLiteHelper.TableTheEvent, SQLiteHelper.Key_The_Event_EventId, SQLiteHelper.Key_The_Event_version_data, model.getEvent_id(), model.getVersion_data())) {
+                                if (db.isDataTableValueMultipleNull(TableTheEvent, Key_The_Event_EventId, Key_The_Event_version_data, model.getEvent_id(), model.getVersion_data())) {
                                     db.saveTheEvent(theEvent, model.getEvent_id(), model.getFeedback_data(), model.getVersion_data());
                                 } else {
                                     db.updateTheEvent(theEvent, model.getEvent_id(), model.getFeedback_data(), model.getVersion_data());
@@ -517,7 +529,7 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
                                     List<EventPlaceList> values = entry.getValue();
                                     for (int i22 = 0; i22 < values.size(); i22++) {
                                         EventPlaceList placeList = values.get(i22);
-                                        if (db.isDataTableValueMultipleNull(SQLiteHelper.TablePlaceList, SQLiteHelper.Key_Place_List_EventId, SQLiteHelper.Key_Place_List_title, model.getEvent_id(), placeList.getTitle())) {
+                                        if (db.isDataTableValueMultipleNull(TablePlaceList, Key_Place_List_EventId, Key_Place_List_title, model.getEvent_id(), placeList.getTitle())) {
                                             db.savePlaceList(placeList, model.getEvent_id());
                                         } else {
                                             db.updatePlaceList(placeList, model.getEvent_id());
@@ -526,12 +538,31 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
                                 }
                             }
 
-                            for (int i3 = 0; i3 < model.getImportan_info().size(); i3++) {
+                            /*for (int i3 = 0; i3 < model.getImportan_info().size(); i3++) {
                                 EventImportanInfo importanInfo = model.getImportan_info().get(i3);
-                                if (db.isDataTableValueMultipleNull(SQLiteHelper.TableImportantInfo, SQLiteHelper.Key_Importan_Info_EventId, SQLiteHelper.Key_Importan_Info_title, model.getEvent_id(), importanInfo.getTitle())) {
+                                if (db.isDataTableValueMultipleNull(TableImportantInfo, Key_Importan_Info_EventId, Key_Importan_Info_title, model.getEvent_id(), importanInfo.getTitle())) {
                                     db.saveImportanInfo(importanInfo, model.getEvent_id());
                                 } else {
                                     db.updateImportanInfo(importanInfo, model.getEvent_id());
+                                }
+                            }*/
+                            for (int i3 = 0; i3 < model.getImportan_info_new().size(); i3++) {
+                                EventImportanInfoNew importanInfoNew = model.getImportan_info_new().get(i3);
+                                if (importanInfoNew.getDetail().size() == 0) {
+                                    if (db.isDataTableValueMultipleNull(TableImportantInfoNew, Key_Important_InfoNew_EventId, Key_Important_InfoNew_title, model.getEvent_id(), importanInfoNew.getTitle())) {
+                                        db.saveImportanInfoNew(importanInfoNew, model.getEvent_id());
+                                    } else {
+                                        db.updateImportanInfoNew(importanInfoNew, model.getEvent_id());
+                                    }
+                                } else {
+                                    for (int i31 = 0; i31 < importanInfoNew.getDetail().size(); i31++) {
+                                        EventImportanInfoNewDetail infoNewDetail = importanInfoNew.getDetail().get(i31);
+                                        if (db.isDataTableValueMultipleNull(TableImportantInfoNew, Key_Important_InfoNew_EventId, Key_Important_InfoNew_Title_image, model.getEvent_id(), infoNewDetail.getTitle_image())) {
+                                            db.saveImportanInfoNew(importanInfoNew, infoNewDetail, model.getEvent_id());
+                                        } else {
+                                            db.updateImportanInfoNew(importanInfoNew, infoNewDetail, model.getEvent_id());
+                                        }
+                                    }
                                 }
                             }
 
@@ -539,7 +570,7 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
                                 EventDataContact dataContact = model.getData_contact().get(i4);
                                 for (int i41 = 0; i41 < dataContact.getContact_list().size(); i41++) {
                                     EventDataContactList dataContactList = dataContact.getContact_list().get(i41);
-                                    if (db.isDataTableValueMultipleNull(SQLiteHelper.TableContactList, SQLiteHelper.Key_Contact_List_EventId, SQLiteHelper.KEY_Contact_List_Name, model.getEvent_id(), dataContactList.getName())) {
+                                    if (db.isDataTableValueMultipleNull(TableContactList, Key_Contact_List_EventId, KEY_Contact_List_Name, model.getEvent_id(), dataContactList.getName())) {
                                         db.saveDataContactList(dataContactList, dataContact.getTitle(), model.getEvent_id());
                                     } else {
                                         db.updateDataContactList(dataContactList, dataContact.getTitle(), model.getEvent_id());
@@ -549,7 +580,7 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
 
                             for (int i5 = 0; i5 < model.getAbout().size(); i5++) {
                                 EventAbout eventAbout = model.getAbout().get(i5);
-                                if (db.isDataTableValueMultipleNull(SQLiteHelper.TableEventAbout, SQLiteHelper.Key_Event_About_EventId, SQLiteHelper.KEY_Event_About_Description, model.getEvent_id(), eventAbout.getDescription())) {
+                                if (db.isDataTableValueMultipleNull(TableEventAbout, Key_Event_About_EventId, KEY_Event_About_Description, model.getEvent_id(), eventAbout.getDescription())) {
                                     db.saveAbout(eventAbout, model.getEvent_id());
                                 } else {
                                     db.updateAbout(eventAbout, model.getEvent_id());
@@ -566,7 +597,7 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
                                         List<EventScheduleListDateDataList> value2 = listDate.getData();
                                         for (int i62 = 0; i62 < value2.size(); i62++) {
                                             EventScheduleListDateDataList listDateDataList = value2.get(i62);
-                                            if (db.isDataTableValueMultipleNull(SQLiteHelper.TableScheduleList, SQLiteHelper.Key_Schedule_List_GroupCode, SQLiteHelper.Key_Schedule_List_id, key, listDateDataList.getId())) {
+                                            if (db.isDataTableValueMultipleNull(TableScheduleList, Key_Schedule_List_GroupCode, Key_Schedule_List_id, key, listDateDataList.getId())) {
                                                 db.saveScheduleList(listDateDataList, listDate.getDate(), model.getEvent_id(), key);
                                             } else {
                                                 db.updateScheduleList(listDateDataList, listDate.getDate(), model.getEvent_id(), key);
@@ -578,25 +609,36 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
 
                             for (int i7 = 0; i7 < model.getEmergencies().size(); i7++) {
                                 EventEmergencies emergencies = model.getEmergencies().get(i7);
-                                if (db.isDataTableValueMultipleNull(SQLiteHelper.TableEmergencie, SQLiteHelper.Key_Emergencie_EventId, SQLiteHelper.Key_Emergencie_Title, model.getEvent_id(), emergencies.getTitle())) {
+                                if (db.isDataTableValueMultipleNull(TableEmergencie, Key_Emergencie_EventId, Key_Emergencie_Title, model.getEvent_id(), emergencies.getTitle())) {
                                     db.saveEmergency(emergencies, model.getEvent_id());
                                 } else {
                                     db.updateEmergency(emergencies, model.getEvent_id());
                                 }
                             }
 
-                            for (int i8 = 0; i8 < model.getSurrounding_area().size(); i8++) {
+                            /*for (int i8 = 0; i8 < model.getSurrounding_area().size(); i8++) {
                                 EventSurroundingArea area = model.getSurrounding_area().get(i8);
-                                if (db.isDataTableValueMultipleNull(SQLiteHelper.TableArea, SQLiteHelper.Key_Area_EventId, SQLiteHelper.Key_Area_Description, model.getEvent_id(), area.getDescription())) {
+                                if (db.isDataTableValueMultipleNull(TableArea, Key_Area_EventId, Key_Area_Description, model.getEvent_id(), area.getDescription())) {
                                     db.saveArea(area, model.getEvent_id());
                                 } else {
                                     db.updateArea(area, model.getEvent_id());
+                                }
+                            }*/
+                            for (int i8 = 0; i8 < model.getSurrounding_area_new().size(); i8++) {
+                                EventSurroundingAreaNew area = model.getSurrounding_area_new().get(i8);
+                                for (int i81 = 0; i81 < area.getDetail().size(); i81++) {
+                                    EventSurroundingAreaNewDetail areaNewDetail = area.getDetail().get(i81);
+                                    if (db.isDataTableValueMultipleNull(TableAreaNew, Key_AreaNew_EventId, Key_AreaNew_Title_image, model.getEvent_id(), areaNewDetail.getTitle_image())) {
+                                        db.saveAreaNew(areaNewDetail, area.getTitle(), model.getEvent_id());
+                                    } else {
+                                        db.updateAreaNew(areaNewDetail, area.getTitle(), model.getEvent_id());
+                                    }
                                 }
                             }
 
                             for (int i9 = 0; i9 < model.getCommittee_note().size(); i9++) {
                                 EventCommitteeNote note = model.getCommittee_note().get(i9);
-                                if (db.isDataTableValueMultipleNull(SQLiteHelper.TableCommiteNote, SQLiteHelper.Key_CommiteNote_EventId, SQLiteHelper.Key_CommiteNote_Id, model.getEvent_id(), note.getId())) {
+                                if (db.isDataTableValueMultipleNull(TableCommiteNote, Key_CommiteNote_EventId, Key_CommiteNote_Id, model.getEvent_id(), note.getId())) {
                                     db.saveCommiteNote(note, model.getEvent_id());
                                 } else {
                                     db.updateCommiteNote(note, model.getEvent_id());

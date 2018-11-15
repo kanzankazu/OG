@@ -22,6 +22,7 @@ import com.gandsoft.openguide.API.APIresponse.Event.EventScheduleListDateDataLis
 import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
 import com.gandsoft.openguide.database.SQLiteHelper;
+import com.gandsoft.openguide.database.SQLiteHelperMethod;
 import com.gandsoft.openguide.support.DateTimeUtil;
 import com.gandsoft.openguide.support.ListArrayUtil;
 import com.gandsoft.openguide.support.NetworkUtil;
@@ -34,7 +35,7 @@ import java.util.ArrayList;
 
 public class cScheduleFragment extends Fragment {
     private static final int REQ_CODE_QNA = 123;
-    private SQLiteHelper db;
+    private SQLiteHelperMethod db;
     private ArrayList<String> scheduleDates;
     private ArrayList<EventScheduleListDateDataList> scheduleListPerDate;
     private ImageView[] ivIndicatorPromo;
@@ -61,7 +62,7 @@ public class cScheduleFragment extends Fragment {
         accountId = SessionUtil.getStringPreferences(ISeasonConfig.KEY_ACCOUNT_ID, null);
         eventId = SessionUtil.getStringPreferences(ISeasonConfig.KEY_EVENT_ID, null);
 
-        db = new SQLiteHelper(getActivity());
+        db = new SQLiteHelperMethod(getActivity());
 
         initComponent(view);
         initContent();

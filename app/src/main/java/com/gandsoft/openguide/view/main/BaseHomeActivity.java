@@ -43,6 +43,7 @@ import com.gandsoft.openguide.IConfig;
 import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
 import com.gandsoft.openguide.database.SQLiteHelper;
+import com.gandsoft.openguide.database.SQLiteHelperMethod;
 import com.gandsoft.openguide.support.AppUtil;
 import com.gandsoft.openguide.support.DateTimeUtil;
 import com.gandsoft.openguide.support.DeviceDetailUtil;
@@ -75,7 +76,7 @@ import retrofit2.Response;
 public class BaseHomeActivity extends AppCompatActivity {
     static final int NUM_ITEMS = 5;
     private static final int REQ_CODE_INBOX = 123;
-    SQLiteHelper db = new SQLiteHelper(this);
+    SQLiteHelperMethod db = new SQLiteHelperMethod(this);
     HomeWatcher mHomeWatcher = new HomeWatcher(this);
 
     ViewPager mPager;

@@ -22,6 +22,7 @@ import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentPostComment
 import com.gandsoft.openguide.API.APIresponse.UserData.UserListEventResponseModel;
 import com.gandsoft.openguide.R;
 import com.gandsoft.openguide.database.SQLiteHelper;
+import com.gandsoft.openguide.database.SQLiteHelperMethod;
 import com.gandsoft.openguide.support.DateTimeUtil;
 import com.gandsoft.openguide.support.NetworkUtil;
 import com.gandsoft.openguide.support.PictureUtil;
@@ -170,7 +171,7 @@ class HomeContentCommentAdapter extends RecyclerView.Adapter<HomeContentCommentA
         private final TextView tvRVCommentContentfvbi;
         private final LinearLayout llRVCommentRemovefvbi;
         private final ImageView ivRVCommentIconfvbi;
-        SQLiteHelper db = new SQLiteHelper(itemView.getContext());
+        SQLiteHelperMethod db = new SQLiteHelperMethod(itemView.getContext());
 
         public ViewHolder(View itemView) {
             super(itemView);

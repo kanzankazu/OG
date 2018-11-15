@@ -1,32 +1,139 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center_vertical"
     android:orientation="vertical">
 
-    <WebView
-        android:id="@+id/wvSurroundAreaChild"
+    <android.support.v7.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:visibility="visible"
-        tools:ignore="WebViewLayout">
+        android:layout_margin="10dp"
+        app:cardCornerRadius="10dp"
+        app:cardElevation="5dp">
 
-    </WebView>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:animateLayoutChanges="true"
+            android:orientation="vertical"
+            android:padding="20dp">
 
-    <TextView
-        android:id="@+id/tvSurroundAreaChild"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="20dp"
-        android:text="Child"
-        android:textColor="@color/colorPrimary"
-        android:textIsSelectable="true"
-        android:textSize="14dp"
-        android:visibility="gone" />
+            <ImageView
+                android:id="@+id/ivSurroundAreaChild"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:src="@drawable/template_account_og" />
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/gray_very_light" />
+            <TextView
+                android:id="@+id/tvTitleSurroundAreaChild"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/background_radius"
+                android:backgroundTint="@color/colorAccent"
+                android:padding="10dp"
+                android:text="test"
+                android:textAllCaps="true"
+                android:textColor="@color/white"
+                android:textStyle="bold" />
+
+            <org.sufficientlysecure.htmltextview.HtmlTextView
+                android:id="@+id/tvDetailSurroundAreaChild"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="jashdjahsfjshdfjshdfgjashdfgajshfjashdfjsakhdfkjashfkjahskjdfhaskjdfhkjahdfkshdfjksahdfkhasdkfjhaskdjhfksahf" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:animateLayoutChanges="true"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:id="@+id/llWalkMinSurroundAreaChild"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:animateLayoutChanges="true"
+                    android:background="@drawable/background_radius"
+                    android:orientation="horizontal"
+                    android:paddingLeft="5dp"
+                    android:paddingRight="5dp">
+
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_walk" />
+
+                    <TextView
+                        android:id="@+id/tvWalkMinSurroundAreaChild"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_marginLeft="5dp"
+                        android:gravity="center"
+                        android:text="2 Min"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/llCarMinSurroundAreaChild"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
+                    android:animateLayoutChanges="true"
+                    android:background="@drawable/background_radius"
+                    android:orientation="horizontal"
+                    android:paddingLeft="5dp"
+                    android:paddingRight="5dp">
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_car" />
+
+                    <TextView
+                        android:id="@+id/tvCarMinSurroundAreaChild"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_marginLeft="5dp"
+                        android:gravity="center"
+                        android:text="2 Min"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/llDirectionSurroundAreaChild"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
+                    android:animateLayoutChanges="true"
+                    android:background="@drawable/background_radius"
+                    android:orientation="horizontal"
+                    android:paddingLeft="5dp"
+                    android:paddingRight="5dp">
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_navigation" />
+
+                    <org.sufficientlysecure.htmltextview.HtmlTextView
+                        android:id="@+id/tvDirectionSurroundAreaChild"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_marginLeft="5dp"
+                        android:gravity="center"
+                        android:text="2 Min"
+                        android:textColor="@color/colorAccent"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+
+            </LinearLayout>
+
+        </LinearLayout>
+    </android.support.v7.widget.CardView>
 </LinearLayout>

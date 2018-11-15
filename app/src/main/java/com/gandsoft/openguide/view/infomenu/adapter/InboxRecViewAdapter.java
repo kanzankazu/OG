@@ -15,6 +15,7 @@ import android.widget.TextView;
 import com.gandsoft.openguide.API.APIresponse.Event.EventCommitteeNote;
 import com.gandsoft.openguide.R;
 import com.gandsoft.openguide.database.SQLiteHelper;
+import com.gandsoft.openguide.database.SQLiteHelperMethod;
 
 import org.sufficientlysecure.htmltextview.HtmlTextView;
 
@@ -25,11 +26,11 @@ public class InboxRecViewAdapter extends RecyclerView.Adapter<InboxRecViewAdapte
 
     private final String accountId;
     private final String eventId;
-    private final SQLiteHelper db;
+    private final SQLiteHelperMethod db;
     private Activity activity;
     private List<EventCommitteeNote> models;
 
-    public InboxRecViewAdapter(Activity activity, ArrayList<EventCommitteeNote> models, String accountId, String eventId, SQLiteHelper db) {
+    public InboxRecViewAdapter(Activity activity, ArrayList<EventCommitteeNote> models, String accountId, String eventId, SQLiteHelperMethod db) {
         this.activity = activity;
         this.models = models;
         this.accountId = accountId;

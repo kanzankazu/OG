@@ -18,6 +18,7 @@ import com.bumptech.glide.request.target.SimpleTarget;
 import com.gandsoft.openguide.API.APIresponse.UserData.UserListEventResponseModel;
 import com.gandsoft.openguide.R;
 import com.gandsoft.openguide.database.SQLiteHelper;
+import com.gandsoft.openguide.database.SQLiteHelperMethod;
 import com.gandsoft.openguide.support.AppUtil;
 import com.gandsoft.openguide.support.InputValidUtil;
 import com.gandsoft.openguide.support.NetworkUtil;
@@ -158,7 +159,7 @@ public class ChangeEventPastAdapter extends RecyclerView.Adapter<ChangeEventPast
         private final RoundedImageView ivListChangeEventLogofvbi;
         private final TextView tvListChangeEventTitlefvbi, tvListChangeEventDatefvbi;
         private final LinearLayout llListChangeEventfvbi;
-        SQLiteHelper db = new SQLiteHelper(itemView.getContext());
+        SQLiteHelperMethod db = new SQLiteHelperMethod(itemView.getContext());
 
         public ViewHolder(View itemView) {
             super(itemView);

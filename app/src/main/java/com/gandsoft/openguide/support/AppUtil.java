@@ -13,13 +13,14 @@ import android.text.TextUtils;
 
 import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.database.SQLiteHelper;
+import com.gandsoft.openguide.database.SQLiteHelperMethod;
 import com.gandsoft.openguide.view.LoginActivity;
 import com.gandsoft.openguide.view.services.RepeatCheckDataService;
 import com.google.firebase.auth.FirebaseAuth;
 
 public class AppUtil {
 
-    public static void signOutUserOtherDevice(Activity activity, SQLiteHelper db, Class<?> targetClass, @Nullable String accountId, boolean showSnackBar) {
+    public static void signOutUserOtherDevice(Activity activity, SQLiteHelperMethod db, Class<?> targetClass, @Nullable String accountId, boolean showSnackBar) {
         new AlertDialog.Builder(activity)
                 .setTitle("Informasi")
                 .setMessage("Akun anda digunakan oleh perangkat lain, anda akan logout otomatis.")
@@ -37,7 +38,7 @@ public class AppUtil {
                 .show();
     }
 
-    public static void signOutFull(Activity activity, SQLiteHelper db, boolean showSnackBar, @Nullable String accountId) {
+    public static void signOutFull(Activity activity, SQLiteHelperMethod db, boolean showSnackBar, @Nullable String accountId) {
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         mAuth.signOut();
         if (showSnackBar) {

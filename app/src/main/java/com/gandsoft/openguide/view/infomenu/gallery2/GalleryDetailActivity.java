@@ -30,6 +30,7 @@ import com.gandsoft.openguide.IConfig;
 import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
 import com.gandsoft.openguide.database.SQLiteHelper;
+import com.gandsoft.openguide.database.SQLiteHelperMethod;
 import com.gandsoft.openguide.support.AppUtil;
 import com.gandsoft.openguide.support.InputValidUtil;
 import com.gandsoft.openguide.support.NetworkUtil;
@@ -49,7 +50,7 @@ public class GalleryDetailActivity extends AppCompatActivity {
 
     private static final int REQ_CODE_COMMENT = 123;
     public ArrayList<GalleryImageModel> models = new ArrayList<>();
-    SQLiteHelper db = new SQLiteHelper(this);
+    SQLiteHelperMethod db = new SQLiteHelperMethod(this);
     int posData;
     Toolbar toolbar;
     private GalleryDetailPagerAdapter mGalleryDetailPagerAdapter;

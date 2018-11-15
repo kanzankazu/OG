@@ -13,14 +13,16 @@ public class EventDataResponseModel {
     public List<EventHomeContent> homecontent = new ArrayList<>();
     public List<EventGallery> gallery = new ArrayList<>();
     public List<Map<Integer, List<EventPlaceList>>> place_list = new ArrayList<>();
-    public List<EventImportanInfo> importan_info = new ArrayList<>();
     public List<EventDataContact> data_contact = new ArrayList<>();
     public List<EventCommitteeNote> committee_note = new ArrayList<>();
     public List<EventAbout> about = new ArrayList<>();
     public List<Map<String, List<EventScheduleListDate>>> schedule_list = new ArrayList<>();
     public List<EventWalletdata> wallet_data = new ArrayList<>();
     public List<EventEmergencies> emergencies = new ArrayList<>();
+    public List<EventImportanInfo> importan_info = new ArrayList<>();
+    public List<EventImportanInfoNew> importan_info_new = new ArrayList<>();
     public List<EventSurroundingArea> surrounding_area = new ArrayList<>();
+    public List<EventSurroundingAreaNew> surrounding_area_new = new ArrayList<>();
     public String feedback_data;
 
     public String getStatus() {
@@ -79,14 +81,6 @@ public class EventDataResponseModel {
         this.place_list = place_list;
     }
 
-    public List<EventImportanInfo> getImportan_info() {
-        return importan_info;
-    }
-
-    public void setImportan_info(List<EventImportanInfo> importan_info) {
-        this.importan_info = importan_info;
-    }
-
     public List<EventDataContact> getData_contact() {
         return data_contact;
     }
@@ -135,12 +129,36 @@ public class EventDataResponseModel {
         this.emergencies = emergencies;
     }
 
+    public List<EventImportanInfo> getImportan_info() {
+        return importan_info;
+    }
+
+    public void setImportan_info(List<EventImportanInfo> importan_info) {
+        this.importan_info = importan_info;
+    }
+
+    public List<EventImportanInfoNew> getImportan_info_new() {
+        return importan_info_new;
+    }
+
+    public void setImportan_info_new(List<EventImportanInfoNew> importan_info_new) {
+        this.importan_info_new = importan_info_new;
+    }
+
     public List<EventSurroundingArea> getSurrounding_area() {
         return surrounding_area;
     }
 
     public void setSurrounding_area(List<EventSurroundingArea> surrounding_area) {
         this.surrounding_area = surrounding_area;
+    }
+
+    public List<EventSurroundingAreaNew> getSurrounding_area_new() {
+        return surrounding_area_new;
+    }
+
+    public void setSurrounding_area_new(List<EventSurroundingAreaNew> surrounding_area_new) {
+        this.surrounding_area_new = surrounding_area_new;
     }
 
     public String getFeedback_data() {

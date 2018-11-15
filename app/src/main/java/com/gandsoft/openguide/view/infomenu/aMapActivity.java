@@ -33,6 +33,7 @@ import com.gandsoft.openguide.API.APIresponse.Event.EventPlaceList;
 import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
 import com.gandsoft.openguide.database.SQLiteHelper;
+import com.gandsoft.openguide.database.SQLiteHelperMethod;
 import com.gandsoft.openguide.support.NetworkUtil;
 import com.gandsoft.openguide.support.PictureUtil;
 import com.gandsoft.openguide.support.SessionUtil;
@@ -63,7 +64,7 @@ import pl.tajchert.nammu.PermissionCallback;
 public class aMapActivity extends LocalBaseActivity implements OnMapReadyCallback {
     private static final int ACTION_MANAGE_OVERLAY_PERMISSION_REQUEST_CODE = 5469;
     private static final int ALL_PERMISSION = 1;
-    SQLiteHelper db = new SQLiteHelper(this);
+    SQLiteHelperMethod db = new SQLiteHelperMethod(this);
     private CardView cvMapsMarkerTitlefvbi, cvMapsFocusEventfvbi;
     private TextView tvMapsMarkerTitlefvbi;
     private TextView tvMapsFocusEventfvbi;

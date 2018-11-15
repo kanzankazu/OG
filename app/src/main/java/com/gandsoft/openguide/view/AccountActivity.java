@@ -53,6 +53,7 @@ import com.gandsoft.openguide.API.APIresponse.UserUpdate.UserUpdateResponseModel
 import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
 import com.gandsoft.openguide.database.SQLiteHelper;
+import com.gandsoft.openguide.database.SQLiteHelperMethod;
 import com.gandsoft.openguide.support.AppUtil;
 import com.gandsoft.openguide.support.NetworkUtil;
 import com.gandsoft.openguide.support.NotifUtil;
@@ -83,7 +84,7 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
     private static final int REQ_CODE_GALLERY = 8;
     private static final int UI_NEW_USER = 0;
     private static final int UI_OLD_USER = 1;
-    SQLiteHelper db = new SQLiteHelper(this);
+    SQLiteHelperMethod db = new SQLiteHelperMethod(this);
     private FirebaseAuth mAuth;
 
     private TextView tvAccIDfvbi, tvAccSelPicfvbi, tvAccGenderfvbi, tvAccTglfvbi, tvAccBulanfvbi, tvAccTahunfvbi, tvAccAggrementfvbi, tvSignOutSkipfvbi;

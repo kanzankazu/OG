@@ -17,6 +17,7 @@ import com.gandsoft.openguide.API.APIresponse.Event.EventTheEvent;
 import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
 import com.gandsoft.openguide.database.SQLiteHelper;
+import com.gandsoft.openguide.database.SQLiteHelperMethod;
 import com.gandsoft.openguide.support.SessionUtil;
 import com.gandsoft.openguide.view.infomenu.adapter.ComitteContactAdapter;
 import com.gandsoft.openguide.view.infomenu.adapter.ComitteContactHook;
@@ -27,7 +28,7 @@ import org.sufficientlysecure.htmltextview.HtmlTextView;
 import java.util.ArrayList;
 
 public class dComitteContactActivity extends AppCompatActivity implements ComitteContactHook {
-    SQLiteHelper db = new SQLiteHelper(this);
+    SQLiteHelperMethod db = new SQLiteHelperMethod(this);
 
     private Toolbar toolbar;
     private ActionBar ab;

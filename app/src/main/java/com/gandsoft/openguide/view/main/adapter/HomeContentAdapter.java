@@ -29,6 +29,7 @@ import com.gandsoft.openguide.API.APIresponse.UserData.UserListEventResponseMode
 import com.gandsoft.openguide.IConfig;
 import com.gandsoft.openguide.R;
 import com.gandsoft.openguide.database.SQLiteHelper;
+import com.gandsoft.openguide.database.SQLiteHelperMethod;
 import com.gandsoft.openguide.support.AppUtil;
 import com.gandsoft.openguide.support.InputValidUtil;
 import com.gandsoft.openguide.support.NetworkUtil;
@@ -341,7 +342,7 @@ public class HomeContentAdapter extends RecyclerView.Adapter<HomeContentAdapter.
         private final LinearLayout llRVHomeContentComment;
         private final LinearLayout llRVHomeContentRemove;
         private final RelativeLayout rlRVHomeContent;
-        SQLiteHelper db = new SQLiteHelper(itemView.getContext());
+        SQLiteHelperMethod db = new SQLiteHelperMethod(itemView.getContext());
 
         public ViewHolder(View itemView) {
             super(itemView);

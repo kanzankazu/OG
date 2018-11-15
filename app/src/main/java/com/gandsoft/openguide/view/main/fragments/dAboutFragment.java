@@ -19,6 +19,7 @@ import com.gandsoft.openguide.API.APIresponse.UserData.UserListEventResponseMode
 import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
 import com.gandsoft.openguide.database.SQLiteHelper;
+import com.gandsoft.openguide.database.SQLiteHelperMethod;
 import com.gandsoft.openguide.support.InputValidUtil;
 import com.gandsoft.openguide.support.NetworkUtil;
 import com.gandsoft.openguide.support.PictureUtil;
@@ -28,7 +29,7 @@ import java.io.File;
 import java.util.ArrayList;
 
 public class dAboutFragment extends Fragment {
-    SQLiteHelper db;
+    SQLiteHelperMethod db;
     private String accountId, eventId;
     private int version_data_event;
     private View view;
@@ -39,7 +40,7 @@ public class dAboutFragment extends Fragment {
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_d_about, container, false);
-        db = new SQLiteHelper(getActivity());
+        db = new SQLiteHelperMethod(getActivity());
 
         accountId = SessionUtil.getStringPreferences(ISeasonConfig.KEY_ACCOUNT_ID, null);
         eventId = SessionUtil.getStringPreferences(ISeasonConfig.KEY_EVENT_ID, null);

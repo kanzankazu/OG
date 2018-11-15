@@ -36,6 +36,7 @@ import com.gandsoft.openguide.IConfig;
 import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
 import com.gandsoft.openguide.database.SQLiteHelper;
+import com.gandsoft.openguide.database.SQLiteHelperMethod;
 import com.gandsoft.openguide.support.DateTimeUtil;
 import com.gandsoft.openguide.support.ListArrayUtil;
 import com.gandsoft.openguide.support.SessionUtil;
@@ -55,7 +56,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class hFeedbackActivity extends AppCompatActivity {
-    SQLiteHelper db = new SQLiteHelper(this);
+    SQLiteHelperMethod db = new SQLiteHelperMethod(this);
     private String accountId, eventId;
     private ArrayList<EventFeedback> feedbacks = new ArrayList<>();
     private LinearLayout llfeedbackfvbi;

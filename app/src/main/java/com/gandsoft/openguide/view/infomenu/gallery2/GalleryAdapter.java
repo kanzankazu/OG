@@ -16,6 +16,7 @@ import com.bumptech.glide.request.target.SimpleTarget;
 import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentResponseModel;
 import com.gandsoft.openguide.R;
 import com.gandsoft.openguide.database.SQLiteHelper;
+import com.gandsoft.openguide.database.SQLiteHelperMethod;
 import com.gandsoft.openguide.support.AppUtil;
 import com.gandsoft.openguide.support.InputValidUtil;
 import com.gandsoft.openguide.support.NetworkUtil;
@@ -132,7 +133,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         private final ImageView mImg;
-        SQLiteHelper db = new SQLiteHelper(itemView.getContext());
+        SQLiteHelperMethod db = new SQLiteHelperMethod(itemView.getContext());
 
         public ViewHolder(View itemView) {
             super(itemView);

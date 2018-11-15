@@ -43,6 +43,7 @@ import com.gandsoft.openguide.IConfig;
 import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
 import com.gandsoft.openguide.database.SQLiteHelper;
+import com.gandsoft.openguide.database.SQLiteHelperMethod;
 import com.gandsoft.openguide.support.AppUtil;
 import com.gandsoft.openguide.support.InputValidUtil;
 import com.gandsoft.openguide.support.NetworkUtil;
@@ -60,7 +61,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class aHomePostCommentActivity extends AppCompatActivity {
-    SQLiteHelper db = new SQLiteHelper(this);
+    SQLiteHelperMethod db = new SQLiteHelperMethod(this);
 
     private SwipeRefreshLayout srlCommentfvbi;
     private NestedScrollView nsvCommentfvbi;

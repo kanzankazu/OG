@@ -26,6 +26,7 @@ import com.gandsoft.openguide.IConfig;
 import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
 import com.gandsoft.openguide.database.SQLiteHelper;
+import com.gandsoft.openguide.database.SQLiteHelperMethod;
 import com.gandsoft.openguide.presenter.widget.CustomScrollView;
 import com.gandsoft.openguide.support.NetworkUtil;
 import com.gandsoft.openguide.support.SessionUtil;
@@ -39,7 +40,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class GalleryActivity extends AppCompatActivity {
-    SQLiteHelper db = new SQLiteHelper(this);
+    SQLiteHelperMethod db = new SQLiteHelperMethod(this);
 
     private GalleryAdapter rvGalleryAdapter;
     private RecyclerView rvGalleryfvbi;

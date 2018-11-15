@@ -16,7 +16,10 @@ import android.widget.TextView;
 import com.gandsoft.openguide.API.APIresponse.Event.EventScheduleListDateDataList;
 import com.gandsoft.openguide.R;
 import com.gandsoft.openguide.database.SQLiteHelper;
+import com.gandsoft.openguide.database.SQLiteHelperMethod;
 import com.gandsoft.openguide.support.DateTimeUtil;
+
+import org.sufficientlysecure.htmltextview.HtmlTextView;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -48,7 +51,8 @@ public class ScheduleRecycleviewAdapter extends RecyclerView.Adapter<ScheduleRec
     public void onBindViewHolder(final MyViewHolder holder, int position) {
         EventScheduleListDateDataList model = models.get(position);
         holder.tvRvScheduleTimefvbi.setText(model.getWaktu());
-        holder.tvRvScheduleTitlefvbi.setText(model.getSchedule_title());
+        //holder.tvRvScheduleTitlefvbi.setText(model.getSchedule_title());
+        holder.tvRvScheduleTitlefvbi.setHtml(model.getSchedule_title(), null);
         if (!TextUtils.isEmpty(model.getLocation())) {
             holder.llRvScheduleLocationfvbi.setVisibility(View.VISIBLE);
             holder.tvRvScheduleLocationTitlefvbi.setText(Html.fromHtml(model.getLocation()));
@@ -188,20 +192,23 @@ public class ScheduleRecycleviewAdapter extends RecyclerView.Adapter<ScheduleRec
     class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         private final LinearLayout llRvScheduleLocationfvbi;
-        private final TextView tvRvScheduleTimefvbi, tvRvScheduleTitlefvbi, tvRvScheduleLocationTitlefvbi, tvRvScheduleDetailfvbi;
+        private final TextView tvRvScheduleTimefvbi;
+        private final HtmlTextView tvRvScheduleTitlefvbi;
+        private final TextView tvRvScheduleLocationTitlefvbi;
+        private final TextView tvRvScheduleDetailfvbi;
         private final Button bRvScheduleDetailfvbi, bRvScheduleLiveQAfvbi, bRvScheduleVotefvbi, bRvScheduleExternalfvbi;
         private final ImageView ivRvScheduleIndicatorfvbi;
         private final View vRvSchedulelinefvbi;
         private final LinearLayout llRvScheduleContentfvbi;
         private final LinearLayout llRvScheduleContent2fvbi;
-        private final SQLiteHelper db;
+        private final SQLiteHelperMethod db;
 
         public MyViewHolder(View itemView) {
             super(itemView);
             //itemView.setOnClickListener(this);
-            db = new SQLiteHelper(itemView.getContext());
+            db = new SQLiteHelperMethod(itemView.getContext());
             tvRvScheduleTimefvbi = (TextView) itemView.findViewById(R.id.tvRvScheduleTime);
-            tvRvScheduleTitlefvbi = (TextView) itemView.findViewById(R.id.tvRvScheduleTitle);
+            tvRvScheduleTitlefvbi = (HtmlTextView) itemView.findViewById(R.id.tvRvScheduleTitle);
             llRvScheduleLocationfvbi = (LinearLayout) itemView.findViewById(R.id.llRvScheduleLocation);
             tvRvScheduleLocationTitlefvbi = (TextView) itemView.findViewById(R.id.tvRvScheduleLocationTitle);
             bRvScheduleDetailfvbi = (Button) itemView.findViewById(R.id.bRvScheduleDetail);

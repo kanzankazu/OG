@@ -14,6 +14,7 @@ import com.gandsoft.openguide.API.APIresponse.Event.EventCommitteeNote;
 import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
 import com.gandsoft.openguide.database.SQLiteHelper;
+import com.gandsoft.openguide.database.SQLiteHelperMethod;
 import com.gandsoft.openguide.support.DateTimeUtil;
 import com.gandsoft.openguide.support.DeviceDetailUtil;
 import com.gandsoft.openguide.support.ListArrayUtil;
@@ -134,13 +135,13 @@ public class InfoListViewAdapter extends RecyclerView.Adapter<InfoListViewAdapte
         TextView tvListInfofvbi;
         ImageView ivListInfoAlert;
 
-        SQLiteHelper db;
+        SQLiteHelperMethod db;
         String eventId, accountId;
 
         public ViewHolder(View itemView) {
 
             super(itemView);
-            db = new SQLiteHelper(itemView.getContext());
+            db = new SQLiteHelperMethod(itemView.getContext());
             llListInfofvbi = (LinearLayout) itemView.findViewById(R.id.llListInfo);
             ivListInfofvbi = (ImageView) itemView.findViewById(R.id.ivListInfo);
             tvListInfofvbi = (TextView) itemView.findViewById(R.id.tvListInfo);

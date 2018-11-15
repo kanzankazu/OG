@@ -13,13 +13,14 @@ import com.gandsoft.openguide.API.APIresponse.UserData.UserWalletDataResponseMod
 import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
 import com.gandsoft.openguide.database.SQLiteHelper;
+import com.gandsoft.openguide.database.SQLiteHelperMethod;
 import com.gandsoft.openguide.support.SessionUtil;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class bWalletFragment extends Fragment {
-    SQLiteHelper db;
+    SQLiteHelperMethod db;
     WalletViewAdapter adapter;
     private RecyclerView rvWalletfvbi;
     private String accountId, eventId;
@@ -45,7 +46,7 @@ public class bWalletFragment extends Fragment {
     }
 
     private void initContent() {
-        db = new SQLiteHelper(getActivity());
+        db = new SQLiteHelperMethod(getActivity());
         List<UserWalletDataResponseModel> listWalletData;
         if (db.isDataTableValueNull(SQLiteHelper.TableWallet, SQLiteHelper.KEY_Wallet_eventId, eventId)) {
             listWalletData = new ArrayList<>();

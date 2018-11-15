@@ -63,6 +63,7 @@ import com.gandsoft.openguide.IConfig;
 import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
 import com.gandsoft.openguide.database.SQLiteHelper;
+import com.gandsoft.openguide.database.SQLiteHelperMethod;
 import com.gandsoft.openguide.presenter.widget.CustomScrollView;
 import com.gandsoft.openguide.support.AppUtil;
 import com.gandsoft.openguide.support.DateTimeUtil;
@@ -101,7 +102,7 @@ public class aHomeFragment extends Fragment {
     private static final int REQ_CODE_POST_IMAGE = 12;
     private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 10;
     private static final long MIN_TIME_BW_UPDATES = 1000 * 30;
-    SQLiteHelper db;
+    SQLiteHelperMethod db;
     private View view;
     private SwipeRefreshLayout homeSRLHomefvbi;
     private CustomScrollView homeNSVHomefvbi;
@@ -157,7 +158,7 @@ public class aHomeFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_a_home, container, false);
 
-        db = new SQLiteHelper(getActivity());
+        db = new SQLiteHelperMethod(getActivity());
 
         accountId = SessionUtil.getStringPreferences(ISeasonConfig.KEY_ACCOUNT_ID, null);
         eventId = SessionUtil.getStringPreferences(ISeasonConfig.KEY_EVENT_ID, null);
@@ -481,12 +482,12 @@ public class aHomeFragment extends Fragment {
         String replace2 = replace1.replace("\"", " ");
         String replace3 = replace2.replace("status-checkin , ", "status-checkin,");
         String replace4 = replace3.replace("status-feedback , ", "status-feedback,");
-        Log.d("Lihat", "initContent aHomeFragment replace4.matches : " + (replace4.matches("(?i).*status-checkin,0.*")));
-        Log.d("Lihat", "initContent aHomeFragment replace4.matches : " + (replace4.matches("(?i).*status-checkin,1.*")));
+        //Log.d("Lihat", "initContent aHomeFragment replace4.matches : " + (replace4.matches("(?i).*status-checkin,0.*")));
+        //Log.d("Lihat", "initContent aHomeFragment replace4.matches : " + (replace4.matches("(?i).*status-checkin,1.*")));
 
         /*INIT VALIDATE DATE*/
         Date currentDate = DateTimeUtil.currentDate();
-        Log.d("Lihat", "checkTheCheckIn aHomeFragment currentDate: " + currentDate);
+        //Log.d("Lihat", "checkTheCheckIn aHomeFragment currentDate: " + currentDate);
 
         //
         /*Date day3BeforecurrentDate = DateTimeUtil.addDays(currentDate, -3);
@@ -518,7 +519,7 @@ public class aHomeFragment extends Fragment {
         //
         String startDate = db.getOneListEvent(eventId, accountId).getStart_date();//"yyyyMMdd"
         String startDateYearMonth = startDate.substring(0, 6);//"yyyyMM"
-        Log.d("Lihat", "checkTheCheckIn aHomeFragment startDateYearMonth: " + startDateYearMonth);
+        //Log.d("Lihat", "checkTheCheckIn aHomeFragment startDateYearMonth: " + startDateYearMonth);
 
         String dateStartEnd = db.getOneListEvent(eventId, accountId).getDate();//"dd-dd mm yyyy"
         String[] dates = dateStartEnd.split(" ");
@@ -528,22 +529,22 @@ public class aHomeFragment extends Fragment {
         String startDay1 = startDay.length() == 1 ? "0" + startDay : startDay;
         String endDay = daysEvents[1];
         String endDay1 = endDay.length() == 1 ? "0" + endDay : endDay;
-        Log.d("Lihat", "checkTheCheckIn aHomeFragment startDay1: " + startDay1);
-        Log.d("Lihat", "checkTheCheckIn aHomeFragment endDay1: " + endDay1);
+        //Log.d("Lihat", "checkTheCheckIn aHomeFragment startDay1: " + startDay1);
+        //Log.d("Lihat", "checkTheCheckIn aHomeFragment endDay1: " + endDay1);
 
         String startDayComplete = startDateYearMonth + startDay1 + " 00:00:00";//"yyyyMMdd HH:mm:ss"
-        Log.d("Lihat", "checkTheCheckIn aHomeFragment startDayComplete: " + startDayComplete);
+        //Log.d("Lihat", "checkTheCheckIn aHomeFragment startDayComplete: " + startDayComplete);
         Date startDayCompleteD = DateTimeUtil.stringToDate(startDayComplete, new SimpleDateFormat("yyyyMMdd HH:mm:ss"));
-        Log.d("Lihat", "checkTheCheckIn aHomeFragment startDayCompleteD: " + startDayCompleteD);
+        //Log.d("Lihat", "checkTheCheckIn aHomeFragment startDayCompleteD: " + startDayCompleteD);
         String endDayComplete = startDateYearMonth + endDay1 + " 23:59:59";//"yyyyMMdd HH:mm:ss"
-        Log.d("Lihat", "checkTheCheckIn aHomeFragment endDayComplete: " + endDayComplete);
+        //Log.d("Lihat", "checkTheCheckIn aHomeFragment endDayComplete: " + endDayComplete);
         Date endDayCompleteD = DateTimeUtil.stringToDate(endDayComplete, new SimpleDateFormat("yyyyMMdd HH:mm:ss"));
-        Log.d("Lihat", "checkTheCheckIn aHomeFragment endDayCompleteD: " + endDayCompleteD);
+        //Log.d("Lihat", "checkTheCheckIn aHomeFragment endDayCompleteD: " + endDayCompleteD);
 
         Date day3BeforeStart = DateTimeUtil.addDays(startDayCompleteD, -3);
-        Log.d("Lihat", "checkTheCheckIn aHomeFragment day3BeforeStart: " + day3BeforeStart);
+        //Log.d("Lihat", "checkTheCheckIn aHomeFragment day3BeforeStart: " + day3BeforeStart);
         Date day7AfterEnd = DateTimeUtil.addDays(endDayCompleteD, 7);
-        Log.d("Lihat", "checkTheCheckIn aHomeFragment day7AfterEnd: " + day7AfterEnd);
+        //Log.d("Lihat", "checkTheCheckIn aHomeFragment day7AfterEnd: " + day7AfterEnd);
 
         /*EXECUTE*/
         if (replace4.matches("(?i).*status-checkin,1.*") || !DateTimeUtil.isBetween2Date(day3BeforeStart, endDayCompleteD)) {

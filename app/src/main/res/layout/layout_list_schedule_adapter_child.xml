@@ -26,7 +26,7 @@
         android:layout_marginTop="15dp"
         android:background="@color/gray_very_light" />
 
-    <TextView
+    <org.sufficientlysecure.htmltextview.HtmlTextView
         android:id="@+id/tvRvScheduleTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

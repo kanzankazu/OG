@@ -29,6 +29,7 @@ import com.gandsoft.openguide.IConfig;
 import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
 import com.gandsoft.openguide.database.SQLiteHelper;
+import com.gandsoft.openguide.database.SQLiteHelperMethod;
 import com.gandsoft.openguide.support.DeviceDetailUtil;
 import com.gandsoft.openguide.support.InputValidUtil;
 import com.gandsoft.openguide.support.NetworkUtil;
@@ -60,7 +61,7 @@ public class LoginActivity extends LocalBaseActivity {
     private static final int UI_VERIFY = 1;
     private static final String TAG = "Lihat LoginActivity";
     private static final int API_CALLER_LOGIN = 1010;
-    SQLiteHelper db = new SQLiteHelper(this);
+    SQLiteHelperMethod db = new SQLiteHelperMethod(this);
     /**/
     private CountryCodePicker ccpLoginfvbi;
     /*UI*/

@@ -24,7 +24,7 @@ import com.bumptech.glide.request.target.SimpleTarget;
 import com.gandsoft.openguide.API.APIresponse.UserData.GetListUserEventResponseModel;
 import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
-import com.gandsoft.openguide.database.SQLiteHelper;
+import com.gandsoft.openguide.database.SQLiteHelperMethod;
 import com.gandsoft.openguide.support.AppUtil;
 import com.gandsoft.openguide.support.InputValidUtil;
 import com.gandsoft.openguide.support.ListArrayUtil;
@@ -49,12 +49,14 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.gandsoft.openguide.database.SQLiteHelper.Key_Area_EventId;
+import static com.gandsoft.openguide.database.SQLiteHelper.Key_AreaNew_EventId;
 import static com.gandsoft.openguide.database.SQLiteHelper.Key_Contact_List_EventId;
 import static com.gandsoft.openguide.database.SQLiteHelper.Key_Emergencie_EventId;
-import static com.gandsoft.openguide.database.SQLiteHelper.TableArea;
+import static com.gandsoft.openguide.database.SQLiteHelper.Key_Important_InfoNew_EventId;
+import static com.gandsoft.openguide.database.SQLiteHelper.TableAreaNew;
 import static com.gandsoft.openguide.database.SQLiteHelper.TableContactList;
 import static com.gandsoft.openguide.database.SQLiteHelper.TableEmergencie;
+import static com.gandsoft.openguide.database.SQLiteHelper.TableImportantInfoNew;
 
 public class eInfoFragment extends Fragment implements InfoListViewAdapter.ListAdapterListener {
     private static final int REQ_CODE_INBOX = 123;
@@ -62,7 +64,7 @@ public class eInfoFragment extends Fragment implements InfoListViewAdapter.ListA
     private static final int ID_NOTIF = 0;
     Button bMyPro;
     InfoListViewAdapter adapter;
-    SQLiteHelper db;
+    SQLiteHelperMethod db;
     String infoMenu[] = {
             "Map",
             "Gallery",
@@ -97,7 +99,7 @@ public class eInfoFragment extends Fragment implements InfoListViewAdapter.ListA
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        db = new SQLiteHelper(getActivity());
+        db = new SQLiteHelperMethod(getActivity());
         View view = inflater.inflate(R.layout.fragment_e_info, container, false);
 
         accountId = SessionUtil.getStringPreferences(ISeasonConfig.KEY_ACCOUNT_ID, null);
@@ -126,7 +128,8 @@ public class eInfoFragment extends Fragment implements InfoListViewAdapter.ListA
 
         boolean isContactListNull = db.isDataTableValueNull(TableContactList, Key_Contact_List_EventId, eventId);
         boolean isEmergencyNull = db.isDataTableValueNull(TableEmergencie, Key_Emergencie_EventId, eventId);
-        boolean isSurroundAreaNull = db.isDataTableValueNull(TableArea, Key_Area_EventId, eventId);
+        boolean isSurroundAreaNull = db.isDataTableValueNull(TableAreaNew, Key_AreaNew_EventId, eventId);
+        boolean isImportantInfoNull = db.isDataTableValueNull(TableImportantInfoNew, Key_Important_InfoNew_EventId, eventId);
 
         List<Integer> s = new ArrayList<>();
         if (isContactListNull) {
@@ -143,6 +146,11 @@ public class eInfoFragment extends Fragment implements InfoListViewAdapter.ListA
             ArrayList<String> list = ListArrayUtil.convertStringArrayToListString(infoMenu);
             int surrounding_area = ListArrayUtil.getPosStringInList(list, "Surrounding Area");
             s.add(surrounding_area);
+        }
+        if (isImportantInfoNull) {
+            ArrayList<String> list = ListArrayUtil.convertStringArrayToListString(infoMenu);
+            int practical_information = ListArrayUtil.getPosStringInList(list, "Practical Information");
+            s.add(practical_information);
         }
 
         int[] ints = ListArrayUtil.convertListIntegertToIntArray(s);
@@ -252,7 +260,7 @@ public class eInfoFragment extends Fragment implements InfoListViewAdapter.ListA
                         ((BaseHomeActivity) getActivity()).recreate();
                     }
                 }
-            }, 2000);
+            }, 1000);
         }
     }
 }

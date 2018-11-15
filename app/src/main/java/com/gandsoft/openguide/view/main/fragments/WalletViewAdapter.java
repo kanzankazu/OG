@@ -1,6 +1,7 @@
 package com.gandsoft.openguide.view.main.fragments;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.CardView;
@@ -17,10 +18,15 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.SimpleTarget;
 import com.gandsoft.openguide.API.APIresponse.UserData.UserWalletDataResponseModel;
 import com.gandsoft.openguide.R;
 import com.gandsoft.openguide.database.SQLiteHelper;
+import com.gandsoft.openguide.database.SQLiteHelperMethod;
 import com.gandsoft.openguide.support.ListArrayUtil;
+import com.gandsoft.openguide.support.PictureUtil;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -91,15 +97,26 @@ class WalletViewAdapter extends RecyclerView.Adapter<WalletViewAdapter.ViewHolde
                 ViewHolder1 holder1 = (ViewHolder1) holder;
                 Document doc1 = Jsoup.parse(model.getBody_wallet());
                 String imgUrl = doc1.select("img").first().absUrl("src");
+                Log.d("Lihat", "onBindViewHolder WalletViewAdapter : " + imgUrl);
+                String imgUrl1 = doc1.select("img").first().attr("abs:src");
+                Log.d("Lihat", "onBindViewHolder WalletViewAdapter : " + imgUrl1);
                 String name = doc1.select("h1").text();
                 String accountId = doc1.select("h2").text();
                 Glide.with(activity)
                         .load(imgUrl)
+                        .asBitmap()
                         .placeholder(R.drawable.template_account_og)
                         .diskCacheStrategy(DiskCacheStrategy.NONE)
                         .skipMemoryCache(false)
                         .error(R.drawable.template_account_og)
-                        .into(holder1.ivWalletIdCardfvbi);
+                        .into(new SimpleTarget<Bitmap>() {
+                            @Override
+                            public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+                                Bitmap resizeImageBitmap = PictureUtil.resizeImageBitmap(resource, 1080);
+                                holder1.ivWalletIdCardfvbi.setImageBitmap(resizeImageBitmap);
+
+                            }
+                        });
                 holder1.tvWalletIdCardNamefvbi.setText(name);
                 holder1.tvWalletIdCardIdfvbi.setText(accountId);
 
@@ -289,7 +306,7 @@ class WalletViewAdapter extends RecyclerView.Adapter<WalletViewAdapter.ViewHolde
         private final TextView tvWalletTransportNotiffvbi, tvWalletTransportNamefvbi, tvWalletTransportTitleDeparturefvbi, tvWalletTransportAirportDeparturefvbi, tvWalletTransportDateDeparturefvbi, tvWalletTransportTimeDeparturefvbi, tvWalletTransportTitleArrivalfvbi, tvWalletTransportAirportArrivalfvbi, tvWalletTransportDateArrivalfvbi, tvWalletTransportTimeArrivalfvbi, tvWalletTransportDetailfvbi, tvWalletTransportFlightCodeTitlefvbi, tvWalletTransportFlightCodefvbi;
         private final Button bWalletTransportDetailfvbi;
         private final ImageView ivWalletTransportIconfvbi;
-        SQLiteHelper db = new SQLiteHelper(itemView.getContext());
+        SQLiteHelperMethod db = new SQLiteHelperMethod(itemView.getContext());
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -316,7 +333,7 @@ class WalletViewAdapter extends RecyclerView.Adapter<WalletViewAdapter.ViewHolde
         private final ImageView ivWalletIdCardfvbi;
         private final CardView cvWalletIdCardDetailfvbi;
         private final TextView tvWalletIdCardNamefvbi, tvWalletIdCardIdfvbi, tvWalletIdCardEventTitlefvbi, tvWalletIdCardEventPlacefvbi, tvWalletIdCardDatefvbi, tvWalletIdCardDetailfvbi;
-        SQLiteHelper db = new SQLiteHelper(itemView.getContext());
+        SQLiteHelperMethod db = new SQLiteHelperMethod(itemView.getContext());
 
         public ViewHolder1(View itemView) {
             super(itemView);
