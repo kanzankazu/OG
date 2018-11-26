@@ -14,7 +14,7 @@
         android:src="@drawable/ic_action_notification"/>
 
     <TextView
-        android:id="@+id/cart_badge"
+        android:id="@+id/tvMenuBHACartBadge"
         android:layout_width="15dp"
         android:layout_height="15dp"
         android:layout_gravity="right|end|top"

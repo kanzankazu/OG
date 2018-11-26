@@ -13,11 +13,13 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.gandsoft.openguide.API.API;
 import com.gandsoft.openguide.API.APIrequest.Gallery.GalleryRequestModel;
@@ -150,12 +152,12 @@ public class GalleryActivity extends AppCompatActivity {
                             }, 2000);
                         } else {
                             if (!isNoMoreShow) {
-                                Snackbar.make(findViewById(android.R.id.content), "no more data", Snackbar.LENGTH_SHORT).show();
+                                SystemUtil.showToast(getApplicationContext(), "no more data", Toast.LENGTH_SHORT, Gravity.TOP);
                                 isNoMoreShow = true;
                             }
                         }
                     } else {
-                        Snackbar.make(findViewById(android.R.id.content), "Check you connection", Snackbar.LENGTH_SHORT).show();
+                        SystemUtil.showToast(getApplicationContext(), "Check you connection", Toast.LENGTH_SHORT,Gravity.TOP);
                     }
 
                 }
@@ -252,14 +254,14 @@ public class GalleryActivity extends AppCompatActivity {
                             first_id = "";
                         }
                     } else {
-                        Snackbar.make(findViewById(android.R.id.content), response.message(), Snackbar.LENGTH_LONG).show();
+                        SystemUtil.showToast(getApplicationContext(), response.message(), Snackbar.LENGTH_LONG,Gravity.TOP);
                     }
                 }
 
                 @Override
                 public void onFailure(Call<List<HomeContentResponseModel>> call, Throwable t) {
                     SystemUtil.hideProgress(progressDialog, 2000);
-                    Snackbar.make(findViewById(android.R.id.content), t.getMessage(), Snackbar.LENGTH_LONG).show();
+                    SystemUtil.showToast(getApplicationContext(), t.getMessage(), Snackbar.LENGTH_LONG,Gravity.TOP);
                 }
             });
         } else {
@@ -290,7 +292,7 @@ public class GalleryActivity extends AppCompatActivity {
                     data.add(model1);
                 }
             } else {
-                Snackbar.make(findViewById(android.R.id.content), "No data", Snackbar.LENGTH_SHORT).show();
+                SystemUtil.showToast(getApplicationContext(), "No data", Toast.LENGTH_SHORT,Gravity.TOP);
             }
         }
     }
@@ -353,7 +355,7 @@ public class GalleryActivity extends AppCompatActivity {
                         }
 
                     } else {
-                        Snackbar.make(findViewById(android.R.id.content), response.message(), Snackbar.LENGTH_LONG).show();
+                        SystemUtil.showToast(getApplicationContext(), response.message(), Snackbar.LENGTH_LONG,Gravity.TOP);
                     }
                 }
 
@@ -361,13 +363,13 @@ public class GalleryActivity extends AppCompatActivity {
                 public void onFailure(Call<List<HomeContentResponseModel>> call, Throwable t) {
                     llLoadModeGalleryfvbi.setVisibility(View.GONE);
                     nsvGalleryfvbi.setEnableScrolling(true);
-                    Snackbar.make(findViewById(android.R.id.content), t.getMessage(), Snackbar.LENGTH_LONG).show();
+                    SystemUtil.showToast(getApplicationContext(), t.getMessage(), Snackbar.LENGTH_LONG,Gravity.TOP);
                 }
             });
         } else {
             llLoadModeGalleryfvbi.setVisibility(View.GONE);
             nsvGalleryfvbi.setEnableScrolling(true);
-            Snackbar.make(findViewById(android.R.id.content), "Check you connection", Snackbar.LENGTH_SHORT).show();
+            SystemUtil.showToast(getApplicationContext(), "Check you connection", Toast.LENGTH_SHORT,Gravity.TOP);
         }
     }
 

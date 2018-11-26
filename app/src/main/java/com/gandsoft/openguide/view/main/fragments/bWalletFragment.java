@@ -5,9 +5,11 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.gandsoft.openguide.API.APIresponse.UserData.UserWalletDataResponseModel;
 import com.gandsoft.openguide.ISeasonConfig;
@@ -15,6 +17,7 @@ import com.gandsoft.openguide.R;
 import com.gandsoft.openguide.database.SQLiteHelper;
 import com.gandsoft.openguide.database.SQLiteHelperMethod;
 import com.gandsoft.openguide.support.SessionUtil;
+import com.gandsoft.openguide.support.SystemUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,7 +53,7 @@ public class bWalletFragment extends Fragment {
         List<UserWalletDataResponseModel> listWalletData;
         if (db.isDataTableValueNull(SQLiteHelper.TableWallet, SQLiteHelper.KEY_Wallet_eventId, eventId)) {
             listWalletData = new ArrayList<>();
-            Snackbar.make(getActivity().findViewById(android.R.id.content), "Empty Data", Snackbar.LENGTH_SHORT).show();
+            SystemUtil.showToast(getActivity(), "Empty Data", Toast.LENGTH_SHORT, Gravity.TOP);
         } else {
             listWalletData = db.getAllWalletData(eventId, accountId);
         }

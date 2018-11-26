@@ -4,12 +4,13 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
+import android.os.Handler;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -17,6 +18,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -29,13 +31,13 @@ import com.gandsoft.openguide.API.APIresponse.LocalBaseResponseModel;
 import com.gandsoft.openguide.IConfig;
 import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
-import com.gandsoft.openguide.database.SQLiteHelper;
 import com.gandsoft.openguide.database.SQLiteHelperMethod;
 import com.gandsoft.openguide.support.AppUtil;
 import com.gandsoft.openguide.support.InputValidUtil;
 import com.gandsoft.openguide.support.NetworkUtil;
 import com.gandsoft.openguide.support.PictureUtil;
 import com.gandsoft.openguide.support.SessionUtil;
+import com.gandsoft.openguide.support.SystemUtil;
 import com.gandsoft.openguide.view.main.fragments.aHomeActivityInFragment.aHomePostCommentActivity;
 
 import java.io.File;
@@ -120,7 +122,7 @@ public class GalleryDetailActivity extends AppCompatActivity {
         mGalleryDetailPagerAdapter = new GalleryDetailPagerAdapter(GalleryDetailActivity.this, imageList, mViewPager);
         mViewPager.setPageTransformer(true, new DepthPageTransformer());
         mViewPager.setAdapter(mGalleryDetailPagerAdapter);
-        mViewPager.setOffscreenPageLimit(0);
+        mViewPager.setOffscreenPageLimit(2);
         mViewPager.setCurrentItem(posData);
 
         updateUi(posData);
@@ -156,7 +158,7 @@ public class GalleryDetailActivity extends AppCompatActivity {
                                 }
                             });
                 } else {
-                    Snackbar.make(findViewById(android.R.id.content), "Check you connection", Snackbar.LENGTH_SHORT).show();
+                    SystemUtil.showToast(getApplicationContext(), "Check you connection", Toast.LENGTH_SHORT, Gravity.TOP);
                 }
             }
         });
@@ -176,22 +178,37 @@ public class GalleryDetailActivity extends AppCompatActivity {
         tvDetailGalleryLikefvbi.setText(model.getLike());
         tvDetailGalleryUsernamefvbi.setText(model.getUsername());
         tvDetailGalleryCaptionfvbi.setText(model.getCaption());
-        String s = AppUtil.validationStringImageIcon(GalleryDetailActivity.this, model.getImage_icon(), model.getImage_icon_local(), false);
+
         Glide.with(getApplicationContext())
-                .load(InputValidUtil.isLinkUrl(s) ? s : new File(s))
-                .asBitmap()
-                .error(R.drawable.template_account_og)
-                .placeholder(R.drawable.ic_action_name)
+                .load(R.drawable.load)
+                .asGif()
+                .crossFade()
                 .diskCacheStrategy(DiskCacheStrategy.NONE)
                 .skipMemoryCache(false)
                 .dontAnimate()
-                .into(new SimpleTarget<Bitmap>() {
-                    @Override
-                    public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
-                        Bitmap bitmap = PictureUtil.resizeImageBitmap(resource, 720);
-                        ivDetailGalleryIconfvbi.setImageBitmap(bitmap);
-                    }
-                });
+                .into(ivDetailGalleryIconfvbi);
+
+        new Handler().postDelayed(new Runnable() {
+            public void run() {
+                //code here
+                String s = AppUtil.validationStringImageIcon(GalleryDetailActivity.this, model.getImage_icon(), model.getImage_icon_local(), false);
+                Glide.with(getApplicationContext())
+                        .load(InputValidUtil.isLinkUrl(s) ? s : new File(s))
+                        .asBitmap()
+                        .error(R.drawable.template_account_og)
+                        .placeholder(R.drawable.ic_action_name)
+                        .diskCacheStrategy(DiskCacheStrategy.NONE)
+                        .skipMemoryCache(false)
+                        .dontAnimate()
+                        .into(new SimpleTarget<Bitmap>() {
+                            @Override
+                            public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+                                Bitmap bitmap = PictureUtil.resizeImageBitmap(resource, 360);
+                                ivDetailGalleryIconfvbi.setImageBitmap(bitmap);
+                            }
+                        });
+            }
+        }, 2000);
 
         if (model.getStatus_like() != 0) {
             ivDetailGalleryLikefvbi.setImageResource(R.drawable.ic_love_fill);
@@ -212,7 +229,7 @@ public class GalleryDetailActivity extends AppCompatActivity {
                     int iLike = Integer.parseInt(model.getLike());
                     postLike(model.getLike(), model, iLike);
                 } else {
-                    Snackbar.make(findViewById(android.R.id.content), "Check you connection", Snackbar.LENGTH_SHORT).show();
+                    SystemUtil.showToast(getApplicationContext(), "Check you connection", Toast.LENGTH_SHORT, Gravity.TOP);
                 }
             }
         });
@@ -254,7 +271,7 @@ public class GalleryDetailActivity extends AppCompatActivity {
             intent.putExtra(ISeasonConfig.INTENT_PARAM2, position);
             startActivityForResult(intent, REQ_CODE_COMMENT);
         } else {
-            Snackbar.make(findViewById(android.R.id.content), "Check you connection", Snackbar.LENGTH_SHORT).show();
+            SystemUtil.showToast(getApplicationContext(), "Check you connection", Toast.LENGTH_SHORT, Gravity.TOP);
         }
     }
 
@@ -299,12 +316,12 @@ public class GalleryDetailActivity extends AppCompatActivity {
                         }
                     } else {
                         Log.d("Lihat", "onResponse HomeContentAdapter : " + response.message());
-                        //Snackbar.make(findViewById(android.R.id.content), "Failed Connection To Server", Snackbar.LENGTH_LONG).show();
+                        //SystemUtil.showToast(getApplicationContext(), "Failed Connection To Server", Toast.LENGTH_SHORT,Gravity.TOP);
                         //Crashlytics.logException(new Exception(response.message()));
                     }
                 } else {
                     Log.d("Lihat", "onResponse HomeContentAdapter : " + response.message());
-                    //Snackbar.make(findViewById(android.R.id.content), "Failed Connection To Server", Snackbar.LENGTH_LONG).show();
+                    //SystemUtil.showToast(getApplicationContext(), "Failed Connection To Server", Toast.LENGTH_SHORT,Gravity.TOP);
                     //Crashlytics.logException(new Exception(response.message()));
                 }
             }
@@ -313,8 +330,8 @@ public class GalleryDetailActivity extends AppCompatActivity {
             public void onFailure(Call<List<LocalBaseResponseModel>> call, Throwable t) {
                 //progressDialog.dismiss();
                 Log.d("Lihat", "onFailure GalleryDetailActivity : " + t.getMessage());
-                Snackbar.make(findViewById(android.R.id.content), "Failed Connection To Server", Snackbar.LENGTH_SHORT).show();
-                /*Snackbar.make(findViewById(android.R.id.content), "Failed Connection To Server", Snackbar.LENGTH_SHORT).setAction("Reload", new View.OnClickListener() {
+                SystemUtil.showToast(getApplicationContext(), "Failed Connection To Server", Toast.LENGTH_SHORT, Gravity.TOP);
+                /*SystemUtil.showToast(getApplicationContext(), "Failed Connection To Server", Snackbar.LENGTH_SHORT).setAction("Reload", new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
 

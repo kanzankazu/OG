@@ -15,7 +15,6 @@ import android.view.MenuItem;
 import com.gandsoft.openguide.API.APIresponse.Event.EventCommitteeNote;
 import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
-import com.gandsoft.openguide.database.SQLiteHelper;
 import com.gandsoft.openguide.database.SQLiteHelperMethod;
 import com.gandsoft.openguide.support.SessionUtil;
 import com.gandsoft.openguide.view.infomenu.adapter.InboxRecViewAdapter;

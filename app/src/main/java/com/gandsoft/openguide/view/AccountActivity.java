@@ -24,12 +24,14 @@ import android.support.annotation.RequiresApi;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
@@ -60,6 +62,7 @@ import com.gandsoft.openguide.support.NotifUtil;
 import com.gandsoft.openguide.support.PictureUtil;
 import com.gandsoft.openguide.support.ServiceUtil;
 import com.gandsoft.openguide.support.SessionUtil;
+import com.gandsoft.openguide.support.SystemUtil;
 import com.gandsoft.openguide.view.services.RepeatCheckDataService;
 import com.google.firebase.auth.FirebaseAuth;
 import com.soundcloud.android.crop.Crop;
@@ -69,6 +72,8 @@ import java.io.FileDescriptor;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import retrofit2.Call;
@@ -81,9 +86,11 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
     private static final int REQ_COD_CAMERA = 5;
     private static final int REQ_COD_CROP = 6;
     private static final int REQ_COD_CAMERA_KITKAT = 7;
+    private static final int REQ_COD_CAMERA_OREO = 9;
     private static final int REQ_CODE_GALLERY = 8;
     private static final int UI_NEW_USER = 0;
     private static final int UI_OLD_USER = 1;
+    private static final String CAPTURE_IMAGE_FILE_PROVIDER = "com.gandsoft.openguide";
     SQLiteHelperMethod db = new SQLiteHelperMethod(this);
     private FirebaseAuth mAuth;
 
@@ -106,6 +113,7 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
     private String imageFilePath3;
     private Uri imageUri;
     private Bitmap bitmapCrop;
+    private Uri mUri;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -114,9 +122,9 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
 
         initSession();
         initPermission();
-        initComponent();
-        initContent();
-        initListener();
+        //initComponent();
+        //initContent();
+        //initListener();
 
     }
 
@@ -130,19 +138,102 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
     }
 
     private void initPermission() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(AccountActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                Toast.makeText(getApplicationContext(), "Access dibutuhkan untuk menentukan lokasi anda", Toast.LENGTH_LONG).show();
+        // cek apakah sudah memiliki permission untuk access fine location
+        if (
+                ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
+                        ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ||
+                        ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED
+                ) {
+            // cek apakah perlu menampilkan info kenapa membutuhkan access fine location
+            if (
+                    ActivityCompat.shouldShowRequestPermissionRationale(AccountActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) ||
+                            ActivityCompat.shouldShowRequestPermissionRationale(AccountActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) ||
+                            ActivityCompat.shouldShowRequestPermissionRationale(AccountActivity.this, Manifest.permission.READ_PHONE_STATE)
+                    ) {
                 String[] perm = {
+                        Manifest.permission.ACCESS_FINE_LOCATION,
                         Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                        Manifest.permission.READ_EXTERNAL_STORAGE};
+                        Manifest.permission.READ_PHONE_STATE
+                };
                 ActivityCompat.requestPermissions(AccountActivity.this, perm, RP_ACCESS);
             } else {
+                // request permission untuk access fine location
                 String[] perm = {
+                        Manifest.permission.ACCESS_FINE_LOCATION,
                         Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                        Manifest.permission.READ_EXTERNAL_STORAGE};
+                        Manifest.permission.READ_PHONE_STATE
+                };
                 ActivityCompat.requestPermissions(AccountActivity.this, perm, RP_ACCESS);
             }
+        } else {
+            // permission access fine location didapat
+            // SystemUtil.showToast(ChangeEventActivity.this, "Yay, has permission", Toast.LENGTH_SHORT,Gravity.TOP);
+            initComponent();
+            initContent();
+            initListener();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case RP_ACCESS: //private final int = 1
+                Log.d("Lihat", "onRequestPermissionsResult ChangeEventActivity grantResults.length : " + grantResults.length);
+                Log.d("Lihat", "onRequestPermissionsResult ChangeEventActivity permissions.length : " + permissions.length);
+                boolean isPerpermissionForAllGranted = false;
+                ArrayList<String> listStat = new ArrayList<>();
+                if (grantResults.length > 0 && permissions.length == grantResults.length) {
+                    for (int i = 0; i < permissions.length; i++) {
+                        if (grantResults[i] == PackageManager.PERMISSION_GRANTED) {
+                            isPerpermissionForAllGranted = true;
+                            listStat.add("1");
+                        } else {
+                            isPerpermissionForAllGranted = false;
+                            listStat.add("0");
+                        }
+                    }
+                } else {
+                    isPerpermissionForAllGranted = true;
+                }
+
+                int frequency0 = Collections.frequency(listStat, "0");
+                int frequency1 = Collections.frequency(listStat, "1");
+
+                if (frequency1 != grantResults.length) {
+                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+                    alertDialogBuilder.setMessage("you denied some permission, you must give all permission to next proccess?");
+                    alertDialogBuilder.setCancelable(false);
+                    alertDialogBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface arg0, int arg1) {
+                            initPermission();
+                        }
+                    });
+                    alertDialogBuilder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface arg0, int arg1) {
+                            finish();
+                            SystemUtil.showToast(getApplicationContext(), "Izin tidak di berikan", Toast.LENGTH_LONG, Gravity.TOP);
+                        }
+                    });
+                    AlertDialog alertDialog = alertDialogBuilder.create();
+                    alertDialog.show();
+                } else {
+                    initComponent();
+                    initContent();
+                    initListener();
+                }
+
+                /*if (!isPerpermissionForAllGranted) {
+                    finish();
+                    SystemUtil.showToast(getApplicationContext(), "Izin tidak di berikan", Snackbar.LENGTH_LONG,Gravity.TOP);
+                } else {
+                    initComponent();
+                    initContent();
+                    initListener();
+                }*/
+                break;
         }
     }
 
@@ -191,7 +282,7 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
         }
 
         if (db.isDataTableValueNull(SQLiteHelper.TableUserData, SQLiteHelper.KEY_UserData_accountId, accountId)) {
-            Snackbar.make(findViewById(android.R.id.content), "data kosong", Snackbar.LENGTH_SHORT).show();
+            SystemUtil.showToast(getApplicationContext(), "data kosong", Toast.LENGTH_SHORT,Gravity.TOP);
         } else {
             updateData(db.getAllUserData(accountId));
         }
@@ -247,52 +338,6 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
     }
 
     private void getImageCamera() {
-        /*// Munculkan alert dialog apabila user ingin keluar aplikasi
-                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(AccountActivity.this);
-                alertDialogBuilder.setMessage("Select to get image?");
-                alertDialogBuilder.setPositiveButton("Camera",
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface arg0, int arg1) {
-                                if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
-                                    imageFilePath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/picture.jpg";
-                                    imageFile = new File(imageFilePath);
-                                    imageFileUri = Uri.fromFile(imageFile); // convert path to Uri
-                                    Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-                                    cameraIntent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, imageFileUri);
-                                    startActivityForResult(cameraIntent, REQ_COD_CAMERA_KITKAT);
-                                } else {
-
-                                    ContentValues values = new ContentValues();
-                                    values.put(MediaStore.Images.Media.TITLE, "New Picture");
-                                    values.put(MediaStore.Images.Media.DESCRIPTION, "From your Camera");
-                                    imageUri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
-                                    Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                                    intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
-                                        intent.putExtra("android.intent.extras.LENS_FACING_FRONT", 1);
-                                    } else {
-                                        intent.putExtra("android.intent.extras.CAMERA_FACING", 1);
-                                    }
-                                    startActivityForResult(intent, REQ_COD_CAMERA);
-                                }
-                            }
-                        });
-                // Pilihan jika NO
-                alertDialogBuilder.setNegativeButton("Gallery",
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface arg0, int arg1) {
-                                Intent intent = new Intent();
-                                intent.setType("image/*");
-                                intent.setAction(Intent.ACTION_GET_CONTENT);
-                                startActivityForResult(Intent.createChooser(intent, "Select Picture"), REQ_CODE_GALLERY);
-                            }
-                        });
-                // Tampilkan alert dialog
-                AlertDialog alertDialog = alertDialogBuilder.create();
-                alertDialog.show();*/
-
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
             imageFilePath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/picture.jpg";
             File imageFile = new File(imageFilePath);
@@ -300,8 +345,17 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
             Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
             cameraIntent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, imageFileUri);
             startActivityForResult(cameraIntent, REQ_COD_CAMERA_KITKAT);
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            imageFilePath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/picture.jpg";
+            File imageFile = new File(imageFilePath);
+            //file = createImageFile();
+            mUri = FileProvider.getUriForFile(getApplicationContext(), CAPTURE_IMAGE_FILE_PROVIDER, imageFile);
+            Log.d("Lihat", "getImageCamera AccountActivity : " + mUri.toString());
+            Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            cameraIntent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, mUri);
+            startActivityForResult(cameraIntent, REQ_COD_CAMERA_OREO);
         } else {
-
             ContentValues values = new ContentValues();
             values.put(MediaStore.Images.Media.TITLE, "New Picture");
             values.put(MediaStore.Images.Media.DESCRIPTION, "From your Camera");
@@ -315,7 +369,18 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
             }
             startActivityForResult(intent, REQ_COD_CAMERA);
         }
+    }
 
+    private File createImageFile() throws IOException {
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "APPNAME-" + timeStamp + ".png";
+        File mediaStorageDir = new File(Environment.getExternalStorageDirectory(), "FOLDERNAME");
+        File storageDir = new File(mediaStorageDir + "/Images");
+        if (!storageDir.exists()) {
+            storageDir.mkdirs();
+        }
+        File image = new File(storageDir, imageFileName);
+        return image;
     }
 
     private void updateData(ArrayList<GetListUserEventResponseModel> models) {
@@ -390,7 +455,7 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface arg0, int arg1) {
-                        Snackbar.make(findViewById(android.R.id.content), "Data tak tersimpan", Snackbar.LENGTH_SHORT).show();
+                        SystemUtil.showToast(getApplicationContext(), "Data tak tersimpan", Toast.LENGTH_SHORT,Gravity.TOP);
                         returnToBackActivity();
                         clearImage();
                     }
@@ -428,7 +493,7 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
             if (cbAccAggrementfvbi.isChecked()) {
                 updateData();//click new user
             } else {
-                Snackbar.make(findViewById(android.R.id.content), "Checked Egreement First!!", Snackbar.LENGTH_SHORT).show();
+                SystemUtil.showToast(getApplicationContext(), "Checked Egreement First!!", Toast.LENGTH_SHORT,Gravity.TOP);
                 cbAccAggrementfvbi.requestFocus();
             }
         } else {
@@ -475,20 +540,25 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
                                 UserUpdateResponseModel model = s.get(i);
                                 db.updateOneKey(SQLiteHelper.TableUserData, SQLiteHelper.KEY_UserData_accountId, accountId, SQLiteHelper.KEY_UserData_imageUrl, model.getImage_url());
                                 if (model.getStatus().equalsIgnoreCase("ok")) {
-                                    Snackbar.make(findViewById(android.R.id.content), "Tersimpan", Snackbar.LENGTH_SHORT).show();
+                                    SystemUtil.showToast(getApplicationContext(), "Tersimpan", Toast.LENGTH_SHORT,Gravity.TOP);
                                     returnToBackActivity();
+
+                                    if (NetworkUtil.isConnected(getApplicationContext())) {
+                                        String imageCachePath = PictureUtil.saveImageLogoBackIcon(getApplicationContext(), bitmapCrop, "user_image" + accountId);
+                                        db.saveUserPicture(imageCachePath, accountId);
+                                    }
 
                                     clearImage();
 
                                 } else {
-                                    Snackbar.make(findViewById(android.R.id.content), "Bad Response", Snackbar.LENGTH_SHORT).show();
+                                    SystemUtil.showToast(getApplicationContext(), "Bad Response", Toast.LENGTH_SHORT,Gravity.TOP);
                                 }
                             }
                         } else {
-                            Snackbar.make(findViewById(android.R.id.content), "Data Tidak Sesuai", Snackbar.LENGTH_SHORT).show();
+                            SystemUtil.showToast(getApplicationContext(), "Data Tidak Sesuai", Toast.LENGTH_SHORT,Gravity.TOP);
                         }
                     } else {
-                        Snackbar.make(findViewById(android.R.id.content), response.message(), Snackbar.LENGTH_SHORT).show();
+                        SystemUtil.showToast(getApplicationContext(), response.message(), Toast.LENGTH_SHORT,Gravity.TOP);
                     }
                 }
 
@@ -504,7 +574,7 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
                 }
             });
         } else {
-            Snackbar.make(findViewById(android.R.id.content), "Check you connection", Snackbar.LENGTH_SHORT).show();
+            SystemUtil.showToast(getApplicationContext(), "Check you connection", Toast.LENGTH_SHORT,Gravity.TOP);
         }
 
     }
@@ -526,7 +596,7 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
         spanTxt.setSpan(new ClickableSpan() {
                             @Override
                             public void onClick(View widget) {
-                                Toast.makeText(getApplicationContext(), "PRIVACY POLICY Clicked", Toast.LENGTH_SHORT).show();
+                                SystemUtil.showToast(getApplicationContext(), "PRIVACY POLICY Clicked", Toast.LENGTH_SHORT,Gravity.TOP);
                             }
                         },
                 spanTxt.length() - "PRIVACY POLICY".length(),
@@ -534,24 +604,6 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
                 0);
         view.setMovementMethod(LinkMovementMethod.getInstance());
         view.setText(spanTxt, TextView.BufferType.SPANNABLE);
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        switch (requestCode) {
-            case RP_ACCESS: //private final int = 1
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    // do location thing
-                    // access location didapatkan
-                    Toast.makeText(getApplicationContext(), "Akses di berikan", Toast.LENGTH_SHORT).show();
-                    /*readSMS();*///jalankan alpkasi yang mau di jalankan
-                } else {
-                    // access location ditolak user
-                    Toast.makeText(getApplicationContext(), "Akses di tolak", Toast.LENGTH_SHORT).show();
-                }
-                return;
-        }
     }
 
     @Override
@@ -584,18 +636,23 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
             bmpFactoryOptions.inJustDecodeBounds = false;
 
             Bitmap resource = BitmapFactory.decodeFile(imageFilePath, bmpFactoryOptions);//kitkat
-            Bitmap resizeImageBitmap = PictureUtil.resizeImageBitmap(resource, 720);
             Uri imageUriFromBitmap = PictureUtil.getImageUriFromBitmap(getApplicationContext(), resource);
 
             beginCrop(imageUriFromBitmap);
 
+        } else if (requestCode == REQ_COD_CAMERA_OREO) {
+            if (resultCode == Activity.RESULT_OK) {
+                String profileImageFilepath = mUri.getPath().replace("//", "/");
+                Log.d("Lihat", "onActivityResult AccountActivity : " + profileImageFilepath);
+            } else {
+                SystemUtil.showToast(getApplicationContext(), "Picture wasn't taken!", Toast.LENGTH_SHORT,Gravity.TOP);
+            }
         } else if (resultCode == Activity.RESULT_OK && requestCode == REQ_CODE_GALLERY) {
             Uri selectedImageUri = data.getData();
             if (Build.VERSION.SDK_INT < 19) {
                 String selectedImagePath = PictureUtil.getImagePathFromUri2(AccountActivity.this, selectedImageUri);
 
                 Bitmap resource = BitmapFactory.decodeFile(selectedImagePath);
-                Bitmap resizeImageBitmap = PictureUtil.resizeImageBitmap(resource, 720);
 
                 beginCrop(selectedImageUri);
 
@@ -606,8 +663,6 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
                     FileDescriptor fileDescriptor = parcelFileDescriptor.getFileDescriptor();
                     Bitmap bitmap = BitmapFactory.decodeFileDescriptor(fileDescriptor);
                     parcelFileDescriptor.close();
-
-                    Bitmap storedata = PictureUtil.resizeImageBitmap(bitmap, 720);
 
                     beginCrop(selectedImageUri);
 
@@ -645,7 +700,7 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
             bitmapCrop = PictureUtil.getImageBitmapFromPathFile(imageFilePath3);
             ivWrapPicfvbi.setImageURI(Crop.getOutput(result));
         } else if (resultCode == Crop.RESULT_ERROR) {
-            Toast.makeText(this, Crop.getError(result).getMessage(), Toast.LENGTH_SHORT).show();
+            SystemUtil.showToast(this, Crop.getError(result).getMessage(), Toast.LENGTH_SHORT,Gravity.TOP);
         }
     }
 

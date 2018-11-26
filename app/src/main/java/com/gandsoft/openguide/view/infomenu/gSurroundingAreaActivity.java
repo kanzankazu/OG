@@ -92,7 +92,7 @@ public class gSurroundingAreaActivity extends AppCompatActivity {
                 }
                 lastExpandedPosition = groupPosition;*/
 
-                if(groupPosition != previousGroup)
+                if (groupPosition != previousGroup)
                     explvSurroundAreafvbi.collapseGroup(previousGroup);
                 previousGroup = groupPosition;
             }

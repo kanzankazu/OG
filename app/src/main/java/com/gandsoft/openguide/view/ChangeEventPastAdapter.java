@@ -3,7 +3,6 @@ package com.gandsoft.openguide.view;
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,7 +16,6 @@ import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.gandsoft.openguide.API.APIresponse.UserData.UserListEventResponseModel;
 import com.gandsoft.openguide.R;
-import com.gandsoft.openguide.database.SQLiteHelper;
 import com.gandsoft.openguide.database.SQLiteHelperMethod;
 import com.gandsoft.openguide.support.AppUtil;
 import com.gandsoft.openguide.support.InputValidUtil;
@@ -59,7 +57,6 @@ public class ChangeEventPastAdapter extends RecyclerView.Adapter<ChangeEventPast
 
             String imageUrlPathBack = AppUtil.validationStringImageIcon((Activity) parent, model.getBackground(), model.getBackground_local(), isPreferUrl);
             String imageUrlPathLogo = AppUtil.validationStringImageIcon((Activity) parent, model.getLogo(), model.getLogo_local(), isPreferUrl);
-            Log.d("Lihat", "onBindViewHolder ChangeEventPastAdapter : " + isPreferUrl);
 
             //code here
             Glide.with((Activity) parent)
@@ -106,7 +103,7 @@ public class ChangeEventPastAdapter extends RecyclerView.Adapter<ChangeEventPast
             holder.llListChangeEventfvbi.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    parent.gotoEvent(model.getEvent_id());
+                    parent.goToTheEvent(model.getEvent_id());
                 }
             });
         }

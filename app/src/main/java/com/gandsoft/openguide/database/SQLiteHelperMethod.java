@@ -138,7 +138,7 @@ public class SQLiteHelperMethod extends SQLiteHelper {
     public void saveUserData(GetListUserEventResponseModel model, String accountId) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
-        contentValues.put(KEY_UserData_accountId, model.getAccount_id());
+        contentValues.put(KEY_UserData_accountId, accountId);
         contentValues.put(KEY_UserData_position, model.getPosition());
         contentValues.put(KEY_UserData_birthday, model.getBirthday());
         contentValues.put(KEY_UserData_versionData, model.getVersion_data());
@@ -232,18 +232,6 @@ public class SQLiteHelperMethod extends SQLiteHelper {
         return model;
     }
 
-    public boolean isUserStillIn(String accountid) {
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.query(TableUserData, null, KEY_UserData_accountId + " = ? AND " + KEY_UserData_isStillIn + " = 1", new String[]{accountid}, null, null, null);
-        if (cursor.getCount() == 1) {
-            cursor.close();
-            return true;
-        } else {
-            cursor.close();
-            return false;
-        }
-    }
-
     public void setUserStillIn(String accountid, boolean isStillIn) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
@@ -254,6 +242,18 @@ public class SQLiteHelperMethod extends SQLiteHelper {
         }
         db.update(TableUserData, contentValues, KEY_UserData_accountId + " = ? ", new String[]{accountid});
         db.close();
+    }
+
+    public boolean isUserStillIn(String accountid) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(TableUserData, null, KEY_UserData_accountId + " = ? AND " + KEY_UserData_isStillIn + " = 1", new String[]{accountid}, null, null, null);
+        if (cursor.getCount() == 1) {
+            cursor.close();
+            return true;
+        } else {
+            cursor.close();
+            return false;
+        }
     }
 
     /**/

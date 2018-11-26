@@ -248,10 +248,10 @@ public class SQLiteHelper extends SQLiteOpenHelper {
             + Key_Important_InfoNew_EventId + " TEXT, "
             + Key_Important_InfoNew_title + " TEXT, "
             + Key_Important_InfoNew_Info + " TEXT, "
-            + Key_Important_InfoNew_Title_image +" TEXT, "
-            + Key_Important_InfoNew_Name_image +" TEXT, "
-            + Key_Important_InfoNew_Name_image_local +" TEXT, "
-            + Key_Important_InfoNew_Detail_image +" TEXT) ";
+            + Key_Important_InfoNew_Title_image + " TEXT, "
+            + Key_Important_InfoNew_Name_image + " TEXT, "
+            + Key_Important_InfoNew_Name_image_local + " TEXT, "
+            + Key_Important_InfoNew_Detail_image + " TEXT) ";
     /**/
     public static String TableArea = "tabArea";
     private static final String query_delete_table_Area = "DROP TABLE IF EXISTS " + TableArea;

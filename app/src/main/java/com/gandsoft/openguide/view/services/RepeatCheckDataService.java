@@ -4,7 +4,6 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.gandsoft.openguide.API.API;
 import com.gandsoft.openguide.API.APIrequest.Event.EventDataRequestModel;
@@ -16,13 +15,11 @@ import com.gandsoft.openguide.API.APIresponse.Event.EventDataContact;
 import com.gandsoft.openguide.API.APIresponse.Event.EventDataContactList;
 import com.gandsoft.openguide.API.APIresponse.Event.EventDataResponseModel;
 import com.gandsoft.openguide.API.APIresponse.Event.EventEmergencies;
-import com.gandsoft.openguide.API.APIresponse.Event.EventImportanInfo;
 import com.gandsoft.openguide.API.APIresponse.Event.EventImportanInfoNew;
 import com.gandsoft.openguide.API.APIresponse.Event.EventImportanInfoNewDetail;
 import com.gandsoft.openguide.API.APIresponse.Event.EventPlaceList;
 import com.gandsoft.openguide.API.APIresponse.Event.EventScheduleListDate;
 import com.gandsoft.openguide.API.APIresponse.Event.EventScheduleListDateDataList;
-import com.gandsoft.openguide.API.APIresponse.Event.EventSurroundingArea;
 import com.gandsoft.openguide.API.APIresponse.Event.EventSurroundingAreaNew;
 import com.gandsoft.openguide.API.APIresponse.Event.EventSurroundingAreaNewDetail;
 import com.gandsoft.openguide.API.APIresponse.Event.EventTheEvent;
@@ -66,8 +63,6 @@ public class RepeatCheckDataService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
-        //Toast.makeText(getApplicationContext(), "start service check data", Toast.LENGTH_SHORT).show();// Set your own toast  message
-
         initParam(intent);
         initSession();
         initContent();
@@ -93,10 +88,6 @@ public class RepeatCheckDataService extends Service {
             @Override
             public void run() {
                 if (NetworkUtil.isConnected(getApplicationContext())) {
-                    //Log.d("Lihat", "run RepeatCheckDataService : " + eventId + "," + accountId);
-                    //Log.d("Lihat", "run RepeatCheckDataService : " + "connected" + count);
-                    //Log.d("Lihat", "run RepeatCheckDataService : " + count++);
-
                     getAPIUserDataDo(accountId);
                     getAPIEventDataDo(eventId, accountId);
                     getAPICheckUser();
@@ -115,7 +106,6 @@ public class RepeatCheckDataService extends Service {
         } else {
             requestModel.setVersion_data(db.getVersionDataIdUser(accountId));
         }
-        //Log.d("Lihat", "getAPIUserDataDo RepeatCheckDataService : " + db.getVersionDataIdUser(accountId));
 
         API.doGetListUserEventRet(requestModel).enqueue(new Callback<List<GetListUserEventResponseModel>>() {
             @Override
@@ -125,7 +115,6 @@ public class RepeatCheckDataService extends Service {
                     for (int i = 0; i < getListUserEventResponseModels.size(); i++) {
                         GetListUserEventResponseModel model = getListUserEventResponseModels.get(i);
                         if (!model.getVersion_data().equalsIgnoreCase("last version")) {//jika bukan lastversion
-                            Log.d("Lihat", "onResponse RepeatCheckDataService getAPIUserDataDo: " + "ok");
                             if (db.isDataTableValueNull(SQLiteHelper.TableUserData, SQLiteHelper.KEY_UserData_accountId, accountId)) {
                                 db.saveUserData(model, accountId);
                             } else {
@@ -356,7 +345,7 @@ public class RepeatCheckDataService extends Service {
                     }
                 } else {
                     Log.d("Lihat", "onFailure ChangeEventActivity : " + response.message());
-                    //Snackbar.make(findViewById(android.R.id.content), "Failed Connection To Server", Snackbar.LENGTH_LONG).show();
+                    //SystemUtil.showToast(getApplicationContext(), "Failed Connection To Server", Toast.LENGTH_SHORT,Gravity.TOP);
                     //Crashlytics.logException(new Exception(response.message()));
                 }
             }
@@ -365,7 +354,7 @@ public class RepeatCheckDataService extends Service {
             public void onFailure(Call<List<VerificationStatusLoginAppUserResponseModel>> call, Throwable t) {
                 //progressDialog.dismiss();
                 Log.d("Lihat", "onFailure RepeatCheckDataService : " + t.getMessage());
-                //Snackbar.make(findViewById(android.R.id.content), "Failed Connection To Server", Snackbar.LENGTH_SHORT).show();
+                //SystemUtil.showToast(getApplicationContext(), "Failed Connection To Server", Toast.LENGTH_SHORT,Gravity.TOP);
                 //Crashlytics.logException(new Exception(t.getMessage()));
             }
         });

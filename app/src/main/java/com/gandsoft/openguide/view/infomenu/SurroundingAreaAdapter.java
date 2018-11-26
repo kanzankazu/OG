@@ -36,12 +36,11 @@ import org.sufficientlysecure.htmltextview.HtmlTextView;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.List;
 
 public class SurroundingAreaAdapter extends BaseExpandableListAdapter {
-    private ArrayList<EventSurroundingAreaNew> parentItems = new ArrayList<>();
     private final String eventId;
     private final String accountId;
+    private ArrayList<EventSurroundingAreaNew> parentItems = new ArrayList<>();
     private LayoutInflater inflater;
     private Activity activity;
 
@@ -100,7 +99,7 @@ public class SurroundingAreaAdapter extends BaseExpandableListAdapter {
         /*return parentItems.get(groupPosition);*/
 
         return parentItems.get(groupPosition).getDetail().get(childPosition);
-        }
+    }
 
     @Override
     public long getChildId(int groupPosition, int childPosition) {

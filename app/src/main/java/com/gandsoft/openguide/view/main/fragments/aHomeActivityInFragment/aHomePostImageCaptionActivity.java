@@ -132,7 +132,6 @@ public class aHomePostImageCaptionActivity extends AppCompatActivity {
     }
 
     private void loadPic(String imageurl) {
-        Log.d("Lihat", "onActivityResult aHomePostImageCaptionActivity : " + imageurl);
         Glide.with(getApplicationContext())
                 .load(new File(imageurl))
                 .asBitmap()

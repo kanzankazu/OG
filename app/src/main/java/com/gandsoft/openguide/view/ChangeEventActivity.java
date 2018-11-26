@@ -25,6 +25,7 @@ import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -61,7 +62,6 @@ import com.gandsoft.openguide.API.APIresponse.VerificationStatusLoginAppUserResp
 import com.gandsoft.openguide.IConfig;
 import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
-import com.gandsoft.openguide.database.SQLiteHelper;
 import com.gandsoft.openguide.database.SQLiteHelperMethod;
 import com.gandsoft.openguide.support.AppUtil;
 import com.gandsoft.openguide.support.DateTimeUtil;
@@ -75,8 +75,10 @@ import com.gandsoft.openguide.view.main.BaseHomeActivity;
 import com.gandsoft.openguide.view.services.RepeatCheckDataService;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Timer;
@@ -86,7 +88,43 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-import static com.gandsoft.openguide.database.SQLiteHelper.*;
+import static com.gandsoft.openguide.database.SQLiteHelper.KEY_Contact_List_Name;
+import static com.gandsoft.openguide.database.SQLiteHelper.KEY_Event_About_Description;
+import static com.gandsoft.openguide.database.SQLiteHelper.KEY_ListEvent_accountId;
+import static com.gandsoft.openguide.database.SQLiteHelper.KEY_ListEvent_eventId;
+import static com.gandsoft.openguide.database.SQLiteHelper.KEY_UserData_accountId;
+import static com.gandsoft.openguide.database.SQLiteHelper.KEY_UserData_phoneNumber;
+import static com.gandsoft.openguide.database.SQLiteHelper.KEY_Wallet_eventId;
+import static com.gandsoft.openguide.database.SQLiteHelper.KEY_Wallet_sort;
+import static com.gandsoft.openguide.database.SQLiteHelper.Key_AreaNew_EventId;
+import static com.gandsoft.openguide.database.SQLiteHelper.Key_AreaNew_Title_image;
+import static com.gandsoft.openguide.database.SQLiteHelper.Key_CommiteNote_EventId;
+import static com.gandsoft.openguide.database.SQLiteHelper.Key_CommiteNote_Id;
+import static com.gandsoft.openguide.database.SQLiteHelper.Key_Contact_List_EventId;
+import static com.gandsoft.openguide.database.SQLiteHelper.Key_Emergencie_EventId;
+import static com.gandsoft.openguide.database.SQLiteHelper.Key_Emergencie_Title;
+import static com.gandsoft.openguide.database.SQLiteHelper.Key_Event_About_EventId;
+import static com.gandsoft.openguide.database.SQLiteHelper.Key_Important_InfoNew_EventId;
+import static com.gandsoft.openguide.database.SQLiteHelper.Key_Important_InfoNew_Title_image;
+import static com.gandsoft.openguide.database.SQLiteHelper.Key_Important_InfoNew_title;
+import static com.gandsoft.openguide.database.SQLiteHelper.Key_Place_List_EventId;
+import static com.gandsoft.openguide.database.SQLiteHelper.Key_Place_List_title;
+import static com.gandsoft.openguide.database.SQLiteHelper.Key_Schedule_List_GroupCode;
+import static com.gandsoft.openguide.database.SQLiteHelper.Key_Schedule_List_id;
+import static com.gandsoft.openguide.database.SQLiteHelper.Key_The_Event_EventId;
+import static com.gandsoft.openguide.database.SQLiteHelper.Key_The_Event_version_data;
+import static com.gandsoft.openguide.database.SQLiteHelper.TableAreaNew;
+import static com.gandsoft.openguide.database.SQLiteHelper.TableCommiteNote;
+import static com.gandsoft.openguide.database.SQLiteHelper.TableContactList;
+import static com.gandsoft.openguide.database.SQLiteHelper.TableEmergencie;
+import static com.gandsoft.openguide.database.SQLiteHelper.TableEventAbout;
+import static com.gandsoft.openguide.database.SQLiteHelper.TableImportantInfoNew;
+import static com.gandsoft.openguide.database.SQLiteHelper.TableListEvent;
+import static com.gandsoft.openguide.database.SQLiteHelper.TablePlaceList;
+import static com.gandsoft.openguide.database.SQLiteHelper.TableScheduleList;
+import static com.gandsoft.openguide.database.SQLiteHelper.TableTheEvent;
+import static com.gandsoft.openguide.database.SQLiteHelper.TableUserData;
+import static com.gandsoft.openguide.database.SQLiteHelper.TableWallet;
 
 public class ChangeEventActivity extends AppCompatActivity implements ChangeEventPastHook {
     private static final int RP_ACCESS = 123;
@@ -107,6 +145,7 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
     private ChangeEventPastAdapter adapterPast;
     private ProgressDialog progressDialog;
     private boolean loadingResult;
+    private Timer timerLoopCheckUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -123,7 +162,10 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
             initPermission();
         } else if (SessionUtil.checkIfExist(ISeasonConfig.KEY_ACCOUNT_ID) && SessionUtil.checkIfExist(ISeasonConfig.KEY_EVENT_ID)) {
             accountid = SessionUtil.getStringPreferences(ISeasonConfig.KEY_ACCOUNT_ID, null);
-            moveToHomeBase(null);
+            moveToTheEvent(null);
+        } else if (SessionUtil.checkIfExist(ISeasonConfig.KEY_ACCOUNT_ID)) {
+            accountid = SessionUtil.getStringPreferences(ISeasonConfig.KEY_ACCOUNT_ID, null);
+            initPermission();
         } else {
             AppUtil.signOutUserOtherDevice(ChangeEventActivity.this, db, RepeatCheckDataService.class, accountid, false);
         }
@@ -159,7 +201,7 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
             }
         } else {
             // permission access fine location didapat
-            // Toast.makeText(ChangeEventActivity.this, "Yay, has permission", Toast.LENGTH_SHORT).show();
+            // SystemUtil.showToast(ChangeEventActivity.this, "Yay, has permission", Toast.LENGTH_SHORT,Gravity.TOP);
             initComponent();
             initContent();
             initListener();
@@ -206,7 +248,7 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
                         @Override
                         public void onClick(DialogInterface arg0, int arg1) {
                             finish();
-                            Snackbar.make(findViewById(android.R.id.content), "Izin tidak di berikan", Snackbar.LENGTH_LONG).show();
+                            SystemUtil.showToast(getApplicationContext(), "Izin tidak di berikan", Toast.LENGTH_LONG, Gravity.TOP);
                         }
                     });
                     AlertDialog alertDialog = alertDialogBuilder.create();
@@ -219,7 +261,7 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
 
                 /*if (!isPerpermissionForAllGranted) {
                     finish();
-                    Snackbar.make(findViewById(android.R.id.content), "Izin tidak di berikan", Snackbar.LENGTH_LONG).show();
+                    SystemUtil.showToast(getApplicationContext(), "Izin tidak di berikan", Snackbar.LENGTH_LONG,Gravity.TOP);
                 } else {
                     initComponent();
                     initContent();
@@ -258,8 +300,6 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
 
         getAPIUserDataDoValid();
 
-        getAPICheckStatusLoginUser();
-
         customText(ceTVInfofvbi);
 
         initLoopCheck();
@@ -290,7 +330,18 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
             @Override
             public void onClick(View view) {
                 Log.d("Lihat", "onClick ChangeEventActivity NetworkUtil.isConnected: " + NetworkUtil.isConnected(ChangeEventActivity.this));
-                Log.d("Lihat", "onClick ChangeEventActivity NetworkUtil.isOnline1: " + NetworkUtil.isConnected(ChangeEventActivity.this) + NetworkUtil.isOnline1());
+
+                Date firstDateOfMonth = DateTimeUtil.getStart(DateTimeUtil.stringToDate("01/01/" + DateTimeUtil.getYearCurrent(), new SimpleDateFormat("dd/MM/yyyy")));
+                Date endDateOfMonth = DateTimeUtil.getEndDateOfMonth(DateTimeUtil.stringToDate("01/12/" + DateTimeUtil.getYearCurrent() + " 23:59:59", new SimpleDateFormat("dd/MM/yyyy HH:mm:ss")));
+                Log.d("Lihat", "onClick ChangeEventActivity : " + firstDateOfMonth);
+                Log.d("Lihat", "onClick ChangeEventActivity : " + endDateOfMonth);
+
+                Log.d("Lihat", "onClick ChangeEventActivity : " + DateTimeUtil.getDayBetween2Date(firstDateOfMonth, endDateOfMonth));
+                Log.d("Lihat", "onClick ChangeEventActivity : " + DateTimeUtil.getDates(firstDateOfMonth, endDateOfMonth));
+
+                int posDateInListDate = DateTimeUtil.getPosDateInListDate(DateTimeUtil.getDates(firstDateOfMonth, endDateOfMonth), DateTimeUtil.currentDate());
+                Log.d("Lihat", "onClick ChangeEventActivity : " + posDateInListDate);
+                Log.d("Lihat", "onClick ChangeEventActivity : " + DateTimeUtil.getDates(firstDateOfMonth, endDateOfMonth).get(posDateInListDate));
             }
         });
     }
@@ -305,7 +356,12 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
                 progressDialog = SystemUtil.showProgress(ChangeEventActivity.this, "Get data from server", "Please Wait...", false);
                 loadingResult = true;
             }
-            getAPIUserDataDo(accountid);
+            new Handler().postDelayed(new Runnable() {
+                public void run() {
+                    //code here
+                    getAPIUserDataDo(accountid);
+                }
+            }, 1000);
         } else {
             if (!loadingResult) {
                 progressDialog = SystemUtil.showProgress(ChangeEventActivity.this, "Get data from server", "Please Wait...", false);
@@ -320,6 +376,8 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
                         getAPIUserDataDo(accountid);
                     }
                 }, 1000);
+            } else {
+                progressDialog.dismiss();
             }
         }
     }
@@ -341,14 +399,25 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
             API.doGetListUserEventRet(requestModel).enqueue(new Callback<List<GetListUserEventResponseModel>>() {
                 @Override
                 public void onResponse(Call<List<GetListUserEventResponseModel>> call, Response<List<GetListUserEventResponseModel>> response) {
-                    SystemUtil.hideProgress(progressDialog, 0);
+                    SystemUtil.hideProgress(progressDialog, 2000);
                     loadingResult = false;
                     if (response.isSuccessful()) {
                         List<GetListUserEventResponseModel> getListUserEventResponseModels = response.body();
                         for (int i = 0; i < getListUserEventResponseModels.size(); i++) {
                             GetListUserEventResponseModel model = getListUserEventResponseModels.get(i);
-                            if (!model.getVersion_data().equalsIgnoreCase("last version")) {//jika bukan lastversion
-                                if (db.isDataTableValueNull(TableUserData, KEY_UserData_accountId, accountId)) {
+                            if (model.getVersion_data().equalsIgnoreCase("last version")) {//jika bukan lastversion
+                                SystemUtil.showToast(getApplicationContext(), model.getVersion_data(), Toast.LENGTH_LONG, Gravity.TOP);
+                            } else if (model.getVersion_data().equalsIgnoreCase("error account")) {
+                                new Handler().postDelayed(new Runnable() {
+                                    public void run() {
+                                        //code here
+                                        AppUtil.signOutFull(ChangeEventActivity.this, db, false, accountId);
+                                    }
+                                }, 2500);
+                            } else {
+                                getAPICheckStatusLoginUser();
+
+                                if (db.isDataTableValueMultipleNull(TableUserData, KEY_UserData_accountId, KEY_UserData_phoneNumber, accountId, model.getPhone_number())) {
                                     db.saveUserData(model, accountId);
                                 } else {
                                     db.updateUserData(model, accountId);
@@ -373,19 +442,22 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
                                         }
                                     }
                                 }
-                            } else {
-                                Snackbar.make(findViewById(android.R.id.content), model.getVersion_data(), Snackbar.LENGTH_LONG).show();
+                            }
+
+                            if (i == (getListUserEventResponseModels.size() - 1)) {
+                                if (db.getAllUserData(accountid).size() != 0) {
+                                    updateUserDataEvent(accountId, true);
+                                }
                             }
                         }
-                        updateUserDataEvent(accountId, true);
                     } else {
-                        Snackbar.make(findViewById(android.R.id.content), response.message(), Snackbar.LENGTH_LONG).show();
+                        SystemUtil.showToast(getApplicationContext(), response.message(), Toast.LENGTH_LONG, Gravity.TOP);
                     }
                 }
 
                 @Override
                 public void onFailure(Call<List<GetListUserEventResponseModel>> call, Throwable t) {
-                    SystemUtil.hideProgress(progressDialog, 0);
+                    SystemUtil.hideProgress(progressDialog, 2000);
                     loadingResult = false;
                     Log.d("Lihat", "onFailure ChangeEventActivity : " + t.getMessage());
                     Snackbar.make(findViewById(android.R.id.content), "Tidak Dapat terhubung dengan server", Snackbar.LENGTH_LONG).setAction("Reload", new View.OnClickListener() {
@@ -397,11 +469,13 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
                     if (!db.isDataTableValueMultipleNull(TableUserData, KEY_UserData_accountId, KEY_UserData_phoneNumber, accountId, accountId)) {
                         updateUserDataEvent(accountId, false);
                     }
+
+                    getAPICheckStatusLoginUser();
                 }
             });
         } else {
             progressDialog.dismiss();
-            Snackbar.make(findViewById(android.R.id.content), "Check you connection", Snackbar.LENGTH_SHORT).show();
+            SystemUtil.showToast(getApplicationContext(), "Check you connection", Toast.LENGTH_SHORT, Gravity.TOP);
         }
 
     }
@@ -462,14 +536,94 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
         adapterOnGoing.replaceData(models, isPreferUrl);
     }
 
+    private void getAPICheckStatusLoginUser() {
+        VerificationStatusLoginAppUserRequestModel requestModel = new VerificationStatusLoginAppUserRequestModel();
+        requestModel.setAccount_id(accountid);
+        requestModel.setDevice_app(DeviceDetailUtil.getAllDataPhone2(ChangeEventActivity.this));
+        requestModel.setDbver(String.valueOf(IConfig.DB_Version));
+
+        API.doVerificationStatusLoginAppUserRet(requestModel).enqueue(new Callback<List<VerificationStatusLoginAppUserResponseModel>>() {
+            @Override
+            public void onResponse(Call<List<VerificationStatusLoginAppUserResponseModel>> call, Response<List<VerificationStatusLoginAppUserResponseModel>> response) {
+                if (response.isSuccessful()) {
+                    List<VerificationStatusLoginAppUserResponseModel> model = response.body();
+                    if (model.size() == 0) {
+                        AppUtil.signOutUserOtherDevice(ChangeEventActivity.this, db, RepeatCheckDataService.class, accountid, false);
+                    }
+                } else {
+                    Log.d("Lihat", "onFailure ChangeEventActivity : " + response.message());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<VerificationStatusLoginAppUserResponseModel>> call, Throwable t) {
+                Log.d("Lihat", "onFailure ChangeEventActivity : " + t.getMessage());
+                //SystemUtil.showToast(getApplicationContext(), "Failed Connection To Server", Toast.LENGTH_SHORT,Gravity.TOP);
+                //Crashlytics.logException(new Exception(t.getMessage()));
+            }
+        });
+    }
+
+    private void Onclick(View view) {
+        if (view == ceBUserAccountfvbi) {
+            moveToAccount();
+        }
+    }
+
+    private void moveToAccount() {
+        Intent intent = new Intent(ChangeEventActivity.this, AccountActivity.class);
+        startActivityForResult(intent, REQ_CODE_ACCOUNT);
+    }
+
+    private void customText(TextView view) {
+        SpannableStringBuilder spanTxt = new SpannableStringBuilder("To create an event, please contact our phone number: ");
+
+        spanTxt.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.colorPrimary)), 10, spanTxt.length(), 0);
+        spanTxt.append("+62 21 53661536");
+        spanTxt.setSpan(new ClickableSpan() {
+            @Override
+            public void onClick(View widget) {
+                //SystemUtil.showToast(getApplicationContext(), "+62 21 53661536 Clicked", Toast.LENGTH_SHORT,Gravity.TOP);
+                String phone = "+622153661536";
+                Intent intent = new Intent(Intent.ACTION_DIAL, Uri.fromParts("tel", phone, null));
+                startActivity(intent);
+            }
+        }, spanTxt.length() - "+62 21 53661536".length(), spanTxt.length(), 0);
+
+        spanTxt.append(" or by email at: ");
+
+        spanTxt.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.colorPrimary)), 10, spanTxt.length(), 0);
+        spanTxt.append("hello@gandsoft.com");
+        spanTxt.setSpan(new ClickableSpan() {
+            @Override
+            public void onClick(View widget) {
+                //SystemUtil.showToast(getApplicationContext(), "hello@gandsoft.com Clicked", Toast.LENGTH_SHORT,Gravity.TOP);
+                Intent emailIntent = new Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:" + "hello@gandsoft.com")); //alamat email tujuan
+                startActivity(Intent.createChooser(emailIntent, "Pilih Aplikasi Email"));
+            }
+        }, spanTxt.length() - "hello@gandsoft.com".length(), spanTxt.length(), 0);
+
+        view.setMovementMethod(LinkMovementMethod.getInstance());
+        view.setText(spanTxt, TextView.BufferType.SPANNABLE);
+    }
+
+    @Override
+    public void goToTheEvent(String eventId) {
+        getAPITheEventDataValid(eventId);
+    }
+
     private void getAPITheEventDataValid(String eventId) {
-        if (NetworkUtil.isConnectedIsOnline(ChangeEventActivity.this)) {
+        if (NetworkUtil.isConnected(ChangeEventActivity.this)) {
             progressDialog = SystemUtil.showProgress(ChangeEventActivity.this, "Get data from server", "Please Wait...", false);
             getAPITheEventDataDo(eventId, accountid, false);
         } else {
             new Handler().postDelayed(new Runnable() {
                 public void run() {
-                    moveToHomeBase(eventId);//validation
+                    if (!db.isDataTableValueNull(TableTheEvent, Key_The_Event_EventId, eventId)) {
+                        moveToTheEvent(eventId);//validation
+                    } else {
+                        SystemUtil.showToast(getApplicationContext(), "Empty Data", Toast.LENGTH_SHORT, Gravity.TOP);
+                    }
                 }
             }, 1000);
         }
@@ -506,7 +660,7 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
         API.doEventDataRet(requestModel).enqueue(new Callback<List<EventDataResponseModel>>() {
             @Override
             public void onResponse(Call<List<EventDataResponseModel>> call, Response<List<EventDataResponseModel>> response) {
-                SystemUtil.hideProgress(progressDialog, 0);
+                SystemUtil.hideProgress(progressDialog, 2000);
                 loadingResult = false;
                 if (response.isSuccessful()) {
                     List<EventDataResponseModel> eventDataResponseModels = response.body();
@@ -646,26 +800,26 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
                             }
 
                         } else {
-                            Snackbar.make(findViewById(android.R.id.content), model.getStatus(), Snackbar.LENGTH_LONG).show();
+                            SystemUtil.showToast(getApplicationContext(), model.getStatus(), Toast.LENGTH_LONG, Gravity.TOP);
                         }
 
                         if (i == (eventDataResponseModels.size() - 1)) {
-                            moveToHomeBase(eventId);//on response
+                            moveToTheEvent(eventId);//on response
                         }
                     }
                 } else {
                     Log.d("Lihat", "onResponse ChangeEventActivity : " + response.message());
-                    Snackbar.make(findViewById(android.R.id.content), "Failed Connection To Server", Snackbar.LENGTH_SHORT).show();
+                    SystemUtil.showToast(getApplicationContext(), "Failed Connection To Server", Toast.LENGTH_SHORT, Gravity.TOP);
                 }
             }
 
             @Override
             public void onFailure(Call<List<EventDataResponseModel>> call, Throwable t) {
-                SystemUtil.hideProgress(progressDialog, 0);
+                SystemUtil.hideProgress(progressDialog, 2000);
                 loadingResult = false;
                 Log.d("Lihat", "onFailure ChangeEventActivity : " + t.getMessage());
-                Snackbar.make(findViewById(android.R.id.content), "Failed Connection To Server", Snackbar.LENGTH_SHORT).show();
-                /*Snackbar.make(findViewById(android.R.id.content), "Failed Connection To Server", Snackbar.LENGTH_SHORT).setAction("Reload", new View.OnClickListener() {
+                SystemUtil.showToast(getApplicationContext(), "Failed Connection To Server", Toast.LENGTH_SHORT, Gravity.TOP);
+                /*SystemUtil.showToast(getApplicationContext(), "Failed Connection To Server", Snackbar.LENGTH_SHORT).setAction("Reload", new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
 
@@ -677,91 +831,13 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
         });
     }
 
-    private void getAPICheckStatusLoginUser() {
-        VerificationStatusLoginAppUserRequestModel requestModel = new VerificationStatusLoginAppUserRequestModel();
-        requestModel.setAccount_id(accountid);
-        requestModel.setDevice_app(DeviceDetailUtil.getAllDataPhone2(ChangeEventActivity.this));
-        requestModel.setDbver(String.valueOf(IConfig.DB_Version));
-
-        API.doVerificationStatusLoginAppUserRet(requestModel).enqueue(new Callback<List<VerificationStatusLoginAppUserResponseModel>>() {
-            @Override
-            public void onResponse(Call<List<VerificationStatusLoginAppUserResponseModel>> call, Response<List<VerificationStatusLoginAppUserResponseModel>> response) {
-                if (response.isSuccessful()) {
-                    List<VerificationStatusLoginAppUserResponseModel> model = response.body();
-                    if (model.size() == 0) {
-                        AppUtil.signOutUserOtherDevice(ChangeEventActivity.this, db, RepeatCheckDataService.class, accountid, false);
-                    }
-                } else {
-                    Log.d("Lihat", "onFailure ChangeEventActivity : " + response.message());
-                    //Snackbar.make(findViewById(android.R.id.content), "Failed Connection To Server", Snackbar.LENGTH_LONG).show();
-                    //Crashlytics.logException(new Exception(response.message()));
-                }
-            }
-
-            @Override
-            public void onFailure(Call<List<VerificationStatusLoginAppUserResponseModel>> call, Throwable t) {
-                Log.d("Lihat", "onFailure ChangeEventActivity : " + t.getMessage());
-                //Snackbar.make(findViewById(android.R.id.content), "Failed Connection To Server", Snackbar.LENGTH_SHORT).show();
-                //Crashlytics.logException(new Exception(t.getMessage()));
-            }
-        });
-    }
-
-    private void Onclick(View view) {
-        if (view == ceBUserAccountfvbi) {
-            moveToAccount();
-        }
-    }
-
-    private void moveToHomeBase(@Nullable String eventId) {
+    private void moveToTheEvent(@Nullable String eventId) {
         if (!TextUtils.isEmpty(eventId)) {
             SessionUtil.setStringPreferences(ISeasonConfig.KEY_EVENT_ID, eventId);
         }
         Intent intent = new Intent(ChangeEventActivity.this, BaseHomeActivity.class);
         startActivity(intent);
         finish();
-    }
-
-    private void moveToAccount() {
-        Intent intent = new Intent(ChangeEventActivity.this, AccountActivity.class);
-        startActivityForResult(intent, REQ_CODE_ACCOUNT);
-    }
-
-    private void customText(TextView view) {
-        SpannableStringBuilder spanTxt = new SpannableStringBuilder("To create an event, please contact our phone number: ");
-
-        spanTxt.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.colorPrimary)), 10, spanTxt.length(), 0);
-        spanTxt.append("+62 21 53661536");
-        spanTxt.setSpan(new ClickableSpan() {
-            @Override
-            public void onClick(View widget) {
-                Toast.makeText(getApplicationContext(), "+62 21 53661536 Clicked", Toast.LENGTH_SHORT).show();
-                String phone = "+622153661536";
-                Intent intent = new Intent(Intent.ACTION_DIAL, Uri.fromParts("tel", phone, null));
-                startActivity(intent);
-            }
-        }, spanTxt.length() - "+62 21 53661536".length(), spanTxt.length(), 0);
-
-        spanTxt.append(" or by email at: ");
-
-        spanTxt.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.colorPrimary)), 10, spanTxt.length(), 0);
-        spanTxt.append("hello@gandsoft.com");
-        spanTxt.setSpan(new ClickableSpan() {
-            @Override
-            public void onClick(View widget) {
-                Toast.makeText(getApplicationContext(), "hello@gandsoft.com Clicked", Toast.LENGTH_SHORT).show();
-                Intent emailIntent = new Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:" + "hello@gandsoft.com")); //alamat email tujuan
-                startActivity(Intent.createChooser(emailIntent, "Pilih Aplikasi Email"));
-            }
-        }, spanTxt.length() - "hello@gandsoft.com".length(), spanTxt.length(), 0);
-
-        view.setMovementMethod(LinkMovementMethod.getInstance());
-        view.setText(spanTxt, TextView.BufferType.SPANNABLE);
-    }
-
-    @Override
-    public void gotoEvent(String eventId) {
-        getAPITheEventDataValid(eventId);
     }
 
     @Override
@@ -781,18 +857,22 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
     }
 
     private void initLoopCheck() {
-        new Timer().schedule(new TimerTask() {
-            @Override
-            public void run() {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (!db.isUserStillIn(accountid)) {
-                            AppUtil.signOutUserOtherDevice(ChangeEventActivity.this, db, RepeatCheckDataService.class, accountid, true); //check eveery 30sec
+        if (db.getAllUserData(accountid).size() != 0) {
+            timerLoopCheckUser = new Timer();
+            timerLoopCheckUser.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (!db.isUserStillIn(accountid)) {
+                                AppUtil.signOutUserOtherDevice(ChangeEventActivity.this, db, RepeatCheckDataService.class, accountid, true); //check eveery 30sec
+                            }
                         }
-                    }
-                });
-            }
-        }, 0, DateTimeUtil.SECOND_MILLIS * 10);
+                    });
+                }
+            }, 0, DateTimeUtil.SECOND_MILLIS * 10);
+        }
+
     }
 }

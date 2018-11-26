@@ -4,14 +4,15 @@ import android.app.Activity;
 import android.graphics.Bitmap;
 import android.os.Handler;
 import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -21,11 +22,11 @@ import com.gandsoft.openguide.API.APIresponse.Event.EventTheEvent;
 import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentPostCommentGetResponseModel;
 import com.gandsoft.openguide.API.APIresponse.UserData.UserListEventResponseModel;
 import com.gandsoft.openguide.R;
-import com.gandsoft.openguide.database.SQLiteHelper;
 import com.gandsoft.openguide.database.SQLiteHelperMethod;
 import com.gandsoft.openguide.support.DateTimeUtil;
 import com.gandsoft.openguide.support.NetworkUtil;
 import com.gandsoft.openguide.support.PictureUtil;
+import com.gandsoft.openguide.support.SystemUtil;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -109,7 +110,7 @@ class HomeContentCommentAdapter extends RecyclerView.Adapter<HomeContentCommentA
                 if (NetworkUtil.isConnected(activity)) {
                     mlistener.onDelete(model.getId(), position);
                 } else {
-                    Snackbar.make(activity.findViewById(android.R.id.content), "Check you connection", Snackbar.LENGTH_SHORT).show();
+                    SystemUtil.showToast(activity, "Check you connection", Toast.LENGTH_SHORT, Gravity.TOP);
                 }
             }
         });

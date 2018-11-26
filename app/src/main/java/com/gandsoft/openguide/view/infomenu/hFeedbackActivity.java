@@ -3,7 +3,6 @@ package com.gandsoft.openguide.view.infomenu;
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -24,6 +23,7 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.gandsoft.openguide.API.API;
 import com.gandsoft.openguide.API.APIrequest.PostFeedbackTheEventDataFeedback;
@@ -35,11 +35,11 @@ import com.gandsoft.openguide.API.APIresponse.UserData.UserWalletDataResponseMod
 import com.gandsoft.openguide.IConfig;
 import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
-import com.gandsoft.openguide.database.SQLiteHelper;
 import com.gandsoft.openguide.database.SQLiteHelperMethod;
 import com.gandsoft.openguide.support.DateTimeUtil;
 import com.gandsoft.openguide.support.ListArrayUtil;
 import com.gandsoft.openguide.support.SessionUtil;
+import com.gandsoft.openguide.support.SystemUtil;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -267,7 +267,7 @@ public class hFeedbackActivity extends AppCompatActivity {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(findViewById(android.R.id.content), "clickked", Snackbar.LENGTH_SHORT).show();
+                SystemUtil.showToast(getApplicationContext(), "clickked", Toast.LENGTH_SHORT,Gravity.TOP);
 
                 List<PostFeedbackTheEventDataFeedback> models = new ArrayList<>();
 
@@ -328,14 +328,14 @@ public class hFeedbackActivity extends AppCompatActivity {
                                     List<PostFeedbackTheEventResponseModel> models = response.body();
                                     if (models.get(0).getStatus().equalsIgnoreCase("ok")) {
                                         finish();
-                                        Snackbar.make(findViewById(android.R.id.content), "Success give feedback", Snackbar.LENGTH_SHORT).show();
+                                        SystemUtil.showToast(getApplicationContext(), "Success give feedback", Toast.LENGTH_SHORT,Gravity.TOP);
                                     } else {
-                                        Snackbar.make(findViewById(android.R.id.content), "Failed give feedback", Snackbar.LENGTH_SHORT).show();
+                                        SystemUtil.showToast(getApplicationContext(), "Failed give feedback", Toast.LENGTH_SHORT,Gravity.TOP);
                                     }
                                 } else {
                                     Log.d("Lihat", "onFailure hFeedbackActivity : " + response.message());
                                     //Crashlytics.logException(new Exception(response.message()));
-                                    Snackbar.make(findViewById(android.R.id.content), "Failed Connection To Server", Snackbar.LENGTH_LONG).show();
+                                    SystemUtil.showToast(getApplicationContext(), "Failed Connection To Server", Toast.LENGTH_SHORT,Gravity.TOP);
                                 }
                             }
 
@@ -344,7 +344,7 @@ public class hFeedbackActivity extends AppCompatActivity {
                                 progressDialog.dismiss();
                                 //Crashlytics.logException(new Exception(t.getMessage()));
                                 Log.d("Lihat", "onFailure hFeedbackActivity : " + t.getMessage());
-                                Snackbar.make(findViewById(android.R.id.content), "Failed Connection To Server", Snackbar.LENGTH_SHORT).show();
+                                SystemUtil.showToast(getApplicationContext(), "Failed Connection To Server", Toast.LENGTH_SHORT,Gravity.TOP);
                             }
                         });
                     }

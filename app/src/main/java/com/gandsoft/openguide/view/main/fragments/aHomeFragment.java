@@ -28,6 +28,7 @@ import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -72,7 +73,6 @@ import com.gandsoft.openguide.support.NetworkUtil;
 import com.gandsoft.openguide.support.PictureUtil;
 import com.gandsoft.openguide.support.SessionUtil;
 import com.gandsoft.openguide.support.SystemUtil;
-import com.gandsoft.openguide.view.main.BaseHomeActivity;
 import com.gandsoft.openguide.view.main.adapter.HomeContentAdapter;
 import com.gandsoft.openguide.view.main.fragments.aHomeActivityInFragment.aHomePostCommentActivity;
 import com.gandsoft.openguide.view.main.fragments.aHomeActivityInFragment.aHomePostImageCaptionActivity;
@@ -258,7 +258,7 @@ public class aHomeFragment extends Fragment {
                         openCamera();
                     }
                 } else {
-                    Snackbar.make(getActivity().findViewById(android.R.id.content), "Check you connection", Snackbar.LENGTH_SHORT).show();
+                    SystemUtil.showToast(getActivity(), "Check you connection", Toast.LENGTH_SHORT, Gravity.TOP);
                 }
             }
         });
@@ -275,7 +275,7 @@ public class aHomeFragment extends Fragment {
                         InputValidUtil.errorET(homeETWritePostCreatefvbi, "This Empty");
                     }
                 } else {
-                    Snackbar.make(getActivity().findViewById(android.R.id.content), "Check you connection", Snackbar.LENGTH_SHORT).show();
+                    SystemUtil.showToast(getActivity(), "Check you connection", Toast.LENGTH_SHORT, Gravity.TOP);
                 }
             }
         });
@@ -315,12 +315,12 @@ public class aHomeFragment extends Fragment {
 
                         } else {
                             if (!isNoMoreShow) {
-                                Snackbar.make(getActivity().findViewById(android.R.id.content), "no more data", Snackbar.LENGTH_SHORT).show();
+                                SystemUtil.showToast(getActivity(), "no more data", Toast.LENGTH_SHORT, Gravity.TOP);
                                 isNoMoreShow = true;
                             }
                         }
                     } else {
-                        Snackbar.make(getActivity().findViewById(android.R.id.content), "Check you connection", Snackbar.LENGTH_SHORT).show();
+                        SystemUtil.showToast(getActivity(), "Check you connection", Toast.LENGTH_SHORT, Gravity.TOP);
                     }
                 }
 
@@ -347,10 +347,10 @@ public class aHomeFragment extends Fragment {
                         callCheckDistanceCheckin(false);//
                     } else {
                         Log.e("Lihat", "onClick aHomeFragment : " + "Lokasi Anda Tidak Terdeteksi");
-                        //Snackbar.make(getActivity().findViewById(android.R.id.content), "Lokasi Anda Tidak Terdeteksi", Snackbar.LENGTH_SHORT).show();
+                        //SystemUtil.showToast(getActivity(), "Lokasi Anda Tidak Terdeteksi", Toast.LENGTH_SHORT,Gravity.TOP);
                     }
                 } else {
-                    Toast.makeText(getActivity(), "Check you connection", Toast.LENGTH_SHORT).show();// Set your own toast  message
+                    SystemUtil.showToast(getActivity(), "Check you connection", Toast.LENGTH_SHORT, Gravity.TOP);// Set your own toast  message
                 }
             }
         });
@@ -369,10 +369,10 @@ public class aHomeFragment extends Fragment {
                     if (mylat != 0.0 || mylng != 0.0) {
                         callCheckDistanceCheckin(true);//
                     } else {
-                        Snackbar.make(getActivity().findViewById(android.R.id.content), "Lokasi Anda Tidak Terdeteksi", Snackbar.LENGTH_SHORT).show();
+                        SystemUtil.showToast(getActivity(), "Lokasi Anda Tidak Terdeteksi", Toast.LENGTH_SHORT, Gravity.TOP);
                     }
                 } else {
-                    Toast.makeText(getActivity(), "jaringan internet tidak tersedia", Toast.LENGTH_SHORT).show();// Set your own toast  message
+                    SystemUtil.showToast(getActivity(), "jaringan internet tidak tersedia", Toast.LENGTH_SHORT, Gravity.TOP);// Set your own toast  message
                 }
             }
         });
@@ -400,11 +400,6 @@ public class aHomeFragment extends Fragment {
         Log.d("Lihat", "openCamera aHomeFragment : " + imageUri);
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE_SECURE);
         intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-        /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
-            intent.putExtra("android.intent.extras.LENS_FACING_FRONT", 1);
-        } else {
-            intent.putExtra("android.intent.extras.CAMERA_FACING", 1);
-        }*/
         startActivityForResult(intent, REQ_CODE_TAKE_PHOTO_INTENT_ID_STANDART);
     }
 
@@ -418,8 +413,8 @@ public class aHomeFragment extends Fragment {
                     "" + Html.fromHtml(theEventModel.getWeather()) + "");
 
             UserListEventResponseModel oneListEvent = db.getOneListEvent(eventId, accountId);
-            String logo = AppUtil.validationStringImageIcon(getActivity(), oneListEvent.getLogo(), oneListEvent.getLogo_local(), true);
-            String background = AppUtil.validationStringImageIcon(getActivity(), oneListEvent.getBackground(), oneListEvent.getBackground_local(), true);
+            String logo = AppUtil.validationStringImageIcon(getActivity(), oneListEvent.getLogo(), oneListEvent.getLogo_local(), false);
+            String background = AppUtil.validationStringImageIcon(getActivity(), oneListEvent.getBackground(), oneListEvent.getBackground_local(), false);
 
             Glide.with(getActivity())
                     .load(InputValidUtil.isLinkUrl(logo) ? logo : new File(logo))
@@ -462,7 +457,7 @@ public class aHomeFragment extends Fragment {
                 homeLLWriteSomethingfvbi.setVisibility(View.GONE);
             }*/
         } else {
-            Snackbar.make(getActivity().findViewById(android.R.id.content), "data kosong", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+            SystemUtil.showToast(getActivity(), "data kosong", Toast.LENGTH_LONG, Gravity.TOP);
         }
     }
 
@@ -573,12 +568,12 @@ public class aHomeFragment extends Fragment {
                             }
                         } else {
                             Log.d("Lihat", "onResponse aHomeFragment : " + response.message());
-                            //Snackbar.make(findViewById(android.R.id.content), "error data", Snackbar.LENGTH_LONG).show();
+                            //SystemUtil.showToast(getApplicationContext(), "error data", Snackbar.LENGTH_LONG,Gravity.TOP);
                             //Crashlytics.logException(new Exception(response.message()));
                         }
                     } else {
                         Log.d("Lihat", "onResponse aHomeFragment : " + response.message());
-                        //Snackbar.make(findViewById(android.R.id.content), "Failed Connection To Server", Snackbar.LENGTH_LONG).show();
+                        //SystemUtil.showToast(getApplicationContext(), "Failed Connection To Server", Toast.LENGTH_SHORT,Gravity.TOP);
                         //Crashlytics.logException(new Exception(response.message()));
                     }
                 }
@@ -588,8 +583,8 @@ public class aHomeFragment extends Fragment {
             public void onFailure(Call<List<GetCheckDistanceLocationResponseModel>> call, Throwable t) {
                 //progressDialog.dismiss();
                 Log.d("Lihat", "onFailure aHomeFragment : " + t.getMessage());
-                Snackbar.make(getActivity().findViewById(android.R.id.content), "Failed Connection To Server", Snackbar.LENGTH_SHORT).show();
-                /*Snackbar.make(findViewById(android.R.id.content), "Failed Connection To Server", Snackbar.LENGTH_SHORT).setAction("Reload", new View.OnClickListener() {
+                SystemUtil.showToast(getActivity(), "Failed Connection To Server", Toast.LENGTH_SHORT, Gravity.TOP);
+                /*SystemUtil.showToast(getApplicationContext(), "Failed Connection To Server", Snackbar.LENGTH_SHORT).setAction("Reload", new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
 
@@ -628,26 +623,26 @@ public class aHomeFragment extends Fragment {
                             for (int i = 0; i < s.size(); i++) {
                                 LocalBaseResponseModel model = s.get(i);
                                 if (model.getStatus().equalsIgnoreCase("ok")) {
-                                    Snackbar.make(getActivity().findViewById(android.R.id.content), "Tersimpan", Snackbar.LENGTH_LONG).show();
+                                    SystemUtil.showToast(getActivity(), "Tersimpan", Toast.LENGTH_LONG, Gravity.TOP);
                                 } else {
-                                    Snackbar.make(getActivity().findViewById(android.R.id.content), "Bad Response", Snackbar.LENGTH_LONG).show();
+                                    SystemUtil.showToast(getActivity(), "Bad Response", Toast.LENGTH_LONG, Gravity.TOP);
                                 }
                             }
                         } else {
-                            Snackbar.make(getActivity().findViewById(android.R.id.content), "Data Tidak Sesuai", Snackbar.LENGTH_LONG).show();
+                            SystemUtil.showToast(getActivity(), "Data Tidak Sesuai", Toast.LENGTH_LONG, Gravity.TOP);
                         }
                     } else {
-                        Snackbar.make(getActivity().findViewById(android.R.id.content), response.message(), Snackbar.LENGTH_LONG).show();
+                        SystemUtil.showToast(getActivity(), response.message(), Toast.LENGTH_LONG, Gravity.TOP);
                     }
                 }
 
                 @Override
                 public void onFailure(Call<List<LocalBaseResponseModel>> call, Throwable t) {
-                    Snackbar.make(getActivity().findViewById(android.R.id.content), t.getMessage(), Snackbar.LENGTH_LONG).show();
+                    SystemUtil.showToast(getActivity(), t.getMessage(), Toast.LENGTH_LONG, Gravity.TOP);
                 }
             });
         } else {
-            Snackbar.make(getActivity().findViewById(android.R.id.content), "Check Your Connection", Snackbar.LENGTH_SHORT).show();
+            SystemUtil.showToast(getActivity(), "Check Your Connection", Toast.LENGTH_SHORT, Gravity.TOP);
         }
 
     }
@@ -712,7 +707,7 @@ public class aHomeFragment extends Fragment {
                             first_id = "";
                         }
                     } else {
-                        Snackbar.make(getActivity().findViewById(android.R.id.content), "Failed Connection To Server", Snackbar.LENGTH_LONG).show();
+                        SystemUtil.showToast(getActivity(), "Failed Connection To Server", Toast.LENGTH_SHORT, Gravity.TOP);
                     }
                 }
 
@@ -729,8 +724,8 @@ public class aHomeFragment extends Fragment {
 
                     //progressDialog.dismiss();
                     Log.d("Lihat", "onFailure aHomeFragment : " + t.getMessage());
-                    Snackbar.make(getActivity().findViewById(android.R.id.content), "Failed Connection To Server", Snackbar.LENGTH_SHORT).show();
-                    /*Snackbar.make(findViewById(android.R.id.content), "Failed Connection To Server", Snackbar.LENGTH_SHORT).setAction("Reload", new View.OnClickListener() {
+                    SystemUtil.showToast(getActivity(), "Failed Connection To Server", Toast.LENGTH_SHORT, Gravity.TOP);
+                    /*SystemUtil.showToast(getApplicationContext(), "Failed Connection To Server", Snackbar.LENGTH_SHORT).setAction("Reload", new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
 
@@ -751,7 +746,7 @@ public class aHomeFragment extends Fragment {
                 Log.d("Lihat", "callHomeContentAPI aHomeFragment : " + homeContent.size());
 
             } else {
-                Snackbar.make(getActivity().findViewById(android.R.id.content), "No data", Snackbar.LENGTH_SHORT).show();
+                SystemUtil.showToast(getActivity(), "No data", Toast.LENGTH_SHORT, Gravity.TOP);
             }
         }
     }
@@ -803,7 +798,7 @@ public class aHomeFragment extends Fragment {
                         }
                     } else {
                         homeNSVHomefvbi.setNestedScrollingEnabled(true);
-                        Snackbar.make(getActivity().findViewById(android.R.id.content), "Failed Connection To Server", Snackbar.LENGTH_LONG).show();
+                        SystemUtil.showToast(getActivity(), "Failed Connection To Server", Toast.LENGTH_SHORT, Gravity.TOP);
                     }
                 }
 
@@ -819,20 +814,20 @@ public class aHomeFragment extends Fragment {
 
                     //progressDialog.dismiss();
                     Log.d("Lihat", "onFailure aHomeFragment : " + t.getMessage());
-                    Snackbar.make(getActivity().findViewById(android.R.id.content), "Failed Connection To Server", Snackbar.LENGTH_SHORT).show();
-                /*Snackbar.make(findViewById(android.R.id.content), "Failed Connection To Server", Snackbar.LENGTH_SHORT).setAction("Reload", new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
+                    SystemUtil.showToast(getActivity(), "Failed Connection To Server", Toast.LENGTH_SHORT, Gravity.TOP);
+                    /*SystemUtil.showToast(getApplicationContext(), "Failed Connection To Server", Snackbar.LENGTH_SHORT).setAction("Reload", new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
 
-                    }
-                }).show();*/
+                        }
+                    }).show();*/
                     //Crashlytics.logException(new Exception(t.getMessage()));
                 }
             });
         } else {
             llLoadMode2fvbi.setVisibility(View.GONE);
             homeNSVHomefvbi.setEnableScrolling(true);
-            Snackbar.make(getActivity().findViewById(android.R.id.content), "Check you connection", Snackbar.LENGTH_SHORT).show();
+            SystemUtil.showToast(getActivity(), "Check you connection", Toast.LENGTH_SHORT, Gravity.TOP);
         }
 
     }
@@ -864,26 +859,26 @@ public class aHomeFragment extends Fragment {
                         for (int i = 0; i < s.size(); i++) {
                             LocalBaseResponseModel model = s.get(i);
                             if (model.getStatus().equalsIgnoreCase("ok")) {
-                                Snackbar.make(getActivity().findViewById(android.R.id.content), "Post Terkirim", Snackbar.LENGTH_LONG).show();
+                                SystemUtil.showToast(getActivity(), "Post Terkirim", Toast.LENGTH_LONG, Gravity.TOP);
                                 callHomeContentAPI();
                                 updateEventInfo();//onresponse callPostCaption
                                 homeETWritePostCreatefvbi.setText("");
                                 SystemUtil.hideKeyBoard(getActivity());
                             } else {
-                                Snackbar.make(getActivity().findViewById(android.R.id.content), "Post Bad Response", Snackbar.LENGTH_LONG).show();
+                                SystemUtil.showToast(getActivity(), "Post Bad Response", Toast.LENGTH_LONG, Gravity.TOP);
                             }
                         }
                     } else {
-                        Snackbar.make(getActivity().findViewById(android.R.id.content), "Post Data Tidak Sesuai", Snackbar.LENGTH_LONG).show();
+                        SystemUtil.showToast(getActivity(), "Post Data Tidak Sesuai", Toast.LENGTH_LONG, Gravity.TOP);
                     }
                 } else {
-                    Snackbar.make(getActivity().findViewById(android.R.id.content), response.message(), Snackbar.LENGTH_LONG).show();
+                    SystemUtil.showToast(getActivity(), response.message(), Toast.LENGTH_LONG, Gravity.TOP);
                 }
             }
 
             @Override
             public void onFailure(Call<List<LocalBaseResponseModel>> call, Throwable t) {
-                Snackbar.make(getActivity().findViewById(android.R.id.content), t.getMessage(), Snackbar.LENGTH_LONG).show();
+                SystemUtil.showToast(getActivity(), t.getMessage(), Toast.LENGTH_LONG, Gravity.TOP);
             }
         });
 
@@ -910,12 +905,12 @@ public class aHomeFragment extends Fragment {
                                 //
                                 adapter.removeAt(position);
                             } else {
-                                Snackbar.make(getActivity().findViewById(android.R.id.content), response.message(), Snackbar.LENGTH_LONG).show();
+                                SystemUtil.showToast(getActivity(), response.message(), Toast.LENGTH_LONG, Gravity.TOP);
                             }
                         }
                     } else {
                         Log.d("Lihat", "onFailure aHomeFragment : " + response.message());
-                        Snackbar.make(getActivity().findViewById(android.R.id.content), "Failed Connection To Server", Snackbar.LENGTH_LONG).show();
+                        SystemUtil.showToast(getActivity(), "Failed Connection To Server", Toast.LENGTH_SHORT, Gravity.TOP);
                     }
                 }
 
@@ -923,12 +918,12 @@ public class aHomeFragment extends Fragment {
                 public void onFailure(Call<List<HomeContentPostCaptionDeleteResponseModel>> call, Throwable t) {
                     progressDialog.dismiss();
                     Log.d("Lihat", "onFailure aHomeFragment : " + t.getMessage());
-                    Snackbar.make(getActivity().findViewById(android.R.id.content), "Failed Connection To Server", Snackbar.LENGTH_SHORT).show();
+                    SystemUtil.showToast(getActivity(), "Failed Connection To Server", Toast.LENGTH_SHORT, Gravity.TOP);
                 }
             });
 
         } else {
-            Snackbar.make(getActivity().findViewById(android.R.id.content), "Check you connection", Snackbar.LENGTH_SHORT).show();
+            SystemUtil.showToast(getActivity(), "Check you connection", Toast.LENGTH_SHORT, Gravity.TOP);
         }
     }
 
@@ -963,19 +958,19 @@ public class aHomeFragment extends Fragment {
                             //
                             adapter.changeDataFirstHasUploaded();
                         } else {
-                            Snackbar.make(getActivity().findViewById(android.R.id.content), model.getMessage(), Snackbar.LENGTH_LONG).show();
+                            SystemUtil.showToast(getActivity(), model.getMessage(), Toast.LENGTH_LONG, Gravity.TOP);
                         }
                     }
                 } else {
                     Log.d("Lihat", "onFailure aHomeFragment : " + response.message());
-                    Snackbar.make(getActivity().findViewById(android.R.id.content), "Failed Connection To Server", Snackbar.LENGTH_LONG).show();
+                    SystemUtil.showToast(getActivity(), "Failed Connection To Server", Toast.LENGTH_SHORT, Gravity.TOP);
                 }
             }
 
             @Override
             public void onFailure(Call<List<LocalBaseResponseModel>> call, Throwable t) {
                 Log.d("Lihat", "onFailure aHomeFragment : " + t.getMessage());
-                Snackbar.make(getActivity().findViewById(android.R.id.content), "Failed Connection To Server", Snackbar.LENGTH_SHORT).show();
+                SystemUtil.showToast(getActivity(), "Failed Connection To Server", Toast.LENGTH_SHORT, Gravity.TOP);
                 adapter.removeDataFirst();
             }
         });
@@ -1042,7 +1037,7 @@ public class aHomeFragment extends Fragment {
             intent.putExtra(ISeasonConfig.INTENT_PARAM2, position);
             startActivityForResult(intent, REQ_CODE_COMMENT);
         } else {
-            Snackbar.make(getActivity().findViewById(android.R.id.content), "Check you connection", Snackbar.LENGTH_SHORT).show();
+            SystemUtil.showToast(getActivity(), "Check you connection", Toast.LENGTH_SHORT, Gravity.TOP);
         }
     }
 
@@ -1116,7 +1111,9 @@ public class aHomeFragment extends Fragment {
                 mylng = location.getLongitude();
                 locationManager.removeUpdates(this);
                 //etDataKoordinatNamaJalan.setText(GeocoderUtil.getAddressFromlatlng(SearchActivity.this, mylat, mylng));
-                //Toast.makeText(SearchActivity.this, R.string.gps_found, Toast.LENGTH_LONG).show();
+                //SystemUtil.showToast(SearchActivity.this, R.string.gps_found, Toast.LENGTH_LONG);
+                // toast.setGravity(Gravity.TOP, 0, 0);
+                // toast.show();
 
                 isLocationFound = true;
                 int i = 1;
@@ -1154,7 +1151,7 @@ public class aHomeFragment extends Fragment {
             isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 
             if (!isGPSEnabled && !isNetworkEnabled) {
-                Toast.makeText(getActivity(), "no network provider is enabled", Toast.LENGTH_SHORT).show();
+                SystemUtil.showToast(getActivity(), "no network provider is enabled", Toast.LENGTH_SHORT, Gravity.TOP);
                 isLocationFound = true;
             } else {
                 if (isNetworkEnabled) {
@@ -1166,10 +1163,12 @@ public class aHomeFragment extends Fragment {
                             mylat = location.getLatitude();
                             mylng = location.getLongitude();
                         } else {
-                            Toast.makeText(getActivity(), "Can't Reach GPS", Toast.LENGTH_SHORT).show();
+                            //SystemUtil.showToast(getActivity(), "Can't Reach GPS", Toast.LENGTH_SHORT, Gravity.TOP);
+                            Log.d("Lihat", "getGpsLocation aHomeFragment : " + "Can't Reach location via network");
                         }
                     } else {
-                        Toast.makeText(getActivity(), "Can't Reach GPS", Toast.LENGTH_SHORT).show();
+                        //SystemUtil.showToast(getActivity(), "Can't Reach GPS", Toast.LENGTH_SHORT, Gravity.TOP);
+                        Log.d("Lihat", "getGpsLocation aHomeFragment : " + "Can't Reach locationManager via network");
                     }
                 }
                 // if GPS Enabled get lat/long using GPS Services
@@ -1182,10 +1181,12 @@ public class aHomeFragment extends Fragment {
                             mylat = location.getLatitude();
                             mylng = location.getLongitude();
                         } else {
-                            Toast.makeText(getActivity(), "Can't Reach GPS", Toast.LENGTH_SHORT).show();
+                            //SystemUtil.showToast(getActivity(), "Can't Reach GPS", Toast.LENGTH_SHORT, Gravity.TOP);
+                            Log.d("Lihat", "getGpsLocation aHomeFragment : " + "Can't Reach location via GPS");
                         }
                     } else {
-                        Toast.makeText(getActivity(), "Can't Reach GPS", Toast.LENGTH_SHORT).show();
+                        //SystemUtil.showToast(getActivity(), "Can't Reach GPS", Toast.LENGTH_SHORT, Gravity.TOP);
+                        Log.d("Lihat", "getGpsLocation aHomeFragment : " + "Can't Reach locationManager via GPS");
                     }
                 }
             }

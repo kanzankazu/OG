@@ -36,12 +36,12 @@ import java.util.List;
 
 @SuppressWarnings("unchecked")
 public class PracticalInfoAdapter extends BaseExpandableListAdapter {
-    private Activity activity;
-    private LayoutInflater inflater;
-    private ArrayList<EventImportanInfoNew> parentItems = new ArrayList<>();
     private final String accountId;
     private final String eventId;
+    private Activity activity;
     SQLiteHelperMethod db = new SQLiteHelperMethod(activity);
+    private LayoutInflater inflater;
+    private ArrayList<EventImportanInfoNew> parentItems = new ArrayList<>();
 
     public PracticalInfoAdapter(Activity activity, ArrayList<EventImportanInfoNew> parents, String accountId, String eventId) {
         this.activity = activity;

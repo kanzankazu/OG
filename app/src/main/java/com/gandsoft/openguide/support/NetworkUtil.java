@@ -9,11 +9,14 @@ import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.provider.Settings;
-import android.support.design.widget.Snackbar;
 import android.telephony.SubscriptionInfo;
 import android.telephony.SubscriptionManager;
 import android.telephony.TelephonyManager;
 import android.util.Log;
+import android.view.Gravity;
+import android.widget.Toast;
+
+import com.gandsoft.openguide.R;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -129,11 +132,11 @@ public class NetworkUtil {
             if (isOnline1()) {
                 return true;
             } else {
-                Snackbar.make(activity.findViewById(android.R.id.content), "Slow Internet Connection", Snackbar.LENGTH_SHORT).show();
+                SystemUtil.showToast(activity, activity.getString(R.string.network_slow_internet), Toast.LENGTH_SHORT, Gravity.TOP);
                 return false;
             }
         } else {
-            Snackbar.make(activity.findViewById(android.R.id.content), "No Internet Connection", Snackbar.LENGTH_SHORT).show();
+            SystemUtil.showToast(activity, activity.getString(R.string.network_no_internet_connection), Toast.LENGTH_SHORT, Gravity.TOP);
             return false;
         }
     }

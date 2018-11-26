@@ -8,10 +8,12 @@
         android:id="@+id/ivEmergencieHeader"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
+        android:layout_marginLeft="20dp"
         android:background="?android:selectableItemBackground"
         android:clickable="false"
-        android:layout_marginLeft="20dp"
-        android:src="@drawable/ic_option_contact" />
+        android:src="@drawable/ic_option_contact"
+        android:visibility="gone" />
+
     <TextView
         android:id="@+id/tvEmergencieHeader"
         android:layout_width="match_parent"
@@ -28,8 +30,8 @@
         android:id="@+id/ivEmergencieHeaderDropdown"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
+        android:layout_marginRight="20dp"
         android:background="?android:selectableItemBackground"
         android:clickable="false"
-        android:layout_marginRight="20dp"
         android:src="@drawable/ic_drop_down" />
 </LinearLayout>

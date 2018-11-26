@@ -11,12 +11,15 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.CardView;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.gandsoft.openguide.API.API;
 import com.gandsoft.openguide.API.APIrequest.Login.PostVerifyPhonenumberFirebaseRequestModel;
@@ -28,7 +31,6 @@ import com.gandsoft.openguide.API.APIresponse.PostVerifyTokenFirebaseResponseMod
 import com.gandsoft.openguide.IConfig;
 import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
-import com.gandsoft.openguide.database.SQLiteHelper;
 import com.gandsoft.openguide.database.SQLiteHelperMethod;
 import com.gandsoft.openguide.support.DeviceDetailUtil;
 import com.gandsoft.openguide.support.InputValidUtil;
@@ -81,6 +83,7 @@ public class LoginActivity extends LocalBaseActivity {
     private ProgressDialog progressDialogSubmit;
     private String refreshedToken;
     private boolean isBypass = false;
+    private ImageView ivLoginfvbi;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -96,6 +99,7 @@ public class LoginActivity extends LocalBaseActivity {
     }
 
     private void initComponent() {
+        ivLoginfvbi = (ImageView) findViewById(R.id.ivLogin);
         ccpLoginfvbi = (CountryCodePicker) findViewById(R.id.ccpLogin);
         tvLoginVerifyInfofvbi = (TextView) findViewById(R.id.tvLoginVerifyInfo);
         etLoginfvbi = (EditText) findViewById(R.id.etLogin);
@@ -218,23 +222,22 @@ public class LoginActivity extends LocalBaseActivity {
         });
 
         /*bypass login*/
-        tvLoginAppVersionfvbi.setOnClickListener(new View.OnClickListener() {
+        ivLoginfvbi.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (!InputValidUtil.isEmptyField(etLoginfvbi)) {
-                    //SessionUtil.setStringPreferences(ISeasonConfig.KEY_ACCOUNT_ID, getPhoneNumberValid(etLoginfvbi));
-                    //moveToChangeEvent();
-                    if (NetworkUtil.isConnectedIsOnline(LoginActivity.this)) {
+                if (!InputValidUtil.isEmptyField(etLoginfvbi) && etLoginfvbi.getText().toString().trim().length() > 9) {
+                    if (NetworkUtil.isConnected(LoginActivity.this)) {
 
                         SessionUtil.removeAllSharedPreferences();
 
+                        snackBar("Start Verify Phone Number", false);
                         phoneNumberSavedwPlus = "+" + getPhoneNumberValid(etLoginfvbi);
                         phoneNumberSavedwoPlus = getPhoneNumberValid(etLoginfvbi);
-                        sendVerifyPhonenumberFirebase();//click bypass
                         isBypass = true;
+                        sendVerifyPhonenumberFirebase();//click bypass
                     }
                 } else {
-                    SystemUtil.etReqFocus(LoginActivity.this, etLoginfvbi, "Data Kosong");
+                    SystemUtil.etReqFocus(LoginActivity.this, etLoginfvbi, "Phone number problem, check again!!");
                 }
             }
         });
@@ -243,13 +246,12 @@ public class LoginActivity extends LocalBaseActivity {
     private void initPhoneNumberValidationInput() {
         if (!InputValidUtil.isEmptyField(etLoginfvbi)) {
             if (isLogin) {
-                if (InputValidUtil.isValidatePhoneNumber(etLoginfvbi.getText().toString())) {
+                if (etLoginfvbi.getText().toString().trim().length() > 9) {
                     phoneNumberSavedwPlus = "+" + getPhoneNumberValid(etLoginfvbi);
                     phoneNumberSavedwoPlus = getPhoneNumberValid(etLoginfvbi);
-                    //Toast.makeText(getApplicationContext(), getPhoneNumberValid(etLoginfvbi), Toast.LENGTH_SHORT).show();
-                    //sendPhoneNumberVerification("+" + getPhoneNumberValid(etLoginfvbi));
                     snackBar("Start Verify Phone Number", false);
                     sendVerifyPhonenumberFirebase();
+                    isBypass = false;
                 } else {
                     SystemUtil.etReqFocus(LoginActivity.this, etLoginfvbi, "Data Tidak Valid");
                 }
@@ -310,24 +312,29 @@ public class LoginActivity extends LocalBaseActivity {
                             for (int i = 0; i < s.size(); i++) {
                                 PostVerifyPhonenumberFirebaseResponseModel model = s.get(i);
                                 if (model.getStatus().equalsIgnoreCase("verify")) {
-                                    Snackbar.make(findViewById(android.R.id.content), "verify", Snackbar.LENGTH_LONG).show();
                                     isVerifyOldUser = true;
+                                    //sendPhoneNumberVerification("+" + getPhoneNumberValid(etLoginfvbi));
+                                    Log.d("Lihat", "onResponse LoginActivity : " + isBypass);
+                                    if (isBypass) {
+                                        moveToChangeEvent();//bypass
+                                    } else {
+                                        sendPhoneNumberVerification("+" + getPhoneNumberValid(etLoginfvbi));
+                                    }
                                 } else {
-                                    Snackbar.make(findViewById(android.R.id.content), "number verify", Snackbar.LENGTH_LONG).show();
                                     isVerifyOldUser = false;
-                                }
-
-                                if (isBypass) {
-                                    moveToChangeEvent();//bypass
-                                } else {
-                                    sendPhoneNumberVerification("+" + getPhoneNumberValid(etLoginfvbi));
+                                    //sendPhoneNumberVerification("+" + getPhoneNumberValid(etLoginfvbi));
+                                    if (isBypass) {
+                                        moveToChangeEvent();//bypass
+                                    } else {
+                                        sendPhoneNumberVerification("+" + getPhoneNumberValid(etLoginfvbi));
+                                    }
                                 }
                             }
                         } else {
-                            Snackbar.make(findViewById(android.R.id.content), "error data", Snackbar.LENGTH_LONG).show();
+                            SystemUtil.showToast(getApplicationContext(), "error data", Toast.LENGTH_LONG, Gravity.TOP);
                         }
                     } else {
-                        Snackbar.make(findViewById(android.R.id.content), "get data unsuccessful", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+                        SystemUtil.showToast(getApplicationContext(), "get data unsuccessful", Toast.LENGTH_LONG, Gravity.TOP);
                     }
                 }
 
@@ -335,8 +342,8 @@ public class LoginActivity extends LocalBaseActivity {
                 public void onFailure(Call<List<PostVerifyPhonenumberFirebaseResponseModel>> call, Throwable t) {
                     progressDialog.dismiss();
                     Log.d("Lihat", "onFailure LoginActivity : " + t.getMessage());
-                    //Snackbar.make(findViewById(android.R.id.content), "Failed Connection To Server", Snackbar.LENGTH_SHORT).show();
-                /*Snackbar.make(findViewById(android.R.id.content), "Failed Connection To Server", Snackbar.LENGTH_SHORT).setAction("Reload", new View.OnClickListener() {
+                    //SystemUtil.showToast(getApplicationContext(), "Failed Connection To Server", Toast.LENGTH_SHORT,Gravity.TOP);
+                /*SystemUtil.showToast(getApplicationContext(), "Failed Connection To Server", Snackbar.LENGTH_SHORT).setAction("Reload", new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
 
@@ -346,7 +353,7 @@ public class LoginActivity extends LocalBaseActivity {
                 }
             });
         } else {
-            Snackbar.make(findViewById(android.R.id.content), "Check you connection", Snackbar.LENGTH_SHORT).show();
+            SystemUtil.showToast(getApplicationContext(), "Check you connection", Toast.LENGTH_SHORT, Gravity.TOP);
         }
 
     }
@@ -427,12 +434,12 @@ public class LoginActivity extends LocalBaseActivity {
                             }
                         } else {
                             Log.d("Lihat", "onResponse LoginActivity : " + response.message());
-                            //Snackbar.make(findViewById(android.R.id.content), "error data", Snackbar.LENGTH_LONG).show();
+                            //SystemUtil.showToast(getApplicationContext(), "error data", Snackbar.LENGTH_LONG,Gravity.TOP);
                             //Crashlytics.logException(new Exception(response.message()));
                         }
                     } else {
                         Log.d("Lihat", "onResponse LoginActivity : " + response.message());
-                        //Snackbar.make(findViewById(android.R.id.content), "Failed Connection To Server", Snackbar.LENGTH_LONG).show();
+                        //SystemUtil.showToast(getApplicationContext(), "Failed Connection To Server", Toast.LENGTH_SHORT,Gravity.TOP);
                         //Crashlytics.logException(new Exception(response.message()));
                     }
                 }
@@ -441,8 +448,8 @@ public class LoginActivity extends LocalBaseActivity {
                 public void onFailure(Call<List<PostVerifyTokenFirebaseResponseModel>> call, Throwable t) {
                     progressDialog.dismiss();
                     Log.d("Lihat", "onFailure LoginActivity : " + t.getMessage());
-                    //Snackbar.make(findViewById(android.R.id.content), "Failed Connection To Server", Snackbar.LENGTH_SHORT).show();
-                /*Snackbar.make(findViewById(android.R.id.content), "Failed Connection To Server", Snackbar.LENGTH_SHORT).setAction("Reload", new View.OnClickListener() {
+                    //SystemUtil.showToast(getApplicationContext(), "Failed Connection To Server", Toast.LENGTH_SHORT,Gravity.TOP);
+                /*SystemUtil.showToast(getApplicationContext(), "Failed Connection To Server", Snackbar.LENGTH_SHORT).setAction("Reload", new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
 
@@ -453,7 +460,7 @@ public class LoginActivity extends LocalBaseActivity {
                 }
             });
         } else {
-            Snackbar.make(findViewById(android.R.id.content), "Check you connection", Snackbar.LENGTH_SHORT).show();
+            SystemUtil.showToast(getApplicationContext(), "Check you connection", Toast.LENGTH_SHORT, Gravity.TOP);
         }
 
     }
@@ -495,12 +502,12 @@ public class LoginActivity extends LocalBaseActivity {
                                     }
                                 } else {
                                     Log.d("Lihat", "onResponse LoginActivity : " + response.message());
-                                    //Snackbar.make(findViewById(android.R.id.content), "error data", Snackbar.LENGTH_LONG).show();
+                                    //SystemUtil.showToast(getApplicationContext(), "error data", Toast.LENGTH_SHORT,Gravity.TOP);
                                     //Crashlytics.logException(new Exception(response.message()));
                                 }
                             } else {
                                 Log.d("Lihat", "onResponse LoginActivity : " + response.message());
-                                //Snackbar.make(findViewById(android.R.id.content), "Failed Connection To Server", Snackbar.LENGTH_LONG).show();
+                                //SystemUtil.showToast(getApplicationContext(), "Failed Connection To Server", Toast.LENGTH_SHORT,Gravity.TOP);
                                 //Crashlytics.logException(new Exception(response.message()));
                             }
                         }
@@ -509,13 +516,13 @@ public class LoginActivity extends LocalBaseActivity {
                         public void onFailure(Call<List<PostVerifyLoginUserResponseModel>> call, Throwable t) {
                             //progressDialog.dismiss();
                             Log.d("Lihat", "onFailure LoginActivity : " + t.getMessage());
-                            //Snackbar.make(findViewById(android.R.id.content), "Failed Connection To Server", Snackbar.LENGTH_SHORT).show();
+                            SystemUtil.showToast(getApplicationContext(), "Failed Connection To Server", Toast.LENGTH_SHORT, Gravity.TOP);
                             //Crashlytics.logException(new Exception(t.getMessage()));
                             signOut();
                         }
                     });
                 } else {
-                    Snackbar.make(findViewById(android.R.id.content), "Check you connection", Snackbar.LENGTH_SHORT).show();
+                    SystemUtil.showToast(getApplicationContext(), "Check you connection", Toast.LENGTH_SHORT, Gravity.TOP);
                 }
 
             }
@@ -569,6 +576,7 @@ public class LoginActivity extends LocalBaseActivity {
         } else {
             sVal = ccpLoginfvbi.getSelectedCountryCode() + string;
         }
+
         return sVal;
     }
 
@@ -579,17 +587,17 @@ public class LoginActivity extends LocalBaseActivity {
                 public void onClick(View view) {
                     initPhoneNumberValidationInput();//reload
                 }
-            })
-                    .show();
+            }).show();
         } else {
             Snackbar.make(findViewById(android.R.id.content), success, Snackbar.LENGTH_LONG).show();
+            //SystemUtil.showToast(getApplicationContext(), success, Toast.LENGTH_LONG, Gravity.TOP);
         }
     }
 
     private void signOut() {
         mAuth.signOut();
         updateUI(UI_LOGIN, null);
-        Snackbar.make(findViewById(android.R.id.content), "Success Sign Out", Snackbar.LENGTH_SHORT).show();
+        SystemUtil.showToast(getApplicationContext(), "Success Sign Out", Toast.LENGTH_SHORT, Gravity.TOP);
     }
 
 }

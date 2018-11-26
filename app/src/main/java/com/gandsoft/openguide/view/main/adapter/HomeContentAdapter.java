@@ -2,11 +2,11 @@ package com.gandsoft.openguide.view.main.adapter;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -28,12 +29,12 @@ import com.gandsoft.openguide.API.APIresponse.LocalBaseResponseModel;
 import com.gandsoft.openguide.API.APIresponse.UserData.UserListEventResponseModel;
 import com.gandsoft.openguide.IConfig;
 import com.gandsoft.openguide.R;
-import com.gandsoft.openguide.database.SQLiteHelper;
 import com.gandsoft.openguide.database.SQLiteHelperMethod;
 import com.gandsoft.openguide.support.AppUtil;
 import com.gandsoft.openguide.support.InputValidUtil;
 import com.gandsoft.openguide.support.NetworkUtil;
 import com.gandsoft.openguide.support.PictureUtil;
+import com.gandsoft.openguide.support.SystemUtil;
 
 import org.sufficientlysecure.htmltextview.HtmlTextView;
 
@@ -168,7 +169,7 @@ public class HomeContentAdapter extends RecyclerView.Adapter<HomeContentAdapter.
                     int like = Integer.parseInt(model.getLike());
                     postLike(model.getLike(), holder, model, like);
                 } else {
-                    Snackbar.make(activity.findViewById(android.R.id.content), "Check you connection", Snackbar.LENGTH_SHORT).show();
+                    SystemUtil.showToast(activity, "Check you connection", Toast.LENGTH_SHORT, Gravity.TOP);
                 }
 
             }
@@ -236,12 +237,12 @@ public class HomeContentAdapter extends RecyclerView.Adapter<HomeContentAdapter.
                         }
                     } else {
                         Log.d("Lihat", "onResponse HomeContentAdapter : " + response.message());
-                        //Snackbar.make(findViewById(android.R.id.content), "Failed Connection To Server", Snackbar.LENGTH_LONG).show();
+                        //SystemUtil.showToast(getApplicationContext(), "Failed Connection To Server", Toast.LENGTH_SHORT,Gravity.TOP);
                         //Crashlytics.logException(new Exception(response.message()));
                     }
                 } else {
                     Log.d("Lihat", "onResponse HomeContentAdapter : " + response.message());
-                    //Snackbar.make(findViewById(android.R.id.content), "Failed Connection To Server", Snackbar.LENGTH_LONG).show();
+                    //SystemUtil.showToast(getApplicationContext(), "Failed Connection To Server", Toast.LENGTH_SHORT,Gravity.TOP);
                     //Crashlytics.logException(new Exception(response.message()));
                 }
             }
@@ -250,8 +251,8 @@ public class HomeContentAdapter extends RecyclerView.Adapter<HomeContentAdapter.
             public void onFailure(Call<List<LocalBaseResponseModel>> call, Throwable t) {
                 //progressDialog.dismiss();
                 Log.d("Lihat", "onFailure HomeContentAdapter : " + t.getMessage());
-                Snackbar.make(activity.findViewById(android.R.id.content), "Failed Connection To Server", Snackbar.LENGTH_SHORT).show();
-                /*Snackbar.make(findViewById(android.R.id.content), "Failed Connection To Server", Snackbar.LENGTH_SHORT).setAction("Reload", new View.OnClickListener() {
+                SystemUtil.showToast(activity, "Failed Connection To Server", Toast.LENGTH_SHORT,Gravity.TOP);
+                /*SystemUtil.showToast(getApplicationContext(), "Failed Connection To Server", Snackbar.LENGTH_SHORT).setAction("Reload", new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
 

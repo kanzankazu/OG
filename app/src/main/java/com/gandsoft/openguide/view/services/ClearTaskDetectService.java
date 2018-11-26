@@ -17,7 +17,6 @@ public class ClearTaskDetectService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        //Toast.makeText(getApplicationContext(), "start service ClearTaskDetectService", Toast.LENGTH_SHORT).show();// Set your own toast  message
         return START_NOT_STICKY;
     }
 
@@ -33,7 +32,7 @@ public class ClearTaskDetectService extends Service {
             SessionUtil.removeKeyPreferences(ISeasonConfig.KEY_EVENT_ID);
         }
         ServiceUtil.stopSevice(ClearTaskDetectService.this, RepeatCheckDataService.class);
-        NotifUtil.clearNotification(ClearTaskDetectService.this,ISeasonConfig.ID_NOTIF);
+        NotifUtil.clearNotification(ClearTaskDetectService.this, ISeasonConfig.ID_NOTIF);
         stopSelf();
     }
 }

@@ -50,7 +50,6 @@ public class GalleryDetailPagerAdapter extends PagerAdapter {
         View viewLayout = inflater.inflate(R.layout.layout_fullscreen_image, container, false);*/
 
         PhotoView photoView = new PhotoView(container.getContext());
-//        TouchImageView photoView = new TouchImageView(container.getContext());
         Glide.with(getContext())
                 .load(InputValidUtil.isLinkUrl(_imagePaths.get(position)) ? _imagePaths.get(position) : new File(_imagePaths.get(position)))
                 .asBitmap()
@@ -58,7 +57,7 @@ public class GalleryDetailPagerAdapter extends PagerAdapter {
                 .into(new SimpleTarget<Bitmap>() {
                     @Override
                     public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
-                        photoView.setImageBitmap(PictureUtil.resizeImageBitmap(resource, 1080));
+                        photoView.setImageBitmap(resource);
                     }
                 });
         container.addView(photoView, LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);

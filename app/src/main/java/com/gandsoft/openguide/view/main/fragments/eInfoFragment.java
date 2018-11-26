@@ -182,12 +182,7 @@ public class eInfoFragment extends Fragment implements InfoListViewAdapter.ListA
         tvInfoUserNamefvbi.setText(model.getFull_name());
         tvInfoUserPhoneNumberfvbi.setText(model.getAccount_id());
 
-        String imageUrlPath;
-        if (NetworkUtil.isConnected(getActivity())) {
-            imageUrlPath = model.getImage_url();
-        } else {
-            imageUrlPath = model.getImage_url_local();
-        }
+        String imageUrlPath = AppUtil.validationStringImageIcon(getActivity(), model.getImage_url(), model.getImage_url_local(), true);
         Glide.with(getActivity())
                 .load(InputValidUtil.isLinkUrl(imageUrlPath) ? imageUrlPath : new File(imageUrlPath))
                 .asBitmap()

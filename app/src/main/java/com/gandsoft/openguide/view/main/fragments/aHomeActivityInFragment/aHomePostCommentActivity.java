@@ -18,6 +18,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -26,6 +27,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -42,7 +44,6 @@ import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentPostComment
 import com.gandsoft.openguide.IConfig;
 import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
-import com.gandsoft.openguide.database.SQLiteHelper;
 import com.gandsoft.openguide.database.SQLiteHelperMethod;
 import com.gandsoft.openguide.support.AppUtil;
 import com.gandsoft.openguide.support.InputValidUtil;
@@ -259,7 +260,7 @@ public class aHomePostCommentActivity extends AppCompatActivity {
                         InputValidUtil.errorET(etCommentPostfvbi, "This Empty");
                     }
                 } else {
-                    Snackbar.make(findViewById(android.R.id.content), "Check you connection", Snackbar.LENGTH_SHORT).show();
+                    SystemUtil.showToast(getApplicationContext(), "Check you connection", Toast.LENGTH_SHORT, Gravity.TOP);
                 }
 
             }
@@ -298,7 +299,7 @@ public class aHomePostCommentActivity extends AppCompatActivity {
 
                     } else {
                         if (!isNoMoreShow) {
-                            Snackbar.make(findViewById(android.R.id.content), "no more data", Snackbar.LENGTH_SHORT).show();
+                            SystemUtil.showToast(getApplicationContext(), "no more data", Toast.LENGTH_SHORT,Gravity.TOP);
                             isNoMoreShow = true;
                         }
                     }
@@ -376,7 +377,7 @@ public class aHomePostCommentActivity extends AppCompatActivity {
                         }
                     } else {
                         Log.d("Lihat", "onFailure aHomePostCommentActivity : " + response.message());
-                        Snackbar.make(findViewById(android.R.id.content), "Failed Connection To Server", Snackbar.LENGTH_LONG).show();
+                        SystemUtil.showToast(getApplicationContext(), "Failed Connection To Server", Toast.LENGTH_SHORT,Gravity.TOP);
                     }
                 }
 
@@ -385,7 +386,7 @@ public class aHomePostCommentActivity extends AppCompatActivity {
                     progressDialog.dismiss();
                     //Crashlytics.logException(new Exception(t.getMessage()));
                     Log.d("Lihat", "onFailure aHomePostCommentActivity : " + t.getMessage());
-                    Snackbar.make(findViewById(android.R.id.content), "Failed Connection To Server", Snackbar.LENGTH_SHORT).show();
+                    SystemUtil.showToast(getApplicationContext(), "Failed Connection To Server", Toast.LENGTH_SHORT,Gravity.TOP);
                 }
             });
         } else {
@@ -396,7 +397,7 @@ public class aHomePostCommentActivity extends AppCompatActivity {
                 last_id = models.get(models.size() - 1).getId();
                 first_id = models.get(0).getId();
             } else {
-                Snackbar.make(findViewById(android.R.id.content), "No data", Snackbar.LENGTH_SHORT).show();
+                SystemUtil.showToast(getApplicationContext(), "No data", Toast.LENGTH_SHORT,Gravity.TOP);
             }
         }
 
@@ -438,7 +439,7 @@ public class aHomePostCommentActivity extends AppCompatActivity {
                         }
                     } else {
                         Log.d("Lihat", "onFailure aHomePostCommentActivity : " + response.message());
-                        Snackbar.make(findViewById(android.R.id.content), "Failed Connection To Server", Snackbar.LENGTH_LONG).show();
+                        SystemUtil.showToast(getApplicationContext(), "Failed Connection To Server", Toast.LENGTH_SHORT,Gravity.TOP);
                     }
                 }
 
@@ -447,12 +448,12 @@ public class aHomePostCommentActivity extends AppCompatActivity {
                     llLoadModecommentfvbi.setVisibility(View.GONE);
                     //Crashlytics.logException(new Exception(t.getMessage()));
                     Log.d("Lihat", "onFailure aHomePostCommentActivity : " + t.getMessage());
-                    Snackbar.make(findViewById(android.R.id.content), "Failed Connection To Server", Snackbar.LENGTH_SHORT).show();
+                    SystemUtil.showToast(getApplicationContext(), "Failed Connection To Server", Toast.LENGTH_SHORT,Gravity.TOP);
                 }
             });
         } else {
             llLoadModecommentfvbi.setVisibility(View.GONE);
-            Snackbar.make(findViewById(android.R.id.content), "Check you connection", Snackbar.LENGTH_SHORT).show();
+            SystemUtil.showToast(getApplicationContext(), "Check you connection", Toast.LENGTH_SHORT,Gravity.TOP);
         }
 
     }
@@ -546,14 +547,14 @@ public class aHomePostCommentActivity extends AppCompatActivity {
                             if (q.getStatus().equalsIgnoreCase(ISeasonConfig.SUCCESS)) {
                                 //adapter.removeAt(position);
                                 callGetCommentList();
-                                Snackbar.make(findViewById(android.R.id.content), q.getStatus(), Snackbar.LENGTH_LONG).show();
+                                SystemUtil.showToast(getApplicationContext(), q.getStatus(), Snackbar.LENGTH_LONG,Gravity.TOP);
                             } else {
-                                Snackbar.make(findViewById(android.R.id.content), q.getStatus(), Snackbar.LENGTH_LONG).show();
+                                SystemUtil.showToast(getApplicationContext(), q.getStatus(), Snackbar.LENGTH_LONG,Gravity.TOP);
                             }
                         }
                     } else {
                         Log.d("Lihat", "onFailure aHomePostCommentActivity : " + response.message());
-                        Snackbar.make(findViewById(android.R.id.content), "Failed Connection To Server", Snackbar.LENGTH_LONG).show();
+                        SystemUtil.showToast(getApplicationContext(), "Failed Connection To Server", Toast.LENGTH_SHORT,Gravity.TOP);
                     }
                 }
 
@@ -561,11 +562,11 @@ public class aHomePostCommentActivity extends AppCompatActivity {
                 public void onFailure(Call<List<HomeContentPostCommentDeleteResponseModel>> call, Throwable t) {
                     progressDialog.dismiss();
                     Log.d("Lihat", "onFailure aHomePostCommentActivity : " + t.getMessage());
-                    Snackbar.make(findViewById(android.R.id.content), "Failed Connection To Server", Snackbar.LENGTH_SHORT).show();
+                    SystemUtil.showToast(getApplicationContext(), "Failed Connection To Server", Toast.LENGTH_SHORT,Gravity.TOP);
                 }
             });
         } else {
-            Snackbar.make(findViewById(android.R.id.content), "Check you connection", Snackbar.LENGTH_SHORT).show();
+            SystemUtil.showToast(getApplicationContext(), "Check you connection", Toast.LENGTH_SHORT,Gravity.TOP);
         }
 
     }

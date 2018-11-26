@@ -2,8 +2,12 @@ package com.gandsoft.openguide.view;
 
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.gandsoft.openguide.support.SystemUtil;
 
 import app.beelabs.com.codebase.base.BaseActivity;
 
@@ -33,7 +37,7 @@ public class LocalBaseActivity extends BaseActivity {
     }
 
     private void showsnackBar(String stringInfo) {
-        Snackbar.make(findViewById(android.R.id.content), stringInfo, Snackbar.LENGTH_LONG).show();
+        SystemUtil.showToast(getApplicationContext(), stringInfo, Toast.LENGTH_LONG, Gravity.TOP);
     }
 
 }

@@ -12,7 +12,6 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
@@ -20,6 +19,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -79,21 +79,20 @@ public class BaseHomeActivity extends AppCompatActivity {
     SQLiteHelperMethod db = new SQLiteHelperMethod(this);
     HomeWatcher mHomeWatcher = new HomeWatcher(this);
 
-    ViewPager mPager;
-    SlidePagerAdapter mPagerAdapter;
-    ImageView imviewdial;
-    int a = 0;
-    private TabLayout tabLayout;
     private ActionBar ab;
+    private Toolbar toolbar;
+    private TabLayout tlBHA;
+    private ViewPager vpBHA;
+    private TextView tvBHAinfo;
+
     private String[] titleTab = new String[]{"Home", "Wallet", "Schedule", "About the Event", "Important Information"};
     private int[] iconTab = new int[]{R.drawable.ic_tab_home, R.drawable.ic_tab_wallet, R.drawable.ic_tab_schedule, R.drawable.ic_tab_about, R.drawable.ic_tab_info};
-    private Toolbar toolbar;
+    private SlidePagerAdapter mPagerAdapter;
     private String accountId, eventId;
-    private int version_data_event;
     private boolean doubleBackToExitPressedOnce;
     private NotificationManager notificationManager;
     private MenuItem menuItem;
-    private TextView tvMenuItemBadge;
+    private TextView tvMenuBHACartBadge;
     private FirebaseAuth mAuth;
 
     @Override
@@ -130,8 +129,9 @@ public class BaseHomeActivity extends AppCompatActivity {
 
     private void initComponent() {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
-        tabLayout = (TabLayout) findViewById(R.id.tlFiltSortHot);
-        mPager = (ViewPager) findViewById(R.id.pager);
+        tlBHA = (TabLayout) findViewById(R.id.tlBHA);
+        vpBHA = (ViewPager) findViewById(R.id.vpBHA);
+        tvBHAinfo = (TextView) findViewById(R.id.tvBHAinfo);
     }
 
     private void initSession() {
@@ -176,10 +176,11 @@ public class BaseHomeActivity extends AppCompatActivity {
 
         getAPIVerivyUser();
 
-        initLoopCheck();
+        initLoopCheckUserLogin();
+        initLoopCheckNetwork();
     }
 
-    private void initLoopCheck() {
+    private void initLoopCheckUserLogin() {
         new Timer().schedule(new TimerTask() {
             @Override
             public void run() {
@@ -195,6 +196,25 @@ public class BaseHomeActivity extends AppCompatActivity {
         }, DateTimeUtil.MINUTE_MILLIS / 4, DateTimeUtil.MINUTE_MILLIS / 2);
     }
 
+    public void initLoopCheckNetwork() {
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (!NetworkUtil.isConnected(getApplicationContext())) {
+                            tvBHAinfo.setVisibility(View.VISIBLE);
+                            tvBHAinfo.setText(getString(R.string.network_no_internet_connection));
+                        } else {
+                            tvBHAinfo.setVisibility(View.GONE);
+                        }
+                    }
+                });
+            }
+        }, 0, 5000);
+    }
+
     private void initActionBar() {
         setSupportActionBar(toolbar);
         ab = getSupportActionBar();
@@ -205,40 +225,40 @@ public class BaseHomeActivity extends AppCompatActivity {
         int tabIconColorSelect = ContextCompat.getColor(this, R.color.colorPrimary);
         int tabIconColorUnSelect = ContextCompat.getColor(this, R.color.grey);
         for (int i = 0; i < titleTab.length; i++) {
-            tabLayout.addTab(tabLayout.newTab().setIcon(iconTab[i]));
+            tlBHA.addTab(tlBHA.newTab().setIcon(iconTab[i]));
             if (i == 0) {
-                tabLayout.getTabAt(i).getIcon().setColorFilter(tabIconColorSelect, PorterDuff.Mode.SRC_IN);
+                tlBHA.getTabAt(i).getIcon().setColorFilter(tabIconColorSelect, PorterDuff.Mode.SRC_IN);
             } else {
-                tabLayout.getTabAt(i).getIcon().setColorFilter(tabIconColorUnSelect, PorterDuff.Mode.SRC_IN);
+                tlBHA.getTabAt(i).getIcon().setColorFilter(tabIconColorUnSelect, PorterDuff.Mode.SRC_IN);
             }
         }
-        /*tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.ic_tab_home));
-        tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.ic_tab_wallet));
-        tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.ic_tab_schedule));
-        tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.ic_tab_about));
-        tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.ic_tab_info));
-        tabLayout.getTabAt(0).getIcon().setColorFilter(tabIconColorSelect, PorterDuff.Mode.SRC_IN);
-        tabLayout.getTabAt(1).getIcon().setColorFilter(tabIconColorUnSelect, PorterDuff.Mode.SRC_IN);
-        tabLayout.getTabAt(2).getIcon().setColorFilter(tabIconColorUnSelect, PorterDuff.Mode.SRC_IN);
-        tabLayout.getTabAt(3).getIcon().setColorFilter(tabIconColorUnSelect, PorterDuff.Mode.SRC_IN);
-        tabLayout.getTabAt(4).getIcon().setColorFilter(tabIconColorUnSelect, PorterDuff.Mode.SRC_IN);*/
-        tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
-        tabLayout.setEnabled(false);
+        /*tlBHA.addTab(tlBHA.newTab().setIcon(R.drawable.ic_tab_home));
+        tlBHA.addTab(tlBHA.newTab().setIcon(R.drawable.ic_tab_wallet));
+        tlBHA.addTab(tlBHA.newTab().setIcon(R.drawable.ic_tab_schedule));
+        tlBHA.addTab(tlBHA.newTab().setIcon(R.drawable.ic_tab_about));
+        tlBHA.addTab(tlBHA.newTab().setIcon(R.drawable.ic_tab_info));
+        tlBHA.getTabAt(0).getIcon().setColorFilter(tabIconColorSelect, PorterDuff.Mode.SRC_IN);
+        tlBHA.getTabAt(1).getIcon().setColorFilter(tabIconColorUnSelect, PorterDuff.Mode.SRC_IN);
+        tlBHA.getTabAt(2).getIcon().setColorFilter(tabIconColorUnSelect, PorterDuff.Mode.SRC_IN);
+        tlBHA.getTabAt(3).getIcon().setColorFilter(tabIconColorUnSelect, PorterDuff.Mode.SRC_IN);
+        tlBHA.getTabAt(4).getIcon().setColorFilter(tabIconColorUnSelect, PorterDuff.Mode.SRC_IN);*/
+        tlBHA.setTabGravity(TabLayout.GRAVITY_FILL);
+        tlBHA.setEnabled(false);
 
-        mPagerAdapter = new SlidePagerAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
-        mPager.setAdapter(mPagerAdapter);
-        mPager.setOffscreenPageLimit(5);
-        mPager.setCurrentItem(0);
+        mPagerAdapter = new SlidePagerAdapter(getSupportFragmentManager(), tlBHA.getTabCount());
+        vpBHA.setAdapter(mPagerAdapter);
+        vpBHA.setOffscreenPageLimit(5);
+        vpBHA.setCurrentItem(0);
     }
 
     private void initListener() {
 
-        mPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+        vpBHA.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tlBHA));
 
-        tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+        tlBHA.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
-                mPager.setCurrentItem(tab.getPosition());
+                vpBHA.setCurrentItem(tab.getPosition());
                 ab.setTitle(titleTab[tab.getPosition()]);
                 int tabIconColor = ContextCompat.getColor(BaseHomeActivity.this, R.color.colorPrimaryDark);
                 tab.getIcon().setColorFilter(tabIconColor, PorterDuff.Mode.SRC_IN);
@@ -331,7 +351,7 @@ public class BaseHomeActivity extends AppCompatActivity {
                 } else {
                     Log.d("Lihat", "onFailure BaseHomeActivity : " + response.message());
                     //Crashlytics.logException(new Exception(response.message()));
-                    Snackbar.make(findViewById(android.R.id.content), "Failed Connection To Server", Snackbar.LENGTH_LONG).show();
+                    SystemUtil.showToast(getApplicationContext(), "Failed Connection To Server", Toast.LENGTH_SHORT, Gravity.TOP);
                 }
             }
 
@@ -340,7 +360,7 @@ public class BaseHomeActivity extends AppCompatActivity {
                 //progressDialog.dismiss();
                 //Crashlytics.logException(new Exception(t.getMessage()));
                 Log.d("Lihat", "onFailure BaseHomeActivity : " + t.getMessage());
-                Snackbar.make(findViewById(android.R.id.content), "Failed Connection To Server", Snackbar.LENGTH_SHORT).show();
+                SystemUtil.showToast(getApplicationContext(), "Failed Connection To Server", Toast.LENGTH_SHORT, Gravity.TOP);
             }
         });
     }
@@ -415,8 +435,8 @@ public class BaseHomeActivity extends AppCompatActivity {
 
         //View actionView = MenuItemCompat.getActionView(menuItem);
         View actionView = menuItem.getActionView();
-        tvMenuItemBadge = (TextView) actionView.findViewById(R.id.cart_badge);
-        tvMenuItemBadge.setText("");
+        tvMenuBHACartBadge = (TextView) actionView.findViewById(R.id.tvMenuBHACartBadge);
+        tvMenuBHACartBadge.setText("");
 
         setupBadge();
 
@@ -457,7 +477,7 @@ public class BaseHomeActivity extends AppCompatActivity {
             setNotif();
         }
         this.doubleBackToExitPressedOnce = true;
-        Toast.makeText(this, "Tekan sekali lagi untuk keluar", Toast.LENGTH_SHORT).show();
+        SystemUtil.showToast(this, "Tekan sekali lagi untuk keluar", Toast.LENGTH_SHORT, Gravity.TOP);
 
         new Handler().postDelayed(new Runnable() {
 
@@ -480,13 +500,13 @@ public class BaseHomeActivity extends AppCompatActivity {
         int noteIsOpen = db.getCommiteHasBeenOpened(eventId);
         if (commiteNote.size() != 0) {
             if (commiteNote.size() == noteIsOpen) {
-                tvMenuItemBadge.setVisibility(View.GONE);
+                tvMenuBHACartBadge.setVisibility(View.GONE);
             } else {
-                tvMenuItemBadge.setVisibility(View.VISIBLE);
+                tvMenuBHACartBadge.setVisibility(View.VISIBLE);
                 //menuItem.setVisible(true);
             }
         } else {
-            tvMenuItemBadge.setVisibility(View.GONE);
+            tvMenuBHACartBadge.setVisibility(View.GONE);
             //menuItem.setVisible(false);
         }
 
@@ -495,4 +515,5 @@ public class BaseHomeActivity extends AppCompatActivity {
     public void updateInbox() {
         setupBadge();
     }
+
 }

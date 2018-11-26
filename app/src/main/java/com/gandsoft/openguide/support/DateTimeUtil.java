@@ -3,6 +3,7 @@ package com.gandsoft.openguide.support;
 import android.content.Context;
 import android.util.Log;
 
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -22,6 +23,21 @@ public class DateTimeUtil {
     public static final int SECONDS_SELECT = 4;
     public static Date MAX_DATE = new Date(Long.MAX_VALUE);
 
+    public static void getCurrentTimeUsingDate() {
+        Date date = new Date();
+        String strDateFormat = "hh:mm:ss a";
+        DateFormat dateFormat = new SimpleDateFormat(strDateFormat);
+        String formattedDate= dateFormat.format(date);
+        System.out.println("Current time of the day using Date - 12 hour format: " + formattedDate);
+    }
+    public static void getCurrentTimeUsingCalendar() {
+        Calendar cal = Calendar.getInstance();
+        Date date=cal.getTime();
+        DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
+        String formattedDate=dateFormat.format(date);
+        System.out.println("Current time of the day using Calendar - 24 hour format: "+ formattedDate);
+    }
+
     public static String getAge(int year, int month, int day) {
         Calendar dob = Calendar.getInstance();
         Calendar today = Calendar.getInstance();
@@ -38,6 +54,28 @@ public class DateTimeUtil {
         String ageS = ageInt.toString();
 
         return ageS;
+    }
+
+    public static int getYearCurrent() {
+        return Calendar.getInstance().get(Calendar.YEAR);
+    }
+
+    public static int getMonthCurrent() {
+        return Calendar.getInstance().get(Calendar.MONTH);
+    }
+
+    public static Date getFirstDateOfMonth(Date date) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        cal.set(Calendar.DAY_OF_MONTH, cal.getActualMinimum(Calendar.DAY_OF_MONTH));
+        return cal.getTime();
+    }
+
+    public static Date getEndDateOfMonth(Date date) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        cal.set(Calendar.DATE, cal.getMaximum(Calendar.DATE));
+        return cal.getTime();
     }
 
     public static String getDayFromDateString(String stringDate, SimpleDateFormat formatter) {
@@ -215,6 +253,16 @@ public class DateTimeUtil {
         }
 
         return getDates(date1, date2);
+    }
+
+    public static int getPosDateInListDate(List<Date> sourceList, Date s) {
+        int position = -1;
+        for (int i = 0; i < sourceList.size(); i++) {
+            if (isSameDay(sourceList.get(i),s)){
+                position = i;
+            }
+        }
+        return position;
     }
 
     public static boolean isBetween2Time(String start, String end) {

@@ -1,6 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">OpenGuides</string>
-
     <string name="string_next">NEXT</string>
     <string name="string_skip">SKIP</string>
     <string name="string_start">OK</string>
@@ -91,14 +91,7 @@
         "user picks up a card, or it can move if a snackbar appears.\n"
         "On the layout level, design your app layout to minimize opportunities for interference. "
         "For example, position the FAB to one side of stream of a cards so the FAB won’t interfere "
-        "when a user tries to pick up one of cards.\n\n"
-    </string>
+        "when a user tries to pick up one of cards.\n\n"</string>
     <string name="network_slow_internet">Slow Internet Connection</string>
     <string name="network_no_internet_connection">No Internet Connection</string>
-
-    <string-array name="names">
-        <item>M</item>
-        <item>W</item>
-        <item>Other</item>
-    </string-array>
 </resources>

@@ -2,6 +2,7 @@ package com.gandsoft.openguide.view.infomenu.gallery2;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -15,7 +16,6 @@ import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentResponseModel;
 import com.gandsoft.openguide.R;
-import com.gandsoft.openguide.database.SQLiteHelper;
 import com.gandsoft.openguide.database.SQLiteHelperMethod;
 import com.gandsoft.openguide.support.AppUtil;
 import com.gandsoft.openguide.support.InputValidUtil;
@@ -53,34 +53,48 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
     public void onBindViewHolder(@NonNull GalleryAdapter.ViewHolder holder, int position) {
         HomeContentResponseModel model = models.get(position);
 
-        String image_icon = AppUtil.validationStringImageIcon(activity, model.getImage_icon(), model.getImage_icon_local(), true);
-        String image_posted = AppUtil.validationStringImageIcon(activity, model.getImage_posted(), model.getImage_posted_local(), false);
-
         Glide.with(activity)
-                .load(InputValidUtil.isLinkUrl(image_posted) ? image_posted : new File(image_posted))
-                .asBitmap()
-                .error(R.drawable.template_account_og)
-                .placeholder(R.drawable.ic_action_name)
+                .load(R.drawable.load)
+                .asGif()
+                .centerCrop()
+                .crossFade()
                 .diskCacheStrategy(DiskCacheStrategy.NONE)
-                .skipMemoryCache(true)
+                .skipMemoryCache(false)
                 .dontAnimate()
-                .into(new SimpleTarget<Bitmap>() {
-                    @Override
-                    public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
-                        if (InputValidUtil.isLinkUrl(image_posted)) {
-                            Bitmap resizeImageBitmap = PictureUtil.resizeImageBitmap(resource, 360);
-                            holder.mImg.setImageBitmap(resizeImageBitmap);
-                        } else {
-                            holder.mImg.setImageBitmap(resource);
-                        }
+                .into(holder.mImg);
 
-                        if (NetworkUtil.isConnected(activity) && getItemCount() < 18) {
-                            String imageCachePath = PictureUtil.saveImageHomeContentImage(activity, resource, model.getId() + "_image", eventId);
-                            holder.db.saveGalleryImage(imageCachePath, accountId, eventId, model.getId());
-                        }
-                    }
-                });
+        new Handler().postDelayed(new Runnable() {
+            public void run() {
+                //code here
+                String image_posted = AppUtil.validationStringImageIcon(activity, model.getImage_posted(), model.getImage_posted_local(), false);
+                Glide.with(activity)
+                        .load(InputValidUtil.isLinkUrl(image_posted) ? image_posted : new File(image_posted))
+                        .asBitmap()
+                        .error(R.drawable.template_account_og)
+                        .placeholder(R.drawable.ic_action_name)
+                        .diskCacheStrategy(DiskCacheStrategy.NONE)
+                        .skipMemoryCache(true)
+                        .dontAnimate()
+                        .into(new SimpleTarget<Bitmap>() {
+                            @Override
+                            public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+                                if (InputValidUtil.isLinkUrl(image_posted)) {
+                                    Bitmap resizeImageBitmap = PictureUtil.resizeImageBitmap(resource, 360);
+                                    holder.mImg.setImageBitmap(resizeImageBitmap);
+                                } else {
+                                    holder.mImg.setImageBitmap(resource);
+                                }
 
+                                if (NetworkUtil.isConnected(activity) && getItemCount() < 18) {
+                                    String imageCachePath = PictureUtil.saveImageHomeContentImage(activity, resource, model.getId() + "_image", eventId);
+                                    holder.db.saveGalleryImage(imageCachePath, accountId, eventId, model.getId());
+                                }
+                            }
+                        });
+            }
+        }, 2000);
+
+        String image_icon = AppUtil.validationStringImageIcon(activity, model.getImage_icon(), model.getImage_icon_local(), true);
         Glide.with(activity)
                 .load(InputValidUtil.isLinkUrl(image_icon) ? image_icon : new File(image_icon))
                 .asBitmap()
@@ -95,6 +109,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
                         if (NetworkUtil.isConnected(activity)) {
                             String imageCachePath = PictureUtil.saveImageHomeContentIcon(activity, resource, model.getAccount_id() + "_icon_gallery", eventId);
                             holder.db.saveGalleryIcon(imageCachePath, accountId, eventId, model.getId());
+                            model.setImage_icon_local(imageCachePath);
                         }
                     }
                 });

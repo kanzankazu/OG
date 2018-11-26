@@ -39,11 +39,11 @@ public class IntroActivity extends LocalBaseActivity {
             // changing the next button text 'NEXT' / 'GOT IT'
             if (position == layouts.length - 1) {
                 // last page. make button text to GOT IT
-                btnNext.setText(getString(R.string.start));
+                btnNext.setText(getString(R.string.string_start));
                 btnSkip.setVisibility(View.INVISIBLE);
             } else {
                 // still pages are left
-                btnNext.setText(getString(R.string.next));
+                btnNext.setText(getString(R.string.string_next));
                 btnSkip.setVisibility(View.VISIBLE);
             }
         }

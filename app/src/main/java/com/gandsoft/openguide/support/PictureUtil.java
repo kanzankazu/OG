@@ -16,9 +16,10 @@ import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
 import android.util.Base64;
 import android.util.Log;
+import android.view.Gravity;
+import android.widget.Toast;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -500,7 +501,7 @@ public class PictureUtil {
                 OutputStream fileOutputStream = new FileOutputStream(imageFile, false);
                 bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fileOutputStream);
                 fileOutputStream.close();
-                Snackbar.make(activity.findViewById(android.R.id.content), "Save Image Success", Snackbar.LENGTH_SHORT).show();
+                SystemUtil.showToast(activity, "Save Image Success", Toast.LENGTH_SHORT, Gravity.TOP);
             } catch (Exception e) {
                 e.printStackTrace();
             }

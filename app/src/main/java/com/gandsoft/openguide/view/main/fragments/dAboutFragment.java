@@ -18,8 +18,8 @@ import com.gandsoft.openguide.API.APIresponse.Event.EventAbout;
 import com.gandsoft.openguide.API.APIresponse.UserData.UserListEventResponseModel;
 import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
-import com.gandsoft.openguide.database.SQLiteHelper;
 import com.gandsoft.openguide.database.SQLiteHelperMethod;
+import com.gandsoft.openguide.support.AppUtil;
 import com.gandsoft.openguide.support.InputValidUtil;
 import com.gandsoft.openguide.support.NetworkUtil;
 import com.gandsoft.openguide.support.PictureUtil;
@@ -72,16 +72,8 @@ public class dAboutFragment extends Fragment {
         }
 
         UserListEventResponseModel oneListEvent = db.getOneListEvent(eventId, accountId);
-        String logo;
-        String background;
-        if (NetworkUtil.isConnected(getActivity())) {
-            logo = oneListEvent.getLogo();
-            background = oneListEvent.getBackground();
-        } else {
-            logo = oneListEvent.getLogo_local();
-            background = oneListEvent.getBackground_local();
-
-        }
+        String logo = AppUtil.validationStringImageIcon(getActivity(), oneListEvent.getLogo(), oneListEvent.getLogo_local(), true);
+        String background = AppUtil.validationStringImageIcon(getActivity(), oneListEvent.getBackground(), oneListEvent.getBackground_local(), true);
         Glide.with(getActivity())
                 .load(InputValidUtil.isLinkUrl(logo) ? logo : new File(logo))
                 .asBitmap()

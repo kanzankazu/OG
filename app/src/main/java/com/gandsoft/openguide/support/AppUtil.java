@@ -7,12 +7,12 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
+import android.view.Gravity;
+import android.widget.Toast;
 
 import com.gandsoft.openguide.ISeasonConfig;
-import com.gandsoft.openguide.database.SQLiteHelper;
 import com.gandsoft.openguide.database.SQLiteHelperMethod;
 import com.gandsoft.openguide.view.LoginActivity;
 import com.gandsoft.openguide.view.services.RepeatCheckDataService;
@@ -38,17 +38,14 @@ public class AppUtil {
                 .show();
     }
 
-    public static void signOutFull(Activity activity, SQLiteHelperMethod db, boolean showSnackBar, @Nullable String accountId) {
+    public static void signOutFull(Activity activity, SQLiteHelperMethod db, boolean showToast, @Nullable String accountId) {
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         mAuth.signOut();
-        if (showSnackBar) {
-            Snackbar.make(activity.findViewById(android.R.id.content), "Success Sign Out", Snackbar.LENGTH_SHORT).show();
+        if (showToast) {
+            SystemUtil.showToast(activity, "Success Sign Out", Toast.LENGTH_SHORT, Gravity.TOP);
         }
         activity.startActivity(new Intent(activity, LoginActivity.class));
         activity.finishAffinity();
-        //SessionUtil.setBoolPreferences(ISeasonConfig.KEY_IS_HAS_LOGIN, false);
-        //SessionUtil.removeKeyPreferences(ISeasonConfig.KEY_ACCOUNT_ID);
-        //SessionUtil.removeKeyPreferences(ISeasonConfig.KEY_EVENT_ID);
         SessionUtil.removeAllSharedPreferences();
 
         if (!TextUtils.isEmpty(accountId)) {

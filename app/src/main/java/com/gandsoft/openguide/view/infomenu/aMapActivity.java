@@ -17,6 +17,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -32,11 +33,11 @@ import com.bumptech.glide.request.target.SimpleTarget;
 import com.gandsoft.openguide.API.APIresponse.Event.EventPlaceList;
 import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
-import com.gandsoft.openguide.database.SQLiteHelper;
 import com.gandsoft.openguide.database.SQLiteHelperMethod;
 import com.gandsoft.openguide.support.NetworkUtil;
 import com.gandsoft.openguide.support.PictureUtil;
 import com.gandsoft.openguide.support.SessionUtil;
+import com.gandsoft.openguide.support.SystemUtil;
 import com.gandsoft.openguide.view.LocalBaseActivity;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -133,7 +134,7 @@ public class aMapActivity extends LocalBaseActivity implements OnMapReadyCallbac
             rlMapsOfflinefvbi.setVisibility(View.GONE);
         } else {
             if (TextUtils.isEmpty(staticMaps)) {
-                Snackbar.make(findViewById(android.R.id.content), "no internet access", Snackbar.LENGTH_SHORT).show();
+                SystemUtil.showToast(getApplicationContext(), "no internet access", Toast.LENGTH_SHORT, Gravity.TOP);
             } else {
                 Glide.with(getApplicationContext())
                         .load(new File(staticMaps))
@@ -286,7 +287,7 @@ public class aMapActivity extends LocalBaseActivity implements OnMapReadyCallbac
         // cek apakah sudah memiliki permission untuk access fine location
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_COARSE_LOCATION) && ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
-                Toast.makeText(this, "Access dibutuhkan untuk menentukan lokasi anda", Toast.LENGTH_LONG).show();
+                SystemUtil.showToast(this, "Access dibutuhkan untuk menentukan lokasi anda", Toast.LENGTH_LONG, Gravity.TOP);
                 String[] perm = {Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION};
                 ActivityCompat.requestPermissions(this, perm, ALL_PERMISSION);
             } else {
@@ -296,7 +297,7 @@ public class aMapActivity extends LocalBaseActivity implements OnMapReadyCallbac
             }
         } else {
             // permission access fine location didapat
-            // Toast.makeText(MainMapsActivity.this, "Yay, has permission", Toast.LENGTH_SHORT).show();
+            // SystemUtil.showToast(MainMapsActivity.this, "Yay, has permission", Toast.LENGTH_SHORT,Gravity.TOP);
         }
     }
 
@@ -308,12 +309,12 @@ public class aMapActivity extends LocalBaseActivity implements OnMapReadyCallbac
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     // do location thing
                     // access location didapatkan
-                    Toast.makeText(this, "Akses di berikan", Toast.LENGTH_SHORT).show();
+                    SystemUtil.showToast(this, "Akses di berikan", Toast.LENGTH_SHORT, Gravity.TOP);
                     finish();
                     startActivity(getIntent());
                 } else {
                     // access location ditolak user
-                    Toast.makeText(this, "Akses di tolak", Toast.LENGTH_SHORT).show();
+                    SystemUtil.showToast(this, "Akses di tolak", Toast.LENGTH_SHORT, Gravity.TOP);
                     finish();
                 }
         }
@@ -367,16 +368,16 @@ public class aMapActivity extends LocalBaseActivity implements OnMapReadyCallbac
             Nammu.askForPermission(this, Manifest.permission.ACCESS_FINE_LOCATION, new PermissionCallback() {
                 @Override
                 public void permissionGranted() {
-                    Snackbar.make(findViewById(android.R.id.content), "Diberikan Ada akses", Snackbar.LENGTH_LONG).show();
+                    SystemUtil.showToast(getApplicationContext(), "Diberikan Ada akses", Toast.LENGTH_LONG, Gravity.TOP);
                 }
 
                 @Override
                 public void permissionRefused() {
-                    Snackbar.make(findViewById(android.R.id.content), "Tidak Diberikan Ada akses", Snackbar.LENGTH_LONG).show();
+                    SystemUtil.showToast(getApplicationContext(), "Tidak Diberikan Ada akses", Toast.LENGTH_LONG, Gravity.TOP);
                 }
             });
         } else {
-            Snackbar.make(findViewById(android.R.id.content), "Sudah Ada akses", Snackbar.LENGTH_LONG).show();
+            SystemUtil.showToast(getApplicationContext(), "Sudah Ada akses", Toast.LENGTH_LONG, Gravity.TOP);
         }
     }
 }
