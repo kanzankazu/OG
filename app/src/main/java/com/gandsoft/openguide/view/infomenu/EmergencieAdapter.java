@@ -14,17 +14,23 @@ import com.gandsoft.openguide.R;
 import java.util.ArrayList;
 
 public class EmergencieAdapter extends BaseExpandableListAdapter {
-
-    private ArrayList<String> headerItems = new ArrayList<>();
-    private ArrayList<Object> childItems = new ArrayList<>();
-    private ArrayList<String> child = new ArrayList<>();
-    private LayoutInflater inflater;
     private Activity activity;
 
-    public EmergencieAdapter(ArrayList<String> headerItems, ArrayList<Object> childItems) {
+    private ArrayList<String> headerItems;
+    private ArrayList<Object> childItems;
+    private ArrayList<String> child = new ArrayList<>();
+    private LayoutInflater inflater;
 
+    public EmergencieAdapter(ArrayList<String> headerItems, ArrayList<Object> childItems) {
         this.headerItems = headerItems;
         this.childItems = childItems;
+    }
+
+    /**/
+    /**/
+    @Override
+    public Object getGroup(int i) {
+        return null;
     }
 
     @Override
@@ -33,37 +39,13 @@ public class EmergencieAdapter extends BaseExpandableListAdapter {
     }
 
     @Override
-    public int getChildrenCount(int i) {
-        return ((ArrayList<String>) childItems.get(i)).size();
-    }
-
-    @Override
-    public Object getGroup(int i) {
-        return null;
-    }
-
-    @Override
-    public Object getChild(int i, int i1) {
-        return null;
-    }
-
-    @Override
     public long getGroupId(int i) {
         return 0;
     }
 
     @Override
-    public long getChildId(int i, int i1) {
-        return 0;
-    }
-
-    @Override
-    public boolean hasStableIds() {
-        return false;
-    }
-
-    @Override
     public View getGroupView(int i, boolean b, View view, ViewGroup viewGroup) {
+
         if (view == null) {
             view = inflater.inflate(R.layout.layout_list_emergencie_header, null);
         }
@@ -80,6 +62,18 @@ public class EmergencieAdapter extends BaseExpandableListAdapter {
         }
 
         return view;
+    }
+
+    /**/
+    /**/
+    @Override
+    public Object getChild(int i, int i1) {
+        return null;
+    }
+
+    @Override
+    public long getChildId(int i, int i1) {
+        return 0;
     }
 
     @Override
@@ -99,7 +93,19 @@ public class EmergencieAdapter extends BaseExpandableListAdapter {
     }
 
     @Override
+    public int getChildrenCount(int i) {
+        return ((ArrayList<String>) childItems.get(i)).size();
+    }
+
+    /**/
+    /**/
+    @Override
     public boolean isChildSelectable(int i, int i1) {
+        return false;
+    }
+
+    @Override
+    public boolean hasStableIds() {
         return false;
     }
 

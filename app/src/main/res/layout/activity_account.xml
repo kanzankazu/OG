@@ -96,7 +96,7 @@
                 <!--Select Picture-->
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:animateLayoutChanges="true"
                     android:background="@drawable/background_middle"
                     android:backgroundTint="@color/white"
@@ -110,21 +110,19 @@
                         android:text="PICTURE PROFILE"
                         android:textColor="@color/colorAccent" />
 
-
                     <LinearLayout
                         android:id="@+id/llWrapPic"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:animateLayoutChanges="true"
-                        android:gravity="center"
-                        android:visibility="gone"
+                        android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
-                        android:orientation="vertical">
+                        android:gravity="center"
+                        android:animateLayoutChanges="true"
+                        android:orientation="vertical"
+                        android:visibility="visible">
 
                         <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-
                             android:animateLayoutChanges="true"
                             android:background="@color/colorPrimary"
                             android:gravity="center"
@@ -133,14 +131,15 @@
 
                             <ImageView
                                 android:id="@+id/ivWrapPic"
-                                android:layout_width="match_parent"
+                                android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:scaleType="centerInside"
-                                android:src="@drawable/template_account_og" />
+                                android:scaleType="fitCenter"
+                                android:adjustViewBounds="true"
+                                android:src="@drawable/template_account_og"
+                                android:visibility="visible" />
                         </LinearLayout>
 
                     </LinearLayout>
-
 
                     <LinearLayout
                         android:id="@+id/llAccPic"
@@ -251,7 +250,6 @@
                         android:textColor="@color/colorPrimary"
                         android:textSize="12dp" />
 
-
                 </LinearLayout>
 
                 <!--Borderspace-->
@@ -317,7 +315,6 @@
                         android:textAllCaps="true"
                         android:textColor="@color/colorAccent" />
 
-
                     <LinearLayout
                         android:id="@+id/llAccBirthdate"
                         android:layout_width="match_parent"
@@ -379,7 +376,6 @@
 
                     </LinearLayout>
 
-
                 </LinearLayout>
 
                 <!--Borderspace-->
@@ -429,7 +425,6 @@
 
                     </android.support.v7.widget.CardView>
 
-
                 </LinearLayout>
 
                 <!--Save Button-->
@@ -476,6 +471,5 @@
         android:layout_height="0dp"
         android:layout_alignParentBottom="true"
         android:background="@android:color/black" />
-
 
 </RelativeLayout>

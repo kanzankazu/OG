@@ -1,15 +1,17 @@
 package com.gandsoft.openguide.database;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import com.gandsoft.openguide.support.SessionUtil;
 
 public class SQLiteHelper extends SQLiteOpenHelper {
     // Databases information
     public static final String DB_NM = "openguides.db";
-    public static final int DB_VER = 11;
+    public static final int DB_VER = 12;
 
     public static String TableGlobalData = "tabGlobalData";
     private static final String query_delete_table_GlobalData = "DROP TABLE IF EXISTS " + TableGlobalData;

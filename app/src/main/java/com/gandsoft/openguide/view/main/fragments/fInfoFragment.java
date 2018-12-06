@@ -58,7 +58,7 @@ import static com.gandsoft.openguide.database.SQLiteHelper.TableContactList;
 import static com.gandsoft.openguide.database.SQLiteHelper.TableEmergencie;
 import static com.gandsoft.openguide.database.SQLiteHelper.TableImportantInfoNew;
 
-public class eInfoFragment extends Fragment implements InfoListViewAdapter.ListAdapterListener {
+public class fInfoFragment extends Fragment implements InfoListViewAdapter.ListAdapterListener {
     private static final int REQ_CODE_INBOX = 123;
     private static final int REQ_CODE_ACCOUNT = 1234;
     private static final int ID_NOTIF = 0;
@@ -100,7 +100,7 @@ public class eInfoFragment extends Fragment implements InfoListViewAdapter.ListA
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         db = new SQLiteHelperMethod(getActivity());
-        View view = inflater.inflate(R.layout.fragment_e_info, container, false);
+        View view = inflater.inflate(R.layout.fragment_f_info, container, false);
 
         accountId = SessionUtil.getStringPreferences(ISeasonConfig.KEY_ACCOUNT_ID, null);
         eventId = SessionUtil.getStringPreferences(ISeasonConfig.KEY_EVENT_ID, null);

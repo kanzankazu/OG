@@ -12,14 +12,18 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ExpandableListView;
 
+import com.gandsoft.openguide.API.APIresponse.Event.EventImportanInfo;
 import com.gandsoft.openguide.API.APIresponse.Event.EventImportanInfoNew;
 import com.gandsoft.openguide.ISeasonConfig;
 import com.gandsoft.openguide.R;
 import com.gandsoft.openguide.database.SQLiteHelperMethod;
+import com.gandsoft.openguide.model.BaseExpandableListModel;
+import com.gandsoft.openguide.model.SubBaseExpanderListModel;
 import com.gandsoft.openguide.support.SessionUtil;
-import com.gandsoft.openguide.view.infomenu.adapter.PracticalInfoAdapter;
+import com.gandsoft.openguide.view.infomenu.adapter.PracticalInfoAdapterOld;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class fPracticalInfoActivity extends AppCompatActivity {
     SQLiteHelperMethod db = new SQLiteHelperMethod(this);
@@ -30,7 +34,7 @@ public class fPracticalInfoActivity extends AppCompatActivity {
 
     private String accountId, eventId;
     private ArrayList<EventImportanInfoNew> parentItems = new ArrayList<EventImportanInfoNew>();
-    private ArrayList<EventImportanInfoNew> childItems = new ArrayList<>();
+    //private ArrayList<EventImportanInfoNew> childItems = new ArrayList<>();
 
     private int lastExpandedPosition = -1;
 
@@ -62,7 +66,7 @@ public class fPracticalInfoActivity extends AppCompatActivity {
         ab = getSupportActionBar();
         ab.setTitle("Practical Information");
 
-        ArrayList<EventImportanInfoNew> models = db.getImportanInfoNew(eventId);
+        /*ArrayList<EventImportanInfoNew> models = db.getImportanInfoNew(eventId);
         if (models != null) {
             for (int i = 0; i < models.size(); i++) {
                 EventImportanInfoNew model = models.get(i);
@@ -72,9 +76,28 @@ public class fPracticalInfoActivity extends AppCompatActivity {
                 model2.setDetail(db.getImportanInfoNewDetail(eventId, model.getTitle()));
                 parentItems.add(model2);
             }
+        }*/
+
+        ArrayList<EventImportanInfo> models = db.getImportanInfo(eventId);
+        List<BaseExpandableListModel> headerItems = new ArrayList<>();
+        if (models != null) {
+            for (int i = 0; i < models.size(); i++) {
+                EventImportanInfo model = models.get(i);
+                BaseExpandableListModel expandableListModel = new BaseExpandableListModel();
+                List<SubBaseExpanderListModel> listModels = new ArrayList<>();
+
+                SubBaseExpanderListModel q = new SubBaseExpanderListModel();
+                q.setInfo(model.getInfo());
+                listModels.add(q);
+
+                expandableListModel.setTitle(model.getTitle());
+                expandableListModel.setDetail(listModels);
+                headerItems.add(expandableListModel);
+            }
         }
 
-        PracticalInfoAdapter adapter = new PracticalInfoAdapter(fPracticalInfoActivity.this, parentItems, accountId, eventId);
+        //PracticalInfoAdapter adapter = new PracticalInfoAdapter(fPracticalInfoActivity.this, parentItems, accountId, eventId);
+        PracticalInfoAdapterOld adapter = new PracticalInfoAdapterOld(fPracticalInfoActivity.this, headerItems);
         adapter.setInflater((LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE), this);
         expandableList.setDividerHeight(2);
         expandableList.setGroupIndicator(null);

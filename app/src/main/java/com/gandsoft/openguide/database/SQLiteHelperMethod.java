@@ -736,7 +736,7 @@ public class SQLiteHelperMethod extends SQLiteHelper {
         contentValues.put(Key_Area_EventId, eventId);
         contentValues.put(Key_Area_Title, model.getTitle());
         contentValues.put(Key_Area_Description, model.getDescription());
-        db.update(TableArea, contentValues, Key_Area_EventId + " = ? " + Key_Area_Description + " = ? ", new String[]{eventId, model.getDescription()});
+        db.update(TableArea, contentValues, Key_Area_EventId + " = ? and " + Key_Area_Description + " = ? ", new String[]{eventId, model.getDescription()});
         db.close();
     }
 
@@ -1705,7 +1705,6 @@ public class SQLiteHelperMethod extends SQLiteHelper {
     }
 
     public void saveUserPicture(String pathImage, String accountId) {
-
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(KEY_UserData_imageUrl_local, pathImage);
@@ -1770,6 +1769,10 @@ public class SQLiteHelperMethod extends SQLiteHelper {
     }
 
     public void saveSurroundAreaImage(String imageCachePath, String accountId, String eventId, String titleImage) {
+        Log.d("Lihat", "saveSurroundAreaImage SQLiteHelperMethod : " + imageCachePath);
+        Log.d("Lihat", "saveSurroundAreaImage SQLiteHelperMethod : " + accountId);
+        Log.d("Lihat", "saveSurroundAreaImage SQLiteHelperMethod : " + eventId);
+        Log.d("Lihat", "saveSurroundAreaImage SQLiteHelperMethod : " + titleImage);
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(Key_AreaNew_Name_image_local, imageCachePath);

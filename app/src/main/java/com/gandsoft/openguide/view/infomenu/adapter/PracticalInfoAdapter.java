@@ -77,7 +77,7 @@ public class PracticalInfoAdapter extends BaseExpandableListAdapter {
         EventImportanInfoNew model = (EventImportanInfoNew) getGroup(groupPosition);
 
         ImageView ivPracticalInfoHeader = (ImageView) convertView.findViewById(R.id.ivPracticalInfoHeader);
-        TextView ctvPracticalInfoHeader = (TextView) convertView.findViewById(R.id.ctvPracticalInfoHeader);
+        TextView ctvPracticalInfoHeader = (TextView) convertView.findViewById(R.id.tvPracticalInfoHeader);
 
         ctvPracticalInfoHeader.setText(model.getTitle());
         if (isExpanded) {

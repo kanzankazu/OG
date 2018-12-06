@@ -3,7 +3,6 @@ package com.gandsoft.openguide.view.main.fragments;
 import android.Manifest;
 import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -14,12 +13,14 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.FileProvider;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
@@ -137,7 +138,6 @@ public class aHomeFragment extends Fragment {
     private boolean last_data = false;
     private String formattedDate;
     private String formattedDateGMT;
-    private Uri imageUri;
     private boolean isNew;
     private String newPostImgPath;
     private boolean newPostImgExists;
@@ -150,6 +150,8 @@ public class aHomeFragment extends Fragment {
     private GpsStatus gpsStatus;
     private boolean isTesting;
     private boolean isNoMoreShow = false;
+    private String imageFilePath;
+    private Uri imageUri;
 
     public aHomeFragment() {
     }
@@ -393,14 +395,45 @@ public class aHomeFragment extends Fragment {
     }
 
     private void openCamera() {
-        ContentValues values = new ContentValues();
-        values.put(MediaStore.Images.Media.TITLE, "New Picture");
-        values.put(MediaStore.Images.Media.DESCRIPTION, "From your Camera");
-        imageUri = getActivity().getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
-        Log.d("Lihat", "openCamera aHomeFragment : " + imageUri);
-        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE_SECURE);
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-        startActivityForResult(intent, REQ_CODE_TAKE_PHOTO_INTENT_ID_STANDART);
+        if (!TextUtils.isEmpty(imageFilePath)) {
+            File file = new File(imageFilePath);
+            if (file.exists()) {
+                file.delete();
+            }
+        }
+
+        String date = DateTimeUtil.dateToString(DateTimeUtil.currentDate(), new SimpleDateFormat("ddMMyy_HHmmss"));
+        imageFilePath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/picture_" + date + ".jpg";
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
+            imageUri = Uri.fromFile(new File(imageFilePath));
+            //imageUri = FileProvider.getUriForFile(getActivity(), "com.gandsoft.openguide", new File(imageFilePath));
+            Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+            cameraIntent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, imageUri);
+            startActivityForResult(cameraIntent, REQ_CODE_TAKE_PHOTO_INTENT_ID_STANDART);
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            imageUri = FileProvider.getUriForFile(getActivity(), "com.gandsoft.openguide", new File(imageFilePath));
+            Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            cameraIntent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+            startActivityForResult(cameraIntent, REQ_CODE_TAKE_PHOTO_INTENT_ID_STANDART);
+        } else {
+            //OLD
+            /*ContentValues values = new ContentValues();
+            values.put(MediaStore.Images.Media.TITLE, "picture");
+            values.put(MediaStore.Images.Media.DESCRIPTION, "From your Camera");
+            imageUri = getActivity().getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE_SECURE);
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+            startActivityForResult(intent, REQ_CODE_TAKE_PHOTO_INTENT_ID_STANDART);*/
+
+            imageUri = FileProvider.getUriForFile(getActivity(), "com.gandsoft.openguide", new File(imageFilePath));
+            Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            cameraIntent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+            startActivityForResult(cameraIntent, REQ_CODE_TAKE_PHOTO_INTENT_ID_STANDART);
+
+        }
+
     }
 
     private void updateEventInfo() {
@@ -1044,28 +1077,12 @@ public class aHomeFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        /*if (requestCode == 1 && resultCode == RESULT_OK && null != data) {
-            Bitmap thumbnail = null;
-            try {
-                thumbnail = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), imageUri);
-                String imageurl = String.valueOf(imageUri);
-                Log.d("image uri ", imageurl);
-                createDirectoryAndSaveFile(thumbnail, "temp.jpg");
-
-                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-                thumbnail.compress(Bitmap.CompressFormat.PNG, 10, byteArrayOutputStream);
-                byte[] byteArray = byteArrayOutputStream.toByteArray();
-
-                base64pic = Base64.encodeToString(byteArray, Base64.DEFAULT);
-                Log.d("bes64 ", base64pic);
-                startActivity(new Intent(getActivity(), aHomePostImageCaptionActivity.class).putExtra("base64", base64pic));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        } else if (requestCode == 2 && resultCode == RESULT_OK) {
-            onSelectGallery(data);
-        } else */
-        if (requestCode == REQ_CODE_POST_IMAGE) {
+        if (requestCode == REQ_CODE_TAKE_PHOTO_INTENT_ID_STANDART && resultCode == Activity.RESULT_OK) {
+            //OLD
+            //String imagePath = PictureUtil.getImagePathFromUri(getActivity(), imageUri);
+            Uri imageUri1 = Uri.parse(imageFilePath);
+            moveToAHomePostImage(imageUri1.getPath());
+        } else if (requestCode == REQ_CODE_POST_IMAGE) {
             if (resultCode == RESULT_OK) {
                 String contentPic;
                 if (data.hasExtra(ISeasonConfig.INTENT_PARAM) && data.hasExtra(ISeasonConfig.INTENT_PARAM2)) {
@@ -1092,9 +1109,6 @@ public class aHomeFragment extends Fragment {
                             });
                 }
             }
-        } else if (requestCode == REQ_CODE_TAKE_PHOTO_INTENT_ID_STANDART && resultCode == Activity.RESULT_OK) {
-            String imageurl = PictureUtil.getImagePathFromUri(getActivity(), imageUri);
-            moveToAHomePostImage(imageurl);
         } else if (requestCode == REQ_CODE_COMMENT && resultCode == Activity.RESULT_OK && NetworkUtil.isConnected(getActivity())) {
             int position = data.getIntExtra(ISeasonConfig.INTENT_PARAM, 0);
             String totalComment = data.getStringExtra(ISeasonConfig.INTENT_PARAM2);

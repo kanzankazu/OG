@@ -13,6 +13,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.text.InputFilter;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.animation.Animation;
@@ -27,7 +28,12 @@ import com.gandsoft.openguide.R;
 import com.google.android.gms.auth.GoogleAuthUtil;
 import com.google.android.gms.common.AccountPicker;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class SystemUtil {
 
@@ -227,5 +233,48 @@ public class SystemUtil {
         }
         toast.show();
 
+    }
+
+    public static Map<String, List<Integer>> findFirstWordsInString(String[] words, String phrase) {
+        Map<String, List<Integer>> dest = new HashMap<>();
+
+        for (String word : words) {
+            Log.d("Lihat", "findFirstWordsInString SystemUtil : " + word);
+            List<Integer> locations = new ArrayList<>();
+
+            for (int loc = -1; (loc = phrase.indexOf(word, loc + 1)) != -1; ) {
+                locations.add(loc);
+            }
+
+            dest.put(word, locations);
+        }
+
+        return dest;
+    }
+
+    public static Map<String, List<Integer>> findLastWordsInString(String[] words, String phrase) {
+        Map<String, List<Integer>> dest = new HashMap<>();
+
+        for (String word : words) {
+            List<Integer> locations = new ArrayList<>();
+
+            for (int loc = -1; (loc = phrase.lastIndexOf(word, loc + 1)) != -1; ) {
+                locations.add(loc);
+            }
+
+            dest.put(word, locations);
+        }
+
+        return dest;
+    }
+
+    public static List<String> getTagValues(final String str, String regex) {
+        final Pattern TAG_REGEX = Pattern.compile(regex, Pattern.DOTALL);
+        final List<String> tagValues = new ArrayList<String>();
+        final Matcher matcher = TAG_REGEX.matcher(str);
+        while (matcher.find()) {
+            tagValues.add(matcher.group(1));
+        }
+        return tagValues;
     }
 }

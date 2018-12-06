@@ -31,8 +31,7 @@
         android:layout_above="@+id/llbottom"
         android:layout_below="@id/appbar"
         android:layout_gravity="center"
-        android:scaleType="fitCenter"
-        app:srcCompat="@drawable/template_account_og" />
+        android:scaleType="fitCenter" />
 
     <View
         android:layout_width="match_parent"

@@ -13,8 +13,6 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY" />
 
-
-
     <application
         android:name=".App"
         android:allowBackup="true"
@@ -23,7 +21,6 @@
         android:largeHeap="true"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="com.gandsoft.openguide"
@@ -31,7 +28,7 @@
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/provider_path"/>
+                android:resource="@xml/provider_path" />
         </provider>
 
         <meta-data
@@ -62,6 +59,21 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!---->
+        <activity android:name="com.soundcloud.android.crop.CropImageActivity" />
+
+        <service
+            android:name=".view.services.RepeatCheckDataService"
+            android:enabled="true"
+            android:exported="true" />
+        <service
+            android:name=".view.services.ClearTaskDetectService"
+            android:enabled="true"
+            android:exported="true"
+            android:stopWithTask="false" />
+        <!---->
+
         <activity
             android:name=".view.IntroActivity"
             android:configChanges="orientation|screenSize"
@@ -148,18 +160,26 @@
             android:configChanges="orientation|screenSize"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
-
-        <service
-            android:name=".view.services.RepeatCheckDataService"
-            android:enabled="true"
-            android:exported="true" />
-        <service
-            android:name=".view.services.ClearTaskDetectService"
-            android:enabled="true"
-            android:exported="true"
-            android:stopWithTask="false" />
-
-        <activity android:name="com.soundcloud.android.crop.CropImageActivity" />
+        <activity
+            android:name=".view.main.fragments.eChatActivity.ChatGroupAddActivity"
+            android:configChanges="orientation|screenSize"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".view.main.fragments.eChatActivity.ChatContactAddActivity"
+            android:configChanges="orientation|screenSize"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".view.main.fragments.eChatActivity.ChatGroupDetailActivity"
+            android:configChanges="orientation|screenSize"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".view.main.fragments.eChatActivity.ChatContactDetailActivity"
+            android:configChanges="orientation|screenSize"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
 </manifest>

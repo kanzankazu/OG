@@ -8,6 +8,7 @@
 
     <color name="colorPrimaryText">#212121</color>
     <color name="colorSecondaryText">#727272</color>
+    <color name="colorLoadingog">#B6B9C6</color>
 
     <color name="androidRed">#d86858</color>
     <color name="super_red">#ff2929</color>

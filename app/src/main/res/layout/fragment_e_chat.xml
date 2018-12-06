@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical">
+
+    <android.support.v4.widget.NestedScrollView
+        android:id="@+id/nsvChatMain"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:animateLayoutChanges="true"
+            android:orientation="vertical"
+            android:padding="10dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Chat Group"
+                android:textColor="@color/colorPrimary"
+                android:textStyle="bold" />
+
+            <android.support.v7.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                app:cardBackgroundColor="@color/colorPrimary"
+                app:cardCornerRadius="5dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:animateLayoutChanges="true"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_margin="5dp"
+                        android:layout_weight="1"
+                        android:gravity="center|left"
+                        android:text="Add New Group"
+                        android:textColor="@color/white" />
+
+                    <ImageButton
+                        android:id="@+id/ibChatMainAddGroup"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_margin="5dp"
+                        android:background="@drawable/background_circle"
+                        android:backgroundTint="@color/white"
+                        android:src="@drawable/ic_plus_white"
+                        android:tint="@color/colorPrimary" />
+                </LinearLayout>
+
+            </android.support.v7.widget.CardView>
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/rvChatMainGroup"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:listitem="@layout/layout_list_chat_group"
+                android:layout_marginTop="10dp"/>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="10dp"
+                android:background="@android:color/darker_gray" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="Chat Contact"
+                android:textColor="@color/colorPrimary"
+                android:textStyle="bold" />
+
+            <android.support.v7.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                app:cardBackgroundColor="@color/colorPrimary"
+                app:cardCornerRadius="5dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:animateLayoutChanges="true"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_margin="5dp"
+                        android:layout_weight="1"
+                        android:gravity="center|left"
+                        android:text="New Chat"
+                        android:textColor="@color/white" />
+
+                    <ImageButton
+                        android:id="@+id/ibChatMainAddContact"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_margin="5dp"
+                        android:background="@drawable/background_circle"
+                        android:backgroundTint="@color/white"
+                        android:src="@drawable/ic_plus_white"
+                        android:tint="@color/colorPrimary" />
+                </LinearLayout>
+
+            </android.support.v7.widget.CardView>
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/rvChatMainContact"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:listitem="@layout/layout_list_chat_contact"
+                android:layout_marginTop="10dp" />
+        </LinearLayout>
+    </android.support.v4.widget.NestedScrollView>
+
+</LinearLayout>

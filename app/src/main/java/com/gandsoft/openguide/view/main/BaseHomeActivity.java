@@ -74,7 +74,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class BaseHomeActivity extends AppCompatActivity {
-    static final int NUM_ITEMS = 5;
+    static final int NUM_ITEMS = 6;
     private static final int REQ_CODE_INBOX = 123;
     SQLiteHelperMethod db = new SQLiteHelperMethod(this);
     HomeWatcher mHomeWatcher = new HomeWatcher(this);
@@ -85,8 +85,8 @@ public class BaseHomeActivity extends AppCompatActivity {
     private ViewPager vpBHA;
     private TextView tvBHAinfo;
 
-    private String[] titleTab = new String[]{"Home", "Wallet", "Schedule", "About the Event", "Important Information"};
-    private int[] iconTab = new int[]{R.drawable.ic_tab_home, R.drawable.ic_tab_wallet, R.drawable.ic_tab_schedule, R.drawable.ic_tab_about, R.drawable.ic_tab_info};
+    private String[] titleTab = new String[]{"Home", "Wallet", "Schedule", "About the Event", "Chat", "Important Information"};
+    private int[] iconTab = new int[]{R.drawable.ic_tab_home, R.drawable.ic_tab_wallet, R.drawable.ic_tab_schedule, R.drawable.ic_tab_about, R.drawable.ic_chat, R.drawable.ic_tab_info};
     private SlidePagerAdapter mPagerAdapter;
     private String accountId, eventId;
     private boolean doubleBackToExitPressedOnce;
@@ -232,20 +232,10 @@ public class BaseHomeActivity extends AppCompatActivity {
                 tlBHA.getTabAt(i).getIcon().setColorFilter(tabIconColorUnSelect, PorterDuff.Mode.SRC_IN);
             }
         }
-        /*tlBHA.addTab(tlBHA.newTab().setIcon(R.drawable.ic_tab_home));
-        tlBHA.addTab(tlBHA.newTab().setIcon(R.drawable.ic_tab_wallet));
-        tlBHA.addTab(tlBHA.newTab().setIcon(R.drawable.ic_tab_schedule));
-        tlBHA.addTab(tlBHA.newTab().setIcon(R.drawable.ic_tab_about));
-        tlBHA.addTab(tlBHA.newTab().setIcon(R.drawable.ic_tab_info));
-        tlBHA.getTabAt(0).getIcon().setColorFilter(tabIconColorSelect, PorterDuff.Mode.SRC_IN);
-        tlBHA.getTabAt(1).getIcon().setColorFilter(tabIconColorUnSelect, PorterDuff.Mode.SRC_IN);
-        tlBHA.getTabAt(2).getIcon().setColorFilter(tabIconColorUnSelect, PorterDuff.Mode.SRC_IN);
-        tlBHA.getTabAt(3).getIcon().setColorFilter(tabIconColorUnSelect, PorterDuff.Mode.SRC_IN);
-        tlBHA.getTabAt(4).getIcon().setColorFilter(tabIconColorUnSelect, PorterDuff.Mode.SRC_IN);*/
         tlBHA.setTabGravity(TabLayout.GRAVITY_FILL);
         tlBHA.setEnabled(false);
 
-        mPagerAdapter = new SlidePagerAdapter(getSupportFragmentManager(), tlBHA.getTabCount());
+        mPagerAdapter = new SlidePagerAdapter(getSupportFragmentManager(),titleTab.length);
         vpBHA.setAdapter(mPagerAdapter);
         vpBHA.setOffscreenPageLimit(5);
         vpBHA.setCurrentItem(0);

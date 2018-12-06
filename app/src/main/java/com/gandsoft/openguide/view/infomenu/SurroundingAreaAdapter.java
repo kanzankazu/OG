@@ -31,6 +31,7 @@ import com.gandsoft.openguide.support.AppUtil;
 import com.gandsoft.openguide.support.InputValidUtil;
 import com.gandsoft.openguide.support.NetworkUtil;
 import com.gandsoft.openguide.support.PictureUtil;
+import com.github.chrisbanes.photoview.PhotoView;
 
 import org.sufficientlysecure.htmltextview.HtmlTextView;
 
@@ -40,17 +41,18 @@ import java.util.ArrayList;
 public class SurroundingAreaAdapter extends BaseExpandableListAdapter {
     private final String eventId;
     private final String accountId;
+    private final SQLiteHelperMethod db;
     private ArrayList<EventSurroundingAreaNew> parentItems = new ArrayList<>();
     private LayoutInflater inflater;
     private Activity activity;
-
-    SQLiteHelperMethod db = new SQLiteHelperMethod(activity);
 
     public SurroundingAreaAdapter(Activity activity, ArrayList<EventSurroundingAreaNew> parentItems, String eventId, String accountId) {
         this.activity = activity;
         this.parentItems = parentItems;
         this.eventId = eventId;
         this.accountId = accountId;
+
+        db = new SQLiteHelperMethod(activity);
     }
 
     /**/
@@ -134,16 +136,16 @@ public class SurroundingAreaAdapter extends BaseExpandableListAdapter {
                 .load(InputValidUtil.isLinkUrl(stringImageIcon) ? stringImageIcon : new File(stringImageIcon))
                 .asBitmap()
                 .error(R.drawable.template_account_og)
-                .placeholder(R.drawable.ic_action_name)
                 .diskCacheStrategy(DiskCacheStrategy.NONE)
                 .skipMemoryCache(false)
                 .dontAnimate()
+                .fitCenter()
                 .into(new SimpleTarget<Bitmap>() {
                     @Override
                     public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
                         ivSurroundAreaChildfvbi.setImageBitmap(resource);
                         if (NetworkUtil.isConnected(activity)) {
-                            String imageCachePath = PictureUtil.saveImageLogoBackIcon(activity, resource, "SurroundArea" + model.getTitle_image() + eventId);
+                            String imageCachePath = PictureUtil.saveImageLogoBackIcon(activity, resource, "SurroundArea_" + model.getTitle_image().replace(" ", "_") + eventId);
                             db.saveSurroundAreaImage(imageCachePath, accountId, eventId, model.getTitle_image());
                         }
                     }

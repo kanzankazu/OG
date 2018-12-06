@@ -53,15 +53,13 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
     public void onBindViewHolder(@NonNull GalleryAdapter.ViewHolder holder, int position) {
         HomeContentResponseModel model = models.get(position);
 
+        holder.gallery_img_loading.setVisibility(View.VISIBLE);
+        holder.gallery_img_fvbi.setVisibility(View.GONE);
+
         Glide.with(activity)
-                .load(R.drawable.load)
+                .load(R.drawable.loading_og)
                 .asGif()
-                .centerCrop()
-                .crossFade()
-                .diskCacheStrategy(DiskCacheStrategy.NONE)
-                .skipMemoryCache(false)
-                .dontAnimate()
-                .into(holder.mImg);
+                .into(holder.gallery_img_loading);
 
         new Handler().postDelayed(new Runnable() {
             public void run() {
@@ -78,11 +76,15 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
                         .into(new SimpleTarget<Bitmap>() {
                             @Override
                             public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+
+                                holder.gallery_img_loading.setVisibility(View.GONE);
+                                holder.gallery_img_fvbi.setVisibility(View.VISIBLE);
+
                                 if (InputValidUtil.isLinkUrl(image_posted)) {
-                                    Bitmap resizeImageBitmap = PictureUtil.resizeImageBitmap(resource, 360);
-                                    holder.mImg.setImageBitmap(resizeImageBitmap);
+                                    Bitmap resizeImageBitmap = PictureUtil.resizeImageBitmap(resource, 270);
+                                    holder.gallery_img_fvbi.setImageBitmap(resizeImageBitmap);
                                 } else {
-                                    holder.mImg.setImageBitmap(resource);
+                                    holder.gallery_img_fvbi.setImageBitmap(resource);
                                 }
 
                                 if (NetworkUtil.isConnected(activity) && getItemCount() < 18) {
@@ -114,7 +116,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
                     }
                 });
 
-        holder.mImg.setOnClickListener(new View.OnClickListener() {
+        holder.gallery_img_fvbi.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 galleryAdapterListener.onDetailClick(position);
@@ -147,12 +149,14 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        private final ImageView mImg;
+        private final ImageView gallery_img_fvbi;
+        private final ImageView gallery_img_loading;
         SQLiteHelperMethod db = new SQLiteHelperMethod(itemView.getContext());
 
         public ViewHolder(View itemView) {
             super(itemView);
-            mImg = (ImageView) itemView.findViewById(R.id.item_img);
+            gallery_img_fvbi = (ImageView) itemView.findViewById(R.id.gallery_img);
+            gallery_img_loading = (ImageView) itemView.findViewById(R.id.gallery_img_loading);
         }
     }
 }

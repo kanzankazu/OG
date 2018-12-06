@@ -180,12 +180,9 @@ public class GalleryDetailActivity extends AppCompatActivity {
         tvDetailGalleryCaptionfvbi.setText(model.getCaption());
 
         Glide.with(getApplicationContext())
-                .load(R.drawable.load)
+                .load(R.drawable.loading_og)
                 .asGif()
-                .crossFade()
-                .diskCacheStrategy(DiskCacheStrategy.NONE)
-                .skipMemoryCache(false)
-                .dontAnimate()
+                .override(180, 180)
                 .into(ivDetailGalleryIconfvbi);
 
         new Handler().postDelayed(new Runnable() {

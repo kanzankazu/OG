@@ -69,12 +69,9 @@ class HomeContentCommentAdapter extends RecyclerView.Adapter<HomeContentCommentA
         holder.tvRVCommentTimefvbi.setText(DateTimeUtil.getTimeAgo(DateTimeUtil.stringToDate(model.getPost_time(), new SimpleDateFormat("yyyy/MM/dd HH:mm:ss"))));
 
         Glide.with(activity)
-                .load(R.drawable.load)
+                .load(R.drawable.loading_og)
                 .asGif()
-                .crossFade()
-                .diskCacheStrategy(DiskCacheStrategy.NONE)
-                .skipMemoryCache(false)
-                .dontAnimate()
+                .override(180, 180)
                 .into(holder.ivRVCommentIconfvbi);
 
         new Handler().postDelayed(new Runnable() {

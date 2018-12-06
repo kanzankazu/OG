@@ -23,10 +23,14 @@ import android.widget.Toast;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class PictureUtil {
 
@@ -194,6 +198,58 @@ public class PictureUtil {
         return temp;
     }
 
+    public static Bitmap rotateBitmap(String src) {
+        Bitmap bitmap = BitmapFactory.decodeFile(src);
+        try {
+            ExifInterface exif = new ExifInterface(src);
+            int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
+
+            Matrix matrix = new Matrix();
+            switch (orientation) {
+                case ExifInterface.ORIENTATION_FLIP_HORIZONTAL:
+                    matrix.setScale(-1, 1);
+                    break;
+                case ExifInterface.ORIENTATION_ROTATE_180:
+                    matrix.setRotate(180);
+                    break;
+                case ExifInterface.ORIENTATION_FLIP_VERTICAL:
+                    matrix.setRotate(180);
+                    matrix.postScale(-1, 1);
+                    break;
+                case ExifInterface.ORIENTATION_TRANSPOSE:
+                    matrix.setRotate(90);
+                    matrix.postScale(-1, 1);
+                    break;
+                case ExifInterface.ORIENTATION_ROTATE_90:
+                    matrix.setRotate(90);
+                    break;
+                case ExifInterface.ORIENTATION_TRANSVERSE:
+                    matrix.setRotate(-90);
+                    matrix.postScale(-1, 1);
+                    break;
+                case ExifInterface.ORIENTATION_ROTATE_270:
+                    matrix.setRotate(-90);
+                    break;
+                case ExifInterface.ORIENTATION_NORMAL:
+                case ExifInterface.ORIENTATION_UNDEFINED:
+                default:
+                    return bitmap;
+            }
+
+            try {
+                Bitmap oriented = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+                bitmap.recycle();
+                return oriented;
+            } catch (OutOfMemoryError e) {
+                e.printStackTrace();
+                return bitmap;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return bitmap;
+    }
+
     public static String getImagePathFromUri(Activity activity, Uri uri) {
         String[] projection = {MediaStore.Images.Media.DATA};
 
@@ -222,6 +278,19 @@ public class PictureUtil {
     public static Bitmap getImageBitmapFromPathFile(String imagePath) {
         BitmapFactory.Options bmOptions = new BitmapFactory.Options();
         Bitmap bitmap = BitmapFactory.decodeFile(imagePath, bmOptions);
+        return bitmap;
+    }
+
+    public static Bitmap getImageBitmapFromPathFile1(String mCurrentPhotoPath) {
+        Bitmap bitmap;
+        Uri imageUri = Uri.parse(mCurrentPhotoPath);
+        File file = new File(imageUri.getPath());
+        try {
+            InputStream ims = new FileInputStream(file);
+            bitmap = BitmapFactory.decodeStream(ims);
+        } catch (FileNotFoundException e) {
+            return null;
+        }
         return bitmap;
     }
 
@@ -526,5 +595,17 @@ public class PictureUtil {
     public static boolean isFileExists(String path) {
         File file = new File(path);
         return file.exists();
+    }
+
+    private File createImageFile() throws IOException {
+        // Create an image file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM), "Camera");
+        File image = File.createTempFile(imageFileName, ".jpg", storageDir);
+
+        // Save a file: path for use with ACTION_VIEW intents
+        String mCurrentPhotoPath = "file:" + image.getAbsolutePath();
+        return image;
     }
 }

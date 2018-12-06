@@ -8,7 +8,8 @@ import com.gandsoft.openguide.view.main.fragments.aHomeFragment;
 import com.gandsoft.openguide.view.main.fragments.bWalletFragment;
 import com.gandsoft.openguide.view.main.fragments.cScheduleFragment;
 import com.gandsoft.openguide.view.main.fragments.dAboutFragment;
-import com.gandsoft.openguide.view.main.fragments.eInfoFragment;
+import com.gandsoft.openguide.view.main.fragments.eChatFragment;
+import com.gandsoft.openguide.view.main.fragments.fInfoFragment;
 
 import static com.gandsoft.openguide.view.main.BaseHomeActivity.NUM_ITEMS;
 
@@ -32,13 +33,15 @@ public class SlidePagerAdapter extends FragmentStatePagerAdapter {
         } else if (position == 3) {
             return new dAboutFragment();
         } else if (position == 4) {
-            return new eInfoFragment();
+            return new eChatFragment();
+        }else if (position == 5) {
+            return new fInfoFragment();
         }
         return null;
     }
 
     @Override
     public int getCount() {
-        return NUM_ITEMS;
+        return mNumOfTabs;
     }
 }

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".view.main.fragments.eChatActivity.ChatGroupAddActivity">
+
+    <View
+        android:id="@+id/focus_thief"
+        android:layout_width="1dp"
+        android:layout_height="1dp"
+        android:focusable="true"
+        android:focusableInTouchMode="true" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:animateLayoutChanges="true"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/ibChatGroupAddBack"
+            android:layout_width="?attr/actionBarSize"
+            android:layout_height="match_parent"
+            android:background="?android:selectableItemBackground"
+            android:src="@drawable/ic_arrow_back"
+            android:tint="@color/colorPrimary" />
+
+        <EditText
+            android:id="@+id/etChatGroupAddName"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@null"
+            android:hint="Group Name"
+            android:textColor="@color/colorPrimary" />
+
+        <ImageButton
+            android:id="@+id/ibChatGroupAddSave"
+            android:layout_width="?attr/actionBarSize"
+            android:layout_height="match_parent"
+            android:background="?android:selectableItemBackground"
+            android:src="@drawable/ic_check"
+            android:tint="@color/colorPrimary" />
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/colorPrimary" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:animateLayoutChanges="true"
+        android:orientation="vertical"
+        android:padding="10dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Please provide a group name and select participants from your contact list"
+            android:textColor="@color/colorPrimary"
+            android:textStyle="bold" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rvChatGroupAddSelect"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="10dp"
+            tools:listitem="@layout/layout_list_chat_group_add">
+
+        </android.support.v7.widget.RecyclerView>
+    </LinearLayout>
+</LinearLayout>

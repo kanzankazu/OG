@@ -144,19 +144,14 @@ public class aHomePostCommentActivity extends AppCompatActivity {
         postId = model.getId();
 
         Glide.with(this)
-                .load(R.drawable.load)
+                .load(R.drawable.loading_og)
                 .asGif()
-                .crossFade()
-                .diskCacheStrategy(DiskCacheStrategy.NONE)
-                .skipMemoryCache(false)
-                .dontAnimate()
+                .override(180, 180)
                 .into(ivCommentTsIconfvbi);
         Glide.with(this)
-                .load(R.drawable.load)
+                .load(R.drawable.loading_og)
                 .asGif()
-                .crossFade()
-                .diskCacheStrategy(DiskCacheStrategy.NONE)
-                .skipMemoryCache(false)
+                .override(180, 180)
                 .into(ivCommentTsImagefvbi);
 
         tvCommentTsUsernamefvbi.setText(model.getUsername());

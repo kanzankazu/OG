@@ -267,7 +267,7 @@ public class hFeedbackActivity extends AppCompatActivity {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                SystemUtil.showToast(getApplicationContext(), "clickked", Toast.LENGTH_SHORT,Gravity.TOP);
+                SystemUtil.showToast(getApplicationContext(), "clickked", Toast.LENGTH_SHORT, Gravity.TOP);
 
                 List<PostFeedbackTheEventDataFeedback> models = new ArrayList<>();
 
@@ -328,14 +328,14 @@ public class hFeedbackActivity extends AppCompatActivity {
                                     List<PostFeedbackTheEventResponseModel> models = response.body();
                                     if (models.get(0).getStatus().equalsIgnoreCase("ok")) {
                                         finish();
-                                        SystemUtil.showToast(getApplicationContext(), "Success give feedback", Toast.LENGTH_SHORT,Gravity.TOP);
+                                        SystemUtil.showToast(getApplicationContext(), "Success give feedback", Toast.LENGTH_SHORT, Gravity.TOP);
                                     } else {
-                                        SystemUtil.showToast(getApplicationContext(), "Failed give feedback", Toast.LENGTH_SHORT,Gravity.TOP);
+                                        SystemUtil.showToast(getApplicationContext(), "Failed give feedback", Toast.LENGTH_SHORT, Gravity.TOP);
                                     }
                                 } else {
                                     Log.d("Lihat", "onFailure hFeedbackActivity : " + response.message());
                                     //Crashlytics.logException(new Exception(response.message()));
-                                    SystemUtil.showToast(getApplicationContext(), "Failed Connection To Server", Toast.LENGTH_SHORT,Gravity.TOP);
+                                    SystemUtil.showToast(getApplicationContext(), "Failed Connection To Server", Toast.LENGTH_SHORT, Gravity.TOP);
                                 }
                             }
 
@@ -344,7 +344,7 @@ public class hFeedbackActivity extends AppCompatActivity {
                                 progressDialog.dismiss();
                                 //Crashlytics.logException(new Exception(t.getMessage()));
                                 Log.d("Lihat", "onFailure hFeedbackActivity : " + t.getMessage());
-                                SystemUtil.showToast(getApplicationContext(), "Failed Connection To Server", Toast.LENGTH_SHORT,Gravity.TOP);
+                                SystemUtil.showToast(getApplicationContext(), "Failed Connection To Server", Toast.LENGTH_SHORT, Gravity.TOP);
                             }
                         });
                     }
@@ -360,6 +360,11 @@ public class hFeedbackActivity extends AppCompatActivity {
         String replace2 = replace1.replace("\"", " ");
         String replace3 = replace2.replace("status-checkin , ", "status-checkin,");
         String replace4 = replace3.replace("status-feedback , ", "status-feedback,");
+
+        Log.d("Lihat", "isHasFeedback hFeedbackActivity : " + replace1);
+        Log.d("Lihat", "isHasFeedback hFeedbackActivity : " + replace2);
+        Log.d("Lihat", "isHasFeedback hFeedbackActivity : " + replace3);
+        Log.d("Lihat", "isHasFeedback hFeedbackActivity : " + replace4);
 
         /*EXECUTE*/
         return replace4.matches("(?i).*status-feedback,1.*");

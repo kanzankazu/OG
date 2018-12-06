@@ -47,11 +47,13 @@ import com.gandsoft.openguide.API.APIresponse.Event.EventDataContact;
 import com.gandsoft.openguide.API.APIresponse.Event.EventDataContactList;
 import com.gandsoft.openguide.API.APIresponse.Event.EventDataResponseModel;
 import com.gandsoft.openguide.API.APIresponse.Event.EventEmergencies;
+import com.gandsoft.openguide.API.APIresponse.Event.EventImportanInfo;
 import com.gandsoft.openguide.API.APIresponse.Event.EventImportanInfoNew;
 import com.gandsoft.openguide.API.APIresponse.Event.EventImportanInfoNewDetail;
 import com.gandsoft.openguide.API.APIresponse.Event.EventPlaceList;
 import com.gandsoft.openguide.API.APIresponse.Event.EventScheduleListDate;
 import com.gandsoft.openguide.API.APIresponse.Event.EventScheduleListDateDataList;
+import com.gandsoft.openguide.API.APIresponse.Event.EventSurroundingArea;
 import com.gandsoft.openguide.API.APIresponse.Event.EventSurroundingAreaNew;
 import com.gandsoft.openguide.API.APIresponse.Event.EventSurroundingAreaNewDetail;
 import com.gandsoft.openguide.API.APIresponse.Event.EventTheEvent;
@@ -98,12 +100,16 @@ import static com.gandsoft.openguide.database.SQLiteHelper.KEY_Wallet_eventId;
 import static com.gandsoft.openguide.database.SQLiteHelper.KEY_Wallet_sort;
 import static com.gandsoft.openguide.database.SQLiteHelper.Key_AreaNew_EventId;
 import static com.gandsoft.openguide.database.SQLiteHelper.Key_AreaNew_Title_image;
+import static com.gandsoft.openguide.database.SQLiteHelper.Key_Area_Description;
+import static com.gandsoft.openguide.database.SQLiteHelper.Key_Area_EventId;
 import static com.gandsoft.openguide.database.SQLiteHelper.Key_CommiteNote_EventId;
 import static com.gandsoft.openguide.database.SQLiteHelper.Key_CommiteNote_Id;
 import static com.gandsoft.openguide.database.SQLiteHelper.Key_Contact_List_EventId;
 import static com.gandsoft.openguide.database.SQLiteHelper.Key_Emergencie_EventId;
 import static com.gandsoft.openguide.database.SQLiteHelper.Key_Emergencie_Title;
 import static com.gandsoft.openguide.database.SQLiteHelper.Key_Event_About_EventId;
+import static com.gandsoft.openguide.database.SQLiteHelper.Key_Importan_Info_EventId;
+import static com.gandsoft.openguide.database.SQLiteHelper.Key_Importan_Info_title;
 import static com.gandsoft.openguide.database.SQLiteHelper.Key_Important_InfoNew_EventId;
 import static com.gandsoft.openguide.database.SQLiteHelper.Key_Important_InfoNew_Title_image;
 import static com.gandsoft.openguide.database.SQLiteHelper.Key_Important_InfoNew_title;
@@ -113,11 +119,13 @@ import static com.gandsoft.openguide.database.SQLiteHelper.Key_Schedule_List_Gro
 import static com.gandsoft.openguide.database.SQLiteHelper.Key_Schedule_List_id;
 import static com.gandsoft.openguide.database.SQLiteHelper.Key_The_Event_EventId;
 import static com.gandsoft.openguide.database.SQLiteHelper.Key_The_Event_version_data;
+import static com.gandsoft.openguide.database.SQLiteHelper.TableArea;
 import static com.gandsoft.openguide.database.SQLiteHelper.TableAreaNew;
 import static com.gandsoft.openguide.database.SQLiteHelper.TableCommiteNote;
 import static com.gandsoft.openguide.database.SQLiteHelper.TableContactList;
 import static com.gandsoft.openguide.database.SQLiteHelper.TableEmergencie;
 import static com.gandsoft.openguide.database.SQLiteHelper.TableEventAbout;
+import static com.gandsoft.openguide.database.SQLiteHelper.TableImportantInfo;
 import static com.gandsoft.openguide.database.SQLiteHelper.TableImportantInfoNew;
 import static com.gandsoft.openguide.database.SQLiteHelper.TableListEvent;
 import static com.gandsoft.openguide.database.SQLiteHelper.TablePlaceList;
@@ -301,8 +309,6 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
         getAPIUserDataDoValid();
 
         customText(ceTVInfofvbi);
-
-        initLoopCheck();
     }
 
     private void initRecycleView() {
@@ -342,6 +348,34 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
                 int posDateInListDate = DateTimeUtil.getPosDateInListDate(DateTimeUtil.getDates(firstDateOfMonth, endDateOfMonth), DateTimeUtil.currentDate());
                 Log.d("Lihat", "onClick ChangeEventActivity : " + posDateInListDate);
                 Log.d("Lihat", "onClick ChangeEventActivity : " + DateTimeUtil.getDates(firstDateOfMonth, endDateOfMonth).get(posDateInListDate));
+
+                String s = "<u>Registration:</u><br>Bima room (1st Floor – MICC) Group Registration area (please look for a signage for your ease reference)<br><br>Note: Upon arrival at the hotel, please make your way to the 'Group Registration Area'. You will be given your room information and IDbadge at the registration.<br><br><u>Workshop Venue:</u><br>Ballroom A&B (2nd Floor – MICC)<br><br><u>Breakfast:</u><br>Andrawina Restaurant (Hotel Lobby Area)<br><br><u>Lunch:</u><br>Grand Ballroom Foyer (2nd Floor – MICC)<br><br><u>Dinner Day 1:</u><br>Boogeys Restaurant – Grand Hyatt Hotel<br><br><u>Gala Dinner:</u><br>Ballroom B&C (2nd Floor – MICC)<br><br><u>Friday Pray:</u><br>Masjid Pendopo – Ground Floor<br><br><u>Medical:</u><br>Holding Room (2nd Floor – MICC)<br><br><span>Indoor Map - First Floor</span><img src=http://api.openguides.id:3000/get_list_image?im=1st-floor&s=event/66989c6a-0bda-11e8-8536-08002753cf51/info><br>A. Yudhistira<br>B. Bima<br>C. Smooking Room<br><span>Indoor Map - Second Floor</span><img src=http://api.openguides.id:3000/get_list_image?im=2nd-floor&s=event/66989c6a-0bda-11e8-8536-08002753cf51/info><br>A. Workshop (Ballroom A+B)<br>B. Gala Dinner (Ballroom B+C)<br>C. Smooking Area<br>D. Medic Room<br>E. Ballroom Foyer<br>F. Smooking Area (Drupadi Room)<br>G. Smooking Area (Adrawina Terrace)<br><span>Indoor Map - Zoning</span><img src=http://api.openguides.id:3000/get_list_image?im=alana-zoning&s=event/66989c6a-0bda-11e8-8536-08002753cf51/info><br>A. Alana Hotel Entrance<br>B. MICC Ballroom Drop Off Area<br>C. Secretariat Room (Yudhistira 1st Floor)<br>D. Registration Area (Bima 1st floor)<br>E. Medic Room (Holding Room 2nd Floor)<br>F. Workshop Ballroom (Ballroom A+B 2nd Floor)<br>G. Gala DInner Ballroom (Ballroom B+C 2nd Floor)<br>H. Hotel Lobby Drop Off<br>I. Adrawina Restaurant<br>J. Team Building Area 1<br>K. Team Building Area 2";
+                String target = "<span>";
+                String target2 = "</span>";
+                Log.d("Lihat", "onClick ChangeEventActivity : " + s.indexOf(target));
+
+                String regexSpan = "<span>(.+?)</span>";
+                String regexImg = "<img src=(.+?)>";
+
+                Log.d("Lihat", "onClick ChangeEventActivity : " + s.replaceAll(regexImg, "<a>"));
+                Log.d("Lihat", "onClick ChangeEventActivity : " + s.replaceAll(regexSpan, "=#="));
+                Log.d("Lihat", "onClick ChangeEventActivity : " + SystemUtil.getTagValues(s, regexSpan));
+                Log.d("Lihat", "onClick ChangeEventActivity : " + SystemUtil.getTagValues(s, regexImg));
+                //Log.d("Lihat", "onClick ChangeEventActivity : " + s.substring(s.indexOf(target3), s.indexOf(target3) + target3.length()));
+
+                List<String> tagSpan = SystemUtil.getTagValues(s, regexSpan);
+                List<String> tagImg = SystemUtil.getTagValues(s, regexImg);
+
+                String s1 = s.replaceAll(regexImg, "<a>");
+                String s2 = s1.replaceAll(regexSpan, "=#=");
+                String s3 = s2.replaceAll("\"", "");
+                String[] split = s3.split("=#=");
+
+                for (int i = 0; i < split.length; i++) {
+                    Log.d("Lihat", "onClick ChangeEventActivity : " + split[i]);
+                }
+                Log.d("Lihat", "onClick ChangeEventActivity : " + split.length);
+                Log.d("Lihat", "onClick ChangeEventActivity : " + tagSpan.size());
             }
         });
     }
@@ -390,7 +424,7 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
 
             requestModel.setVersion_data(IConfig.DB_Version);
             /*if (db.isDataTableKeyNull(TableUserData, KEY_UserData_versionData)) {
-                requestModel.setVersion_data(IConfig.DB_Version);
+                requestModel.setVersion_data(0);
             } else {
                 requestModel.setVersion_data(db.getVersionDataIdUser(accountId));
             }*/
@@ -492,9 +526,7 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
         /*Glide.with(this)
                 .load(R.drawable.load)
                 .asGif()
-                .crossFade()
-                .diskCacheStrategy(DiskCacheStrategy.NONE)
-                .skipMemoryCache(false)
+                .override(180, 180)
                 .into(ceIVUserPicfvbi);*/
 
         String stringImageIcon = AppUtil.validationStringImageIcon(ChangeEventActivity.this, model.getImage_url(), model.getImage_url_local(), isPreferUrl);
@@ -692,14 +724,14 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
                                 }
                             }
 
-                            /*for (int i3 = 0; i3 < model.getImportan_info().size(); i3++) {
+                            for (int i3 = 0; i3 < model.getImportan_info().size(); i3++) {
                                 EventImportanInfo importanInfo = model.getImportan_info().get(i3);
                                 if (db.isDataTableValueMultipleNull(TableImportantInfo, Key_Importan_Info_EventId, Key_Importan_Info_title, model.getEvent_id(), importanInfo.getTitle())) {
                                     db.saveImportanInfo(importanInfo, model.getEvent_id());
                                 } else {
                                     db.updateImportanInfo(importanInfo, model.getEvent_id());
                                 }
-                            }*/
+                            }
                             for (int i3 = 0; i3 < model.getImportan_info_new().size(); i3++) {
                                 EventImportanInfoNew importanInfoNew = model.getImportan_info_new().get(i3);
                                 if (importanInfoNew.getDetail().size() == 0) {
@@ -770,14 +802,14 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
                                 }
                             }
 
-                            /*for (int i8 = 0; i8 < model.getSurrounding_area().size(); i8++) {
+                            for (int i8 = 0; i8 < model.getSurrounding_area().size(); i8++) {
                                 EventSurroundingArea area = model.getSurrounding_area().get(i8);
                                 if (db.isDataTableValueMultipleNull(TableArea, Key_Area_EventId, Key_Area_Description, model.getEvent_id(), area.getDescription())) {
                                     db.saveArea(area, model.getEvent_id());
                                 } else {
                                     db.updateArea(area, model.getEvent_id());
                                 }
-                            }*/
+                            }
                             for (int i8 = 0; i8 < model.getSurrounding_area_new().size(); i8++) {
                                 EventSurroundingAreaNew area = model.getSurrounding_area_new().get(i8);
                                 for (int i81 = 0; i81 < area.getDetail().size(); i81++) {
@@ -873,6 +905,5 @@ public class ChangeEventActivity extends AppCompatActivity implements ChangeEven
                 }
             }, 0, DateTimeUtil.SECOND_MILLIS * 10);
         }
-
     }
 }

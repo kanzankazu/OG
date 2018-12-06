@@ -15,11 +15,13 @@ import com.gandsoft.openguide.API.APIresponse.Event.EventDataContact;
 import com.gandsoft.openguide.API.APIresponse.Event.EventDataContactList;
 import com.gandsoft.openguide.API.APIresponse.Event.EventDataResponseModel;
 import com.gandsoft.openguide.API.APIresponse.Event.EventEmergencies;
+import com.gandsoft.openguide.API.APIresponse.Event.EventImportanInfo;
 import com.gandsoft.openguide.API.APIresponse.Event.EventImportanInfoNew;
 import com.gandsoft.openguide.API.APIresponse.Event.EventImportanInfoNewDetail;
 import com.gandsoft.openguide.API.APIresponse.Event.EventPlaceList;
 import com.gandsoft.openguide.API.APIresponse.Event.EventScheduleListDate;
 import com.gandsoft.openguide.API.APIresponse.Event.EventScheduleListDateDataList;
+import com.gandsoft.openguide.API.APIresponse.Event.EventSurroundingArea;
 import com.gandsoft.openguide.API.APIresponse.Event.EventSurroundingAreaNew;
 import com.gandsoft.openguide.API.APIresponse.Event.EventSurroundingAreaNewDetail;
 import com.gandsoft.openguide.API.APIresponse.Event.EventTheEvent;
@@ -93,7 +95,7 @@ public class RepeatCheckDataService extends Service {
                     getAPICheckUser();
                 }
             }
-        }, 0, DateTimeUtil.MINUTE_MILLIS);
+        }, 0, DateTimeUtil.MINUTE_MILLIS * 3);
     }
 
     private void getAPIUserDataDo(String accountId) {
@@ -202,18 +204,18 @@ public class RepeatCheckDataService extends Service {
                                 }
                             }
 
-                            /*for (int i3 = 0; i3 < model.getImportan_info().size(); i3++) {
+                            for (int i3 = 0; i3 < model.getImportan_info().size(); i3++) {
                                 EventImportanInfo importanInfo = model.getImportan_info().get(i3);
                                 if (db.isDataTableValueMultipleNull(SQLiteHelper.TableImportantInfo, SQLiteHelper.Key_Importan_Info_EventId, SQLiteHelper.Key_Importan_Info_title, model.getEvent_id(), importanInfo.getTitle())) {
                                     db.saveImportanInfo(importanInfo, model.getEvent_id());
                                 } else {
                                     db.updateImportanInfo(importanInfo, model.getEvent_id());
                                 }
-                            }*/
+                            }
                             for (int i3 = 0; i3 < model.getImportan_info_new().size(); i3++) {
                                 EventImportanInfoNew importanInfoNew = model.getImportan_info_new().get(i3);
-                                Log.d("Lihat", "onResponse ChangeEventActivity : " + importanInfoNew.getTitle());
-                                Log.d("Lihat", "onResponse ChangeEventActivity : " + importanInfoNew.getInfo());
+                                Log.d("Lihat", "onResponse RepeatCheckDataService : " + importanInfoNew.getTitle());
+                                Log.d("Lihat", "onResponse RepeatCheckDataService : " + importanInfoNew.getInfo());
                                 if (importanInfoNew.getDetail().size() == 0) {
                                     if (db.isDataTableValueMultipleNull(SQLiteHelper.TableImportantInfoNew, SQLiteHelper.Key_Important_InfoNew_EventId, SQLiteHelper.Key_Important_InfoNew_title, model.getEvent_id(), importanInfoNew.getTitle())) {
                                         db.saveImportanInfoNew(importanInfoNew, model.getEvent_id());
@@ -282,14 +284,14 @@ public class RepeatCheckDataService extends Service {
                                 }
                             }
 
-                            /*for (int i8 = 0; i8 < model.getSurrounding_area().size(); i8++) {
+                            for (int i8 = 0; i8 < model.getSurrounding_area().size(); i8++) {
                                 EventSurroundingArea area = model.getSurrounding_area().get(i8);
                                 if (db.isDataTableValueMultipleNull(SQLiteHelper.TableArea, SQLiteHelper.Key_Area_EventId, SQLiteHelper.Key_Area_Description, model.getEvent_id(), area.getDescription())) {
                                     db.saveArea(area, model.getEvent_id());
                                 } else {
                                     db.updateArea(area, model.getEvent_id());
                                 }
-                            }*/
+                            }
                             for (int i8 = 0; i8 < model.getSurrounding_area_new().size(); i8++) {
                                 EventSurroundingAreaNew area = model.getSurrounding_area_new().get(i8);
                                 for (int i81 = 0; i81 < area.getDetail().size(); i81++) {
