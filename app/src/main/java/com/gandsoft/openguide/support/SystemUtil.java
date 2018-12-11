@@ -3,12 +3,15 @@ package com.gandsoft.openguide.support;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ProgressDialog;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.database.Cursor;
 import android.graphics.Paint;
 import android.os.Handler;
+import android.provider.ContactsContract;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.text.InputFilter;
@@ -276,5 +279,80 @@ public class SystemUtil {
             tagValues.add(matcher.group(1));
         }
         return tagValues;
+    }
+
+    public static List<ContactVO> getAllContacts(Context context) {
+        List<ContactVO> contactVOList = new ArrayList();
+        ContactVO contactVO;
+
+        ContentResolver contentResolver = context.getContentResolver();
+        Cursor cursor = contentResolver.query(ContactsContract.Contacts.CONTENT_URI, null, null, null, ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME + " ASC");
+        if (cursor.getCount() > 0) {
+            while (cursor.moveToNext()) {
+
+                int hasPhoneNumber = Integer.parseInt(cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER)));
+                if (hasPhoneNumber > 0) {
+                    String id = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts._ID));
+                    String name = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
+
+                    contactVO = new ContactVO();
+                    contactVO.setContactName(name);
+
+                    Cursor phoneCursor = contentResolver.query(
+                            ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+                            null,
+                            ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?",
+                            new String[]{id},
+                            null);
+                    if (phoneCursor.moveToNext()) {
+                        String phoneNumber = phoneCursor.getString(phoneCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+                        contactVO.setContactNumber(phoneNumber);
+                    }
+
+                    phoneCursor.close();
+
+                    Cursor emailCursor = contentResolver.query(
+                            ContactsContract.CommonDataKinds.Email.CONTENT_URI,
+                            null,
+                            ContactsContract.CommonDataKinds.Email.CONTACT_ID + " = ?",
+                            new String[]{id}, null);
+                    while (emailCursor.moveToNext()) {
+                        String emailId = emailCursor.getString(emailCursor.getColumnIndex(ContactsContract.CommonDataKinds.Email.DATA));
+                    }
+                    contactVOList.add(contactVO);
+                }
+            }
+        }
+        return contactVOList;
+    }
+
+    private static class ContactVO {
+        private String ContactImage;
+        private String ContactName;
+        private String ContactNumber;
+
+        public String getContactImage() {
+            return ContactImage;
+        }
+
+        public void setContactImage(String contactImage) {
+            ContactImage = contactImage;
+        }
+
+        public String getContactName() {
+            return ContactName;
+        }
+
+        public void setContactName(String contactName) {
+            ContactName = contactName;
+        }
+
+        public String getContactNumber() {
+            return ContactNumber;
+        }
+
+        public void setContactNumber(String contactNumber) {
+            ContactNumber = contactNumber;
+        }
     }
 }
