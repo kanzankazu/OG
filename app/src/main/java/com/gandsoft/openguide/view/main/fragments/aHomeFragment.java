@@ -396,10 +396,7 @@ public class aHomeFragment extends Fragment {
 
     private void openCamera() {
         if (!TextUtils.isEmpty(imageFilePath)) {
-            File file = new File(imageFilePath);
-            if (file.exists()) {
-                file.delete();
-            }
+            PictureUtil.removeImageFromPathFile(imageFilePath);
         }
 
         String date = DateTimeUtil.dateToString(DateTimeUtil.currentDate(), new SimpleDateFormat("ddMMyy_HHmmss"));
@@ -431,9 +428,7 @@ public class aHomeFragment extends Fragment {
             cameraIntent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
             cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
             startActivityForResult(cameraIntent, REQ_CODE_TAKE_PHOTO_INTENT_ID_STANDART);
-
         }
-
     }
 
     private void updateEventInfo() {
@@ -657,6 +652,8 @@ public class aHomeFragment extends Fragment {
                                 LocalBaseResponseModel model = s.get(i);
                                 if (model.getStatus().equalsIgnoreCase("ok")) {
                                     SystemUtil.showToast(getActivity(), "Tersimpan", Toast.LENGTH_LONG, Gravity.TOP);
+
+                                    callHomeContentAPI();//checkin
                                 } else {
                                     SystemUtil.showToast(getActivity(), "Bad Response", Toast.LENGTH_LONG, Gravity.TOP);
                                 }
@@ -682,10 +679,7 @@ public class aHomeFragment extends Fragment {
 
     private void callHomeContentAPI() {
         if (NetworkUtil.isConnected(getActivity())) {
-            if (newPostImgExists) {
-                PictureUtil.removeImageFromPathFile2(getActivity(), new File(newPostImgPath));
-                newPostImgExists = false;
-            }
+            deleteExistImg();
 
             //deleteImageFile(event_Id);
             db.deleleDataByKey(SQLiteHelper.TableHomeContent, SQLiteHelper.Key_HomeContent_EventId, eventId);
@@ -1058,6 +1052,7 @@ public class aHomeFragment extends Fragment {
             mode.setImage_posted(model.getImage_posted());
             mode.setImage_posted_local(model.getImage_posted_local());
             mode.setKeterangan(model.getKeterangan());
+            mode.setKeterangan(model.getEvent());
             mode.setNew_event(model.getNew_event());
             if (dataParam.size() > 0) {
                 dataParam.clear();
@@ -1071,48 +1066,6 @@ public class aHomeFragment extends Fragment {
             startActivityForResult(intent, REQ_CODE_COMMENT);
         } else {
             SystemUtil.showToast(getActivity(), "Check you connection", Toast.LENGTH_SHORT, Gravity.TOP);
-        }
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQ_CODE_TAKE_PHOTO_INTENT_ID_STANDART && resultCode == Activity.RESULT_OK) {
-            //OLD
-            //String imagePath = PictureUtil.getImagePathFromUri(getActivity(), imageUri);
-            Uri imageUri1 = Uri.parse(imageFilePath);
-            moveToAHomePostImage(imageUri1.getPath());
-        } else if (requestCode == REQ_CODE_POST_IMAGE) {
-            if (resultCode == RESULT_OK) {
-                String contentPic;
-                if (data.hasExtra(ISeasonConfig.INTENT_PARAM) && data.hasExtra(ISeasonConfig.INTENT_PARAM2)) {
-                    newPostImgPath = data.getStringExtra(ISeasonConfig.INTENT_PARAM);
-                    newPostImgExists = true;
-                    Log.d("Lihat", "onActivityResult aHomeFragment : " + newPostImgPath);
-                    contentPic = data.getStringExtra(ISeasonConfig.INTENT_PARAM2);
-
-                    Glide.with(getActivity())
-                            .load(new File(newPostImgPath))
-                            .asBitmap()
-                            .error(R.drawable.template_account_og)
-                            .placeholder(R.drawable.ic_action_name)
-                            .diskCacheStrategy(DiskCacheStrategy.NONE)
-                            .skipMemoryCache(false)
-                            .dontAnimate()
-                            .into(new SimpleTarget<Bitmap>() {
-                                @Override
-                                public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
-                                    Bitmap resizeImage = PictureUtil.resizeImageBitmap(resource, 1080);
-                                    String base64 = PictureUtil.bitmapToBase64(resizeImage, Bitmap.CompressFormat.JPEG, 100);
-                                    callPostImageCaption(newPostImgPath, contentPic, base64);
-                                }
-                            });
-                }
-            }
-        } else if (requestCode == REQ_CODE_COMMENT && resultCode == Activity.RESULT_OK && NetworkUtil.isConnected(getActivity())) {
-            int position = data.getIntExtra(ISeasonConfig.INTENT_PARAM, 0);
-            String totalComment = data.getStringExtra(ISeasonConfig.INTENT_PARAM2);
-            adapter.changeTotalComment(position, totalComment);
         }
     }
 
@@ -1205,6 +1158,61 @@ public class aHomeFragment extends Fragment {
                 }
             }
             gpsStatus = locationManager.getGpsStatus(null);
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQ_CODE_TAKE_PHOTO_INTENT_ID_STANDART && resultCode == Activity.RESULT_OK) {
+            //OLD
+            //String imagePath = PictureUtil.getImagePathFromUri(getActivity(), imageUri);
+            Uri imageUri1 = Uri.parse(imageFilePath);
+            moveToAHomePostImage(imageUri1.getPath());
+        } else if (requestCode == REQ_CODE_POST_IMAGE) {
+            if (resultCode == RESULT_OK) {
+                String contentPic;
+                if (data.hasExtra(ISeasonConfig.INTENT_PARAM) && data.hasExtra(ISeasonConfig.INTENT_PARAM2)) {
+                    newPostImgPath = data.getStringExtra(ISeasonConfig.INTENT_PARAM);
+                    newPostImgExists = true;
+                    Log.d("Lihat", "onActivityResult aHomeFragment : " + newPostImgPath);
+                    contentPic = data.getStringExtra(ISeasonConfig.INTENT_PARAM2);
+
+                    Glide.with(getActivity())
+                            .load(new File(newPostImgPath))
+                            .asBitmap()
+                            .error(R.drawable.template_account_og)
+                            .placeholder(R.drawable.ic_action_name)
+                            .diskCacheStrategy(DiskCacheStrategy.NONE)
+                            .skipMemoryCache(false)
+                            .dontAnimate()
+                            .into(new SimpleTarget<Bitmap>() {
+                                @Override
+                                public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+                                    Bitmap resizeImage = PictureUtil.resizeImageBitmap(resource, 1080);
+                                    String base64 = PictureUtil.bitmapToBase64(resizeImage, Bitmap.CompressFormat.JPEG, 100);
+                                    callPostImageCaption(newPostImgPath, contentPic, base64);
+                                }
+                            });
+                }
+            }
+        } else if (requestCode == REQ_CODE_COMMENT && resultCode == Activity.RESULT_OK && NetworkUtil.isConnected(getActivity())) {
+            int position = data.getIntExtra(ISeasonConfig.INTENT_PARAM, 0);
+            String totalComment = data.getStringExtra(ISeasonConfig.INTENT_PARAM2);
+            adapter.changeTotalComment(position, totalComment);
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        deleteExistImg();
+    }
+
+    private void deleteExistImg() {
+        if (newPostImgExists) {
+            PictureUtil.removeImageFromPathFile(newPostImgPath);
+            newPostImgExists = false;
         }
     }
 }

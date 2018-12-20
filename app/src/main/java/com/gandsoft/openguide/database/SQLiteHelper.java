@@ -1,17 +1,15 @@
 package com.gandsoft.openguide.database;
 
-import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 
 import com.gandsoft.openguide.support.SessionUtil;
 
 public class SQLiteHelper extends SQLiteOpenHelper {
     // Databases information
     public static final String DB_NM = "openguides.db";
-    public static final int DB_VER = 12;
+    public static final int DB_VER = 13;
 
     public static String TableGlobalData = "tabGlobalData";
     private static final String query_delete_table_GlobalData = "DROP TABLE IF EXISTS " + TableGlobalData;
@@ -456,7 +454,8 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     public static String Key_HomeContent_image_posted = "image_posted";
     public static String Key_HomeContent_image_posted_local = "image_posted_local";
     public static String Key_HomeContent_keterangan = "keterangan";
-    public static String Key_HomeContent_event = "new_event";
+    public static String Key_HomeContent_event = "event";
+    public static String Key_HomeContent_new_event = "new_event";
     private static final String query_add_table_HomeContent = "CREATE TABLE IF NOT EXISTS " + TableHomeContent + "("
             + Key_HomeContent_No + " INTEGER PRIMARY KEY AUTOINCREMENT, "
             + Key_HomeContent_EventId + " TEXT, "
@@ -473,7 +472,8 @@ public class SQLiteHelper extends SQLiteOpenHelper {
             + Key_HomeContent_image_posted + " TEXT, "
             + Key_HomeContent_image_posted_local + " TEXT, "
             + Key_HomeContent_keterangan + " TEXT, "
-            + Key_HomeContent_event + " TEXT) ";
+            + Key_HomeContent_event + " TEXT, "
+            + Key_HomeContent_new_event + " TEXT) ";
     /**/
     public static String TableComment = "tabComment";
     private static final String query_delete_table_Comment = "DROP TABLE IF EXISTS " + TableComment;

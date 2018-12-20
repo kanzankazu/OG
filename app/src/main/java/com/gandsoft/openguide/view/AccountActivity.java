@@ -330,18 +330,8 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
     }
 
     private void getImageCamera() {
-        if (!TextUtils.isEmpty(imageFilePath)) {
-            File file = new File(imageFilePath);
-            if (file.exists()) {
-                file.delete();
-            }
-        }
-        if (!TextUtils.isEmpty(imageFilePath2)) {
-            File file = new File(imageFilePath2);
-            if (file.exists()) {
-                file.delete();
-            }
-        }
+        deleteImg();
+
 
         String date = DateTimeUtil.dateToString(DateTimeUtil.currentDate(), new java.text.SimpleDateFormat("ddMMyy_HHmmss"));
         imageFilePath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/picture_" + date + ".jpg";
@@ -351,23 +341,7 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
             Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
             cameraIntent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, imageFileUri);
             startActivityForResult(cameraIntent, REQ_COD_CAMERA_KITKAT);
-        } /*else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            imageFilePath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/picture.jpg";
-            mUriNougat = FileProvider.getUriForFile(getApplicationContext(), CAPTURE_IMAGE_FILE_PROVIDER, new File(imageFilePath));
-            //mUriNougat = FileProvider.getUriForFile(getApplicationContext(), BuildConfig.APPLICATION_ID + ".provider", new File(imageFilePath));
-            Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            cameraIntent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-            cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, mUriNougat);
-            startActivityForResult(cameraIntent, REQ_COD_CAMERA_NOUGAT);
-        } */ else {
-            /*ContentValues values = new ContentValues();
-            values.put(MediaStore.Images.Media.TITLE, "New Picture");
-            values.put(MediaStore.Images.Media.DESCRIPTION, "From your Camera");
-            imageUri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
-            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-            startActivityForResult(intent, REQ_CODE_TAKE_PHOTO_INTENT_ID_STANDART);*/
-
+        } else {
             Uri imageUri = FileProvider.getUriForFile(getApplicationContext(), "com.gandsoft.openguide", new File(imageFilePath));
             Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
             cameraIntent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
@@ -463,6 +437,7 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
                         SystemUtil.showToast(getApplicationContext(), "Data tak tersimpan", Toast.LENGTH_SHORT, Gravity.TOP);
                         returnToBackActivity();
                         //clearImage();
+                        deleteImg();
                     }
                 });
         // Pilihan jika NO
@@ -615,15 +590,9 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == Activity.RESULT_OK && requestCode == REQ_CODE_TAKE_PHOTO_INTENT_ID_STANDART) {
-            /*Uri uri = Uri.fromFile(new File(imageFilePath));
-
-            beginCrop(uri);*/
-
             Uri imageUri = Uri.fromFile(new File(imageFilePath));
-            //imageFilePath = PictureUtil.getImagePathFromUri(this, imageUri);//above kitkat
             Glide.with(getApplicationContext())
                     .load(imageUri)
-                    //.load(new File(imageFilePath))
                     .asBitmap()
                     .error(R.drawable.template_account_og)
                     .placeholder(R.drawable.ic_action_name)
@@ -648,6 +617,15 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
             beginCrop(uri);
         } else if (requestCode == Crop.REQUEST_CROP) {
             handleCrop(resultCode, data);
+        }
+    }
+
+    private void deleteImg() {
+        if (!TextUtils.isEmpty(imageFilePath)) {
+            PictureUtil.removeImageFromPathFile(imageFilePath);
+        }
+        if (!TextUtils.isEmpty(imageFilePath2)) {
+            PictureUtil.removeImageFromPathFile(imageFilePath2);
         }
     }
 
@@ -702,5 +680,11 @@ public class AccountActivity extends LocalBaseActivity implements View.OnClickLi
     @Override
     public void onBackPressed() {
         quitNotSave();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        deleteImg();
     }
 }

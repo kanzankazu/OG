@@ -164,12 +164,12 @@ public class RepeatCheckDataService extends Service {
         requestModel.setId_event(eventId);
         requestModel.setPass("");
         requestModel.setPhonenumber(accountId);
-        //requestModel.setVersion_data(0);
-        if (db.isDataTableValueNull(SQLiteHelper.TableTheEvent, SQLiteHelper.Key_The_Event_EventId, eventId)) {
+        requestModel.setVersion_data(0);
+        /*if (db.isDataTableValueNull(SQLiteHelper.TableTheEvent, SQLiteHelper.Key_The_Event_EventId, eventId)) {
             requestModel.setVersion_data(0);
         } else {
             requestModel.setVersion_data(db.getVersionDataIdEvent(eventId));
-        }
+        }*/
 
         API.doEventDataRet(requestModel).enqueue(new Callback<List<EventDataResponseModel>>() {
             @Override

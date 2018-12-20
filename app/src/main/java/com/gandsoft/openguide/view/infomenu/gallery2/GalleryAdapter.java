@@ -87,7 +87,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
                                     holder.gallery_img_fvbi.setImageBitmap(resource);
                                 }
 
-                                if (NetworkUtil.isConnected(activity) && getItemCount() < 18) {
+                                if (NetworkUtil.isConnected(activity) && InputValidUtil.isLinkUrl(image_posted)) {
                                     String imageCachePath = PictureUtil.saveImageHomeContentImage(activity, resource, model.getId() + "_image", eventId);
                                     holder.db.saveGalleryImage(imageCachePath, accountId, eventId, model.getId());
                                 }
@@ -108,7 +108,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
                 .into(new SimpleTarget<Bitmap>() {
                     @Override
                     public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
-                        if (NetworkUtil.isConnected(activity)) {
+                        if (NetworkUtil.isConnected(activity) && InputValidUtil.isLinkUrl(image_icon)) {
                             String imageCachePath = PictureUtil.saveImageHomeContentIcon(activity, resource, model.getAccount_id() + "_icon_gallery", eventId);
                             holder.db.saveGalleryIcon(imageCachePath, accountId, eventId, model.getId());
                             model.setImage_icon_local(imageCachePath);

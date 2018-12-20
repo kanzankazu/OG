@@ -306,14 +306,14 @@ public class PictureUtil {
         return getImageUriFromBitmap(activity, bitmapFromPathFile);
     }
 
-    public static boolean removeImageFromPathFile(String source_) {
-        File fdelete = new File(source_);
+    public static boolean removeImageFromPathFile(String pathImg) {
+        File fdelete = new File(pathImg);
         if (fdelete.exists()) {
             if (fdelete.delete()) {
-                Log.d("Lihat", "removeImageFromPathFile PictureUtil : " + "file Deleted :" + source_);
+                Log.d("Lihat", "removeImageFromPathFile PictureUtil : " + "file Deleted :" + pathImg);
                 return true;
             } else {
-                Log.d("Lihat", "removeImageFromPathFile PictureUtil : " + "file not Deleted :" + source_);
+                Log.d("Lihat", "removeImageFromPathFile PictureUtil : " + "file not Deleted :" + pathImg);
                 return false;
             }
         }

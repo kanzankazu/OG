@@ -121,10 +121,7 @@ public class aHomePostImageCaptionActivity extends AppCompatActivity {
 
     private void openCamera() {
         if (!TextUtils.isEmpty(imageFilePath)) {
-            File file = new File(imageFilePath);
-            if (file.exists()) {
-                file.delete();
-            }
+            PictureUtil.removeImageFromPathFile(imageFilePath);
         }
 
         String date = DateTimeUtil.dateToString(DateTimeUtil.currentDate(), new SimpleDateFormat("ddMMyy_HHmmss"));
@@ -190,10 +187,7 @@ public class aHomePostImageCaptionActivity extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface arg0, int arg1) {
                         if (!TextUtils.isEmpty(imageFilePath)) {
-                            File file = new File(imageFilePath);
-                            if (file.exists()) {
-                                file.delete();
-                            }
+                            PictureUtil.removeImageFromPathFile(imageFilePath);
                         }
 
                         Intent intent = new Intent();

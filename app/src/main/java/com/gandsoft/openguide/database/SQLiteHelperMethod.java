@@ -1263,7 +1263,8 @@ public class SQLiteHelperMethod extends SQLiteHelper {
         contentValues.put(Key_HomeContent_image_icon, model.getImage_icon());
         contentValues.put(Key_HomeContent_image_posted, model.getImage_posted());
         contentValues.put(Key_HomeContent_keterangan, model.getKeterangan());
-        contentValues.put(Key_HomeContent_event, model.getNew_event());
+        contentValues.put(Key_HomeContent_event, model.getEvent());
+        contentValues.put(Key_HomeContent_new_event, model.getNew_event());
         db.insert(TableHomeContent, null, contentValues);
         db.close();
     }
@@ -1284,7 +1285,8 @@ public class SQLiteHelperMethod extends SQLiteHelper {
         contentValues.put(Key_HomeContent_image_posted, model.getImage_posted());
         //contentValues.put(Key_HomeContent_image_posted_local, model.getSubJudul());
         contentValues.put(Key_HomeContent_keterangan, model.getKeterangan());
-        contentValues.put(Key_HomeContent_event, model.getNew_event());
+        contentValues.put(Key_HomeContent_event, model.getEvent());
+        contentValues.put(Key_HomeContent_new_event, model.getNew_event());
         db.update(TableHomeContent, contentValues, Key_HomeContent_EventId + " = ? AND " + Key_HomeContent_id + " = ? ", new String[]{eventId, model.getId()});
         db.close();
     }
@@ -1312,7 +1314,8 @@ public class SQLiteHelperMethod extends SQLiteHelper {
                 model.setImage_posted(cursor.getString(cursor.getColumnIndex(Key_HomeContent_image_posted)));
                 model.setImage_posted_local(cursor.getString(cursor.getColumnIndex(Key_HomeContent_image_posted_local)));
                 model.setKeterangan(cursor.getString(cursor.getColumnIndex(Key_HomeContent_keterangan)));
-                model.setNew_event(cursor.getString(cursor.getColumnIndex(Key_HomeContent_event)));
+                model.setEvent(cursor.getString(cursor.getColumnIndex(Key_HomeContent_event)));
+                model.setNew_event(cursor.getString(cursor.getColumnIndex(Key_HomeContent_new_event)));
                 modelList.add(model);
             } while (cursor.moveToNext());
         }
@@ -1344,7 +1347,8 @@ public class SQLiteHelperMethod extends SQLiteHelper {
                 model.setImage_posted(cursor.getString(cursor.getColumnIndex(Key_HomeContent_image_posted)));
                 model.setImage_posted_local(cursor.getString(cursor.getColumnIndex(Key_HomeContent_image_posted_local)));
                 model.setKeterangan(cursor.getString(cursor.getColumnIndex(Key_HomeContent_keterangan)));
-                model.setNew_event(cursor.getString(cursor.getColumnIndex(Key_HomeContent_event)));
+                model.setEvent(cursor.getString(cursor.getColumnIndex(Key_HomeContent_event)));
+                model.setNew_event(cursor.getString(cursor.getColumnIndex(Key_HomeContent_new_event)));
                 modelList.add(model);
             } while (cursor.moveToNext());
         }

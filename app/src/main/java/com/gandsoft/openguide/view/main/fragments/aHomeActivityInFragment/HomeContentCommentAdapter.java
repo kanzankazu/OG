@@ -23,11 +23,14 @@ import com.gandsoft.openguide.API.APIresponse.HomeContent.HomeContentPostComment
 import com.gandsoft.openguide.API.APIresponse.UserData.UserListEventResponseModel;
 import com.gandsoft.openguide.R;
 import com.gandsoft.openguide.database.SQLiteHelperMethod;
+import com.gandsoft.openguide.support.AppUtil;
 import com.gandsoft.openguide.support.DateTimeUtil;
+import com.gandsoft.openguide.support.InputValidUtil;
 import com.gandsoft.openguide.support.NetworkUtil;
 import com.gandsoft.openguide.support.PictureUtil;
 import com.gandsoft.openguide.support.SystemUtil;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -76,8 +79,10 @@ class HomeContentCommentAdapter extends RecyclerView.Adapter<HomeContentCommentA
 
         new Handler().postDelayed(new Runnable() {
             public void run() {
+                String image_icon = AppUtil.validationStringImageIcon(activity, model.getImage_icon(), model.getImage_icon_local(), true);
+
                 Glide.with(activity)
-                        .load(model.getImage_icon())
+                        .load(InputValidUtil.isLinkUrl(image_icon) ? image_icon : new File(image_icon))
                         .asBitmap()
                         .error(R.drawable.template_account_og)
                         .placeholder(R.drawable.ic_action_name)
@@ -88,7 +93,7 @@ class HomeContentCommentAdapter extends RecyclerView.Adapter<HomeContentCommentA
                             @Override
                             public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
                                 holder.ivRVCommentIconfvbi.setImageBitmap(resource);
-                                if (NetworkUtil.isConnected(activity)) {
+                                if (NetworkUtil.isConnected(activity) && InputValidUtil.isLinkUrl(image_icon)) {
                                     String imageCachePath = PictureUtil.saveImageHomeContentIcon(activity, resource, model.getAccount_id() + "_icon_comment", eventId);
                                     holder.db.saveCommentIcon(imageCachePath, accountId, eventId, model.getId());
                                 }

@@ -91,9 +91,9 @@ public class HomeContentAdapter extends RecyclerView.Adapter<HomeContentAdapter.
         if (!TextUtils.isEmpty(model.getKeterangan())) {
             holder.tvRVHomeContentKeterangan.setHtml(model.getKeterangan());
             holder.tvRVHomeContentKeterangan.setVisibility(View.VISIBLE);
-        } else if (!TextUtils.isEmpty(model.getNew_event())) {
-            holder.tvRVHomeContentKeterangan.setHtml(model.getNew_event());
-            holder.tvRVHomeContentKeterangan.setVisibility(View.GONE);
+        } else if (!TextUtils.isEmpty(model.getEvent())) {
+            holder.tvRVHomeContentKeterangan.setHtml(model.getEvent());
+            holder.tvRVHomeContentKeterangan.setVisibility(View.VISIBLE);
         } else {
             holder.tvRVHomeContentKeterangan.setVisibility(View.GONE);
         }
@@ -114,8 +114,10 @@ public class HomeContentAdapter extends RecyclerView.Adapter<HomeContentAdapter.
                         @Override
                         public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
                             holder.ivRVHomeContentImage.setImageBitmap(resource);
-                            String imageCachePath = PictureUtil.saveImageHomeContentImage(activity, resource, model.getId() + "_image", eventId);
-                            holder.db.saveHomeContentImage(imageCachePath, accountId, eventId, model.getId());
+                            if (NetworkUtil.isConnected(activity) && InputValidUtil.isLinkUrl(image_posted)) {
+                                String imageCachePath = PictureUtil.saveImageHomeContentImage(activity, resource, model.getId() + "_image", eventId);
+                                holder.db.saveHomeContentImage(imageCachePath, accountId, eventId, model.getId());
+                            }
                         }
                     });
         } else {
@@ -133,7 +135,7 @@ public class HomeContentAdapter extends RecyclerView.Adapter<HomeContentAdapter.
                     @Override
                     public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
                         holder.ivRVRVHomeContentIcon.setImageBitmap(resource);
-                        if (NetworkUtil.isConnected(activity)) {
+                        if (NetworkUtil.isConnected(activity) && InputValidUtil.isLinkUrl(image_icon)) {
                             String imageCachePath = PictureUtil.saveImageHomeContentIcon(activity, resource, model.getAccount_id() + "_icon_home", eventId);
                             holder.db.saveHomeContentIcon(imageCachePath, accountId, eventId, model.getId());
                         }
@@ -251,7 +253,7 @@ public class HomeContentAdapter extends RecyclerView.Adapter<HomeContentAdapter.
             public void onFailure(Call<List<LocalBaseResponseModel>> call, Throwable t) {
                 //progressDialog.dismiss();
                 Log.d("Lihat", "onFailure HomeContentAdapter : " + t.getMessage());
-                SystemUtil.showToast(activity, "Failed Connection To Server", Toast.LENGTH_SHORT,Gravity.TOP);
+                SystemUtil.showToast(activity, "Failed Connection To Server", Toast.LENGTH_SHORT, Gravity.TOP);
                 /*SystemUtil.showToast(getApplicationContext(), "Failed Connection To Server", Snackbar.LENGTH_SHORT).setAction("Reload", new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {

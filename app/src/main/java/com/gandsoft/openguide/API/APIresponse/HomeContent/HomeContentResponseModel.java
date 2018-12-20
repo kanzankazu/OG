@@ -17,6 +17,7 @@ public class HomeContentResponseModel {
     private String image_posted_local;
     private String caption;
     private String keterangan;
+    private String event;
     private String date_created;
     private String jabatan;
 
@@ -167,5 +168,17 @@ public class HomeContentResponseModel {
 
     public void setIs_new(boolean is_new) {
         this.is_new = is_new;
+    }
+
+    public boolean isIs_new() {
+        return is_new;
+    }
+
+    public String getEvent() {
+        return event;
+    }
+
+    public void setEvent(String event) {
+        this.event = event;
     }
 }
