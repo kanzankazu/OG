@@ -235,7 +235,7 @@ public class BaseHomeActivity extends AppCompatActivity {
         tlBHA.setTabGravity(TabLayout.GRAVITY_FILL);
         tlBHA.setEnabled(false);
 
-        mPagerAdapter = new SlidePagerAdapter(getSupportFragmentManager(),titleTab.length);
+        mPagerAdapter = new SlidePagerAdapter(getSupportFragmentManager(), titleTab.length);
         vpBHA.setAdapter(mPagerAdapter);
         vpBHA.setOffscreenPageLimit(5);
         vpBHA.setCurrentItem(0);

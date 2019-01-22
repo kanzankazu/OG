@@ -263,6 +263,7 @@ public class GalleryDetailActivity extends AppCompatActivity {
             } else {
                 dataParam.add(mode);
             }
+
             Intent intent = new Intent(this, aHomePostCommentActivity.class);
             intent.putParcelableArrayListExtra(ISeasonConfig.INTENT_PARAM, dataParam);
             intent.putExtra(ISeasonConfig.INTENT_PARAM2, position);
